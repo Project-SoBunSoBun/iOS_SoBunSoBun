@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Security
 
 final class KeyChain {
     static let shared = KeyChain()
@@ -45,8 +44,9 @@ final class KeyChain {
         var searchWord: CFTypeRef? = nil
         let searchResult = SecItemCopyMatching(savedData, &searchWord)
         
+        // 없으면 미출력
         if (searchResult != errSecSuccess) {
-            return nil // 없으면 미출력
+            return nil
         }
         
         let searchData: Data = searchWord as! Data
