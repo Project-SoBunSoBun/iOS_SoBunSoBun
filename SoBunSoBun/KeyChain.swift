@@ -45,7 +45,7 @@ final class KeyChain {
         let searchResult = SecItemCopyMatching(savedData, &searchWord)
         
         // 없으면 미출력
-        if (searchResult != errSecSuccess) {
+        if searchResult != errSecSuccess {
             return nil
         }
         
