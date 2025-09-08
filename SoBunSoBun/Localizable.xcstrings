@@ -1,0 +1,28 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "LoginApple" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple로 시작하기"
+          }
+        }
+      }
+    },
+    "LoginKakao" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카카오로 시작하기"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
