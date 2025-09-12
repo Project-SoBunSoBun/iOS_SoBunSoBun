@@ -33,6 +33,17 @@
           }
         }
       }
+    },
+    "ServerConnectFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버 에러"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
