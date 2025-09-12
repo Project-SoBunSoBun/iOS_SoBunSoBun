@@ -47,7 +47,7 @@ class LoginView: UIViewController {
     // 애플 버튼 안 텍스트
     private let appleText: UILabel = {
         let label = UILabel()
-        label.text = String(localized: "LoginApple")
+        label.text = String(localized: "LoginApple") // 다국어 지원 구문
         label.textColor = .white
         
         return label
@@ -83,7 +83,7 @@ class LoginView: UIViewController {
     // 카카오 버튼 안 텍스트
     private let kakaoText: UILabel = {
         let label = UILabel()
-        label.text = String(localized: "LoginKakao")
+        label.text = String(localized: "LoginKakao") // 다국어 지원 구문
         label.textColor = .black
         
         return label
@@ -104,7 +104,7 @@ class LoginView: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        navigationController?.navigationBar.isHidden = true
+        navigationController?.navigationBar.isHidden = true // 네비게이션 바 숨김
     }
     
     override func viewDidLoad() {
@@ -117,7 +117,6 @@ class LoginView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        
         // TODO: 배경 색상 - 디자인 시스템 나오면 변경 필요
         view.backgroundColor = .white
         
@@ -188,8 +187,6 @@ extension LoginView {
             .map { _ in Reactor.Action.appleButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
-        
         
         // 카카오로 시작하기 버튼 클릭 제스처
         kakaoButtonView.rx.tapGesture()
