@@ -42,7 +42,21 @@ class LoginReactor: Reactor {
                 .subscribe(onNext: { oauthToken in
                     let accessToken = oauthToken.accessToken
                     print("KakaoToken : \(accessToken)")
-                    // status = Observable.just(.loginSuccess)
+                    
+                    NetworkManager.shared.fetchAuthLoginKakao(accessToken: accessToken)
+                        .asObservable()
+                        .subscribe { userModel in
+                            KeyChain.shared.set(key: "ACCESS_TOKEN", value: userModel.accessToken)
+                            KeyChain.shared.set(key: "REFRESH_TOKEN", value: userModel.refreshToken)
+                            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT", value: String(userModel.accessTokenExpiresAt))
+                            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT", value: String(userModel.refreshTokenExpiresAt))
+                            
+                            status = Observable.just(.loginSuccess)
+                        } onError: { error in
+                            print(error.localizedDescription)
+                            status = Observable.just(.loginFailed(String(localized: "ServerConnectFailed")))
+                        }
+                        .disposed(by: self.disposeBag)
                 }, onError: { _ in
                     status = Observable.just(.loginFailed(String(localized: "KakaoLoginFailed")))
                 })
