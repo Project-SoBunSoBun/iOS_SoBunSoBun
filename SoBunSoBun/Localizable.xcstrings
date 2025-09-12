@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "KakaoLoginFailed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카카오 로그인 실패"
+          }
+        }
+      }
+    },
     "LoginApple" : {
       "extractionState" : "manual",
       "localizations" : {
