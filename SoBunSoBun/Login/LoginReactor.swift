@@ -45,7 +45,8 @@ class LoginReactor: Reactor {
                     // status = Observable.just(.loginSuccess)
                 }, onError: { _ in
                     status = Observable.just(.loginFailed(String(localized: "KakaoLoginFailed")))
-                }).disposed(by: disposeBag)
+                })
+                .disposed(by: disposeBag)
             
             return status
         case .appleButtonTapped:
