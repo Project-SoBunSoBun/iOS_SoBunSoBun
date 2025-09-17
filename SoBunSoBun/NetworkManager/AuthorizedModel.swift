@@ -15,8 +15,8 @@ struct UserModel: Decodable {
     let accessToken: String
     let refreshToken: String
     let user: UserInfoModel
-    let accessTokenExpiresAt: Int
-    let refreshTokenExpiresAt: Int
+    let accessTokenExpiresAtKst: String
+    let refreshTokenExpiresAtKst: String
 }
 
 struct UserInfoModel: Decodable {
