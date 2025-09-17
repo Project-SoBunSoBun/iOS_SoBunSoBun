@@ -48,8 +48,8 @@ class LoginReactor: Reactor {
                         .subscribe { userModel in
                             KeyChain.shared.set(key: "ACCESS_TOKEN", value: userModel.accessToken)
                             KeyChain.shared.set(key: "REFRESH_TOKEN", value: userModel.refreshToken)
-                            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT", value: String(userModel.accessTokenExpiresAt))
-                            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT", value: String(userModel.refreshTokenExpiresAt))
+                            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(userModel.accessTokenExpiresAtKst))
+                            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(userModel.refreshTokenExpiresAtKst))
                             
                             status = Observable.just(.loginSuccess)
                         } onError: { error in
