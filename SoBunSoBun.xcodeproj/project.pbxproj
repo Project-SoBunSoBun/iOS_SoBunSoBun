@@ -31,7 +31,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BB7572812E4F4438008DFF98 /* Exceptions for "SoBunSoBun" folder in "SoBunSoBun" target */ = {
+		BBB09B582E7ABD0E00287084 /* Exceptions for "SoBunSoBun" folder in "SoBunSoBun" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -44,7 +44,7 @@
 		BB7572712E4F4436008DFF98 /* SoBunSoBun */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				BB7572812E4F4438008DFF98 /* Exceptions for "SoBunSoBun" folder in "SoBunSoBun" target */,
+				BBB09B582E7ABD0E00287084 /* Exceptions for "SoBunSoBun" folder in "SoBunSoBun" target */,
 			);
 			path = SoBunSoBun;
 			sourceTree = "<group>";
