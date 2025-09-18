@@ -31,7 +31,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		BB7572812E4F4438008DFF98 /* Exceptions for "SoBunSoBun" folder in "SoBunSoBun" target */ = {
+		BBB09B582E7ABD0E00287084 /* Exceptions for "SoBunSoBun" folder in "SoBunSoBun" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -44,7 +44,7 @@
 		BB7572712E4F4436008DFF98 /* SoBunSoBun */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				BB7572812E4F4438008DFF98 /* Exceptions for "SoBunSoBun" folder in "SoBunSoBun" target */,
+				BBB09B582E7ABD0E00287084 /* Exceptions for "SoBunSoBun" folder in "SoBunSoBun" target */,
 			);
 			path = SoBunSoBun;
 			sourceTree = "<group>";
@@ -222,9 +222,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.seongpil.SoBunSoBun;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -250,9 +253,12 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = dev.seongpil.SoBunSoBun;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

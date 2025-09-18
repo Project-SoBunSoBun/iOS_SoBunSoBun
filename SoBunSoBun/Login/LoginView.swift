@@ -29,7 +29,7 @@ class LoginView: UIViewController {
     // 애플로 시작하기를 담고 있는 뷰
     private let appleButtonView: UIView = {
         let view = UIView()
-        view.backgroundColor = .black
+        view.backgroundColor = .black0
         view.layer.cornerRadius = 10
         
         return view
@@ -47,8 +47,12 @@ class LoginView: UIViewController {
     // 애플 버튼 안 텍스트
     private let appleText: UILabel = {
         let label = UILabel()
-        label.text = String(localized: "LoginApple") // 다국어 지원 구문
-        label.textColor = .white
+        let attributedText = NSAttributedString(
+            string: String(localized: "LoginApple"), // 다국어 지원 구문
+            attributes: title16.attributes
+        )
+        label.attributedText = attributedText
+        label.textColor = .backgroundWhite
         
         return label
     }()
@@ -66,7 +70,7 @@ class LoginView: UIViewController {
     // 카카오로 시작하기를 담고 있는 뷰
     private let kakaoButtonView: UIView = {
         let view = UIView()
-        view.backgroundColor = .yellow
+        view.backgroundColor = .kakao
         view.layer.cornerRadius = 10
         
         return view
@@ -83,8 +87,12 @@ class LoginView: UIViewController {
     // 카카오 버튼 안 텍스트
     private let kakaoText: UILabel = {
         let label = UILabel()
-        label.text = String(localized: "LoginKakao") // 다국어 지원 구문
-        label.textColor = .black
+        let attributedText = NSAttributedString(
+            string: String(localized: "LoginKakao"), // 다국어 지원 구문
+            attributes: title16.attributes
+        )
+        label.attributedText = attributedText
+        label.textColor = .black0
         
         return label
     }()
@@ -111,14 +119,12 @@ class LoginView: UIViewController {
         super.viewDidLoad()
 
         configureUI()
-        
         bind(reactor: reactor)
     }
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        // TODO: 배경 색상 - 디자인 시스템 나오면 변경 필요
-        view.backgroundColor = .white
+        view.backgroundColor = .backgroundWhite
         
         [appLogoImage, appleButtonView, kakaoButtonView].forEach {
             view.addSubview($0)
