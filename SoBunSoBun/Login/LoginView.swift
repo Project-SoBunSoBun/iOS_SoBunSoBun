@@ -52,7 +52,7 @@ class LoginView: UIViewController {
             attributes: title16.attributes
         )
         label.attributedText = attributedText
-        label.textColor = .white
+        label.textColor = .backgroundWhite
         
         return label
     }()
@@ -92,7 +92,7 @@ class LoginView: UIViewController {
             attributes: title16.attributes
         )
         label.attributedText = attributedText
-        label.textColor = .black
+        label.textColor = .black0
         
         return label
     }()
