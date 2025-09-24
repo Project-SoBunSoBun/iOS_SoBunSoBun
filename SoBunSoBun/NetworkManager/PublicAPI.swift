@@ -15,8 +15,7 @@ enum PublicAPI {
 
 extension PublicAPI: TargetType {
     var baseURL: URL {
-        let apiUrl = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
-        return URL(string: apiUrl)!
+        return URL(string: API_URL)!
     }
     
     var path: String {
