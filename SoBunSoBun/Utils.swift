@@ -8,6 +8,12 @@
 import Foundation
 import UIKit
 
+// API URL
+let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
+
+// 재발급 중
+var isRefreshing: Bool = false
+
 // 문자열에서 날짜 계산
 func stringToDate(string: String, format: String) -> Date {
     let dateFormatter = DateFormatter()
@@ -29,12 +35,6 @@ func dateToString(date: Date, format: String) -> String {
     
     return dateFormatter.string(from: date)
 }
-
-// API URL
-let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
-
-// 재발급 중
-var isRefreshing: Bool = false
 
 // 미리보기
 #if DEBUG

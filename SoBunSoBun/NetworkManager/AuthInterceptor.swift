@@ -10,13 +10,11 @@ import Alamofire
 import Moya
 
 final class AuthInterceptor: RequestInterceptor {
-    
     static let shared = AuthInterceptor()
     
     private init() {}
     
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        
         // 저장된 액세스 토큰과 액세스 토큰 만료 시간을 가져오기
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN"),
               let accessTokenExpireAtKST = KeyChain.shared.get(key: "ACCESS_TOKEN_EXPIRE_AT_KST")
@@ -31,7 +29,7 @@ final class AuthInterceptor: RequestInterceptor {
         
         // 현재 시간과 accessToken의 만료 시간을 비교
         if isAccessExpired {
-            completion(.failure(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰이 없음"])))
+            completion(.failure(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰 만료"])))
             return
         }
         
@@ -43,7 +41,6 @@ final class AuthInterceptor: RequestInterceptor {
     }
     
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
-        
         print("retry 진입")
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
             print("401 오류가 아님")
