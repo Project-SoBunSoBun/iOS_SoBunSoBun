@@ -29,4 +29,13 @@ final class NetworkManager {
         .filterSuccessfulStatusCodes()
         .map(UserModel.self)
     }
+    
+    // 서버에서 닉네임 중복 여부를 확인하는 메서드
+    func checkNickname(nickname: String) -> Single<CheckNicknameModel> {
+        return provider.rx.request(
+            MultiTarget(PublicAPI.checkNickname(nickname: nickname))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(CheckNicknameModel.self)
+    }
 }
