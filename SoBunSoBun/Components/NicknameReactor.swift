@@ -42,8 +42,10 @@ class NicknameReactor: Reactor {
         switch action {
         case .isDuplicationCheckButtonTapped(input: let input):
             if let nickname = input {
-                let regex = "^[가-힣a-zA-Z0-9]{2,8}$" // 닉네임 정규식
-                let result = nickname.range(of: regex, options: .regularExpression) != nil // 닉네임 정규식 검사
+                // 닉네임 정규식
+                let regex = "^[가-힣a-zA-Z0-9]{2,8}$"
+                // 닉네임 정규식 검사
+                let result = nickname.range(of: regex, options: .regularExpression) != nil
                 if result {
                     // 서버와 통신 닉네임 중복 검사
                     return NetworkManager.shared.checkNickname(nickname: nickname)

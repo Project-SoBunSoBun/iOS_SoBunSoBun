@@ -164,11 +164,11 @@ class Nickname: UIView {
             self.addSubview($0)
         }
         
-        textField.layer.borderColor = UIColor.primary100.cgColor
-        
         title.snp.makeConstraints { make in
             make.leading.top.equalToSuperview()
         }
+        
+        textField.layer.borderColor = UIColor.primary100.cgColor
         
         button.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
