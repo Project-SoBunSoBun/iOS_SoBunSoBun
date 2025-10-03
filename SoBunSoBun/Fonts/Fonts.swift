@@ -35,6 +35,12 @@ struct FontStyle {
     }
 }
 
+let body12 = FontStyle(
+    fontName: "Pretendard-Regular",
+    fontSize: 12,
+    lineHeightMultiple: 1.5
+)
+
 let body14 = FontStyle(
     fontName: "Pretendard-Regular",
     fontSize: 14,
@@ -51,6 +57,12 @@ let body18 = FontStyle(
     fontName: "Pretendard-Regular",
     fontSize: 18,
     lineHeightMultiple: 1.5
+)
+
+let title12 = FontStyle(
+    fontName: "Pretendard-Semibold",
+    fontSize: 12,
+    lineHeightMultiple: 1.35
 )
 
 let title14 = FontStyle(
