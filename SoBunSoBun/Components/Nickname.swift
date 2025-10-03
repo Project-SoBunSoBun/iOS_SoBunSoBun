@@ -26,9 +26,6 @@ class Nickname: UIView {
             .distinctUntilChanged()
     }
     
-    // TODO: 색상 변경 예정
-    let redColor = UIColor(red: 0.942, green: 0, blue: 0, alpha: 1)
-    
     // MARK: - 디자인 요소
     private let title: UILabel = {
         let title = UILabel()
@@ -138,8 +135,7 @@ class Nickname: UIView {
                 lb.textColor = .primary400
             } else { // isAvailable이 false일 때
                 iv.image = .redFail
-                // TODO: 색상 변경 필요 레드
-                lb.textColor = redColor
+                lb.textColor = .errorRed
             }
         } else { // nil일 때
             iv.image = .greyCheck
