@@ -9,20 +9,9 @@ import UIKit
 import SnapKit
 
 class Button: UIButton {
-    enum ColorType {
-        case primary, black
-    }
-    
-    var colorType: ColorType = .primary {
-        didSet {
-            self.backgroundColor = colorType == .primary ? .primary300 : .black0
-        }
-    }
-    
     override var isEnabled: Bool {
         didSet {
-            self.backgroundColor = isEnabled ?
-            (colorType == .primary ? .primary300 : .black0) : .neutral200
+            self.backgroundColor = isEnabled ? .primary400 : .neutral200
         }
     }
     
@@ -37,14 +26,16 @@ class Button: UIButton {
     }
     
     private func configure() {
+        self.backgroundColor = self.isEnabled ? .primary400 : .neutral200
         self.setTitleColor(.backgroundWhite, for: .normal)
         self.setTitleColor(.backgroundWhite, for: .disabled)
         self.setTitleColor(.backgroundWhite, for: .highlighted)
-        self.titleLabel?.font = title16.font
-        self.layer.cornerRadius = 14
+        self.titleLabel?.font = title20.font
+        self.layer.cornerRadius = 16
+        self.layer.masksToBounds = true
         
         self.snp.makeConstraints { make in
-            make.height.equalTo(56)
+            make.height.equalTo(64)
         }
     }
 }
