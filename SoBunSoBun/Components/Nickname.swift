@@ -18,47 +18,46 @@ class Nickname: UIView {
     var isNicknameValid: Observable<Bool> {
         return reactor.state
             .map { state -> Bool in
-                guard let inputStatus = state.inputStatus,
-                      let isAvailable = state.nickNameAvailable else {
+                guard let isAvailable = state.nickNameAvailable else {
                     return false
                 }
-                return inputStatus && isAvailable
+                return isAvailable
             }
             .distinctUntilChanged()
     }
     
     // TODO: 색상 변경 예정
-    let blueColor = UIColor(red: 0.251, green: 0.325, blue: 1, alpha: 1)
     let redColor = UIColor(red: 0.942, green: 0, blue: 0, alpha: 1)
-    let grayColor = UIColor(red: 0.692, green: 0.692, blue: 0.692, alpha: 1)
     
+    // MARK: - 디자인 요소
     private let title: UILabel = {
         let title = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "Nickname"), // 다국어 지원 구문
-            attributes: body14.attributes
+            string: String(localized: "Nickname"),
+            attributes: title16.attributes
         )
         title.attributedText = attributedText
-        title.textColor = .black0
+        title.textColor = .neutral900
         
         return title
     }()
     
     let textField: UITextField = {
         let textField = UITextField()
-        textField.layer.cornerRadius = 14
-        textField.layer.borderWidth = 1
+        textField.layer.cornerRadius = 16
+        textField.layer.borderWidth = 2
         textField.backgroundColor = .backgroundWhite
-        textField.textColor = .black0
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 10, height: textField.frame.height))
+        textField.textColor = .neutral900
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: textField.frame.height))
         textField.leftView = paddingView
+        textField.rightView = paddingView
         textField.leftViewMode = .always
+        textField.rightViewMode = .always
         textField.font = body16.font
         textField.attributedPlaceholder = NSAttributedString(
-            string: "닉네임을 입력해주세요",
+            string: String(localized: "InsertNickname"),
             attributes: [
-                // TODO: 색상 변경 예정
-                .foregroundColor: UIColor(red: 0.692, green: 0.692, blue: 0.692, alpha: 1)
+                .foregroundColor: UIColor.neutral300
             ]
         )
         
@@ -67,36 +66,58 @@ class Nickname: UIView {
     
     private let button: UIButton = {
         let button = UIButton()
-        button.setTitle(String(localized: "DuplicationCheck"), for: .normal)
-        button.titleLabel?.font = title14.font
-        button.titleLabel?.textColor = .backgroundWhite
-        // TODO: 색상 코드 변경 필요
-        button.layer.backgroundColor = UIColor(red: 0.543, green: 0.543, blue: 0.543, alpha: 1).cgColor
-        button.layer.cornerRadius = 14
+        button.contentVerticalAlignment = .center
+        button.contentHorizontalAlignment = .center
+        
+        var config = UIButton.Configuration.filled()
+        config.background.cornerRadius = 16
+        config.background.backgroundColor = .primary400
+        config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+        
+        button.configuration = config
+        
+        button.configurationUpdateHandler = { button in
+            var updatedConfig = button.configuration
+            
+            // 상태별 텍스트 색상
+            var titleAttributes = AttributeContainer()
+            titleAttributes.font = title14.font
+            titleAttributes.foregroundColor = UIColor.backgroundWhite.withAlphaComponent(1.0)
+            
+            // 상태별 배경색
+            if button.isEnabled {
+                updatedConfig?.background.backgroundColor = .primary400
+            } else {
+                updatedConfig?.background.backgroundColor = .neutral200
+            }
+            
+            updatedConfig?.attributedTitle = AttributedString(
+                String(localized: "DuplicationCheck"),
+                attributes: titleAttributes
+            )
+            
+            button.configuration = updatedConfig
+        }
         
         return button
     }()
     
     private let stackView: UIStackView = {
         let sv = UIStackView()
-        sv.axis = .vertical
-        sv.spacing = 8
-        sv.alignment = .leading
-        
-        return sv
-    }()
-    
-    private func infoMessageSV(isAvailable: Bool?, infoMessage: String) -> UIStackView {
-        let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 0
         sv.alignment = .center
         
+        return sv
+    }()
+    
+    // 안내 메세지를 설정하는 함수
+    private func makeInfoMessage(isAvailable: Bool?, infoMessage: String) {
         let iv = UIImageView()
         let lb = UILabel()
         
         [iv, lb].forEach {
-            sv.addArrangedSubview($0)
+            stackView.addArrangedSubview($0)
         }
         
         iv.snp.makeConstraints { make in
@@ -104,29 +125,29 @@ class Nickname: UIView {
         }
         
         let attributedText = NSAttributedString(
-            string: infoMessage, // 다국어 지원 구문
+            string: infoMessage,
             attributes: body14.attributes
         )
+        
         lb.attributedText = attributedText
         
         if let isAvailable = isAvailable {
             // isAvailable이 true일 때
             if isAvailable {
                 iv.image = .check
-                iv.tintColor = blueColor
-                lb.textColor = blueColor
+                iv.tintColor = .primary400
+                lb.textColor = .primary400
             } else { // isAvailable이 false일 때
                 iv.image = .X
+                // TODO: 색상 변경 필요 레드
                 iv.tintColor = redColor
                 lb.textColor = redColor
             }
-        } else { // Nil일 때
+        } else { // nil일 때
             iv.image = .check
-            iv.tintColor = grayColor
-            lb.textColor = grayColor
+            iv.tintColor = .neutral500
+            lb.textColor = .neutral500
         }
-        
-        return sv
     }
     
     override init(frame: CGRect) {
@@ -146,7 +167,7 @@ class Nickname: UIView {
             self.addSubview($0)
         }
         
-        textField.layer.borderColor = grayColor.cgColor
+        textField.layer.borderColor = UIColor.primary100.cgColor
         
         title.snp.makeConstraints { make in
             make.leading.top.equalToSuperview()
@@ -155,7 +176,7 @@ class Nickname: UIView {
         button.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
             make.top.equalTo(title.snp.bottom).offset(8)
-            make.width.equalTo(74)
+            make.width.equalTo(80)
             make.height.equalTo(52)
         }
         
@@ -170,6 +191,17 @@ class Nickname: UIView {
             make.top.equalTo(textField.snp.bottom).offset(8)
             make.horizontalEdges.bottom.equalToSuperview()
         }
+        
+        // textField 영역 외 부분을 누르면 키보드 내리기
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        // 다른 터치 이벤트를 방해하지 않도록 설정
+        tapGesture.cancelsTouchesInView = false
+        self.addGestureRecognizer(tapGesture)
+    }
+    
+    // 키보드를 내리는 함수
+    @objc private func dismissKeyboard() {
+        self.endEditing(true)
     }
 }
 
@@ -182,6 +214,19 @@ extension Nickname {
     }
     
     func bindAction(reactor: NicknameReactor) {
+        // textField의 text 변화를 감지
+        textField.rx.text
+            .map { Reactor.Action.textFieldChanged($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // textField를 클릭했을 때
+        textField.rx.controlEvent(.editingDidBegin)
+            .map { Reactor.Action.textFieldBeginEditing }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 중복확인 버튼을 클릭했을 때
         button.rx.tap
             .map { _ in Reactor.Action.isDuplicationCheckButtonTapped(input: self.textField.text)}
             .bind(to: reactor.action)
@@ -189,27 +234,47 @@ extension Nickname {
     }
     
     func bindState(reactor: NicknameReactor) {
+        // 버튼 비활성화
+        reactor.state.map { $0.isButtonEnabled }
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: false)
+            .drive(with: self, onNext: { owner, isEnabled in
+                owner.button.isEnabled = isEnabled
+            })
+            .disposed(by: disposeBag)
+        
+        // 중복확인 후 textField를 클릭하면 textField의 text 전체 지우기
+        reactor.pulse(\.$shouldClearText)
+            .filter { $0 == true }
+            .asDriver(onErrorJustReturn: false)
+            .drive(with: self, onNext: { owner, _ in
+                owner.textField.text = ""
+            })
+            .disposed(by: disposeBag)
+        
+        // 안내 메세지
         reactor.state
             .asDriver(onErrorDriveWith: .empty())
             .drive(with: self, onNext: { [weak self] _, state in
                 guard let self = self else { return }
                 
-                self.stackView.arrangedSubviews.forEach { view in
+                stackView.arrangedSubviews.forEach { view in
                     self.stackView.removeArrangedSubview(view)
                     view.removeFromSuperview()
                 }
                 
-                let inputStatus = state.inputStatus
-                stackView.addArrangedSubview(infoMessageSV(isAvailable: inputStatus, infoMessage: String(localized: "DenyNicknameInput")))
-                
-                if let inputStatus = inputStatus {
-                    textField.layer.borderColor = inputStatus ? blueColor.cgColor : redColor.cgColor
+                guard let isAvailable = state.nickNameAvailable,
+                      let infoMessage = state.infoMessage else { makeInfoMessage(isAvailable: nil, infoMessage: String(localized: "DenyNicknameInput"))
+                    textField.layer.borderColor = UIColor.primary100.cgColor
+                    textField.layer.borderWidth = 1
+                    return
                 }
                 
-                guard let isAvailable = state.nickNameAvailable, let infoMessage = state.infoMessage else { return }
+                makeInfoMessage(isAvailable: isAvailable, infoMessage: infoMessage)
                 
-                self.stackView.addArrangedSubview(self.infoMessageSV(isAvailable: isAvailable, infoMessage: infoMessage))
-                textField.layer.borderColor = isAvailable ? blueColor.cgColor : redColor.cgColor
+                textField.layer.borderColor = isAvailable ? UIColor.primary400.cgColor : UIColor.primary100.cgColor
+                
+                textField.layer.borderWidth = isAvailable ? 2 : 1
             })
             .disposed(by: disposeBag)
     }
