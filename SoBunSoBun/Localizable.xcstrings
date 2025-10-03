@@ -45,6 +45,17 @@
         }
       }
     },
+    "InsertNickname" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닉네임을 입력해주세요"
+          }
+        }
+      }
+    },
     "KakaoLoginFailed" : {
       "extractionState" : "manual",
       "localizations" : {
