@@ -39,7 +39,6 @@ class LoginView: UIViewController {
     private let appleImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = .apple
-        imageView.tintColor = .white
         
         return imageView
     }()

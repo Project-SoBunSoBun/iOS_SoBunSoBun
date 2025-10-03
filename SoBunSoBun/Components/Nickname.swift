@@ -134,18 +134,15 @@ class Nickname: UIView {
         if let isAvailable = isAvailable {
             // isAvailable이 true일 때
             if isAvailable {
-                iv.image = .check
-                iv.tintColor = .primary400
+                iv.image = .blueCheck
                 lb.textColor = .primary400
             } else { // isAvailable이 false일 때
-                iv.image = .X
+                iv.image = .redFail
                 // TODO: 색상 변경 필요 레드
-                iv.tintColor = redColor
                 lb.textColor = redColor
             }
         } else { // nil일 때
-            iv.image = .check
-            iv.tintColor = .neutral500
+            iv.image = .greyCheck
             lb.textColor = .neutral500
         }
     }
