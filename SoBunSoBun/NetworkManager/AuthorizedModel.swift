@@ -26,3 +26,8 @@ struct UserInfoModel: Decodable {
     let profileImageUrl: String?
     let role: String
 }
+
+struct CheckNicknameModel: Decodable {
+    let nickname: String
+    let available: Bool
+}

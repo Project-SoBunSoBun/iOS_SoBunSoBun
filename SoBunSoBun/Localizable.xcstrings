@@ -1,105 +1,182 @@
 {
-  "sourceLanguage" : "ko",
-  "strings" : {
-    "AllAgree" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "네, 모두 동의합니다"
-          }
+    "sourceLanguage" : "ko",
+    "strings" : {
+        "AllAgree" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "네, 모두 동의합니다"
+                    }
+                }
+            }
+        },
+        "AvailableNickname" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "사용 가능한 닉네임입니다"
+                    }
+                }
+            }
+        },
+        "DenyNicknameInput" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "2-8자로 한글, 영문 또는 숫자만 입력 가능합니다"
+                    }
+                }
+            }
+        },
+        "DuplicationCheck" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "중복확인"
+                    }
+                }
+            }
+        },
+        "Error" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "오류가 발생했습니다"
+                    }
+                }
+            }
+        },
+        "InsertNickname" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "닉네임을 입력해주세요"
+                    }
+                }
+            }
+        },
+        "KakaoLoginFailed" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "카카오 로그인 실패"
+                    }
+                }
+            }
+        },
+        "LocationInfomationAgree" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "[필수] 위치정보 수집 동의"
+                    }
+                }
+            }
+        },
+        "LoginApple" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "Apple로 시작하기"
+                    }
+                }
+            }
+        },
+        "LoginKakao" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "카카오로 시작하기"
+                    }
+                }
+            }
+        },
+        "PersonalInfomationAgree" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "[필수] 개인정보 수집 및 이용 동의"
+                    }
+                }
+            }
+        },
+        "Nickname" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "닉네임"
+                    }
+                }
+            }
+        },
+        "ServerConnectFailed" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "서버 에러"
+                    }
+                }
+            }
+        },
+        "ServiceAgree" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "[필수] 서비스 이용약관 동의"
+                    }
+                }
+            }
+        },
+        "Unavailable" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "이미 사용 중인 닉네임입니다"
+                    }
+                }
+            }
+        },
+        "SignUpTitle" : {
+            "extractionState" : "manual",
+            "localizations" : {
+                "ko" : {
+                    "stringUnit" : {
+                        "state" : "translated",
+                        "value" : "서비스 이용약관에 \n동의해 주세요"
+                    }
+                }
+            }
         }
-      }
     },
-    "KakaoLoginFailed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "카카오 로그인 실패"
-          }
-        }
-      }
-    },
-    "LocationInfomationAgree" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[필수] 위치정보 수집 동의"
-          }
-        }
-      }
-    },
-    "LoginApple" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apple로 시작하기"
-          }
-        }
-      }
-    },
-    "LoginKakao" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "카카오로 시작하기"
-          }
-        }
-      }
-    },
-    "PersonalInfomationAgree" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[필수] 개인정보 수집 및 이용 동의"
-          }
-        }
-      }
-    },
-    "ServerConnectFailed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서버 에러"
-          }
-        }
-      }
-    },
-    "ServiceAgree" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[필수] 서비스 이용약관 동의"
-          }
-        }
-      }
-    },
-    "SignUpTitle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "서비스 이용약관에 \n동의해 주세요"
-          }
-        }
-      }
-    }
-  },
-  "version" : "1.0"
+    "version" : "1.0"
 }

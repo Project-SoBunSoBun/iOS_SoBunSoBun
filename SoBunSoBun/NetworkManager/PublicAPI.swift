@@ -11,6 +11,7 @@ import Moya
 enum PublicAPI {
     case authLoginKakao(accessToken: String)
     case health
+    case checkNickname(nickname: String) // 닉네임 중복 검사 API
 }
 
 extension PublicAPI: TargetType {
@@ -24,6 +25,8 @@ extension PublicAPI: TargetType {
             return "/auth/login/kakao-token"
         case .health:
             return "/health"
+        case .checkNickname:
+            return "/users/check-nickname"
         }
     }
     
@@ -32,6 +35,8 @@ extension PublicAPI: TargetType {
         case .authLoginKakao:
             return .post
         case .health:
+            return .get
+        case .checkNickname:
             return .get
         }
     }
@@ -43,10 +48,12 @@ extension PublicAPI: TargetType {
             return .requestJSONEncodable(body)
         case .health:
             return .requestPlain
+        case .checkNickname(nickname: let nickname):
+            return .requestParameters(parameters: ["nickname": nickname], encoding: URLEncoding.queryString)
         }
     }
     
     var headers: [String : String]? {
-        return ["Content-Type": "application/json"]
+        return [:]
     }
 }
