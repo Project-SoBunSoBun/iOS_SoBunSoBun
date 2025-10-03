@@ -12,6 +12,9 @@ struct FontStyle {
     let fontSize: CGFloat
     let lineHeightMultiple: CGFloat // 행간 비율
     
+    // UIFont 타입 대응 변수
+    var font: UIFont { return UIFont(name: fontName, size: fontSize)! }
+    
     var paragraphStyle: NSParagraphStyle {
         let style = NSMutableParagraphStyle()
         let lineHeight = fontSize * lineHeightMultiple

@@ -28,10 +28,10 @@ final class AuthInterceptor: RequestInterceptor {
                                            format: "yyyy-MM-dd HH:mm:ss") < now
         
         // 현재 시간과 accessToken의 만료 시간을 비교
-        if isAccessExpired {
-            completion(.failure(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰 만료"])))
-            return
-        }
+//        if isAccessExpired {
+//            completion(.failure(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰 만료"])))
+//            return
+//        }
         
         // 헤더에 accessToken을 담아서 전달
         var urlRequest = urlRequest
@@ -68,13 +68,12 @@ final class AuthInterceptor: RequestInterceptor {
         }
         
         if isRefreshing {
-            print("재발급 중")
+            print("이미 재발급 중")
             completion(.retry)
         } else {
             isRefreshing = true
             
-            refreshToken() { [weak self] isSuccess in
-                guard let self = self else { return }
+            refreshToken() { isSuccess in
                 isRefreshing = false
                 
                 if isSuccess {
@@ -97,7 +96,7 @@ final class AuthInterceptor: RequestInterceptor {
             return
         }
         
-        let parameters: [String: Any] = ["refresh": refresh]
+        let parameters: [String: Any] = ["refreshToken": refresh]
         
         AF.request("\(API_URL)/auth/token/refresh",
                    method: .post,

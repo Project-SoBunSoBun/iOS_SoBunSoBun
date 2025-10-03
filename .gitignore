@@ -136,3 +136,6 @@ iOSInjectionProject/
 *.xcconfig
 *.ttf
 *.otf
+
+TestView.swift
+TestReactor.swift

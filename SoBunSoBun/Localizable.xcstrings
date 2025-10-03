@@ -1,6 +1,61 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "AvailableNickname" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용 가능한 닉네임입니다"
+          }
+        }
+      }
+    },
+    "DenyNicknameInput" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2-8자로 한글, 영문 또는 숫자만 입력 가능합니다"
+          }
+        }
+      }
+    },
+    "DuplicationCheck" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중복확인"
+          }
+        }
+      }
+    },
+    "Error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오류가 발생했습니다"
+          }
+        }
+      }
+    },
+    "InsertNickname" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닉네임을 입력해주세요"
+          }
+        }
+      }
+    },
     "KakaoLoginFailed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -34,6 +89,17 @@
         }
       }
     },
+    "Nickname" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닉네임"
+          }
+        }
+      }
+    },
     "ServerConnectFailed" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -41,6 +107,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "서버 에러"
+          }
+        }
+      }
+    },
+    "Unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미 사용 중인 닉네임입니다"
           }
         }
       }
