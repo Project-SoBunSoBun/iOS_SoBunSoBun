@@ -29,7 +29,7 @@ class LoginView: UIViewController {
     // 애플로 시작하기를 담고 있는 뷰
     private let appleButtonView: UIView = {
         let view = UIView()
-        view.backgroundColor = .black0
+        view.backgroundColor = .appleBlack
         view.layer.cornerRadius = 10
         
         return view
@@ -51,7 +51,7 @@ class LoginView: UIViewController {
             attributes: title16.attributes
         )
         label.attributedText = attributedText
-        label.textColor = .backgroundWhite
+        label.textColor = .appleWhite
         
         return label
     }()
@@ -69,7 +69,7 @@ class LoginView: UIViewController {
     // 카카오로 시작하기를 담고 있는 뷰
     private let kakaoButtonView: UIView = {
         let view = UIView()
-        view.backgroundColor = .kakao
+        view.backgroundColor = .kakaoYellow
         view.layer.cornerRadius = 10
         
         return view
@@ -91,7 +91,7 @@ class LoginView: UIViewController {
             attributes: title16.attributes
         )
         label.attributedText = attributedText
-        label.textColor = .black0
+        label.textColor = .kakaoLabelBlack
         
         return label
     }()
