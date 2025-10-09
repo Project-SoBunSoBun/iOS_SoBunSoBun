@@ -7,14 +7,6 @@ assignees: ''
 
 ---
 
----
-name: EatsOkay Feature Template
-about: EatsOkay 기능 템플릿
-title: "[Feat]"
-labels: 'new feature'
-assignees: ''
----
-
 ## 📌 Feature Issue
 <!-- 구현할 기능에 대한 내용을 설명해주세요. -->
 - 
