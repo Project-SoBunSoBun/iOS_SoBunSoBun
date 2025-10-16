@@ -11,6 +11,21 @@ struct AuthKakaoTokenModel: Encodable {
     let accessToken: String
 }
 
+struct LoginTokenModel: Encodable {
+    let loginToken: String
+    let serviceTermsAgreed: Bool
+    let privacyPolicyAgreed: Bool
+    let marketingOptionalAgreed: Bool
+}
+
+struct KakaoAuthResponse: Decodable {
+    let email: String
+    let nickname: String?
+    let profileImageUrl: String?
+    let loginToken: String
+    let newUser: Bool
+}
+
 struct UserModel: Decodable {
     let accessToken: String
     let refreshToken: String
