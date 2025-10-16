@@ -10,6 +10,7 @@ import Moya
 
 enum PublicAPI {
     case authLoginKakao(accessToken: String)
+    case authCompleteSignUp(loginToken: String, serviceTermsAgreed: Bool, privacyPolicyAgreed: Bool, marketingOptionalAgreed: Bool)
     case health
     case checkNickname(nickname: String) // 닉네임 중복 검사 API
 }
@@ -22,7 +23,9 @@ extension PublicAPI: TargetType {
     var path: String {
         switch self {
         case .authLoginKakao:
-            return "/auth/login/kakao-token"
+            return "/auth/verify/kakao-token"
+        case .authCompleteSignUp:
+            return "/auth/complete-signup"
         case .health:
             return "/health"
         case .checkNickname:
@@ -33,6 +36,8 @@ extension PublicAPI: TargetType {
     var method: Moya.Method {
         switch self {
         case .authLoginKakao:
+            return .post
+        case .authCompleteSignUp:
             return .post
         case .health:
             return .get
@@ -45,6 +50,15 @@ extension PublicAPI: TargetType {
         switch self {
         case .authLoginKakao(accessToken: let accessToken):
             let body = AuthKakaoTokenModel(accessToken: accessToken)
+            return .requestJSONEncodable(body)
+        case .authCompleteSignUp(loginToken: let loginToken,
+                                 serviceTermsAgreed: let serviceTermsAgreed,
+                                 privacyPolicyAgreed: let privacyPolicyAgreed,
+                                 marketingOptionalAgreed: let marketingOptionalAgreed):
+            let body = LoginTokenModel(loginToken: loginToken,
+                                       serviceTermsAgreed: serviceTermsAgreed,
+                                       privacyPolicyAgreed: privacyPolicyAgreed,
+                                       marketingOptionalAgreed: marketingOptionalAgreed)
             return .requestJSONEncodable(body)
         case .health:
             return .requestPlain
