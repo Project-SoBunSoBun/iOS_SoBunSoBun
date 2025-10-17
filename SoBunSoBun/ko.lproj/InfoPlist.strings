@@ -1,0 +1,11 @@
+/* 
+  InfoPlist.strings
+  SoBunSoBun
+
+  Created by 허성필 on 10/18/25.
+  
+*/
+
+NSLocationWhenInUseUsageDescription = "내 주변의 모임을 검색하거나\n동네 인증을 위해 현재 위치를 확인합니다.\n미 허용 시 앱을 사용하실 수 없습니다.";
+CFBundleDisplayName = "소분소분";
+CFBundleName = "소분소분";
