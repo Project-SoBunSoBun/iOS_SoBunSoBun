@@ -12,6 +12,17 @@
         }
       }
     },
+    "Chat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅"
+          }
+        }
+      }
+    },
     "DenyNicknameInput" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -41,6 +52,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "오류가 발생했습니다"
+          }
+        }
+      }
+    },
+    "Home" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "홈"
           }
         }
       }
@@ -89,6 +111,17 @@
         }
       }
     },
+    "Mypage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이페이지"
+          }
+        }
+      }
+    },
     "Nickname" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -107,6 +140,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "서버 에러"
+          }
+        }
+      }
+    },
+    "Settlement" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산"
           }
         }
       }
