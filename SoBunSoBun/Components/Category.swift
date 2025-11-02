@@ -6,9 +6,11 @@
 //
 
 import UIKit
+import SnapKit
 import RxSwift
 import RxGesture
 
+/// 카테고리 블록입니다.
 class Category: UILabel {
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -26,7 +28,7 @@ class Category: UILabel {
         self.textColor = .primary300
         self.backgroundColor = .primary50
         self.layer.cornerRadius = 12
-        self.layer.masksToBounds = true
+        self.clipsToBounds = true
         
         self.setContentCompressionResistancePriority(.required, for: .horizontal)
         self.setContentHuggingPriority(.required, for: .horizontal)
@@ -45,6 +47,7 @@ class Category: UILabel {
     }
 }
 
+/// Tabable 카테고리 블록입니다.
 class CategorySelectable: UILabel {
     private let disposeBag = DisposeBag()
     
@@ -72,8 +75,8 @@ class CategorySelectable: UILabel {
         self.textColor = .primary300
         self.backgroundColor = .primary50
         self.layer.cornerRadius = 12
-        self.layer.masksToBounds = true
         self.layer.borderColor = UIColor.primary400.cgColor
+        self.clipsToBounds = true
         
         self.setContentCompressionResistancePriority(.required, for: .horizontal)
         self.setContentHuggingPriority(.required, for: .horizontal)
@@ -100,6 +103,43 @@ class CategorySelectable: UILabel {
             self.frame = CGRectInset(self.frame, 2, 2)
             self.layer.borderWidth = 0
         }
+    }
+    
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: insets))
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        var contentSize = super.intrinsicContentSize
+        contentSize.height += insets.top + insets.bottom
+        contentSize.width += insets.left + insets.right
+        
+        return contentSize
+    }
+}
+
+/// 목록 내 보여질 카테코리 블록입니다.
+class CategoryMini: UILabel {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configure()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private let insets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
+    
+    private func configure() {
+        self.font = title12.font
+        self.textColor = .primary400
+        self.backgroundColor = .neutral50
+        self.layer.cornerRadius = 8
+        self.clipsToBounds = true
+        
+        self.setContentCompressionResistancePriority(.required, for: .horizontal)
+        self.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     override func drawText(in rect: CGRect) {
