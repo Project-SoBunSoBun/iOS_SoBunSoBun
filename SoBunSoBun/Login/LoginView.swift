@@ -12,7 +12,7 @@ import SnapKit
 import RxSwift
 import RxGesture
 
-class LoginView: UIViewController {
+class LoginView: CustomViewController {
     typealias Reactor = LoginReactor
     private let reactor = LoginReactor()
     private let disposeBag = DisposeBag()
@@ -22,6 +22,16 @@ class LoginView: UIViewController {
     private let appLogoImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = .logo
+        imageView.contentMode = .scaleAspectFit
+        
+        return imageView
+    }()
+    
+    // 앱 로고 Text - 소분소분
+    private let appLogoText: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = .sobunSobunText
+        imageView.contentMode = .scaleAspectFit
         
         return imageView
     }()
@@ -30,7 +40,7 @@ class LoginView: UIViewController {
     private let appleButtonView: UIView = {
         let view = UIView()
         view.backgroundColor = .appleBlack
-        view.layer.cornerRadius = 10
+        view.layer.cornerRadius = 12
         
         return view
     }()
@@ -39,6 +49,7 @@ class LoginView: UIViewController {
     private let appleImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = .apple
+        imageView.contentMode = .scaleAspectFit
         
         return imageView
     }()
@@ -48,7 +59,7 @@ class LoginView: UIViewController {
         let label = UILabel()
         let attributedText = NSAttributedString(
             string: String(localized: "LoginApple"), // 다국어 지원 구문
-            attributes: title16.attributes
+            attributes: title16.attributes()
         )
         label.attributedText = attributedText
         label.textColor = .appleWhite
@@ -70,7 +81,7 @@ class LoginView: UIViewController {
     private let kakaoButtonView: UIView = {
         let view = UIView()
         view.backgroundColor = .kakaoYellow
-        view.layer.cornerRadius = 10
+        view.layer.cornerRadius = 12
         
         return view
     }()
@@ -79,6 +90,7 @@ class LoginView: UIViewController {
     private let kakaoImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = .kakao
+        imageView.contentMode = .scaleAspectFit
         
         return imageView
     }()
@@ -88,7 +100,7 @@ class LoginView: UIViewController {
         let label = UILabel()
         let attributedText = NSAttributedString(
             string: String(localized: "LoginKakao"), // 다국어 지원 구문
-            attributes: title16.attributes
+            attributes: title16.attributes()
         )
         label.attributedText = attributedText
         label.textColor = .kakaoLabelBlack
@@ -106,26 +118,52 @@ class LoginView: UIViewController {
         return view
     }()
     
+    // 그라데이션 뷰
+    private let gradientLayer: CAGradientLayer = {
+        let gl = CAGradientLayer()
+        gl.colors = [
+            UIColor.primary100.withAlphaComponent(0).cgColor,
+            UIColor.primary100.withAlphaComponent(1).cgColor
+        ]
+        gl.locations = [0,1]
+        gl.startPoint = CGPoint(x: 0.5, y: 0.0)
+        gl.endPoint = CGPoint(x: 0.5, y: 1.0)
+        
+        return gl
+    }()
+    
     // MARK: - 생명주기
     // 네비게이션 바를 숨기기 위한 viewWillAppear
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        navigationController?.navigationBar.isHidden = true // 네비게이션 바 숨김
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         configureUI()
         bind(reactor: reactor)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        gradientLayer.frame = CGRect(
+            x: 0,
+            y: 312,
+            width: view.bounds.width,
+            height: view.bounds.height - 312
+        )
     }
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [appLogoImage, appleButtonView, kakaoButtonView].forEach {
+        // 그라데이션 추가
+        view.layer.addSublayer(gradientLayer)
+        
+        [appLogoImage, appLogoText, appleButtonView, kakaoButtonView].forEach {
             view.addSubview($0)
         }
         
@@ -146,10 +184,17 @@ class LoginView: UIViewController {
             make.size.equalTo(120)
         }
         
+        appLogoText.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(appLogoImage.snp.bottom).offset(24)
+            make.height.equalTo(44)
+            make.width.equalTo(129)
+        }
+        
         appleButtonView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().inset(24)
-            make.top.equalTo(appLogoImage.snp.bottom).offset(150)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(appLogoText.snp.bottom).offset(80)
             make.height.equalTo(52)
         }
         
@@ -162,8 +207,8 @@ class LoginView: UIViewController {
         }
         
         kakaoButtonView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().inset(24)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().inset(16)
             make.top.equalTo(appleButtonView.snp.bottom).offset(8)
             make.height.equalTo(52)
         }
@@ -201,7 +246,17 @@ extension LoginView {
     }
     
     func bindState(reactor: LoginReactor) {
-        
+        reactor.pulse(\.$loginCompleted)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                // newUser가 true이면 이용약관 동의로 넘기기
+                
+                // newUser가 false이고 홈으로 넘기기
+                let vc = SignUpView()
+                self.navigationController?.pushViewController(vc, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }
 

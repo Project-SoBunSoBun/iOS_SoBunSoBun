@@ -35,34 +35,24 @@ class LoginReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .kakaoButtonTapped:
-            var status = Observable<Mutation>.empty()
-            
             // 카카오 로그인을 통해 OAuthToken 발급받기
-            kakaoLoginAction()
-                .subscribe(onNext: { oauthToken in
+            return kakaoLoginAction()
+                .flatMap { oauthToken in
                     let accessToken = oauthToken.accessToken
-                    print("KakaoToken : \(accessToken)")
-                    
-                    NetworkManager.shared.fetchAuthLoginKakao(accessToken: accessToken)
+                    return NetworkManager.shared.fetchAuthLoginKakao(accessToken: accessToken)
                         .asObservable()
-                        .subscribe { userModel in
-                            KeyChain.shared.set(key: "ACCESS_TOKEN", value: userModel.accessToken)
-                            KeyChain.shared.set(key: "REFRESH_TOKEN", value: userModel.refreshToken)
-                            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(userModel.accessTokenExpiresAtKst))
-                            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(userModel.refreshTokenExpiresAtKst))
-                            
-                            status = Observable.just(.loginSuccess)
-                        } onError: { error in
-                            print(error.localizedDescription)
-                            status = Observable.just(.loginFailed(String(localized: "ServerConnectFailed")))
+                        .map { kakaoAuthResponse in
+                            // 임시 토큰 저장
+                            KeyChain.shared.set(key: "LOGIN_TOKEN", value: kakaoAuthResponse.loginToken)
+                            return Mutation.loginSuccess
                         }
-                        .disposed(by: self.disposeBag)
-                }, onError: { _ in
-                    status = Observable.just(.loginFailed(String(localized: "KakaoLoginFailed")))
-                })
-                .disposed(by: disposeBag)
-            
-            return status
+                        .catch { error in
+                            Observable.just(Mutation.loginFailed("ServerConnectFailed"))
+                        }
+                }
+                .catch { error in
+                    Observable.just(Mutation.loginFailed("KakaoLoginFailed"))
+                }
         case .appleButtonTapped:
             return Observable.empty()
         }
