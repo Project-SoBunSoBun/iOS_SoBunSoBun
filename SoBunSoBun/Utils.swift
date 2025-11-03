@@ -33,11 +33,11 @@ func dateToString(date: Date, format: String) -> String {
 }
 
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
-func ISO8601ToLocalizedDateTimeString(_ isoDatetimeString: String) -> String {
+func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String {
     let isoFormatter = ISO8601DateFormatter()
     isoFormatter.formatOptions = [.withFullDate, .withFullTime]
     
-    if let date = isoFormatter.date(from: isoDatetimeString) {
+    if let date = isoFormatter.date(from: iso8601DatetimeString) {
         let dateFormatter = DateFormatter()
         dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a hh:mm")
         
@@ -49,11 +49,11 @@ func ISO8601ToLocalizedDateTimeString(_ isoDatetimeString: String) -> String {
 }
 
 // ISO8601 Datetime에서 D-Day 계산
-func ISO8601ToDDay(_ isoDatetimeString: String) -> String {
+func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
     let isoFormatter = ISO8601DateFormatter()
     isoFormatter.formatOptions = [.withFullDate, .withFullTime]
     
-    if let date = isoFormatter.date(from: isoDatetimeString) {
+    if let date = isoFormatter.date(from: iso8601DatetimeString) {
         let calendar = Calendar.current
         let now = calendar.startOfDay(for: Date())
         let targetDay = calendar.startOfDay(for: date)

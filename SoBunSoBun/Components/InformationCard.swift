@@ -9,17 +9,18 @@ import UIKit
 import SnapKit
 
 class InformationCard: UIView {
+    /// dateTimeString은 ISO 8601(DateTime) 형식의 문자열입니다.
     init(frame: CGRect = .zero,
          minCount: Int,
          maxCount: Int,
          location: String,
-         date: String) {
+         dateTimeString: String) {
         super.init(frame: frame)
         
         configure(minCount: minCount,
                   maxCount: maxCount,
                   location: location,
-                  date: date)
+                  dateTimeString: dateTimeString)
     }
     
     required init?(coder: NSCoder) {
@@ -104,7 +105,7 @@ class InformationCard: UIView {
         minCount: Int,
         maxCount: Int,
         location: String,
-        date: String) {
+        dateTimeString: String) {
             self.backgroundColor = .primary50
             self.layer.cornerRadius = 16
             self.clipsToBounds = true
@@ -135,7 +136,7 @@ class InformationCard: UIView {
             // 날짜 및 시간
             dateTimeStackView.addArrangedSubview(dateTimeTitleLabel)
             dateTimeStackView.addArrangedSubview(dateTimeDescLabel)
-            dateTimeDescLabel.text = ISO8601ToLocalizedDateTimeString(date)
+            dateTimeDescLabel.text = ISO8601ToLocalizedDateTimeString(dateTimeString)
             
             addSubview(dateTimeStackView)
             
@@ -147,7 +148,7 @@ class InformationCard: UIView {
             // 마감일
             deadlineStackView.addArrangedSubview(deadlineTitleLabel)
             deadlineStackView.addArrangedSubview(deadlineDescLabel)
-            deadlineDescLabel.text = ISO8601ToDDay(date)
+            deadlineDescLabel.text = ISO8601ToDDay(dateTimeString)
             
             addSubview(deadlineStackView)
             
