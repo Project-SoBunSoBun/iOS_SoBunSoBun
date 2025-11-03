@@ -105,55 +105,55 @@ class InformationCard: UIView {
         maxCount: Int,
         location: String,
         date: String) {
-        self.backgroundColor = .primary50
-        self.layer.cornerRadius = 16
-        self.clipsToBounds = true
-        
-        // 모집 인원
-        participantsStackView.addArrangedSubview(participantsTitleLabel)
-        participantsStackView.addArrangedSubview(participantsDescLabel)
-        participantsDescLabel.text = String(format: NSLocalizedString("ParticipantCount", comment: "participants minimum and maximum counts"), minCount, maxCount)
-        
-        addSubview(participantsStackView)
-        
-        participantsStackView.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview().inset(16)
-        }
-        
-        // 지점 위치
-        marketLocationStackView.addArrangedSubview(marketLocationTitleLabel)
-        marketLocationStackView.addArrangedSubview(marketLocationDescLabel)
-        marketLocationDescLabel.text = location
-        
-        addSubview(marketLocationStackView)
-        
-        marketLocationStackView.snp.makeConstraints { make in
-            make.top.equalTo(participantsStackView.snp.bottom).offset(8)
-            make.horizontalEdges.equalToSuperview().inset(16)
-        }
-        
-        // 날짜 및 시간
-        dateTimeStackView.addArrangedSubview(dateTimeTitleLabel)
-        dateTimeStackView.addArrangedSubview(dateTimeDescLabel)
-        dateTimeDescLabel.text = ISO8601ToLocalizedDateTimeString(date)
+            self.backgroundColor = .primary50
+            self.layer.cornerRadius = 16
+            self.clipsToBounds = true
             
-        addSubview(dateTimeStackView)
+            // 모집 인원
+            participantsStackView.addArrangedSubview(participantsTitleLabel)
+            participantsStackView.addArrangedSubview(participantsDescLabel)
+            participantsDescLabel.text = String(format: NSLocalizedString("ParticipantCount", comment: "participants minimum and maximum counts"), minCount, maxCount)
             
-        dateTimeStackView.snp.makeConstraints { make in
-            make.top.equalTo(marketLocationStackView.snp.bottom).offset(8)
-            make.horizontalEdges.equalToSuperview().inset(16)
+            addSubview(participantsStackView)
+            
+            participantsStackView.snp.makeConstraints { make in
+                make.top.horizontalEdges.equalToSuperview().inset(16)
+            }
+            
+            // 지점 위치
+            marketLocationStackView.addArrangedSubview(marketLocationTitleLabel)
+            marketLocationStackView.addArrangedSubview(marketLocationDescLabel)
+            marketLocationDescLabel.text = location
+            
+            addSubview(marketLocationStackView)
+            
+            marketLocationStackView.snp.makeConstraints { make in
+                make.top.equalTo(participantsStackView.snp.bottom).offset(8)
+                make.horizontalEdges.equalToSuperview().inset(16)
+            }
+            
+            // 날짜 및 시간
+            dateTimeStackView.addArrangedSubview(dateTimeTitleLabel)
+            dateTimeStackView.addArrangedSubview(dateTimeDescLabel)
+            dateTimeDescLabel.text = ISO8601ToLocalizedDateTimeString(date)
+            
+            addSubview(dateTimeStackView)
+            
+            dateTimeStackView.snp.makeConstraints { make in
+                make.top.equalTo(marketLocationStackView.snp.bottom).offset(8)
+                make.horizontalEdges.equalToSuperview().inset(16)
+            }
+            
+            // 마감일
+            deadlineStackView.addArrangedSubview(deadlineTitleLabel)
+            deadlineStackView.addArrangedSubview(deadlineDescLabel)
+            deadlineDescLabel.text = ISO8601ToDDay(date)
+            
+            addSubview(deadlineStackView)
+            
+            deadlineStackView.snp.makeConstraints { make in
+                make.top.equalTo(dateTimeStackView.snp.bottom).offset(8)
+                make.horizontalEdges.bottom.equalToSuperview().inset(16)
+            }
         }
-        
-        // 마감일
-        deadlineStackView.addArrangedSubview(deadlineTitleLabel)
-        deadlineStackView.addArrangedSubview(deadlineDescLabel)
-        deadlineDescLabel.text = ISO8601ToDDay(date)
-            
-        addSubview(deadlineStackView)
-            
-        deadlineStackView.snp.makeConstraints { make in
-            make.top.equalTo(dateTimeStackView.snp.bottom).offset(8)
-            make.horizontalEdges.bottom.equalToSuperview().inset(16)
-        }
-    }
 }
