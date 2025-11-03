@@ -31,7 +31,7 @@ class Nickname: UIView {
         let title = UILabel()
         let attributedText = NSAttributedString(
             string: String(localized: "Nickname"),
-            attributes: title16.attributes
+            attributes: title16.attributes()
         )
         title.attributedText = attributedText
         title.textColor = .neutral900
@@ -123,7 +123,7 @@ class Nickname: UIView {
         
         let attributedText = NSAttributedString(
             string: infoMessage,
-            attributes: body14.attributes
+            attributes: body14.attributes()
         )
         
         lb.attributedText = attributedText
