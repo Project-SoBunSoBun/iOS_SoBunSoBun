@@ -371,6 +371,28 @@
         }
       }
     },
+    "DateTime" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "날짜 및 시간"
+          }
+        }
+      }
+    },
+    "Deadline" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마감일"
+          }
+        }
+      }
+    },
     "DenyNicknameInput" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -459,6 +481,17 @@
         }
       }
     },
+    "MarketLocation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지점 위치"
+          }
+        }
+      }
+    },
     "Mypage" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -477,6 +510,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "닉네임"
+          }
+        }
+      }
+    },
+    "NumberOfParticipants" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모집 인원"
+          }
+        }
+      }
+    },
+    "ParticipantCount" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소 %1$(min)lld명 / 최대 %2$(max)lld명"
           }
         }
       }
