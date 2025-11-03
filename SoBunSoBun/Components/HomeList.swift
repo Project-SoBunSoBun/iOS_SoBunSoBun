@@ -103,7 +103,6 @@ class HomeList: UIView {
     private let joinedLabel: UILabel = {
         let lb = UILabel()
         lb.font = title12.font
-        lb.textColor = .primary400
         lb.textAlignment = .right
         
         return lb
@@ -173,6 +172,7 @@ class HomeList: UIView {
         
         bottomStackView.addArrangedSubview(joinedLabel)
         joinedLabel.text = "\(joinedCount)/\(maxCount)"
+        joinedLabel.textColor = joinedCount + 1 >= maxCount ? .primary400 : .neutral300
             
         addSubview(bottomStackView)
         
