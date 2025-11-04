@@ -24,7 +24,7 @@ class NavigationBar: UIView {
         self.buttons = buttons
         super.init(frame: frame)
         
-        configureUI()
+        configure()
     }
     
     required init?(coder: NSCoder) {
@@ -96,7 +96,7 @@ class NavigationBar: UIView {
     private var indicatorLeadingConstraint: Constraint? = nil
     
     // MARK: - 레이아웃 설정
-    private func configureUI() {
+    private func configure() {
         // 그림자
         self.clipsToBounds = false
         self.layer.shadowPath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: 344, height: 68), cornerRadius: 16).cgPath

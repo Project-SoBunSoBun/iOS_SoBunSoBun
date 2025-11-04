@@ -64,8 +64,8 @@ class NavigationTabView: UIViewController {
         view.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.bottom.equalToSuperview()
         }
         

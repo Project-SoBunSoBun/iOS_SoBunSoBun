@@ -87,7 +87,7 @@ class RuleCard: UIView {
         addSubview(titleLabel)
         
         titleLabel.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.top.equalToSuperview().inset(16)
         }
         
         // 설명
@@ -96,9 +96,9 @@ class RuleCard: UIView {
         addSubview(descLabel)
         
         descLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.leading.equalToSuperview().inset(16 + bulletPointSpacing)
             make.trailing.bottom.equalToSuperview().inset(16)
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
         }
     }
 }

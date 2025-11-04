@@ -118,7 +118,7 @@ class InformationCard: UIView {
             addSubview(participantsStackView)
             
             participantsStackView.snp.makeConstraints { make in
-                make.top.horizontalEdges.equalToSuperview().inset(16)
+                make.horizontalEdges.top.equalToSuperview().inset(16)
             }
             
             // 지점 위치
@@ -129,8 +129,8 @@ class InformationCard: UIView {
             addSubview(marketLocationStackView)
             
             marketLocationStackView.snp.makeConstraints { make in
-                make.top.equalTo(participantsStackView.snp.bottom).offset(8)
                 make.horizontalEdges.equalToSuperview().inset(16)
+                make.top.equalTo(participantsStackView.snp.bottom).offset(8)
             }
             
             // 날짜 및 시간
@@ -141,8 +141,8 @@ class InformationCard: UIView {
             addSubview(dateTimeStackView)
             
             dateTimeStackView.snp.makeConstraints { make in
-                make.top.equalTo(marketLocationStackView.snp.bottom).offset(8)
                 make.horizontalEdges.equalToSuperview().inset(16)
+                make.top.equalTo(marketLocationStackView.snp.bottom).offset(8)
             }
             
             // 마감일
@@ -153,8 +153,8 @@ class InformationCard: UIView {
             addSubview(deadlineStackView)
             
             deadlineStackView.snp.makeConstraints { make in
-                make.top.equalTo(dateTimeStackView.snp.bottom).offset(8)
                 make.horizontalEdges.bottom.equalToSuperview().inset(16)
+                make.top.equalTo(dateTimeStackView.snp.bottom).offset(8)
             }
         }
 }

@@ -137,8 +137,8 @@ class HomeList: UIView {
         addSubview(categoriesWrappingView)
         
         categoriesWrappingView.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(16)
             make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalToSuperview().offset(16)
         }
         
         // 제목
@@ -147,8 +147,8 @@ class HomeList: UIView {
         addSubview(titleLabel)
         
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(categoriesWrappingView.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(categoriesWrappingView.snp.bottom).offset(8)
         }
         
         // 장소
@@ -159,8 +159,8 @@ class HomeList: UIView {
         addSubview(locationStackView)
         
         locationStackView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
         }
         
         // 시간 및 인원 표시
@@ -177,16 +177,16 @@ class HomeList: UIView {
         addSubview(bottomStackView)
         
         bottomStackView.snp.makeConstraints { make in
-            make.top.equalTo(locationStackView.snp.bottom).offset(4)
             make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(locationStackView.snp.bottom).offset(4)
         }
         
         // 구분선
         addSubview(divider)
         
         divider.snp.makeConstraints { make in
-            make.top.equalTo(bottomStackView.snp.bottom).offset(16)
             make.horizontalEdges.bottom.equalToSuperview()
+            make.top.equalTo(bottomStackView.snp.bottom).offset(16)
         }
     }
     
