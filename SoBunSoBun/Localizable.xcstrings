@@ -536,6 +536,17 @@
         }
       }
     },
+    "RegionVerified" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(region)@ 인증"
+          }
+        }
+      }
+    },
     "ServerConnectFailed" : {
       "extractionState" : "manual",
       "localizations" : {

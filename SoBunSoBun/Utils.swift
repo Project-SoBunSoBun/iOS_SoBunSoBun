@@ -77,6 +77,23 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
     }
 }
 
+func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
+    let isoFormatter = ISO8601DateFormatter()
+    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
+    
+    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.locale = Locale.current
+        formatter.unitsStyle = .short
+        formatter.dateTimeStyle = .named
+        
+        return formatter.localizedString(for: date, relativeTo: Date())
+    } else {
+        print("isoFormatter.date 생성 중 오류 발생")
+        return "Error!"
+    }
+}
+
 // 미리보기
 #if DEBUG
 import SwiftUI
