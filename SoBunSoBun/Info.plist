@@ -6,6 +6,10 @@
 	<string>$(PRODUCT_NAME)</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>$(NSLocationWhenInUseUsageDescription)</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>$(NSPhotoLibraryUsageDescription)</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>$(NSPhotoLibraryAddUsageDescription)</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Pretendard-Regular.otf</string>
