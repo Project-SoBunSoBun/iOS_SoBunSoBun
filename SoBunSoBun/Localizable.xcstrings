@@ -558,7 +558,7 @@
         }
       }
     },
-    "Settlement" : {
+    "SettleUp" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {

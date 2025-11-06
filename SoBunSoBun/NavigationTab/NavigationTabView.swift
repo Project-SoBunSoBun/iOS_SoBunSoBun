@@ -20,14 +20,14 @@ class NavigationTabView: UIViewController {
     private let viewControllers: [UIViewController] = [
         HomeView(),
         ChatView(),
-        SettlementView(),
+        SettleUpView(),
         MypageView()
     ]
     
     private let buttons: [TabBarButton] = [
         TabBarButton(icons: [.greyFilledHome, .blueFilledHome], title: String(localized: "Home")),
         TabBarButton(icons: [.greyFilledMessage, .blueFilledMessage], title: String(localized: "Chat")),
-        TabBarButton(icons: [.greyFilledReceipt, .blueFilledReceipt], title: String(localized: "Settlement")),
+        TabBarButton(icons: [.greyFilledReceipt, .blueFilledReceipt], title: String(localized: "SettleUp")),
         TabBarButton(icons: [.greyFilledUser, .blueFilledUser], title: String(localized: "Mypage"))
     ]
     
