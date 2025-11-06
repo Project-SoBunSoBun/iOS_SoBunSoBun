@@ -122,7 +122,6 @@ class NicknameSettingView: CustomViewController {
         switch status {
         case .authorized, .limited:
             presentImagePicker()
-            
         case .notDetermined:
             PHPhotoLibrary.requestAuthorization(for: .readWrite) { [weak self] newStatus in
                 DispatchQueue.main.async {
@@ -131,11 +130,9 @@ class NicknameSettingView: CustomViewController {
                     }
                 }
             }
-            
         case .denied, .restricted:
             showPermissionAlert()
-            
-        @unknown default:
+        default:
             break
         }
     }
