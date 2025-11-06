@@ -216,10 +216,12 @@ class Comment: UIView {
             self.reportTrigger.accept((commentUUID, authorUUID))
         }
         
+        /*
         let editAction = UIAction(title: "수정하기") { [weak self] _ in
             guard let self = self else { return }
             self.editTrigger.accept(commentUUID)
         }
+        */
         
         let deleteAction = UIAction(title: "삭제하기", attributes: .destructive) { [weak self] _ in
             guard let self = self else { return }
