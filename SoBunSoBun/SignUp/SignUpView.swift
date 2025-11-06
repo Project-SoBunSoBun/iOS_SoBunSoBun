@@ -56,7 +56,7 @@ class SignUpView: CustomViewController {
     private let privacyTermsCheckBox = TermsCheckBoxView()
     private let locationTermsCheckBox = TermsCheckBoxView()
     
-    private let nextButton = Button(title: "다음")
+    private let nextButton = Button(title: String(localized: "Next"))
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
