@@ -33,15 +33,29 @@ func dateToString(date: Date, format: String) -> String {
 }
 
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
-func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String {
+func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatColon: Bool = true) -> String {
     let isoFormatter = ISO8601DateFormatter()
     isoFormatter.formatOptions = [.withFullDate, .withFullTime]
     
     if let date = isoFormatter.date(from: iso8601DatetimeString) {
         let dateFormatter = DateFormatter()
-        dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a hh:mm")
+        let calendar = Calendar.current
+        let minutes = calendar.component(.minute, from: date)
         
-        return dateFormatter.string(from: date)
+        if isFormatColon {
+            dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a hh:mm")
+            return dateFormatter.string(from: date)
+        } else {
+            if minutes == 0 {
+                dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h")
+                return dateFormatter.string(from: date)
+            } else {
+                dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h:mm")
+                return dateFormatter.string(from: date)
+                    .replacingOccurrences(of: ":", with: String(localized: "TimeHour") + " ")
+                + String(localized: "TimeMinute")
+            }
+        }
     } else {
         print("isoFormatter.date 생성 중 오류 발생")
         return "Error!"

@@ -13,7 +13,7 @@ class HomeList: UIView {
          categories: String,
          title: String,
          location: String,
-         meetingDate: String,
+         meetingDate: String, // ISO 8601 문자열
          joinedCount: Int,
          maxCount: Int) {
         super.init(frame: frame)
@@ -168,7 +168,7 @@ class HomeList: UIView {
         
         dateStackView.addArrangedSubview(dateIcon)
         dateStackView.addArrangedSubview(dateLabel)
-        dateLabel.text = meetingDate
+        dateLabel.text = ISO8601ToLocalizedDateTimeString(meetingDate, isFormatColon: false)
         
         bottomStackView.addArrangedSubview(joinedLabel)
         joinedLabel.text = "\(joinedCount)/\(maxCount)"
