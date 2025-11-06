@@ -26,6 +26,11 @@ class Nickname: UIView {
             .distinctUntilChanged()
     }
     
+    // 외뷰 View에서 사용 할 텍스트 필드 empty 여부
+    var nicknameText: Observable<String> {
+        return textField.rx.text.orEmpty.asObservable()
+    }
+    
     // MARK: - 디자인 요소
     private let title: UILabel = {
         let title = UILabel()
