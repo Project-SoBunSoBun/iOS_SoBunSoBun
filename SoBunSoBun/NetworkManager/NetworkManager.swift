@@ -47,4 +47,24 @@ final class NetworkManager {
         .filterSuccessfulStatusCodes()
         .map(CheckNicknameModel.self)
     }
+    
+    // 서버에 닉네임과 프로필 이미지를 저장하는 메서드
+    func saveProfile(nickname: String, profileImage: UIImage?) -> Single<Void> {
+        let imageData = profileImage?.jpegData(compressionQuality: 0.5)
+        
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.saveProfile(nickname: nickname, profileImage: imageData))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
+    
+    // 서버에 유저 정보를 받아오는 메서드
+    func myProfile() -> Single<UserInfoModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.myProfile)
+        )
+        .filterSuccessfulStatusCodes()
+        .map(UserInfoModel.self)
+    }
 }
