@@ -142,7 +142,7 @@ class HomeList: UIView {
         }
         
         // 제목
-        titleLabel.attributedText = NSAttributedString(string: title, attributes: title18.attributes)
+        titleLabel.attributedText = NSAttributedString(string: title, attributes: title18.attributes())
         
         addSubview(titleLabel)
         

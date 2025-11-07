@@ -15,10 +15,11 @@ struct FontStyle {
     // UIFont 타입 대응 변수
     var font: UIFont { return UIFont(name: fontName, size: fontSize)! }
     
-    var paragraphStyle: NSParagraphStyle {
+    func paragraphStyle(alignment: NSTextAlignment = .left) -> NSParagraphStyle {
         let style = NSMutableParagraphStyle()
         let lineHeight = fontSize * lineHeightMultiple
         
+        style.alignment = alignment
         style.lineHeightMultiple = lineHeightMultiple
         style.maximumLineHeight = lineHeight
         style.minimumLineHeight = lineHeight
@@ -26,10 +27,10 @@ struct FontStyle {
         return style
     }
     
-    var attributes: [NSAttributedString.Key: Any] {
+    func attributes(alignment: NSTextAlignment = .left) -> [NSAttributedString.Key: Any] {
         [
             .font: UIFont(name: fontName, size: fontSize)!,
-            .paragraphStyle: paragraphStyle,
+            .paragraphStyle: paragraphStyle(alignment: alignment),
             .baselineOffset: ((fontSize * lineHeightMultiple) - UIFont(name: fontName, size: fontSize)!.lineHeight) / 2
         ]
     }
