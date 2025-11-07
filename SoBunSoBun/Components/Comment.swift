@@ -120,7 +120,7 @@ class Comment: UIView {
         guard let regex = try? NSRegularExpression(pattern: pattern) else {
             // 정규식 오류 시 기본 텍스트 return
             let defaultAttributedString = NSMutableAttributedString(string: comment)
-            defaultAttributedString.setAttributes(body16.attributes, range: NSRange(location: 0, length: comment.count))
+            defaultAttributedString.setAttributes(body16.attributes(), range: NSRange(location: 0, length: comment.count))
             defaultAttributedString.addAttributes([.foregroundColor: UIColor.neutral900], range: NSRange(location: 0, length: comment.count))
             
             return defaultAttributedString
@@ -152,12 +152,12 @@ class Comment: UIView {
             .foregroundColor: UIColor.neutral900,
             .font: body16.font,
             .paragraphStyle: title16.paragraphStyle,
-            .baselineOffset: title16.attributes[.baselineOffset]!
+            .baselineOffset: title16.attributes()[.baselineOffset]!
         ], range: NSRange(location: 0, length: text.count))
         
         // 멘션 부분 하이라이트 적용
         for info in mentionInfos {
-            attributedString.setAttributes(title16.attributes, range: info.range)
+            attributedString.setAttributes(title16.attributes(), range: info.range)
             attributedString.addAttributes([
                 .foregroundColor: UIColor.primary400,
                 .link: "profile://\(info.uuid)"

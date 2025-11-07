@@ -48,7 +48,7 @@ class RuleCard: UIView {
         
         // 기존 폰트 구조
         let fontStruct = body14
-        var attrs = fontStruct.attributes
+        var attrs = fontStruct.attributes()
         
         // 불렛 너비
         let bulletPointWidth = (bulletPoint as NSString).size(withAttributes: [.font: fontStruct.font]).width
@@ -82,7 +82,7 @@ class RuleCard: UIView {
         self.clipsToBounds = true
         
         // 제목
-        titleLabel.attributedText = NSAttributedString(string: title, attributes: title14.attributes)
+        titleLabel.attributedText = NSAttributedString(string: title, attributes: title14.attributes())
         
         addSubview(titleLabel)
         
