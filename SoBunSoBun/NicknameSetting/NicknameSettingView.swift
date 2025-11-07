@@ -55,9 +55,6 @@ class NicknameSettingView: CustomViewController {
         configureUI()
         bind(reactor: reactor)
         setupImagePickerGesture()
-        
-        // 초기 기본 이미지를 reactor로 전달
-        reactor.action.onNext(.profileImageSelected(.defaultProfile))
     }
     
     private func configureUI() {

@@ -45,13 +45,23 @@ extension AuthorizedAPI: TargetType {
         case .saveProfile(nickname: let nickname, profileImage: let profileImage):
             var formData: [MultipartFormData] = []
             
-            // 프로필 이미지가 있을 경우에만 추가
+            // 사용자가 선택한 이미지가 있을 때 이미지 추가
             if let imageData = profileImage {
-                formData.append(MultipartFormData(provider: .data(imageData),
-                                                  name: "profileImage",
-                                                  fileName: "profile.jpg",
-                                                  mimeType: "image/jpeg"))
-            }
+                        formData.append(MultipartFormData(
+                            provider: .data(imageData),
+                            name: "profileImage",
+                            fileName: "profile.jpg",
+                            mimeType: "image/jpeg"
+                        ))
+                    } else {
+                        // 이미지가 없을 때 빈 데이터 전송
+                        formData.append(MultipartFormData(
+                            provider: .data(Data()),
+                            name: "profileImage",
+                            fileName: "",
+                            mimeType: "image/jpeg"
+                        ))
+                    }
             
             // nickname은 URL query parameter로 전달
             let urlParameters = ["nickname": nickname]
