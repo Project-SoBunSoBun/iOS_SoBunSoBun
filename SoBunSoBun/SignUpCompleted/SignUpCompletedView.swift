@@ -200,8 +200,8 @@ extension SignUpCompletedView {
     }
     
     private func navigateToHome() {
-        let homeView = ViewController()
-        navigationController?.setViewControllers([homeView], animated: false)
+        let vc = NavigationTabView()
+        navigationController?.setViewControllers([vc], animated: false)
     }
 }
 

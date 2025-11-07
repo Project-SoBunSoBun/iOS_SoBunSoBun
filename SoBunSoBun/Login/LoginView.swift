@@ -255,7 +255,7 @@ extension LoginView {
                     let vc = SignUpView()
                     self.navigationController?.pushViewController(vc, animated: true)
                 } else {
-                    let vc = ViewController()
+                    let vc = NavigationTabView()
                     self.navigationController?.setViewControllers([vc], animated: false)
                 }
             })
