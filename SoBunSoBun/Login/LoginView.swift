@@ -248,13 +248,16 @@ extension LoginView {
     func bindState(reactor: LoginReactor) {
         reactor.pulse(\.$loginCompleted)
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] isNewUser in
                 guard let self = self else { return }
-                // newUser가 true이면 이용약관 동의로 넘기기
                 
-                // newUser가 false이고 홈으로 넘기기
-                let vc = SignUpView()
-                self.navigationController?.pushViewController(vc, animated: true)
+                if isNewUser {
+                    let vc = SignUpView()
+                    self.navigationController?.pushViewController(vc, animated: true)
+                } else {
+                    let vc = ViewController()
+                    self.navigationController?.setViewControllers([vc], animated: false)
+                }
             })
             .disposed(by: disposeBag)
     }

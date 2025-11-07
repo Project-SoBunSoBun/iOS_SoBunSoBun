@@ -23,12 +23,12 @@ class LoginReactor: Reactor {
     }
     
     enum Mutation {
-        case loginSuccess // 로그인 성공했을 때
+        case loginSuccess(isNewUser: Bool) // 로그인 성공했을 때
         case loginFailed(String) // 로그인에 실패했을 때
     }
     
     struct State {
-        @Pulse var loginCompleted: Void?
+        @Pulse var loginCompleted: Bool?
         @Pulse var loginErrorMessage: String?
     }
     
@@ -44,7 +44,7 @@ class LoginReactor: Reactor {
                         .map { kakaoAuthResponse in
                             // 임시 토큰 저장
                             KeyChain.shared.set(key: "LOGIN_TOKEN", value: kakaoAuthResponse.loginToken)
-                            return Mutation.loginSuccess
+                            return Mutation.loginSuccess(isNewUser: kakaoAuthResponse.newUser)
                         }
                         .catch { error in
                             Observable.just(Mutation.loginFailed("ServerConnectFailed"))
@@ -62,8 +62,8 @@ class LoginReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case .loginSuccess:
-            newState.loginCompleted = Void()
+        case .loginSuccess(let isNewUser):
+            newState.loginCompleted = isNewUser
         case .loginFailed(let message):
             newState.loginErrorMessage = message
         }
