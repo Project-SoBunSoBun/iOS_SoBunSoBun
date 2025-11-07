@@ -50,7 +50,7 @@ final class NetworkManager {
     
     // 서버에 닉네임과 프로필 이미지를 저장하는 메서드
     func saveProfile(nickname: String, profileImage: UIImage?) -> Single<Void> {
-        let imageData = profileImage?.jpegData(compressionQuality: 0.5)
+        let imageData = profileImage?.jpegData(compressionQuality: 0.7)
         
         return authProvider.rx.request(
             MultiTarget(AuthorizedAPI.saveProfile(nickname: nickname, profileImage: imageData))
