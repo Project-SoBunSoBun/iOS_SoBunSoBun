@@ -20,8 +20,8 @@ class CustomAlertView: UIView {
     
     var disposeBag = DisposeBag()
     
-    init(title: String) {
-        super.init(frame: .zero)
+    init(title: String, frame: CGRect = .zero) {
+        super.init(frame: frame)
         configureUI(title: title)
         bind(reactor: reactor)
     }
@@ -37,7 +37,10 @@ class CustomAlertView: UIView {
         ctView.alignment = .center
         ctView.backgroundColor = .backgroundWhite
         ctView.layer.cornerRadius = 16
-        
+        ctView.clipsToBounds = true
+        ctView.isLayoutMarginsRelativeArrangement = true
+        ctView.layoutMargins = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
+                
         return ctView
     }()
     
@@ -121,10 +124,9 @@ class CustomAlertView: UIView {
             containerView.addArrangedSubview($0)
         }
         
-        containerView.isLayoutMarginsRelativeArrangement = true
-        containerView.layoutMargins = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
-        containerView.setCustomSpacing(16, after: titleLabel)
         
+        containerView.setCustomSpacing(16, after: titleLabel)
+
         containerView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.72)
