@@ -1,0 +1,212 @@
+//
+//  CustomAlertView.swift
+//  SoBunSoBun
+//
+//  Created by 허성필 on 10/18/25.
+//
+
+import UIKit
+import SnapKit
+import ReactorKit
+import RxSwift
+import RxCocoa
+
+class CustomAlertView: UIView {
+    typealias Reactor = CustomAlertViewReactor
+    private let reactor = CustomAlertViewReactor()
+    
+    var onSettingsTapped: (() -> Void)?
+    var onCancelTapped: (() -> Void)?
+    
+    var disposeBag = DisposeBag()
+    
+    init(title: String) {
+        super.init(frame: .zero)
+        configureUI(title: title)
+        bind(reactor: reactor)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private let containerView: UIStackView = {
+        let ctView = UIStackView()
+        ctView.axis = .vertical
+        ctView.spacing = 0
+        ctView.alignment = .center
+        ctView.backgroundColor = .backgroundWhite
+        ctView.layer.cornerRadius = 16
+        
+        return ctView
+    }()
+    
+    private let titleLabel: UILabel = {
+        let titleLabel = UILabel()
+        titleLabel.textColor = .neutral900
+        titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 0
+        
+        return titleLabel
+    }()
+    
+    private let buttonStackView: UIStackView = {
+        let buttonStackView = UIStackView()
+        buttonStackView.axis = .vertical
+        buttonStackView.spacing = 0
+        
+        return buttonStackView
+    }()
+    
+    private let settingsButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.primary400
+        
+        let attributedTitle = NSAttributedString(
+            string: String(localized: "GoToSetting"),
+            attributes: attributes
+        )
+        config.attributedTitle = AttributedString(attributedTitle)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+        
+        let button = UIButton(configuration: config)
+        
+        return button
+    }()
+    
+    private let cancelButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.neutral700
+        
+        let attributedTitle = NSAttributedString(
+            string: String(localized: "Cancel"),
+            attributes: attributes
+        )
+        config.attributedTitle = AttributedString(attributedTitle)
+        config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
+        
+        let button = UIButton(configuration: config)
+        
+        return button
+    }()
+    
+    private let firstDivider: UIView = {
+        let divider = UIView()
+        divider.backgroundColor = .neutral400
+        
+        return divider
+    }()
+    
+    private let secondDivider: UIView = {
+        let divider = UIView()
+        divider.backgroundColor = .neutral400
+        
+        return divider
+    }()
+    
+    private func configureUI(title: String) {
+        self.backgroundColor = .alertBackgroundBlack
+        
+        let attributedText = NSAttributedString(
+            string: title,
+            attributes: title16.attributes(alignment: .center)
+        )
+        titleLabel.attributedText = attributedText
+        
+        self.addSubview(containerView)
+        
+        [titleLabel, firstDivider, settingsButton, secondDivider, cancelButton].forEach {
+            containerView.addArrangedSubview($0)
+        }
+        
+        containerView.isLayoutMarginsRelativeArrangement = true
+        containerView.layoutMargins = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
+        containerView.setCustomSpacing(16, after: titleLabel)
+        
+        containerView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.width.equalToSuperview().multipliedBy(0.72)
+        }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+        }
+        
+        firstDivider.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.height.equalTo(1)
+        }
+        
+        settingsButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+        }
+        
+        cancelButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+        }
+        
+        secondDivider.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.height.equalTo(1)
+        }
+    }
+    
+    func show(on viewController: UIViewController) {
+        guard let window = viewController.view.window else { return }
+        window.addSubview(self)
+        self.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        // 애니메이션
+        self.alpha = 0
+        containerView.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+        UIView.animate(withDuration: 0.25) {
+            self.alpha = 1
+            self.containerView.transform = .identity
+        }
+    }
+}
+
+extension CustomAlertView {
+    func bind(reactor: CustomAlertViewReactor) {
+        bindAction(reactor: reactor)
+        bindState(reactor: reactor)
+    }
+    
+    func bindAction(reactor: CustomAlertViewReactor) {
+        // 설정 버튼 탭
+        settingsButton.rx.tap
+            .map { Reactor.Action.settingButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 취소 버튼 탭
+        cancelButton.rx.tap
+            .map { Reactor.Action.cancelButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    func bindState(reactor:CustomAlertViewReactor) {
+        reactor.pulse(\.$shouldOpenSettings)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.onSettingsTapped?()
+                self?.removeFromSuperview()
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldDismiss)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                self?.onCancelTapped?()
+                self?.removeFromSuperview()
+            })
+            .disposed(by: disposeBag)
+    }
+}
