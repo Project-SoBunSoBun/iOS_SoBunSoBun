@@ -27,11 +27,7 @@ class LocationManager: NSObject {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         
         // 초기 상태 설정
-        if #available(iOS 14.0, *) {
-            authorizationStatus.accept(locationManager.authorizationStatus)
-        } else {
-            authorizationStatus.accept(CLLocationManager.authorizationStatus())
-        }
+        authorizationStatus.accept(locationManager.authorizationStatus)
     }
     
     // 권한 요청하기
@@ -55,7 +51,6 @@ extension LocationManager: CLLocationManagerDelegate {
         authorizationStatus.accept(status)
     }
     
-    // iOS 14 이상
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
             authorizationStatus.accept(manager.authorizationStatus)
     }
