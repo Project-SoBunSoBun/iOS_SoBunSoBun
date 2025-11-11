@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 import RxSwift
 import RxCocoa
 import ReactorKit
@@ -16,6 +17,7 @@ class SignUpView: CustomViewController {
     
     private let disposeBag = DisposeBag()
     
+    // MARK: - 디자인 요소
     // 뒤로 가기 버튼
     private let backButton: UIButton = {
         let button = UIButton()
@@ -58,10 +60,7 @@ class SignUpView: CustomViewController {
     
     private let nextButton = Button(title: String(localized: "Next"))
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -69,6 +68,7 @@ class SignUpView: CustomViewController {
         bind(reactor: reactor)
     }
     
+    // MARK: - 레이아웃 구성
     func configureUI() {
         view.backgroundColor = .backgroundWhite
         
@@ -118,7 +118,7 @@ class SignUpView: CustomViewController {
         
         termsContainerView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
+            make.trailing.equalToSuperview().inset(32)
             make.top.equalTo(allAgreeCheckBox.snp.bottom).offset(16)
         }
         
@@ -132,7 +132,7 @@ class SignUpView: CustomViewController {
         nextButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.height.equalTo(64)
-            make.top.equalToSuperview().offset(715)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
         nextButton.isEnabled = false

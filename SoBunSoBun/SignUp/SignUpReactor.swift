@@ -76,15 +76,12 @@ class SignUpReactor: Reactor {
             case .notDetermined:
                 // 아직 권한을 요청하지 않음 -> 권한 요청
                 return Observable.just(.setRequestLocationPermission)
-                
             case .denied, .restricted:
                 // 권한 거부됨 -> 설정 알러트
                 return Observable.just(.setShowLocationSettingAlert)
-                
             case .authorizedWhenInUse, .authorizedAlways:
                 // 권한 허용됨 -> 회원 가입 진행
                 return performSignUp()
-                
             default:
                 return Observable.just(.setShowLocationSettingAlert)
             }
