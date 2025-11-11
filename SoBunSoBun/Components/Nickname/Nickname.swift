@@ -26,12 +26,17 @@ class Nickname: UIView {
             .distinctUntilChanged()
     }
     
+    // 외뷰 View에서 사용 할 텍스트 필드 empty 여부
+    var nicknameText: Observable<String> {
+        return textField.rx.text.orEmpty.asObservable()
+    }
+    
     // MARK: - 디자인 요소
     private let title: UILabel = {
         let title = UILabel()
         let attributedText = NSAttributedString(
             string: String(localized: "Nickname"),
-            attributes: title16.attributes
+            attributes: title16.attributes()
         )
         title.attributedText = attributedText
         title.textColor = .neutral900
@@ -123,7 +128,7 @@ class Nickname: UIView {
         
         let attributedText = NSAttributedString(
             string: infoMessage,
-            attributes: body14.attributes
+            attributes: body14.attributes()
         )
         
         lb.attributedText = attributedText
@@ -201,12 +206,12 @@ class Nickname: UIView {
 // Reactor 연결
 extension Nickname {
     // reactor와 view 연결
-    func bind(reactor: NicknameReactor) {
+    private func bind(reactor: NicknameReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: NicknameReactor) {
+    private func bindAction(reactor: NicknameReactor) {
         // textField의 text 변화를 감지
         textField.rx.text
             .map { Reactor.Action.textFieldChanged($0) }
@@ -226,7 +231,7 @@ extension Nickname {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: NicknameReactor) {
+    private func bindState(reactor: NicknameReactor) {
         // 버튼 비활성화
         reactor.state.map { $0.isButtonEnabled }
             .distinctUntilChanged()

@@ -1,0 +1,88 @@
+//
+//  ServiceTermView.swift
+//  SoBunSoBun
+//
+//  Created by 허성필 on 10/23/25.
+//
+
+import UIKit
+import SnapKit
+import ReactorKit
+import RxSwift
+import RxCocoa
+
+class ServiceTermView: UIViewController {
+    typealias Reactor = ServiceTermReactor
+    private let reactor = ServiceTermReactor()
+    
+    private let disposeBag = DisposeBag()
+    
+    // 뒤로 가기 버튼
+    private let backButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "BlackLeft"), for: .normal)
+        
+        return button
+    }()
+
+    // 임시 타이틀
+    private let titleLabel: UILabel = {
+        let title = UILabel()
+        title.text = "Service 약관 화면"
+        title.textColor = .neutral900
+        title.textAlignment = .center
+        
+        return title
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        configureUI()
+        bind(reactor: reactor)
+    }
+    
+    private func configureUI() {
+        view.backgroundColor = .backgroundWhite
+        
+        [backButton, titleLabel].forEach {
+            view.addSubview($0)
+        }
+        
+        backButton.snp.makeConstraints { make in
+            make.size.equalTo(48)
+            make.leading.equalToSuperview().offset(4)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+        }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
+}
+
+extension ServiceTermView {
+    // reactor와 view 연결
+    private func bind(reactor: ServiceTermReactor) {
+        bindAction(reactor: reactor)
+        bindState(reactor: reactor)
+    }
+    
+    private func bindAction(reactor: ServiceTermReactor) {
+        // Back 버튼 탭
+        backButton.rx.tap
+            .map { Reactor.Action.backButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindState(reactor: ServiceTermReactor) {
+        // 뒤로 가기 버튼
+        reactor.pulse(\.$shouldPopViewController)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
+}

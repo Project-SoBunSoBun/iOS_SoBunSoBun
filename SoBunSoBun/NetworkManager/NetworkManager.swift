@@ -21,10 +21,19 @@ final class NetworkManager {
     // Authorized API 전용
     private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared))
     
-    // 서버에서 카카오 토큰을 통해 사용자 정보 가져오는 메서드
-    func fetchAuthLoginKakao(accessToken: String) -> Single<UserModel> {
+    // 서버에서 카카오 토큰을 통해 임시 토큰을 가져오는 메서드
+    func fetchAuthLoginKakao(accessToken: String) -> Single<KakaoAuthResponse> {
         return provider.rx.request(
             MultiTarget(PublicAPI.authLoginKakao(accessToken: accessToken))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(KakaoAuthResponse.self)
+    }
+    
+    // 서버에서 임시 토큰을 통해 사용자 정보를 가져오는 메서드
+    func fetchAuthCompleteSignUp(loginToken: String, serviceTermsAgreed: Bool, privacyPolicyAgreed: Bool, marketingOptionalAgreed: Bool) -> Single<UserModel> {
+        return provider.rx.request(
+            MultiTarget(PublicAPI.authCompleteSignUp(loginToken: loginToken, serviceTermsAgreed: serviceTermsAgreed, privacyPolicyAgreed: privacyPolicyAgreed, marketingOptionalAgreed: marketingOptionalAgreed))
         )
         .filterSuccessfulStatusCodes()
         .map(UserModel.self)
@@ -37,5 +46,25 @@ final class NetworkManager {
         )
         .filterSuccessfulStatusCodes()
         .map(CheckNicknameModel.self)
+    }
+    
+    // 서버에 닉네임과 프로필 이미지를 저장하는 메서드
+    func saveProfile(nickname: String, profileImage: UIImage?) -> Single<Void> {
+        let imageData = profileImage?.jpegData(compressionQuality: 0.7)
+        
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.saveProfile(nickname: nickname, profileImage: imageData))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
+    
+    // 서버에 유저 정보를 받아오는 메서드
+    func myProfile() -> Single<UserInfoModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.myProfile)
+        )
+        .filterSuccessfulStatusCodes()
+        .map(UserInfoModel.self)
     }
 }

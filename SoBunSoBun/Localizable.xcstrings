@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "AllAgree" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "네, 모두 동의합니다"
+          }
+        }
+      }
+    },
     "AvailableNickname" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8,6 +19,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "사용 가능한 닉네임입니다"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "취소"
           }
         }
       }
@@ -371,6 +393,28 @@
         }
       }
     },
+    "Confirm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "확인"
+          }
+        }
+      }
+    },
+    "CongratulationsOnJoining" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가입을 축하드려요!"
+          }
+        }
+      }
+    },
     "DateTime" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -426,6 +470,28 @@
         }
       }
     },
+    "GalleryPermissionMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진 이용에 대한 접근 권한이 없습니다."
+          }
+        }
+      }
+    },
+    "GoToSetting" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정하러가기"
+          }
+        }
+      }
+    },
     "Home" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -433,6 +499,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "홈"
+          }
+        }
+      }
+    },
+    "ImageSizeExceeded" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 크기 초과"
           }
         }
       }
@@ -455,6 +532,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "카카오 로그인 실패"
+          }
+        }
+      }
+    },
+    "LocationInfomationAgree" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[필수] 위치정보 수집 동의"
+          }
+        }
+      }
+    },
+    "LocationPermission" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 주변의 모임을 검색하거나\n동네 인증을 위해 현재 위치를 확인합니다."
+          }
+        }
+      }
+    },
+    "LocationSettingTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치정보 이용에 대한\n액세스 권한이 없습니다."
           }
         }
       }
@@ -503,6 +613,17 @@
         }
       }
     },
+    "Next" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음"
+          }
+        }
+      }
+    },
     "Nickname" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -536,6 +657,17 @@
         }
       }
     },
+    "PersonalInfomationAgree" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[필수] 개인정보 수집 및 이용 동의"
+          }
+        }
+      }
+    },
     "RegionVerified" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -543,6 +675,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$(region)@ 인증"
+          }
+        }
+      }
+    },
+    "SelectOnlyFilesUnder5MB" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5MB 이하의 이미지만 선택할 수 있습니다."
           }
         }
       }
@@ -558,6 +701,17 @@
         }
       }
     },
+    "ServiceAgree" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[필수] 서비스 이용약관 동의"
+          }
+        }
+      }
+    },
     "SettleUp" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -565,6 +719,39 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "정산"
+          }
+        }
+      }
+    },
+    "SignUpCompletedMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새로운 공동구매 모임이\n%@님을\n기다리고 있어요"
+          }
+        }
+      }
+    },
+    "SignUpTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서비스 이용약관에 \n동의해 주세요"
+          }
+        }
+      }
+    },
+    "Start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시작하기"
           }
         }
       }
