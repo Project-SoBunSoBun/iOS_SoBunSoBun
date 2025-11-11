@@ -72,7 +72,6 @@ class TermsCheckBoxView: UIView {
         
         checkButton.snp.makeConstraints { make in
             make.leading.equalToSuperview()
-            make.centerY.equalToSuperview()
             make.size.equalTo(24)
         }
         
