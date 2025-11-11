@@ -23,6 +23,17 @@ class TermsCheckBoxView: UIView {
         }
     }
     
+    override init(frame: CGRect = .zero) {
+        super.init(frame: frame)
+        
+        configureUI()
+        bind()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - 디자인 요소
     private let checkButton: UIButton = {
         let button = UIButton()
@@ -52,17 +63,6 @@ class TermsCheckBoxView: UIView {
         
         return button
     }()
-    
-    init() {
-        super.init(frame: .zero)
-        
-        configureUI()
-        bind()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
