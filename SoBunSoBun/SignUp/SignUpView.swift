@@ -58,7 +58,12 @@ class SignUpView: UIViewController {
     private let privacyTermsCheckBox = TermsCheckBoxView()
     private let locationTermsCheckBox = TermsCheckBoxView()
     
-    private let nextButton = Button(title: String(localized: "Next"))
+    private let nextButton: Button = {
+        let button = Button(title: String(localized: "Next"))
+        button.isEnabled = false
+        
+        return button
+    }()
     
     // MARK: - 생명주기
     override func viewDidLoad() {
@@ -134,8 +139,6 @@ class SignUpView: UIViewController {
             make.height.equalTo(64)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
-        
-        nextButton.isEnabled = false
     }
 }
 

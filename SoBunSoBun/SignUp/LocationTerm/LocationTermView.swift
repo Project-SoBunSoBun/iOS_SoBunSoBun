@@ -29,7 +29,7 @@ class LocationTermView: UIViewController {
     private let titleLabel: UILabel = {
         let title = UILabel()
         title.text = "Location 약관 화면"
-        title.textColor = .appleBlack
+        title.textColor = .neutral900
         title.textAlignment = .center
         
         return title
@@ -43,7 +43,7 @@ class LocationTermView: UIViewController {
     }
     
     private func configureUI() {
-        view.backgroundColor = .appleWhite
+        view.backgroundColor = .backgroundWhite
         
         [backButton, titleLabel].forEach {
             view.addSubview($0)
