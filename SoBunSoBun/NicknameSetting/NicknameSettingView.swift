@@ -18,6 +18,7 @@ class NicknameSettingView: CustomViewController {
     
     private let disposeBag = DisposeBag()
     
+    // MARK: - 디자인 요소
     // 뒤로 가기 버튼
     private let backButton: UIButton = {
         let button = UIButton()
@@ -26,7 +27,7 @@ class NicknameSettingView: CustomViewController {
         return button
     }()
     
-    private let defaultImage: UIImageView = {
+    private let profileImage: UIImageView = {
         let image = UIImageView()
         image.image = .defaultProfile
         image.contentMode = .scaleAspectFit
@@ -49,6 +50,7 @@ class NicknameSettingView: CustomViewController {
     
     private let nextButton = Button(title: String(localized: "Next"))
     
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -57,10 +59,11 @@ class NicknameSettingView: CustomViewController {
         setupImagePickerGesture()
     }
     
+    // MARK: - 레이아웃 구성
     private func configureUI() {
         view.backgroundColor = .appleWhite
         
-        [backButton, defaultImage, cameraImage, nickname, nextButton].forEach {
+        [backButton, profileImage, cameraImage, nickname, nextButton].forEach {
             view.addSubview($0)
         }
         
@@ -72,28 +75,28 @@ class NicknameSettingView: CustomViewController {
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
-        defaultImage.snp.makeConstraints { make in
+        profileImage.snp.makeConstraints { make in
             make.size.equalTo(100)
-            make.leading.equalTo(backButton.snp.trailing).offset(86)
+            make.centerX.equalToSuperview()
             make.top.equalTo(backButton.snp.bottom).offset(16)
         }
         
         cameraImage.snp.makeConstraints { make in
             make.size.equalTo(48)
-            make.bottom.equalTo(defaultImage.snp.bottom)
-            make.trailing.equalTo(defaultImage.snp.trailing)
+            make.bottom.equalTo(profileImage.snp.bottom)
+            make.trailing.equalTo(profileImage.snp.trailing)
         }
         
         nickname.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.trailing.equalToSuperview().inset(16)
-            make.top.equalTo(defaultImage.snp.bottom).offset(24)
+            make.top.equalTo(profileImage.snp.bottom).offset(24)
         }
         
         nextButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.height.equalTo(64)
-            make.top.equalToSuperview().offset(715)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
         // 닉네임 유효성 검사 결과를 버튼 활성화 상태에 바인딩
@@ -145,12 +148,17 @@ class NicknameSettingView: CustomViewController {
     
     // 권한 요청이 없을 때 실행 될 설정으로 이동시키는 알러트
     private func showPermissionAlert() {
-        let alertView = CustomAlertView(title: String(localized: "GalleryPermissionMessage"))
+        let alertView = CustomAlertView(title: String(localized: "GalleryPermissionMessage")
+        )
         
-        alertView.onSettingsTapped = { [weak self] in
+        alertView.onSettingsTapped = {
             if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsURL)
             }
+        }
+        
+        alertView.onCancelTapped = {
+            print("취소됨")
         }
         alertView.show(on: self)
     }
@@ -180,7 +188,7 @@ extension NicknameSettingView: UIImagePickerControllerDelegate, UINavigationCont
             }
         }
         
-        defaultImage.image = image
+        profileImage.image = image
         reactor.action.onNext(.profileImageSelected(image))
     }
     

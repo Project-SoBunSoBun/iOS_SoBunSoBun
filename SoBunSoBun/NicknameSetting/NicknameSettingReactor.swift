@@ -40,7 +40,6 @@ class NicknameSettingReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-            
         case .backButtonTapped:
             return Observable.just(.setBackButtonTapped)
         case .nicknameChanged(let nickname):
@@ -55,7 +54,6 @@ class NicknameSettingReactor: Reactor {
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
-            
         case .setBackButtonTapped:
             newState.shouldPopViewController = ()
         case .setNickname(let nickname):
