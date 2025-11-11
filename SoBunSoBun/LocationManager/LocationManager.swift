@@ -57,8 +57,6 @@ extension LocationManager: CLLocationManagerDelegate {
     
     // iOS 14 이상
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if #available(iOS 14.0, *) {
             authorizationStatus.accept(manager.authorizationStatus)
-        }
     }
 }
