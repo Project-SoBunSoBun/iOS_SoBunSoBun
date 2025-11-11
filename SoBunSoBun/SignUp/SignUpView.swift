@@ -146,7 +146,7 @@ extension SignUpView {
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: SignUpReactor) {
+    private func bindAction(reactor: SignUpReactor) {
         // Back 버튼 탭
         backButton.rx.tap
             .map { Reactor.Action.backButtonTapped }
@@ -217,7 +217,7 @@ extension SignUpView {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: SignUpReactor) {
+    private func bindState(reactor: SignUpReactor) {
         // 뒤로 가기 버튼
         reactor.pulse(\.$shouldPopViewController)
             .compactMap { $0 }

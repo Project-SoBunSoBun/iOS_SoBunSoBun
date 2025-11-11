@@ -173,12 +173,12 @@ class CustomAlertView: UIView {
 }
 
 extension CustomAlertView {
-    func bind(reactor: CustomAlertViewReactor) {
+    private func bind(reactor: CustomAlertViewReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: CustomAlertViewReactor) {
+    private func bindAction(reactor: CustomAlertViewReactor) {
         // 설정 버튼 탭
         settingsButton.rx.tap
             .map { Reactor.Action.settingButtonTapped }
@@ -192,7 +192,7 @@ extension CustomAlertView {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor:CustomAlertViewReactor) {
+    private func bindState(reactor:CustomAlertViewReactor) {
         reactor.pulse(\.$shouldOpenSettings)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)

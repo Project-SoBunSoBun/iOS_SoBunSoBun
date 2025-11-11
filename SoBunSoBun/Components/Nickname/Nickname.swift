@@ -206,12 +206,12 @@ class Nickname: UIView {
 // Reactor 연결
 extension Nickname {
     // reactor와 view 연결
-    func bind(reactor: NicknameReactor) {
+    private func bind(reactor: NicknameReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: NicknameReactor) {
+    private func bindAction(reactor: NicknameReactor) {
         // textField의 text 변화를 감지
         textField.rx.text
             .map { Reactor.Action.textFieldChanged($0) }
@@ -231,7 +231,7 @@ extension Nickname {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: NicknameReactor) {
+    private func bindState(reactor: NicknameReactor) {
         // 버튼 비활성화
         reactor.state.map { $0.isButtonEnabled }
             .distinctUntilChanged()

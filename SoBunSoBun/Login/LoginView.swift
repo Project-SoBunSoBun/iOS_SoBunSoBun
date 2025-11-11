@@ -187,8 +187,7 @@ class LoginView: UIViewController {
         }
         
         appleButtonView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(appLogoText.snp.bottom).offset(80)
             make.height.equalTo(52)
         }
@@ -202,8 +201,7 @@ class LoginView: UIViewController {
         }
         
         kakaoButtonView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(appleButtonView.snp.bottom).offset(8)
             make.height.equalTo(52)
         }
@@ -221,12 +219,12 @@ class LoginView: UIViewController {
 // Reactor 연결
 extension LoginView {
     // reactor와 view 연결
-    func bind(reactor: LoginReactor) {
+    private func bind(reactor: LoginReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: LoginReactor) {
+    private func bindAction(reactor: LoginReactor) {
         // Apple로 시작하기 버튼 클릭 제스처
         appleButtonView.rx.tapGesture()
             .map { _ in Reactor.Action.appleButtonTapped }
@@ -240,7 +238,7 @@ extension LoginView {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: LoginReactor) {
+    private func bindState(reactor: LoginReactor) {
         reactor.pulse(\.$loginCompleted)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] isNewUser in

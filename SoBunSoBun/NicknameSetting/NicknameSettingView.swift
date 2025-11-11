@@ -209,12 +209,12 @@ extension NicknameSettingView: UIImagePickerControllerDelegate, UINavigationCont
 
 extension NicknameSettingView {
     // reactor와 view 연결
-    func bind(reactor: NicknameSettingReactor) {
+    private func bind(reactor: NicknameSettingReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: NicknameSettingReactor) {
+    private func bindAction(reactor: NicknameSettingReactor) {
         // Back 버튼 탭
         backButton.rx.tap
             .map { Reactor.Action.backButtonTapped }
@@ -234,7 +234,7 @@ extension NicknameSettingView {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: NicknameSettingReactor) {
+    private func bindState(reactor: NicknameSettingReactor) {
         // 뒤로 가기 버튼
         reactor.pulse(\.$shouldPopViewController)
             .compactMap { $0 }

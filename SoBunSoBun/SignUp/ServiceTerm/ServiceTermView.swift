@@ -11,7 +11,7 @@ import ReactorKit
 import RxSwift
 import RxCocoa
 
-class ServiceTermView: CustomViewController {
+class ServiceTermView: UIViewController {
     typealias Reactor = ServiceTermReactor
     private let reactor = ServiceTermReactor()
     
@@ -63,12 +63,12 @@ class ServiceTermView: CustomViewController {
 
 extension ServiceTermView {
     // reactor와 view 연결
-    func bind(reactor: ServiceTermReactor) {
+    private func bind(reactor: ServiceTermReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: ServiceTermReactor) {
+    private func bindAction(reactor: ServiceTermReactor) {
         // Back 버튼 탭
         backButton.rx.tap
             .map { Reactor.Action.backButtonTapped }
@@ -76,7 +76,7 @@ extension ServiceTermView {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: ServiceTermReactor) {
+    private func bindState(reactor: ServiceTermReactor) {
         // 뒤로 가기 버튼
         reactor.pulse(\.$shouldPopViewController)
             .compactMap { $0 }

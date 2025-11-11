@@ -11,7 +11,7 @@ import ReactorKit
 import RxSwift
 import RxCocoa
 
-class PrivacyTermView: CustomViewController {
+class PrivacyTermView: UIViewController {
     typealias Reactor = PrivacyTermReactor
     private let reactor = PrivacyTermReactor()
     
@@ -64,12 +64,12 @@ class PrivacyTermView: CustomViewController {
 
 extension PrivacyTermView {
     // reactor와 view 연결
-    func bind(reactor: PrivacyTermReactor) {
+    private func bind(reactor: PrivacyTermReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: PrivacyTermReactor) {
+    private func bindAction(reactor: PrivacyTermReactor) {
         // Back 버튼 탭
         backButton.rx.tap
             .map { Reactor.Action.backButtonTapped }
@@ -77,7 +77,7 @@ extension PrivacyTermView {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: PrivacyTermReactor) {
+    private func bindState(reactor: PrivacyTermReactor) {
         // 뒤로 가기 버튼
         reactor.pulse(\.$shouldPopViewController)
             .compactMap { $0 }

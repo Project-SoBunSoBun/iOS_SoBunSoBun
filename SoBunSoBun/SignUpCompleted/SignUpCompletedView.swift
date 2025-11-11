@@ -117,12 +117,12 @@ class SignUpCompletedView: UIViewController {
 }
 
 extension SignUpCompletedView {
-    func bind(reactor: SignUpCompletedReactor) {
+    private func bind(reactor: SignUpCompletedReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: SignUpCompletedReactor) {
+    private func bindAction(reactor: SignUpCompletedReactor) {
         // 닫기 버튼 탭
         greyClose.rx.tap
             .map { Reactor.Action.closeButtonTapped }
@@ -136,7 +136,7 @@ extension SignUpCompletedView {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: SignUpCompletedReactor) {
+    private func bindState(reactor: SignUpCompletedReactor) {
         // 닉네임 업데이트
         reactor.state.map { $0.nickname }
             .distinctUntilChanged()

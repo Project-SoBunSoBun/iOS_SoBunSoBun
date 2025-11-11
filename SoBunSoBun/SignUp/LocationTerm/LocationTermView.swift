@@ -11,7 +11,7 @@ import ReactorKit
 import RxSwift
 import RxCocoa
 
-class LocationTermView: CustomViewController {
+class LocationTermView: UIViewController {
     typealias Reactor = LocationTermReactor
     private let reactor = LocationTermReactor()
     
@@ -63,12 +63,12 @@ class LocationTermView: CustomViewController {
 
 extension LocationTermView {
     // reactor와 view 연결
-    func bind(reactor: LocationTermReactor) {
+    private func bind(reactor: LocationTermReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    func bindAction(reactor: LocationTermReactor) {
+    private func bindAction(reactor: LocationTermReactor) {
         // Back 버튼 탭
         backButton.rx.tap
             .map { Reactor.Action.backButtonTapped }
@@ -76,7 +76,7 @@ extension LocationTermView {
             .disposed(by: disposeBag)
     }
     
-    func bindState(reactor: LocationTermReactor) {
+    private func bindState(reactor: LocationTermReactor) {
         // 뒤로 가기 버튼
         reactor.pulse(\.$shouldPopViewController)
             .compactMap { $0 }
