@@ -41,11 +41,7 @@ class LocationManager: NSObject {
     
     // 권한 상태 가져오기
     func getCurrentAuthorizationStatus() -> CLAuthorizationStatus {
-        if #available(iOS 14.0, *) {
-            return locationManager.authorizationStatus
-        } else {
-            return CLLocationManager.authorizationStatus()
-        }
+        return locationManager.authorizationStatus
     }
     
     func isLocationAuthorized() -> Bool {
