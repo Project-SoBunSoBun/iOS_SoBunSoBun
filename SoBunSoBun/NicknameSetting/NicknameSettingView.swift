@@ -56,7 +56,6 @@ class NicknameSettingView: UIViewController {
         
         configureUI()
         bind(reactor: reactor)
-        setupImagePickerGesture()
     }
     
     // MARK: - 레이아웃 구성
@@ -103,16 +102,6 @@ class NicknameSettingView: UIViewController {
         nickname.isNicknameValid
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
-    }
-    
-    private func setupImagePickerGesture() {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(cameraImageTapped))
-        cameraImage.addGestureRecognizer(tapGesture)
-    }
-    
-    // cameraImage가 Tapped 됐을 때 실행되는 함수
-    @objc private func cameraImageTapped() {
-        checkPhotoLibraryPermission()
     }
     
     // 사진 권한을 확인하는 함수
@@ -232,6 +221,13 @@ extension NicknameSettingView {
             .map { Reactor.Action.nextButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        // 카메라 이미지 탭
+        cameraImage.rx.tapGesture()
+            .when(.recognized)
+            .map { _ in Reactor.Action.cameraImageTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: NicknameSettingReactor) {
@@ -274,6 +270,15 @@ extension NicknameSettingView {
                 let alert = UIAlertController(title: String(localized: "Error"), message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: String(localized: "Confirm"), style: .default))
                 self?.present(alert, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        // 이미지 피커 표시
+        reactor.pulse(\.$shouldShowImagePicker)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: {[weak self] _ in
+                self?.checkPhotoLibraryPermission()
             })
             .disposed(by: disposeBag)
     }

@@ -18,6 +18,7 @@ class NicknameSettingReactor: Reactor {
         case nicknameChanged(String)
         case profileImageSelected(UIImage)
         case nextButtonTapped
+        case cameraImageTapped
     }
     
     enum Mutation {
@@ -27,6 +28,7 @@ class NicknameSettingReactor: Reactor {
         case setLoading(Bool)
         case setProfileSaved
         case setError(String)
+        case showImagePicker
     }
     
     struct State {
@@ -36,6 +38,7 @@ class NicknameSettingReactor: Reactor {
         var isLoading: Bool = false
         @Pulse var profileSaved: Void?
         @Pulse var errorMessage: String?
+        @Pulse var shouldShowImagePicker: Void?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -48,6 +51,8 @@ class NicknameSettingReactor: Reactor {
             return Observable.just(.setProfileImage(image))
         case .nextButtonTapped:
             return saveProfile()
+        case .cameraImageTapped:
+            return Observable.just(.showImagePicker)
         }
     }
     
@@ -66,6 +71,8 @@ class NicknameSettingReactor: Reactor {
             newState.profileSaved = ()
         case .setError(let message):
             newState.errorMessage = message
+        case .showImagePicker:
+            newState.shouldShowImagePicker = ()
         }
         return newState
     }
