@@ -133,11 +133,6 @@ class LoginView: CustomViewController {
     }()
     
     // MARK: - 생명주기
-    // 네비게이션 바를 숨기기 위한 viewWillAppear
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -150,9 +145,9 @@ class LoginView: CustomViewController {
         
         gradientLayer.frame = CGRect(
             x: 0,
-            y: 312,
+            y: view.bounds.height * 0.38, // 높이 기준 38%
             width: view.bounds.width,
-            height: view.bounds.height - 312
+            height: view.bounds.height * (1 - 0.38)
         )
     }
     
