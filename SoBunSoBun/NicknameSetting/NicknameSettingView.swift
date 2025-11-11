@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 import Photos
 
-class NicknameSettingView: CustomViewController {
+class NicknameSettingView: UIViewController {
     typealias Reactor = NicknameSettingReactor
     private let reactor = NicknameSettingReactor()
     
@@ -61,7 +61,7 @@ class NicknameSettingView: CustomViewController {
     
     // MARK: - 레이아웃 구성
     private func configureUI() {
-        view.backgroundColor = .appleWhite
+        view.backgroundColor = .backgroundWhite
         
         [backButton, profileImage, cameraImage, nickname, nextButton].forEach {
             view.addSubview($0)

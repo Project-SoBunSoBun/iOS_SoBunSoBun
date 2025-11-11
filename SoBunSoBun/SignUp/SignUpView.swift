@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import ReactorKit
 
-class SignUpView: CustomViewController {
+class SignUpView: UIViewController {
     typealias Reactor = SignUpReactor
     private let reactor = SignUpReactor()
     
@@ -141,7 +141,7 @@ class SignUpView: CustomViewController {
 
 extension SignUpView {
     // reactor와 view 연결
-    func bind(reactor: SignUpReactor) {
+    private func bind(reactor: SignUpReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }

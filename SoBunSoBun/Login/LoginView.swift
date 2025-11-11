@@ -12,7 +12,7 @@ import SnapKit
 import RxSwift
 import RxGesture
 
-class LoginView: CustomViewController {
+class LoginView: UIViewController {
     typealias Reactor = LoginReactor
     private let reactor = LoginReactor()
     private let disposeBag = DisposeBag()

@@ -11,7 +11,7 @@ import ReactorKit
 import RxSwift
 import RxCocoa
 
-class SignUpCompletedView: CustomViewController {
+class SignUpCompletedView: UIViewController {
     typealias Reactor = SignUpCompletedReactor
     private let reactor = SignUpCompletedReactor()
     
