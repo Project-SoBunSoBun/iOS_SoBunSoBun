@@ -32,8 +32,7 @@ class SignUpCompletedReactor: Reactor {
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
-        switch action {
-            
+        switch action { 
         case .viewDidLoad:
             return fetchUserProfile()
         case .closeButtonTapped, .startButtonTapped:
@@ -44,7 +43,6 @@ class SignUpCompletedReactor: Reactor {
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         switch mutation {
-            
         case .setNickname(let nickname):
             newState.nickname = nickname
         case .setLoading(let isLoading):

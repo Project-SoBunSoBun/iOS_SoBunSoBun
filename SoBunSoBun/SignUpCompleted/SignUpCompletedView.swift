@@ -17,6 +17,7 @@ class SignUpCompletedView: CustomViewController {
     
     private let disposeBag = DisposeBag()
     
+    // MARK: - 디자인 요소
     private let greyClose: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "GreyClose"), for: .normal)
@@ -61,6 +62,7 @@ class SignUpCompletedView: CustomViewController {
     
     private let startButton = Button(title: String(localized: "Start"))
     
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -70,8 +72,9 @@ class SignUpCompletedView: CustomViewController {
         reactor.action.onNext(.viewDidLoad)
     }
     
+    // MARK: - 레이아웃 구성
     private func configureUI() {
-        view.backgroundColor = .appleWhite
+        view.backgroundColor = .backgroundWhite
         
         [greyClose, unionLeft, titleLabel, subLabel, unionRight, startButton].forEach {
             view.addSubview($0)
@@ -80,7 +83,7 @@ class SignUpCompletedView: CustomViewController {
         greyClose.snp.makeConstraints { make in
             make.size.equalTo(48)
             make.trailing.equalToSuperview().inset(4)
-            make.top.equalToSuperview().offset(50)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
         unionLeft.snp.makeConstraints { make in
@@ -102,13 +105,13 @@ class SignUpCompletedView: CustomViewController {
         unionRight.snp.makeConstraints { make in
             make.size.equalTo(100)
             make.trailing.equalToSuperview().inset(62)
-            make.top.equalToSuperview().offset(514)
+            make.top.equalTo(subLabel.snp.bottom).offset(44)
         }
         
         startButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.height.equalTo(64)
-            make.top.equalTo(unionRight.snp.bottom).offset(101)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
     }
 }
