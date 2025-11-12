@@ -19,7 +19,7 @@ class NavigationTabView: UIViewController {
     
     private let viewControllers: [UIViewController] = [
         HomeView(),
-        ChatView(),
+        ChatListView(),
         SettleUpView(),
         MypageView()
     ]

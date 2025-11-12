@@ -564,7 +564,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "위치정보 이용에 대한\n액세스 권한이 없습니다."
+            "value" : "위치정보 이용에 대한\n접근 권한이 없습니다."
           }
         }
       }
