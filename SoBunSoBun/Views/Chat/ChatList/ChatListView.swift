@@ -1,5 +1,5 @@
 //
-//  ChatView.swift
+//  ChatListView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 10/24/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ChatView: UIViewController {
+class ChatListView: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
