@@ -90,7 +90,7 @@ class NicknameReactor: Reactor {
             newState.infoMessage = String(localized: "AvailableNickname")
         case .unAvailable:
             newState.nickNameAvailable = false
-            newState.infoMessage = String(localized: "Unavailable")
+            newState.infoMessage = String(localized: "UnavailableNickname")
         case .invalidInput:
             newState.nickNameAvailable = false
             newState.infoMessage = String(localized: "DenyNicknameInput")

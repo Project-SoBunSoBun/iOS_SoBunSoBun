@@ -404,17 +404,6 @@
         }
       }
     },
-    "Complete" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "정산 완료"
-          }
-        }
-      }
-    },
     "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -536,17 +525,6 @@
         }
       }
     },
-    "Incomplete" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "정산 미완료"
-          }
-        }
-      }
-    },
     "InsertNickname" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -568,9 +546,6 @@
           }
         }
       }
-    },
-    "Key" : {
-      "extractionState" : "manual"
     },
     "LocationInfomationAgree" : {
       "extractionState" : "manual",
@@ -759,6 +734,28 @@
         }
       }
     },
+    "SettleUpComplete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 완료"
+          }
+        }
+      }
+    },
+    "SettleUpIncomplete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 미완료"
+          }
+        }
+      }
+    },
     "SettleUpStart" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -836,7 +833,7 @@
         }
       }
     },
-    "Unavailable" : {
+    "UnavailableNickname" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
