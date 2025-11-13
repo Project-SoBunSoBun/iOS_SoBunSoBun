@@ -393,6 +393,17 @@
         }
       }
     },
+    "CheckSettleUp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 확인"
+          }
+        }
+      }
+    },
     "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -723,6 +734,50 @@
         }
       }
     },
+    "SettleUpComplete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 완료"
+          }
+        }
+      }
+    },
+    "SettleUpIncomplete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 미완료"
+          }
+        }
+      }
+    },
+    "SettleUpStart" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산하기"
+          }
+        }
+      }
+    },
+    "Share" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공유하기"
+          }
+        }
+      }
+    },
     "SignUpCompletedMessage" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -778,7 +833,7 @@
         }
       }
     },
-    "Unavailable" : {
+    "UnavailableNickname" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
