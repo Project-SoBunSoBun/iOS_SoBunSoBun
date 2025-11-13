@@ -393,6 +393,28 @@
         }
       }
     },
+    "CheckSettleUp" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 확인"
+          }
+        }
+      }
+    },
+    "Complete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 완료"
+          }
+        }
+      }
+    },
     "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -514,6 +536,17 @@
         }
       }
     },
+    "Incomplete" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 미완료"
+          }
+        }
+      }
+    },
     "InsertNickname" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -535,6 +568,9 @@
           }
         }
       }
+    },
+    "Key" : {
+      "extractionState" : "manual"
     },
     "LocationInfomationAgree" : {
       "extractionState" : "manual",
@@ -719,6 +755,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "정산"
+          }
+        }
+      }
+    },
+    "SettleUpStart" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산하기"
+          }
+        }
+      }
+    },
+    "Share" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공유하기"
           }
         }
       }
