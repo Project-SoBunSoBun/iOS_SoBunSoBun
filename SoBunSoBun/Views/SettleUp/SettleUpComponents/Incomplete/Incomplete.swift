@@ -204,11 +204,11 @@ class Incomplete: UIView {
             
             // 정산 여부 분기 처리
             if SettleUpStatus {
-                statusLabel.attributedText = NSAttributedString(string: String(localized: "Complete"), attributes: title12.attributes())
+                statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpComplete"), attributes: title12.attributes())
                 statusLabel.textColor = .review2
                 settleUpButton.isHidden = true
             } else {
-                statusLabel.attributedText = NSAttributedString(string: String(localized: "Incomplete"), attributes: title12.attributes())
+                statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpIncomplete"), attributes: title12.attributes())
                 statusLabel.textColor = .errorRed
                 statementCheckButton.isHidden = true
                 shareButton.isHidden = true
