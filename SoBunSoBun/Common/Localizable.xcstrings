@@ -382,6 +382,39 @@
         }
       }
     },
+    "CategoryAll" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 카테고리"
+          }
+        }
+      }
+    },
+    "CategoryGroup00" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "식품"
+          }
+        }
+      }
+    },
+    "CategoryGroup01" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "생활용품"
+          }
+        }
+      }
+    },
     "Chat" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -690,6 +723,17 @@
         }
       }
     },
+    "SearchSomething" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색어를 입력하세요"
+          }
+        }
+      }
+    },
     "SelectOnlyFilesUnder5MB" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -796,6 +840,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "서비스 이용약관에 \n동의해 주세요"
+          }
+        }
+      }
+    },
+    "SortByNewest" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최신순"
           }
         }
       }
