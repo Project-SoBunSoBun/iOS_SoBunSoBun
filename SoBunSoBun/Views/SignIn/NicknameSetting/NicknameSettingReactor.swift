@@ -8,6 +8,7 @@
 import UIKit
 import ReactorKit
 import Moya
+import RxSwift
 
 class NicknameSettingReactor: Reactor {
     let initialState = State()
