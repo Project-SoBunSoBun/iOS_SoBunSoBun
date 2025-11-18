@@ -42,7 +42,7 @@ class NavigationBar: UIView {
         // 테두리
         view.layer.borderWidth = 2
         view.layer.borderColor = UIColor.backgroundWhite.withAlphaComponent(0.5).cgColor
-        view.frame = CGRectInset(view.frame, -2, -2)
+        view.frame = CGRectInset(view.frame, -view.layer.borderWidth, -view.layer.borderWidth)
         
         return view
     }()
