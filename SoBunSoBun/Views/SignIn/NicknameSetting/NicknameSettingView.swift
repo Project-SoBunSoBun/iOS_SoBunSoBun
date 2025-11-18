@@ -58,7 +58,7 @@ class NicknameSettingView: UIViewController {
         bind(reactor: reactor)
     }
     
-    // MARK: - 레이아웃 구성
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
