@@ -6,12 +6,19 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 /// 데이터는 labels에 삽입하십시오
 class LabelsWrappingView<T: UILabel>: UIView {
     private let customLabelType: T.Type
     private let spacingX: CGFloat
     private let spacingY: CGFloat
+    
+    private let disposeBag = DisposeBag()
+    
+    // 외부 이벤트 전달
+    let selectedCategory = PublishRelay<String>()
     
     init(frame: CGRect = .zero,
          customLabelType: T.Type,
@@ -30,22 +37,45 @@ class LabelsWrappingView<T: UILabel>: UIView {
     
     var labels: [String] = [] {
         didSet {
-            addTagLabels()
+            addchipLabels()
+        }
+    }
+    
+    /// labels와 같은 개수를 맞추싶시오
+    var tags: [Int] = [] {
+        didSet {
+            addTags()
+        }
+    }
+    
+    func bindSelectedCategories(_ selectedCategories: Observable<[String]>) {
+        selectedCategories
+            .subscribe(onNext: { [weak self] categories in
+                self?.updateSelectedCategories(categories)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    func updateSelectedCategories(_ selectedCategories: [String]) {
+        self.subviews.forEach { v in
+            guard let label = v as? CategorySelectable else { return }
+            
+            label.isChecked = selectedCategories.contains(String(format: "%04d", label.tag))
         }
     }
     
     private var intrinsicHeight: CGFloat = 0
     
-    private func addTagLabels(){
+    private func addchipLabels(){
         // subview 초기화
         while self.subviews.count > labels.count {
             self.subviews[0].removeFromSuperview()
         }
         
-        // tagLabels 수 맞추기
+        // chipLabels 수 맞추기
         while self.subviews.count < labels.count {
-            let tagView = customLabelType.init()
-            addSubview(tagView)
+            let chipView = customLabelType.init()
+            addSubview(chipView)
             
         }
         
@@ -57,10 +87,16 @@ class LabelsWrappingView<T: UILabel>: UIView {
             
             label.text = str
             label.frame.size = label.intrinsicContentSize
+            
+            if let categorySelectable = label as? CategorySelectable {
+                categorySelectable.didTap
+                    .bind(to: selectedCategory)
+                    .disposed(by: disposeBag)
+            }
         }
     }
     
-    private func displayTagLabels() {
+    private func displayChipLabels() {
         var currentOriginX: CGFloat = 0
         var currentOriginY: CGFloat = 0
         
@@ -89,6 +125,14 @@ class LabelsWrappingView<T: UILabel>: UIView {
         
     }
     
+    private func addTags() {
+        if self.subviews.count == tags.count {
+            self.subviews.enumerated().forEach { index, view in
+                view.tag = tags[index]
+            }
+        }
+    }
+    
     override var intrinsicContentSize: CGSize {
         var sz = super.intrinsicContentSize
         sz.height = intrinsicHeight
@@ -98,6 +142,6 @@ class LabelsWrappingView<T: UILabel>: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        displayTagLabels()
+        displayChipLabels()
     }
 }
