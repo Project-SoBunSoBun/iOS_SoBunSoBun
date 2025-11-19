@@ -34,7 +34,7 @@ class NavigationTabView: UIViewController {
     private var currentVC: UIViewController? = nil
     
     // MARK: - 디자인 요소
-    private lazy var navigationBar = NavigationBar(buttons: buttons, selectedIndex: 0)
+    private lazy var navigationBar = NavigationBar(buttons: buttons)
     
     private let containerView: UIView = {
         let view = UIView()
