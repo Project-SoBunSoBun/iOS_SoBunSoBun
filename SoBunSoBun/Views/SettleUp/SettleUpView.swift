@@ -52,11 +52,10 @@ class SettleUpView: UIViewController {
         let lb = UILabel()
         let attributedText = NSAttributedString(
             string: String(localized: "SettleUpTableViewEmpty"),
-            attributes: body18.attributes()
+            attributes: body18.attributes(alignment: .center)
         )
         lb.attributedText = attributedText
         lb.textColor = .primary200
-        lb.textAlignment = .center
         lb.numberOfLines = 0
         
         return lb
@@ -72,7 +71,7 @@ class SettleUpView: UIViewController {
         tv.showsVerticalScrollIndicator = false
         tv.register(SettleUpTableViewCell.self, forCellReuseIdentifier: "SettleUpTableViewCell")
         tv.rowHeight = UITableView.automaticDimension
-        tv.estimatedRowHeight = 200
+        tv.estimatedRowHeight = 185
         tv.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 84, right: 0)
         
         return tv
@@ -129,7 +128,7 @@ class SettleUpView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [titleLabel, categoryStackView, tableView, gradientView, emptyView].forEach {
+        [titleLabel, categoryStackView, gradientView, emptyView, tableView].forEach {
             view.addSubview($0)
         }
         
@@ -159,22 +158,12 @@ class SettleUpView: UIViewController {
         
         allCategories.isChecked = true
         
-        // TableView
-        tableView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.top.equalTo(categoryStackView.snp.bottom).offset(8)
-            make.bottom.equalToSuperview()
-        }
-        
-        // 그라데이션 뷰 - TableView 뒤에 배치
+        // 그라데이션 뷰
         gradientView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview()
             make.height.equalTo(UIScreen.main.bounds.height * 0.62)
         }
-        
-        // gradientView를 TableView 뒤로 이동
-        view.sendSubviewToBack(gradientView)
         
         // 비어있는 뷰
         emptyView.snp.makeConstraints { make in
@@ -184,12 +173,18 @@ class SettleUpView: UIViewController {
         }
         
         emptyView.addSubview(tableViewEmptyDescLabel)
-        view.sendSubviewToBack(emptyView)
         
         // 테이블 뷰 Empty Desc
         tableViewEmptyDescLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(85)
+            make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
+        }
+        
+        // TableView
+        tableView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(categoryStackView.snp.bottom).offset(8)
+            make.bottom.equalToSuperview()
         }
     }
 }

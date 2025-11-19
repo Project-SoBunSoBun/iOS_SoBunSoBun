@@ -14,9 +14,6 @@ class SettleUpTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        self.backgroundColor = .clear
-        self.contentView.backgroundColor = .clear
     }
     
     required init?(coder: NSCoder) {
@@ -31,6 +28,9 @@ class SettleUpTableViewCell: UITableViewCell {
     }
     
     func configure(with item: SettleUpItem) {
+        self.backgroundColor = .clear
+        self.contentView.backgroundColor = .clear
+        
         incompleteView?.removeFromSuperview()
         
         let newIncompleteView = Incomplete(
