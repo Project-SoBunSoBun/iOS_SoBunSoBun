@@ -116,19 +116,11 @@ class SettleUpView: UIViewController {
         configureUI()
         bind(reactor: reactor)
         
-        // ViewDidLoad 액션 전달
         reactor.action.onNext(.viewDidLoad)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        //        gradientLayer.frame = CGRect(
-        //            x: 0,
-        //            y: view.bounds.height * 0.38, // 높이 기준 38%
-        //            width: view.bounds.width,
-        //            height: view.bounds.height * (1 - 0.38)
-        //        )
         
         gradientLayer.frame = gradientView.bounds
     }
@@ -184,6 +176,7 @@ class SettleUpView: UIViewController {
         // gradientView를 TableView 뒤로 이동
         view.sendSubviewToBack(gradientView)
         
+        // 비어있는 뷰
         emptyView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(allCategories.snp.bottom).offset(8)

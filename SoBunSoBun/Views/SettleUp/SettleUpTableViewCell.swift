@@ -31,7 +31,6 @@ class SettleUpTableViewCell: UITableViewCell {
     }
     
     func configure(with item: SettleUpItem) {
-        // Incomplete 뷰를 다시 생성하여 설정
         incompleteView?.removeFromSuperview()
         
         let newIncompleteView = Incomplete(
