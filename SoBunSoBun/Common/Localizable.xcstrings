@@ -393,17 +393,6 @@
         }
       }
     },
-    "CheckSettleUp" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "정산서 확인"
-          }
-        }
-      }
-    },
     "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -734,7 +723,32 @@
         }
       }
     },
+    "SettleUpAll" : {
+      "comment" : "CalculationCategory.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전체"
+          }
+        }
+      }
+    },
+    "SettleUpCheck" : {
+      "comment" : "Incomplete.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 확인"
+          }
+        }
+      }
+    },
     "SettleUpComplete" : {
+      "comment" : "CalculationCategory.swift에서 사용",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -746,6 +760,7 @@
       }
     },
     "SettleUpIncomplete" : {
+      "comment" : "CalculationCategory.swift에서 사용",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -757,6 +772,7 @@
       }
     },
     "SettleUpStart" : {
+      "comment" : "CalculationCategory.swift에서 사용",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -767,7 +783,20 @@
         }
       }
     },
+    "SettleUpTableViewEmpty" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여 중인 모임이 없습니다. 내 주변 모임을 확인해보세요!"
+          }
+        }
+      }
+    },
     "Share" : {
+      "comment" : "Incomplete.swift에서 사용",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -779,6 +808,7 @@
       }
     },
     "SignUpCompletedMessage" : {
+      "comment" : "SignUpCompltedView.swift에서 사용",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
