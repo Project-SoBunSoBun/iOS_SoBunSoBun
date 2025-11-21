@@ -32,12 +32,17 @@ func dateToString(date: Date, format: String) -> String {
     return dateFormatter.string(from: date)
 }
 
-// ISO8601 Datetime에서 현지화 Datetime 문자열 변환
-func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatColon: Bool = true) -> String {
+// ISO8601 Datetime에서 Date 형변환
+func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
     let isoFormatter = ISO8601DateFormatter()
     isoFormatter.formatOptions = [.withFullDate, .withFullTime]
     
-    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+    return isoFormatter.date(from: iso8601DatetimeString)
+}
+
+// ISO8601 Datetime에서 현지화 Datetime 문자열 변환
+func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatColon: Bool = true) -> String {
+    if let date = ISO8601ToDate(iso8601DatetimeString) {
         let dateFormatter = DateFormatter()
         let calendar = Calendar.current
         let minutes = calendar.component(.minute, from: date)
@@ -64,10 +69,7 @@ func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatC
 
 // ISO8601 Datetime에서 D-Day 계산
 func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
-    let isoFormatter = ISO8601DateFormatter()
-    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
-    
-    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+    if let date = ISO8601ToDate(iso8601DatetimeString) {
         let calendar = Calendar.current
         let now = calendar.startOfDay(for: Date())
         let targetDay = calendar.startOfDay(for: date)
@@ -92,10 +94,7 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
 }
 
 func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
-    let isoFormatter = ISO8601DateFormatter()
-    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
-    
-    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+    if let date = ISO8601ToDate(iso8601DatetimeString) {
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = Locale.current
         formatter.unitsStyle = .short
