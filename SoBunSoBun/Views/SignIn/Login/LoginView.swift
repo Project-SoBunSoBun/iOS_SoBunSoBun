@@ -248,9 +248,20 @@ extension LoginView {
                     let vc = SignUpView()
                     self.navigationController?.pushViewController(vc, animated: true)
                 } else {
-                    let vc = NavigationTabView()
-                    self.navigationController?.setViewControllers([vc], animated: false)
+                    self.reactor.action.onNext(.saveToken)
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$saveSuccess)
+            .compactMap { $0 }
+            .filter { $0 == true }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                let vc = NavigationTabView()
+                self.navigationController?.setViewControllers([vc], animated: false)
             })
             .disposed(by: disposeBag)
     }
