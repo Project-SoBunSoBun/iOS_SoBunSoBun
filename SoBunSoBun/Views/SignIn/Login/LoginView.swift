@@ -248,12 +248,12 @@ extension LoginView {
                     let vc = SignUpView()
                     self.navigationController?.pushViewController(vc, animated: true)
                 } else {
-                    self.reactor.action.onNext(.saveToken)
+                    self.reactor.action.onNext(.completeLoginAndNavigateToHome)
                 }
             })
             .disposed(by: disposeBag)
         
-        reactor.pulse(\.$saveSuccess)
+        reactor.pulse(\.$shouldNavigateToHome)
             .compactMap { $0 }
             .filter { $0 == true }
             .observe(on: MainScheduler.instance)
