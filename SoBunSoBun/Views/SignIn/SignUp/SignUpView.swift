@@ -73,7 +73,7 @@ class SignUpView: UIViewController {
         bind(reactor: reactor)
     }
     
-    // MARK: - 레이아웃 구성
+    // MARK: - 레이아웃 설정
     func configureUI() {
         view.backgroundColor = .backgroundWhite
         

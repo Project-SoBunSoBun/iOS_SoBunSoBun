@@ -120,7 +120,7 @@ class Incomplete: UIView {
         let bt = UIButton()
         var config = UIButton.Configuration.filled()
         
-        var attributedString = AttributedString(String(localized: "CheckSettleUp"))
+        var attributedString = AttributedString(String(localized: "SettleUpCheck"))
         attributedString.font = title14.font
         
         config.attributedTitle = attributedString
