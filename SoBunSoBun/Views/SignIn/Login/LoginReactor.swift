@@ -20,16 +20,20 @@ class LoginReactor: Reactor {
     enum Action {
         case appleButtonTapped // 애플 로그인 버튼을 클릭했을 때
         case kakaoButtonTapped // 카카오 로그인 버튼을 클릭했을 때
+        case completeLoginAndNavigateToHome // 로그인 후 홈으로 이동
     }
     
     enum Mutation {
         case loginSuccess(isNewUser: Bool) // 로그인 성공했을 때
         case loginFailed(String) // 로그인에 실패했을 때
+        case loginAndNavigateToHomeSuccess(isSaved: Bool) // 로그인 후 홈으로 이동 성공
+        case loginAndNavigateToHomeFailed(String) // 로그인 후 홈으로 이동 실패
     }
     
     struct State {
         @Pulse var loginCompleted: Bool?
-        @Pulse var loginErrorMessage: String?
+        @Pulse var ErrorMessage: String?
+        @Pulse var shouldNavigateToHome: Bool?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -55,6 +59,8 @@ class LoginReactor: Reactor {
                 }
         case .appleButtonTapped:
             return Observable.empty()
+        case .completeLoginAndNavigateToHome:
+            return saveToken()
         }
     }
     
@@ -65,7 +71,11 @@ class LoginReactor: Reactor {
         case .loginSuccess(let isNewUser):
             newState.loginCompleted = isNewUser
         case .loginFailed(let message):
-            newState.loginErrorMessage = message
+            newState.ErrorMessage = message
+        case .loginAndNavigateToHomeSuccess(let isSaved):
+            newState.shouldNavigateToHome = isSaved
+        case .loginAndNavigateToHomeFailed(let message):
+            newState.ErrorMessage = message
         }
         
         return newState
@@ -73,7 +83,7 @@ class LoginReactor: Reactor {
 }
 
 extension LoginReactor {
-    func kakaoLoginAction() -> Observable<OAuthToken> {
+    private func kakaoLoginAction() -> Observable<OAuthToken> {
         let loginObservable: Observable<OAuthToken>
         
         // KakaoTalk 앱을 통한 로그인
@@ -84,5 +94,29 @@ extension LoginReactor {
         }
         
         return loginObservable
+    }
+    
+    private func saveToken() -> Observable<Mutation> {
+        guard let loginToken = KeyChain.shared.get(key: "LOGIN_TOKEN") else {
+            return Observable.just(.loginAndNavigateToHomeFailed("로그인 토큰이 없습니다"))
+        }
+        
+        return NetworkManager.shared.fetchAuthCompleteSignUp(
+            loginToken: loginToken,
+            serviceTermsAgreed: true,
+            privacyPolicyAgreed: true,
+            marketingOptionalAgreed: false
+        )
+        .asObservable()
+        .map { userModel in
+            KeyChain.shared.set(key: "ACCESS_TOKEN", value: userModel.accessToken)
+            KeyChain.shared.set(key: "REFRESH_TOKEN", value: userModel.refreshToken)
+            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(userModel.accessTokenExpiresAtKst))
+            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(userModel.refreshTokenExpiresAtKst))
+            return Mutation.loginAndNavigateToHomeSuccess(isSaved: true)
+        }
+        .catch { error in
+            return Observable.just(.loginAndNavigateToHomeFailed("토큰 저장 실패"))
+        }
     }
 }
