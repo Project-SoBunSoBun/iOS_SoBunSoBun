@@ -20,14 +20,14 @@ class LoginReactor: Reactor {
     enum Action {
         case appleButtonTapped // 애플 로그인 버튼을 클릭했을 때
         case kakaoButtonTapped // 카카오 로그인 버튼을 클릭했을 때
-        case completeLoginAndNavigateToHome // 카카오 로그인 성공 시 토큰 저장하기
+        case completeLoginAndNavigateToHome // 로그인 후 홈으로 이동
     }
     
     enum Mutation {
         case loginSuccess(isNewUser: Bool) // 로그인 성공했을 때
         case loginFailed(String) // 로그인에 실패했을 때
-        case loginAndNavigateToHomeSuccess(isSaved: Bool) // 키체인에 저장 성공했을 때
-        case loginAndNavigateToHomeFailed(String)
+        case loginAndNavigateToHomeSuccess(isSaved: Bool) // 로그인 후 홈으로 이동 성공
+        case loginAndNavigateToHomeFailed(String) // 로그인 후 홈으로 이동 실패
     }
     
     struct State {
