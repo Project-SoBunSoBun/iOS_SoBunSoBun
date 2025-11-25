@@ -54,7 +54,7 @@ class NavigationBar: UIView {
     struct BlurredBackground: View {
         var body: some View {
             Rectangle()
-                .fill(.backgroundWhite.opacity(0.2))
+                .fill(.clear)
                 .blur(radius: 8)
         }
     }
@@ -63,7 +63,7 @@ class NavigationBar: UIView {
     private let blurredBackground: UIHostingController = {
         let hostingController = UIHostingController(rootView: BlurredBackground())
         // hostingController는 기본적으로 흰색 배경을 가지고 있음
-        hostingController.view.backgroundColor = .clear
+        hostingController.view.backgroundColor = .backgroundWhite.withAlphaComponent(0.2)
         
         return hostingController
     }()
