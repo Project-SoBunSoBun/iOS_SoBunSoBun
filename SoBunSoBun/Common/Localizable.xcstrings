@@ -498,7 +498,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오류가 발생했습니다"
+            "value" : "오류가 발생했습니다."
           }
         }
       }
@@ -569,6 +569,17 @@
         }
       }
     },
+    "Loading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "불러오는 중"
+          }
+        }
+      }
+    },
     "LocationInfomationAgree" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -587,6 +598,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "내 주변의 모임을 검색하거나\n동네 인증을 위해 현재 위치를 확인합니다."
+          }
+        }
+      }
+    },
+    "LocationPermissionDenied" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치 권한을 확인하세요."
           }
         }
       }

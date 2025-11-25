@@ -21,6 +21,7 @@ final class NetworkManager {
     // Authorized API 전용
     private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared))
     
+    // MARK: - 로그인
     // 서버에서 카카오 토큰을 통해 임시 토큰을 가져오는 메서드
     func fetchAuthLoginKakao(accessToken: String) -> Single<KakaoAuthResponse> {
         return provider.rx.request(
@@ -66,5 +67,35 @@ final class NetworkManager {
         )
         .filterSuccessfulStatusCodes()
         .map(UserInfoModel.self)
+    }
+    
+    // MARK: - 홈
+    // 현재 사용자 위치 인증 상태 조회
+    func getLocationVefirication() -> Single<LocationVerificationModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.getLocationVerification)
+        )
+        .filterSuccessfulStatusCodes()
+        .map(LocationVerificationModel.self)
+    }
+    
+    // 좌표를 통해 주소 변환
+    func getAddresFromGeocoder(latitude: Double, longitude: Double) -> Single<GeocoderResponseModel> {
+        let point: String = "\(longitude),\(latitude)"
+        
+        return provider.rx.request(
+            MultiTarget(PublicAPI.getAddress(point: point))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(GeocoderResponseModel.self)
+    }
+    
+    // 사용자 위치 인증
+    func patchLocationVerification(address: String) -> Single<LocationVerificationModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.patchLocationVerification(address: address))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(LocationVerificationModel.self)
     }
 }

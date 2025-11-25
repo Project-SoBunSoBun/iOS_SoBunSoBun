@@ -107,6 +107,35 @@ func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
     }
 }
 
+// 위치 권한 설정 알림창
+func showLocationSettingAlert(_ vc: UIViewController) {
+    let alert = CustomAlertView(
+        title: String(localized: "LocationSettingTitle")
+    )
+    
+    alert.onSettingsTapped = {
+        // 설정 앱으로 이동
+        if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(settingsUrl)
+        }
+    }
+    
+    alert.onCancelTapped = {
+        print("취소됨")
+    }
+    
+    alert.show(on: vc)
+}
+
+extension Encodable {
+    func toDictionary() -> [String: Any]? {
+        guard let data = try? JSONEncoder().encode(self) else { return nil }
+        guard let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
+        
+        return dictionary
+    }
+}
+
 // 미리보기
 #if DEBUG
 import SwiftUI

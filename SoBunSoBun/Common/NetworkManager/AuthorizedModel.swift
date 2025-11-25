@@ -46,3 +46,15 @@ struct CheckNicknameModel: Decodable {
     let nickname: String
     let available: Bool
 }
+
+struct LocationVerificationModel: Decodable {
+    let address: String?
+    let locationVerifiedAt: String?
+    let remainingMinutes: Int?
+    let verified: Bool
+    let expired: Bool
+}
+
+struct LocationVerificationBodyModel: Encodable {
+    let address: String
+}

@@ -5,13 +5,16 @@
 //  Created by 허성필 on 9/24/25.
 //
 
-
 import Foundation
 import Moya
 
 enum AuthorizedAPI {
+    // 로그인
     case saveProfile(nickname: String, profileImage: Data?)
     case myProfile
+    // 홈
+    case getLocationVerification
+    case patchLocationVerification(address: String)
 }
 
 extension AuthorizedAPI: TargetType {
@@ -21,27 +24,32 @@ extension AuthorizedAPI: TargetType {
     
     var path: String {
         switch self {
-            
         case .saveProfile:
             return "/users/me/profile"
         case .myProfile:
             return "/me"
+        case .getLocationVerification:
+            return "/me/location-verification"
+        case .patchLocationVerification:
+            return "/me/location-verification"
         }
     }
     
     var method: Moya.Method {
         switch self {
-            
         case .saveProfile:
             return .patch
         case .myProfile:
             return .get
+        case .getLocationVerification:
+            return .get
+        case .patchLocationVerification:
+            return .patch
         }
     }
     
     var task: Moya.Task {
         switch self {
-            
         case .saveProfile(nickname: let nickname, profileImage: let profileImage):
             var formData: [MultipartFormData] = []
             
@@ -69,6 +77,12 @@ extension AuthorizedAPI: TargetType {
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
         case .myProfile:
             return .requestPlain
+        case .getLocationVerification:
+            return .requestPlain
+        case .patchLocationVerification(address: let address):
+            let body = LocationVerificationBodyModel(address: address)
+            
+            return .requestJSONEncodable(body)
         }
     }
     
@@ -76,7 +90,9 @@ extension AuthorizedAPI: TargetType {
         switch self {
         case .saveProfile:
             return ["Content-Type": "multipart/form-data"]
-        case .myProfile:
+        case .myProfile,
+                .getLocationVerification,
+                .patchLocationVerification:
             return [:]
         }
     }

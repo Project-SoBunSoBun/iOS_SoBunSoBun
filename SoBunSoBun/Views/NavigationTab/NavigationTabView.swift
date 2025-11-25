@@ -17,12 +17,12 @@ class NavigationTabView: UIViewController {
     private let reactor = NavigationTabReactor()
     private let disposeBag = DisposeBag()
     
-    private let viewControllers: [UIViewController] = [
-        HomeView(),
-        ChatListView(),
-        SettleUpView(),
-        MypageView()
-    ]
+    private let homeView = HomeView()
+    private let chatListView = ChatListView()
+    private let settleUpView = SettleUpView()
+    private let myPageView = MypageView()
+    
+    private lazy var viewControllers: [UIViewController] = [homeView, chatListView, settleUpView, myPageView]
     
     private let buttons: [TabBarButton] = [
         TabBarButton(icons: [.greyFilledHome, .blueFilledHome], title: String(localized: "Home")),
@@ -43,6 +43,7 @@ class NavigationTabView: UIViewController {
         return view
     }()
     
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -99,6 +100,14 @@ extension NavigationTabView {
     private func bind(reactor: NavigationTabReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
+        
+        // homeView 위치 권한 알림창
+        homeView.shouldShowLocationSettingAlert
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: {
+                showLocationSettingAlert(self)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func bindAction(reactor: NavigationTabReactor) {

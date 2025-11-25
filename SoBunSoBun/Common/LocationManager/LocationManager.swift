@@ -14,10 +14,15 @@ class LocationManager: NSObject {
     static let shared = LocationManager()
     
     private let locationManager = CLLocationManager()
-    private let authorizationStatus = BehaviorRelay<CLAuthorizationStatus>(value: .notDetermined)
     
+    private let authorizationStatus = BehaviorRelay<CLAuthorizationStatus>(value: .notDetermined)
     var currentAuthorizationStatus: Observable<CLAuthorizationStatus> {
         return authorizationStatus.asObservable()
+    }
+    
+    private let currentLocationRelay = BehaviorRelay<CLLocationCoordinate2D?>(value: nil)
+    var currentLocation: Observable<CLLocationCoordinate2D?> {
+        return currentLocationRelay.asObservable()
     }
     
     private override init() {
@@ -44,14 +49,56 @@ class LocationManager: NSObject {
         let status = getCurrentAuthorizationStatus()
         return status == .authorizedWhenInUse || status == .authorizedAlways
     }
+    
+    // 위치 가져오기
+    func requestCurrentLocation() {
+        guard isLocationAuthorized() else {
+            print("위치 권한 없음")
+            requestLocationPermission()
+            return
+        }
+        
+        locationManager.requestLocation()
+    }
+    
+    // 좌표 가져오기
+    func getCurrentCoordinate() -> CLLocationCoordinate2D? {
+        return currentLocationRelay.value
+    }
+    
 }
 
 extension LocationManager: CLLocationManagerDelegate {
+    // 권한 업데이트
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         authorizationStatus.accept(status)
     }
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-            authorizationStatus.accept(manager.authorizationStatus)
+        authorizationStatus.accept(manager.authorizationStatus)
+    }
+    
+    // 위치 업데이트
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        
+        let coordinate = location.coordinate
+        
+        currentLocationRelay.accept(coordinate)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("위치 가져오기 실패: \(error.localizedDescription)")
+        
+        if let clError = error as? CLError {
+            switch clError.code {
+            case .denied:
+                print("위치 권한 거부됨")
+            case .locationUnknown:
+                print("위치를 확인할 수 없음")
+            default:
+                print("기타 위치 오류: \(clError.code)")
+            }
+        }
     }
 }
