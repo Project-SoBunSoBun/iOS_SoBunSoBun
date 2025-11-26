@@ -80,7 +80,7 @@ final class NetworkManager {
     }
     
     // 좌표를 통해 주소 변환
-    func getAddresFromGeocoder(latitude: Double, longitude: Double) -> Single<GeocoderResponseModel> {
+    func getAddresFromGeocoder(longitude: Double, latitude: Double) -> Single<GeocoderResponseModel> {
         let point: String = "\(longitude),\(latitude)"
         
         return provider.rx.request(

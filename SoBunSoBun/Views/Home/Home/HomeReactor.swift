@@ -88,7 +88,7 @@ class HomeReactor: Reactor {
             .take(1) // 1번만
             .timeout(.seconds(10), scheduler: MainScheduler.instance) // 10초 타임아웃
             .flatMap { coords -> Observable<Mutation> in
-                return self.getAddressFromGeocoder(latitude: coords.latitude,longitude: coords.longitude)
+                return self.getAddressFromGeocoder(longitude: coords.longitude, latitude: coords.latitude)
             }
             .catch { error in
                 print("위치 권한 문제: \(error.localizedDescription)")
@@ -97,8 +97,8 @@ class HomeReactor: Reactor {
     }
     
     // 지오코더 API 호출
-    private func getAddressFromGeocoder(latitude: Double, longitude: Double) -> Observable<Mutation> {
-        return NetworkManager.shared.getAddresFromGeocoder(latitude: latitude, longitude: longitude)
+    private func getAddressFromGeocoder(longitude: Double, latitude: Double) -> Observable<Mutation> {
+        return NetworkManager.shared.getAddresFromGeocoder(longitude: longitude, latitude: latitude)
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 let structure = model.response.result[0].structure
