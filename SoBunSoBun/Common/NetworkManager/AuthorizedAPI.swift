@@ -12,6 +12,7 @@ import Moya
 enum AuthorizedAPI {
     case saveProfile(nickname: String, profileImage: Data?)
     case myProfile
+    case mySettleUps(activeOnly: String, page: Int, size: Int)
 }
 
 extension AuthorizedAPI: TargetType {
@@ -26,6 +27,8 @@ extension AuthorizedAPI: TargetType {
             return "/users/me/profile"
         case .myProfile:
             return "/me"
+        case .mySettleUps:
+            return "/api/settleups/my"
         }
     }
     
@@ -35,6 +38,8 @@ extension AuthorizedAPI: TargetType {
         case .saveProfile:
             return .patch
         case .myProfile:
+            return .get
+        case .mySettleUps:
             return .get
         }
     }
@@ -69,6 +74,8 @@ extension AuthorizedAPI: TargetType {
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
         case .myProfile:
             return .requestPlain
+        case .mySettleUps(activeOnly: let activeOnly, page: let page, size: let size):
+            return .requestParameters(parameters: ["activeOnly": activeOnly, "page": page, "size": size], encoding: URLEncoding.queryString)
         }
     }
     
@@ -77,6 +84,8 @@ extension AuthorizedAPI: TargetType {
         case .saveProfile:
             return ["Content-Type": "multipart/form-data"]
         case .myProfile:
+            return [:]
+        case .mySettleUps:
             return [:]
         }
     }
