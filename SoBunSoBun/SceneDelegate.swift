@@ -24,10 +24,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        
         self.window = window
         
-        let nav = UINavigationController(rootViewController: LoginView())
+        var nav: UINavigationController
+        
+        let now = Date()
+        
+        if KeyChain.shared.get(key: "REFRESH_TOKEN") != nil,
+           let refreshTokenExpireAtKST = KeyChain.shared.get(key: "REFRESH_TOKEN_EXPIRE_AT_KST"),
+           let dateRefreshTokenExpireAtKST = ISO8601ToDate(refreshTokenExpireAtKST),
+           dateRefreshTokenExpireAtKST > now {
+            nav = UINavigationController(rootViewController: NavigationTabView())
+        } else {
+            nav = UINavigationController(rootViewController: LoginView())
+        }
+        
         nav.isNavigationBarHidden = true
         
         window.rootViewController = nav
