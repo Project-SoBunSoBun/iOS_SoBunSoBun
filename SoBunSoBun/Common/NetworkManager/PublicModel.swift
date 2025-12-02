@@ -12,12 +12,12 @@ struct GeocoderRequestModel: Encodable {
     let request: String = "getAddress"
     let version: String = "2.0"
     let crs: String = "epsg:4326"
-    let point: String
     let format: String = "json"
     let errorformat: String = "json"
     let type: String = "parcel"
     let zipcode: Bool = false
     let simple: Bool = true
+    let point: String
     let key: String
 }
 
@@ -35,7 +35,5 @@ struct GeocoderResponseResultModel: Decodable {
 }
 
 struct GeocoderResponseResultStructureModel: Decodable {
-    let level1: String
-    let level2: String
-    let level3: String
+    let level1, level2, level3: String
 }

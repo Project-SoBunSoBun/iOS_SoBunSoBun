@@ -15,6 +15,8 @@ enum AuthorizedAPI {
     // 홈
     case getLocationVerification
     case patchLocationVerification(address: String)
+    case getHomeList(page: Int, size: Int)
+    case getHomeListByCategories(category: [String], page: Int, size: Int)
 }
 
 extension AuthorizedAPI: TargetType {
@@ -32,6 +34,10 @@ extension AuthorizedAPI: TargetType {
             return "/me/location-verification"
         case .patchLocationVerification:
             return "/me/location-verification"
+        case .getHomeList:
+            return "/api/posts"
+        case .getHomeListByCategories(category: let category, page: _, size: _):
+            return "/api/posts/categories/\(category.joined(separator: ","))"
         }
     }
     
@@ -45,6 +51,10 @@ extension AuthorizedAPI: TargetType {
             return .get
         case .patchLocationVerification:
             return .patch
+        case .getHomeList:
+            return .get
+        case .getHomeListByCategories:
+            return .get
         }
     }
     
@@ -83,6 +93,14 @@ extension AuthorizedAPI: TargetType {
             let body = LocationVerificationBodyModel(address: address)
             
             return .requestJSONEncodable(body)
+        case .getHomeList(page: let page, size: let size):
+            let parameters = HomeListRequestModel(page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+        case .getHomeListByCategories(category: _, page: let page, size: let size):
+            let parameters = HomeListRequestModel(page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
         }
     }
     
@@ -92,7 +110,9 @@ extension AuthorizedAPI: TargetType {
             return ["Content-Type": "multipart/form-data"]
         case .myProfile,
                 .getLocationVerification,
-                .patchLocationVerification:
+                .patchLocationVerification,
+                .getHomeList,
+                .getHomeListByCategories:
             return [:]
         }
     }

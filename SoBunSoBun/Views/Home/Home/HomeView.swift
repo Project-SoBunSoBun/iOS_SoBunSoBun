@@ -148,11 +148,56 @@ class HomeView: UIViewController {
         return view
     }()
     
+    private let tableView: UITableView = {
+        let tv = UITableView()
+        tv.backgroundColor = .clear
+        tv.separatorStyle = .none
+        tv.register(PostListTableViewCell.self, forCellReuseIdentifier: PostListTableViewCell.identifier)
+        tv.estimatedRowHeight = 142
+        tv.rowHeight = UITableView.automaticDimension
+        tv.showsVerticalScrollIndicator = false
+        
+        return tv
+    }()
+    
+    private let refreshControl: UIRefreshControl = {
+        let rc = UIRefreshControl()
+        
+        return rc
+    }()
+    
+    private let writeButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.background.backgroundColor = .primary500
+        config.cornerStyle = .fixed
+        config.background.cornerRadius = 100
+        var imageConfig = UIImage.SymbolConfiguration(pointSize: 20)
+        config.preferredSymbolConfigurationForImage = imageConfig
+        config.image = .whitePost
+        config.imagePadding = 8
+        
+        var attributes: [NSAttributedString.Key: Any] = title16.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.backgroundWhite
+        
+        let attributedTitle = NSAttributedString(
+            string: String(localized: "WritePost"),
+            attributes: attributes
+        )
+        
+        config.attributedTitle = AttributedString(attributedTitle)
+        config.contentInsets = .init(top: 12, leading: 16, bottom: 12, trailing: 16)
+        
+        let btn = UIButton(configuration: config)
+        
+        return btn
+    }()
+    
+    private lazy var gradientLayer = BackgroundGradientLayer(view)
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Do any additional setup after loading the view.
         configureUI()
         bind(reactor: reactor)
     }
@@ -160,8 +205,9 @@ class HomeView: UIViewController {
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
+        view.layer.addSublayer(gradientLayer)
         
-        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, mypageButton, notificationButton, locationLabel, searchTextField, categoriesScrollView].forEach {
+        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, mypageButton, notificationButton, locationLabel, searchTextField, categoriesScrollView, tableView, writeButton].forEach {
             view.addSubview($0)
         }
         
@@ -199,6 +245,7 @@ class HomeView: UIViewController {
         }
         
         // 검색창
+        searchTextField.isEnabled = false
         searchTextField.snp.makeConstraints { make in
             make.top.equalTo(mypageButton.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview().inset(16)
@@ -221,6 +268,21 @@ class HomeView: UIViewController {
         addCategoryAll()
         
         categoriesStackView.addArrangedSubview(addCategoryButton)
+        
+        // 게시글 목록
+        tableView.refreshControl = refreshControl
+        
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(categoriesScrollView.snp.bottom).offset(8)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview()
+        }
+        
+        // 글쓰기 버튼
+        writeButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(safeareaBottom + 8 + NavigationBar.SHADOW_HEIGHT + 8 + 8)
+        }
     }
 }
 
@@ -229,6 +291,17 @@ extension HomeView {
     private func bind(reactor: HomeReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
+        
+        searchTextField.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                // TODO: 검색 뷰 이동
+                print("검색 뷰 이동")
+            })
+            .disposed(by: disposeBag)
     }
     
     private func bindAction(reactor: HomeReactor) {
@@ -245,6 +318,43 @@ extension HomeView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        // 페이지네이션
+        tableView.rx.contentOffset
+            .map { [weak self] offset -> Bool in
+                guard let self = self else { return false }
+                
+                let currentOffset = offset.y
+                let maximumOffset = tableView.contentSize.height - tableView.frame.size.height
+                let frameHeight = tableView.frame.size.height
+                
+                guard tableView.contentSize.height > frameHeight else {
+                    return false
+                }
+                
+                return currentOffset >= maximumOffset - (frameHeight * 0.5)
+            }
+            .distinctUntilChanged()
+            .filter { $0 }
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .map { _ in Reactor.Action.loadMorePosts }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 새로고침
+        refreshControl.rx.controlEvent(.valueChanged)
+            .map { Reactor.Action.refresh }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 셀을 눌렀을 때
+        tableView.rx.modelSelected(PostModel.self)
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                // TODO: 상세 뷰 이동 기능 추가
+                print(model)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: HomeReactor) {
@@ -270,6 +380,34 @@ extension HomeView {
                 
                 updateCategoriesStackView(selectedCategories)
             })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldShowLocationSettingAlert)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                shouldShowLocationSettingAlert.accept(())
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.posts }
+            .distinctUntilChanged { $0.count == $1.count } // 개수 비교
+            .observe(on: MainScheduler.instance)
+            .bind(to: tableView.rx.items(
+                cellIdentifier: PostListTableViewCell.identifier,
+                cellType: PostListTableViewCell.self
+            )) { index, model, cell in
+                let isLast = index == reactor.currentState.posts.count - 1
+                
+                cell.configureUI(model: model, isLast: isLast)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isRefreshing }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind(to: refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
     }
     

@@ -12,11 +12,14 @@ import RxSwift
 class HomeReactor: Reactor {
     private let disposeBag = DisposeBag()
     let initialState: State = State()
+    let pageSize: Int = 20
     
     enum Action {
         case initialized
         case addCategoryTapped
         case getSelectedCategories([String])
+        case loadMorePosts
+        case refresh
     }
     
     enum Mutation {
@@ -24,24 +27,65 @@ class HomeReactor: Reactor {
         case setAddCategoryTapped
         case setSelectedCategories([String])
         case setShowLocationSettingAlert
+        
+        case setLoading(Bool)
+        case setRefreshing(Bool)
+        case setPosts([PostModel])
+        case appendPosts([PostModel])
+        case setPage(Int)
+        case setHasMore(Bool)
     }
     
     struct State {
         var isLocationVerified: Bool = false
+        
         @Pulse var shouldShowBottomCategorySheet: Void?
         var selectedCategories: [String] = []
         var verifiedLocation: String = "\(String(localized: "Loading"))..."
-        @Pulse var shouldShowLocationSettingAlert: Bool = false
+        @Pulse var shouldShowLocationSettingAlert: Void?
+        
+        var page: Int = 0
+        var posts: [PostModel] = []
+        var isLoading: Bool = false
+        var isRefreshing: Bool = false
+        var hasMore: Bool = true
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .initialized:
-            return currentState.isLocationVerified ? .empty() : verifyLocation()
+            return Observable.concat(
+                currentState.isLocationVerified ? .empty() : verifyLocation(),
+                Observable.just(.setPage(0)),
+                loadPosts(page: 0, isFirst: true)
+            )
         case .addCategoryTapped:
             return Observable.just(.setAddCategoryTapped)
         case .getSelectedCategories(let selectedCategories):
-            return Observable.just(.setSelectedCategories(selectedCategories))
+            return Observable.concat([
+                .just(.setSelectedCategories(selectedCategories)),
+                .just(.setRefreshing(true)),
+                .just(.setPage(0)),
+                loadPosts(page: 0, isFirst: true, categories: selectedCategories),
+                .just(.setRefreshing(false))
+            ])
+        case .loadMorePosts:
+            guard !currentState.isLoading && currentState.hasMore else {
+                return .empty()
+            }
+            
+            let nextPage = currentState.page + 1
+            return Observable.concat([
+                .just(.setPage(nextPage)),
+                loadPosts(page: nextPage, isFirst: false)
+            ])
+        case .refresh:
+            return Observable.concat([
+                .just(.setRefreshing(true)),
+                .just(.setPage(0)),
+                loadPosts(page: 0, isFirst: true),
+                .just(.setRefreshing(false))
+            ])
         }
     }
     
@@ -51,13 +95,26 @@ class HomeReactor: Reactor {
         switch mutation {
         case .verifyLocation(let address):
             newState.verifiedLocation = address
-            newState.isLocationVerified = !address.isEmpty && address != String(localized: "Error") && address != String(localized: "LocationPermissionDenied")
+            newState.isLocationVerified = !address.isEmpty && address != String(localized: "Error")
         case .setAddCategoryTapped:
             newState.shouldShowBottomCategorySheet = ()
         case .setSelectedCategories(let selectedCategories):
             newState.selectedCategories = selectedCategories
         case .setShowLocationSettingAlert:
-            newState.shouldShowLocationSettingAlert = true
+            newState.shouldShowLocationSettingAlert = ()
+            newState.verifiedLocation = String(localized: "LocationPermissionDenied")
+        case .setLoading(let isLoading):
+            newState.isLoading = isLoading
+        case .setRefreshing(let isRefreshing):
+            newState.isRefreshing = isRefreshing
+        case .setPosts(let posts):
+            newState.posts = posts
+        case .appendPosts(let posts):
+            newState.posts.append(contentsOf: posts)
+        case .setPage(let page):
+            newState.page = page
+        case .setHasMore(let hasMore):
+            newState.hasMore = hasMore
         }
         
         return newState
@@ -129,5 +186,35 @@ class HomeReactor: Reactor {
                 print("위치 인증 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "Error")))
             }
+    }
+    
+    // 홈 게시글 목록 API 호출
+    private func loadPosts(page: Int, isFirst: Bool, categories: [String] = []) -> Observable<Mutation> {
+        // API 호출
+        let api: Single<PostListResponseModel> = categories.isEmpty
+        ? NetworkManager.shared.getHomeList(page: page, size: pageSize)
+        : NetworkManager.shared.getHomeListByCategories(categories: categories, page: page, size: pageSize)
+        
+        return Observable.concat([
+            .just(.setLoading(true)),
+            api.asObservable()
+                .flatMap { response -> Observable<Mutation> in
+                    let mutations: Observable<Mutation> = isFirst
+                    ? .just(.setPosts(response.posts))
+                    : .just(.appendPosts(response.posts))
+                    
+                    return .concat(mutations,
+                                   .just(.setHasMore(!response.pageInfo.last)),
+                                   .just(.setLoading(false)))
+                }
+                .catch { error in
+                    print("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+                    return .concat([
+                        isFirst ? .just(.setPosts([])) : .empty(),
+                        .just(.setLoading(false)),
+                        .just(.setHasMore(false))
+                    ])
+                }
+        ])
     }
 }

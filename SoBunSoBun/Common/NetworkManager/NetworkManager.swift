@@ -98,4 +98,22 @@ final class NetworkManager {
         .filterSuccessfulStatusCodes()
         .map(LocationVerificationModel.self)
     }
+    
+    // 홈 게시글 목록 불러오기
+    func getHomeList(page: Int, size: Int) -> Single<PostListResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.getHomeList(page: page, size: size))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(PostListResponseModel.self)
+    }
+    
+    // 카테고리 선택 후 홈 게시글 목록 불러오기
+    func getHomeListByCategories(categories: [String], page: Int, size: Int) -> Single<PostListResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.getHomeListByCategories(category: categories, page: page, size: size))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(PostListResponseModel.self)
+    }
 }

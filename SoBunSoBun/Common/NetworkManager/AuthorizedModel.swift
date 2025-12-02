@@ -7,6 +7,31 @@
 
 import Foundation
 
+// MARK: - 공통
+struct PostListResponseModel: Decodable {
+    let posts: [PostModel]
+    let pageInfo: PostPageInfo
+}
+
+struct PostModel: Decodable {
+    let id: Int
+    let owner: PostOwnerModel
+    let title, categoryCode, content, itemsText, notesText, locationName, meetAt, deadlineAt: String
+    let minMembers, maxMembers, joinedMembers: Int
+    let status, createdAt, updatedAt: String
+}
+
+struct PostOwnerModel: Decodable {
+    let id: Int
+    let nickname, profileImageUrl: String?
+}
+
+struct PostPageInfo: Decodable {
+    let currentPage, pageSize, totalElements, totalPages: Int
+    let last: Bool
+}
+
+// MARK: - 로그인
 struct AuthKakaoTokenModel: Encodable {
     let accessToken: String
 }
@@ -47,14 +72,22 @@ struct CheckNicknameModel: Decodable {
     let available: Bool
 }
 
+// MARK: - 홈
 struct LocationVerificationModel: Decodable {
-    let address: String?
-    let locationVerifiedAt: String?
+    let address, locationVerifiedAt: String?
     let remainingMinutes: Int?
-    let verified: Bool
-    let expired: Bool
+    let verified, expired: Bool
 }
 
 struct LocationVerificationBodyModel: Encodable {
     let address: String
+}
+
+struct HomeListRequestModel: Encodable {
+    let page, size: Int
+}
+
+struct HomeListCategoryRequestModel: Encodable {
+    let categories: [String]
+    let page, size: Int
 }

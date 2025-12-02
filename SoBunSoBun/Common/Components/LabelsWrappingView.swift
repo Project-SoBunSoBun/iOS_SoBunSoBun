@@ -122,7 +122,6 @@ class LabelsWrappingView<T: UILabel>: UIView {
         // 전체 높이 계산 및 intrinsicContentSize 업데이트
         intrinsicHeight = currentOriginY + ((self.subviews.first as? T)?.frame.height ?? 0)
         invalidateIntrinsicContentSize()
-        
     }
     
     private func addTags() {
