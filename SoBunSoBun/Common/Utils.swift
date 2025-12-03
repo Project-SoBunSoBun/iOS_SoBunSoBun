@@ -8,36 +8,31 @@
 import Foundation
 import UIKit
 
+// safearea
+let scenes = UIApplication.shared.connectedScenes
+let windowScene = scenes.first as? UIWindowScene
+let window = windowScene?.windows.first
+
+let safeareaTop = window?.safeAreaInsets.top ?? 0
+let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
+
 // API URL
 let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
 
 // 재발급 중
 var isRefreshing: Bool = false
 
-// 문자열에서 날짜 변환(토큰 만료 시간 계산에만 사용)
-func stringToDate(string: String, format: String) -> Date {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = format
-    dateFormatter.locale = Locale(identifier: "ko_KR")
+// ISO8601 Datetime에서 Date형 변환
+func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
+    let isoFormatter = ISO8601DateFormatter()
+    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
     
-    return dateFormatter.date(from: string)!
-}
-
-// 날짜에서 문자열 변환(토큰 만료 시간 계산에만 사용)
-func dateToString(date: Date, format: String) -> String {
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = format
-    dateFormatter.locale = Locale(identifier: "ko_KR")
-    
-    return dateFormatter.string(from: date)
+    return isoFormatter.date(from: iso8601DatetimeString)
 }
 
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
 func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatColon: Bool = true) -> String {
-    let isoFormatter = ISO8601DateFormatter()
-    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
-    
-    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+    if let date = ISO8601ToDate(iso8601DatetimeString) {
         let dateFormatter = DateFormatter()
         let calendar = Calendar.current
         let minutes = calendar.component(.minute, from: date)
@@ -64,10 +59,7 @@ func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatC
 
 // ISO8601 Datetime에서 D-Day 계산
 func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
-    let isoFormatter = ISO8601DateFormatter()
-    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
-    
-    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+    if let date = ISO8601ToDate(iso8601DatetimeString) {
         let calendar = Calendar.current
         let now = calendar.startOfDay(for: Date())
         let targetDay = calendar.startOfDay(for: date)
@@ -92,10 +84,7 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
 }
 
 func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
-    let isoFormatter = ISO8601DateFormatter()
-    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
-    
-    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+    if let date = ISO8601ToDate(iso8601DatetimeString) {
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = Locale.current
         formatter.unitsStyle = .short
@@ -105,6 +94,35 @@ func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
     } else {
         print("isoFormatter.date 생성 중 오류 발생")
         return "Error!"
+    }
+}
+
+// 위치 권한 설정 알림창
+func showLocationSettingAlert(_ vc: UIViewController) {
+    let alert = CustomAlertView(
+        title: String(localized: "LocationSettingTitle")
+    )
+    
+    alert.onSettingsTapped = {
+        // 설정 앱으로 이동
+        if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(settingsUrl)
+        }
+    }
+    
+    alert.onCancelTapped = {
+        print("취소됨")
+    }
+    
+    alert.show(on: vc)
+}
+
+extension Encodable {
+    func toDictionary() -> [String: Any]? {
+        guard let data = try? JSONEncoder().encode(self) else { return nil }
+        guard let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
+        
+        return dictionary
     }
 }
 

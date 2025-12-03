@@ -1,5 +1,5 @@
 //
-//  HomeList.swift
+//  PostList.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 10/22/25.
@@ -8,22 +8,11 @@
 import UIKit
 import SnapKit
 
-class HomeList: UIView {
-    init(frame: CGRect = .zero,
-         categories: String,
-         title: String,
-         location: String,
-         meetingDate: String, // ISO 8601 문자열
-         joinedCount: Int,
-         maxCount: Int) {
+class PostList: UIView {
+    init(frame: CGRect = .zero, model: PostModel) {
         super.init(frame: frame)
         
-        configure(categories: categories,
-                  title: title,
-                  location: location,
-                  meetingDate: meetingDate,
-                  joinedCount: joinedCount,
-                  maxCount: maxCount)
+        configure(model: model)
     }
     
     required init?(coder: NSCoder) {
@@ -87,13 +76,6 @@ class HomeList: UIView {
     
     private lazy var locationLabel: UILabel = descLabel()
     
-    private lazy var bottomStackView: UIStackView = {
-        let sv = descStackView()
-        sv.distribution = .fill
-        
-        return sv
-    }()
-    
     private lazy var dateStackView: UIStackView = descStackView()
     
     private lazy var dateIcon: UIImageView = iconImage(image: .greyClockS)
@@ -112,25 +94,15 @@ class HomeList: UIView {
         let view = UIView()
         view.backgroundColor = .primary100
         
-        view.snp.makeConstraints { make in
-            make.height.equalTo(1)
-        }
-        
         return view
     }()
     
     // MARK: - 레이아웃 설정
-    private func configure(
-        categories: String,
-        title: String,
-        location: String,
-        meetingDate: String,
-        joinedCount: Int,
-        maxCount: Int) {
+    private func configure(model: PostModel) {
         // 키워드
-        let tempList: [String] = categories.components(separatedBy: ",")
-        let categoryList: [String] = tempList.map { k in
-            NSLocalizedString("Category\(k)", comment: "Category \(k)") // 동적 문자열 대응
+        let tempList: [String] = model.categoryCode.components(separatedBy: ",")
+        let categoryList: [String] = tempList.map {
+            NSLocalizedString("Category\($0)", comment: "Category \($0)") // 동적 문자열 대응
         }
         categoriesWrappingView.labels = categoryList
         
@@ -142,7 +114,7 @@ class HomeList: UIView {
         }
         
         // 제목
-        titleLabel.attributedText = NSAttributedString(string: title, attributes: title18.attributes())
+        titleLabel.attributedText = NSAttributedString(string: model.title, attributes: title18.attributes(alignment: .left))
         
         addSubview(titleLabel)
         
@@ -154,7 +126,9 @@ class HomeList: UIView {
         // 장소
         locationStackView.addArrangedSubview(locationIcon)
         locationStackView.addArrangedSubview(locationLabel)
-        locationLabel.text = location
+        locationLabel.text = model.locationName
+        locationLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        locationLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         addSubview(locationStackView)
         
@@ -164,19 +138,18 @@ class HomeList: UIView {
         }
         
         // 시간 및 인원 표시
-        bottomStackView.addArrangedSubview(dateStackView)
-        
         dateStackView.addArrangedSubview(dateIcon)
         dateStackView.addArrangedSubview(dateLabel)
-        dateLabel.text = ISO8601ToLocalizedDateTimeString(meetingDate, isFormatColon: false)
-        
-        bottomStackView.addArrangedSubview(joinedLabel)
-        joinedLabel.text = "\(joinedCount)/\(maxCount)"
-        joinedLabel.textColor = joinedCount + 1 >= maxCount ? .primary400 : .neutral300
+        dateLabel.text = ISO8601ToLocalizedDateTimeString(model.meetAt, isFormatColon: false)
+        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        dateLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        dateStackView.addArrangedSubview(joinedLabel)
+        joinedLabel.text = "\(model.joinedMembers)/\(model.maxMembers)"
+        joinedLabel.textColor = model.joinedMembers + 1 >= model.maxMembers ? .primary400 : .neutral300
             
-        addSubview(bottomStackView)
+        addSubview(dateStackView)
         
-        bottomStackView.snp.makeConstraints { make in
+        dateStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(locationStackView.snp.bottom).offset(4)
         }
@@ -186,7 +159,8 @@ class HomeList: UIView {
         
         divider.snp.makeConstraints { make in
             make.horizontalEdges.bottom.equalToSuperview()
-            make.top.equalTo(bottomStackView.snp.bottom).offset(16)
+            make.top.equalTo(dateStackView.snp.bottom).offset(16)
+            make.height.equalTo(1)
         }
     }
     

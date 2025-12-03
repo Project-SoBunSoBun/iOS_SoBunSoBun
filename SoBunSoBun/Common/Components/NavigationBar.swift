@@ -14,13 +14,16 @@ import RxCocoa
 class NavigationBar: UIView {
     private let disposeBag = DisposeBag()
     
+    static let SHADOW_WIDTH: CGFloat = 344
+    static let SHADOW_HEIGHT: CGFloat = 68
+    
     private let buttons: [TabBarButton]
     
     /// 외부 뷰에 이벤트 전달
     let didChangeIndex = PublishSubject<Int>()
     
     /// updateSelectedIndex 함수로 상태를 변경하십시오.
-    init(frame: CGRect = .zero, buttons: [TabBarButton], selectedIndex: Int) {
+    init(frame: CGRect = .zero, buttons: [TabBarButton]) {
         self.buttons = buttons
         super.init(frame: frame)
         
@@ -42,7 +45,7 @@ class NavigationBar: UIView {
         // 테두리
         view.layer.borderWidth = 2
         view.layer.borderColor = UIColor.backgroundWhite.withAlphaComponent(0.5).cgColor
-        view.frame = CGRectInset(view.frame, -2, -2)
+        view.frame = CGRectInset(view.frame, -view.layer.borderWidth, -view.layer.borderWidth)
         
         return view
     }()
@@ -51,7 +54,7 @@ class NavigationBar: UIView {
     struct BlurredBackground: View {
         var body: some View {
             Rectangle()
-                .fill(.backgroundWhite.opacity(0.2))
+                .fill(.clear)
                 .blur(radius: 8)
         }
     }
@@ -60,7 +63,7 @@ class NavigationBar: UIView {
     private let blurredBackground: UIHostingController = {
         let hostingController = UIHostingController(rootView: BlurredBackground())
         // hostingController는 기본적으로 흰색 배경을 가지고 있음
-        hostingController.view.backgroundColor = .clear
+        hostingController.view.backgroundColor = .backgroundWhite.withAlphaComponent(0.2)
         
         return hostingController
     }()
@@ -99,7 +102,7 @@ class NavigationBar: UIView {
     private func configure() {
         // 그림자
         self.clipsToBounds = false
-        self.layer.shadowPath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: 344, height: 68), cornerRadius: 16).cgPath
+        self.layer.shadowPath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: Self.SHADOW_WIDTH, height: Self.SHADOW_HEIGHT), cornerRadius: 16).cgPath
         self.layer.shadowOffset = .zero
         self.layer.shadowColor = UIColor.primary400.cgColor
         self.layer.shadowOpacity = 0.16

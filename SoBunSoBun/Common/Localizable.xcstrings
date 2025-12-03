@@ -382,6 +382,39 @@
         }
       }
     },
+    "CategoryAll" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 카테고리"
+          }
+        }
+      }
+    },
+    "CategoryGroup00" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "식품"
+          }
+        }
+      }
+    },
+    "CategoryGroup01" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "생활용품"
+          }
+        }
+      }
+    },
     "Chat" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -465,7 +498,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오류가 발생했습니다"
+            "value" : "오류가 발생했습니다."
           }
         }
       }
@@ -536,6 +569,17 @@
         }
       }
     },
+    "Loading" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "불러오는 중"
+          }
+        }
+      }
+    },
     "LocationInfomationAgree" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -554,6 +598,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "내 주변의 모임을 검색하거나\n동네 인증을 위해 현재 위치를 확인합니다."
+          }
+        }
+      }
+    },
+    "LocationPermissionDenied" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치 권한을 확인하세요."
           }
         }
       }
@@ -675,6 +730,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$(region)@ 인증"
+          }
+        }
+      }
+    },
+    "SearchSomething" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색어를 입력하세요"
           }
         }
       }
@@ -830,6 +896,17 @@
         }
       }
     },
+    "SortByNewest" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최신순"
+          }
+        }
+      }
+    },
     "Start" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -870,6 +947,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "이미 사용 중인 닉네임입니다"
+          }
+        }
+      }
+    },
+    "WritePost" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "글쓰기"
           }
         }
       }
