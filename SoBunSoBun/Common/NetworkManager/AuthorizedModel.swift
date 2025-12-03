@@ -123,3 +123,4 @@ struct Pageable: Decodable {
 
 struct Sort: Decodable {
     let sorted, empty, unsorted: Bool
+}

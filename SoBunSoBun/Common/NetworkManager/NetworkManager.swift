@@ -69,15 +69,6 @@ final class NetworkManager {
         .map(UserInfoModel.self)
     }
     
-<<<<<<< HEAD
-    // 서버에서 유저별 정산 목록을 받아오는 메서드
-    func mySettleUps(activeOnly: String, page: Int, size: Int) -> Single<SettleUpModel> {
-        return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.mySettleUps(activeOnly: activeOnly, page: page, size: size))
-        )
-        .filterSuccessfulStatusCodes()
-        .map(SettleUpModel.self)
-=======
     // MARK: - 홈
     // 현재 사용자 위치 인증 상태 조회
     func getLocationVefirication() -> Single<LocationVerificationModel> {
@@ -124,6 +115,15 @@ final class NetworkManager {
         )
         .filterSuccessfulStatusCodes()
         .map(PostListResponseModel.self)
->>>>>>> dev
+    }
+    
+    // MARK: - 정산
+    // 서버에서 유저별 정산 목록을 받아오는 메서드
+    func mySettleUps(activeOnly: String, page: Int, size: Int) -> Single<SettleUpModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.mySettleUps(activeOnly: activeOnly, page: page, size: size))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(SettleUpModel.self)
     }
 }
