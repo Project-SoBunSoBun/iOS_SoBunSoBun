@@ -29,7 +29,7 @@ class BottomSheetView: UIViewController {
         contentViewController: UIViewController,
         heightRatio: CGFloat,
         cornerRadius: CGFloat,
-        dismissible: Bool = true,
+        dismissible: Bool = true
     ) {
         self.contentViewController = contentViewController
         self.heightRatio = min(max(heightRatio, 0.0), 1.0)
