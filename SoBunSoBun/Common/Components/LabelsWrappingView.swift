@@ -41,7 +41,7 @@ class LabelsWrappingView<T: UILabel>: UIView {
         }
     }
     
-    /// labels와 같은 개수를 맞추싶시오
+    /// labels와 같은 개수를 맞추십시오
     var tags: [Int] = [] {
         didSet {
             addTags()

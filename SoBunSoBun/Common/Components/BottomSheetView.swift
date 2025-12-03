@@ -47,7 +47,6 @@ class BottomSheetView: UIViewController {
     }
     
     // MARK: - 디자인 요소
-    
     private let dimmedView: UIView = {
         let view = UIView()
         view.backgroundColor = .alertBackgroundBlack
