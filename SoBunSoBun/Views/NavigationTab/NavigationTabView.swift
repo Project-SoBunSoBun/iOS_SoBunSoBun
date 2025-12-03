@@ -17,12 +17,12 @@ class NavigationTabView: UIViewController {
     private let reactor = NavigationTabReactor()
     private let disposeBag = DisposeBag()
     
-    private let viewControllers: [UIViewController] = [
-        HomeView(),
-        ChatListView(),
-        SettleUpView(),
-        MypageView()
-    ]
+    private let homeView = HomeView()
+    private let chatListView = ChatListView()
+    private let settleUpView = SettleUpView()
+    private let myPageView = MypageView()
+    
+    private lazy var viewControllers: [UIViewController] = [homeView, chatListView, settleUpView, myPageView]
     
     private let buttons: [TabBarButton] = [
         TabBarButton(icons: [.greyFilledHome, .blueFilledHome], title: String(localized: "Home")),
@@ -34,7 +34,7 @@ class NavigationTabView: UIViewController {
     private var currentVC: UIViewController? = nil
     
     // MARK: - 디자인 요소
-    private lazy var navigationBar = NavigationBar(buttons: buttons, selectedIndex: 0)
+    private lazy var navigationBar = NavigationBar(buttons: buttons)
     
     private let containerView: UIView = {
         let view = UIView()
@@ -43,6 +43,7 @@ class NavigationTabView: UIViewController {
         return view
     }()
     
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -55,6 +56,13 @@ class NavigationTabView: UIViewController {
         bind(reactor: reactor)
         
         showViewController(index: 0)
+        
+        #if DEBUG
+        // 테스트 용
+        if let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") {
+            print(accessToken)
+        }
+        #endif
     }
     
     // MARK: - 레이아웃 설정
@@ -99,6 +107,14 @@ extension NavigationTabView {
     private func bind(reactor: NavigationTabReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
+        
+        // homeView 위치 권한 알림창
+        homeView.shouldShowLocationSettingAlert
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: {
+                showLocationSettingAlert(self)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func bindAction(reactor: NavigationTabReactor) {

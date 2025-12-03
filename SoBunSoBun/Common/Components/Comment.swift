@@ -151,7 +151,7 @@ class Comment: UIView {
         attributedString.setAttributes([
             .foregroundColor: UIColor.neutral900,
             .font: body16.font,
-            .paragraphStyle: title16.paragraphStyle,
+            .paragraphStyle: title16.paragraphStyle(),
             .baselineOffset: title16.attributes()[.baselineOffset]!
         ], range: NSRange(location: 0, length: text.count))
         

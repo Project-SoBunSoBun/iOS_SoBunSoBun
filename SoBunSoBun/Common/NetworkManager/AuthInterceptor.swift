@@ -24,8 +24,12 @@ final class AuthInterceptor: RequestInterceptor {
         }
         
         let now = Date()
-        let isAccessExpired = stringToDate(string: accessTokenExpireAtKST,
-                                           format: "yyyy-MM-dd HH:mm:ss") < now
+        
+        guard let dateAccessTokenExpireAtKST = ISO8601ToDate(accessTokenExpireAtKST) else {
+            return
+        }
+        
+        let isAccessExpired = dateAccessTokenExpireAtKST < now
         
         // 현재 시간과 accessToken의 만료 시간을 비교
 //        if isAccessExpired {
@@ -56,8 +60,12 @@ final class AuthInterceptor: RequestInterceptor {
         }
         
         let now = Date()
-        let isRefreshExpired = stringToDate(string: refreshTokenExpireAtKST,
-                                            format: "yyyy-MM-dd HH:mm:ss") < now
+        
+        guard let dateRefreshTokenExpireAtKST = ISO8601ToDate(refreshTokenExpireAtKST) else {
+            return
+        }
+        
+        let isRefreshExpired = dateRefreshTokenExpireAtKST < now
         
         // 현재 시간과 refreshToken의 만료 시간을 비교
         if isRefreshExpired {

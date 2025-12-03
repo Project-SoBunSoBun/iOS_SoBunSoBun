@@ -8,12 +8,14 @@
 import UIKit
 import SnapKit
 import RxSwift
+import RxCocoa
 import RxGesture
 
 class CategorySelectable: UILabel {
     private let disposeBag = DisposeBag()
     
-    var number: Int = -1
+    // 외부 이벤트 전달
+    let didTap = PublishRelay<String>()
     
     var isChecked: Bool = false {
         didSet {
@@ -50,6 +52,8 @@ class CategorySelectable: UILabel {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 isChecked.toggle()
+                
+                didTap.accept(String(format: "%04d", tag))
             })
             .disposed(by: disposeBag)
     }
@@ -58,12 +62,10 @@ class CategorySelectable: UILabel {
         if isChecked {
             self.textColor = .primary400
             self.backgroundColor = .primary100
-            self.frame = CGRectInset(self.frame, -2, -2)
             self.layer.borderWidth = 2
         } else {
             self.textColor = .primary300
             self.backgroundColor = .primary50
-            self.frame = CGRectInset(self.frame, 2, 2)
             self.layer.borderWidth = 0
         }
     }
