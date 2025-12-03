@@ -47,7 +47,7 @@ class PostListTableViewCell: UITableViewCell {
             make.top.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview().inset(isLast
                                                  ? 8 + NavigationBar.SHADOW_HEIGHT + 8 + 8
-                                                 : 0).priority(.high) // 우선순위 매우 중요 너 때문에 6시간 날려먹음
+                                                 : 0).priority(.high) // 중요 우선순위
         }
         
         self.view = view
