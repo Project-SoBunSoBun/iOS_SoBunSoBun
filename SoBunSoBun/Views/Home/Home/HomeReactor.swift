@@ -24,9 +24,10 @@ class HomeReactor: Reactor {
     
     enum Mutation {
         case verifyLocation(String)
+        case setShowLocationSettingAlert
+        
         case setAddCategoryTapped
         case setSelectedCategories([String])
-        case setShowLocationSettingAlert
         
         case setLoading(Bool)
         case setRefreshing(Bool)

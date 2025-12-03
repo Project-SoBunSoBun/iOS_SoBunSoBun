@@ -22,8 +22,6 @@ class HomeView: UIViewController {
     let shouldShowLocationSettingAlert = PublishRelay<Void>()
     
     // MARK: - 디자인 요소
-    private let scrollView: UIScrollView = UIScrollView()
-    
     private let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
