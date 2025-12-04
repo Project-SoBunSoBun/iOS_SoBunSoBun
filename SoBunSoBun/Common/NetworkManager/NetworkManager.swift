@@ -116,4 +116,14 @@ final class NetworkManager {
         .filterSuccessfulStatusCodes()
         .map(PostListResponseModel.self)
     }
+    
+    // MARK: - 정산
+    // 서버에서 유저별 정산 목록을 받아오는 메서드
+    func mySettleUps(activeOnly: Int, page: Int, size: Int) -> Single<SettleUpModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.mySettleUps(activeOnly: activeOnly, page: page, size: size))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(SettleUpModel.self)
+    }
 }

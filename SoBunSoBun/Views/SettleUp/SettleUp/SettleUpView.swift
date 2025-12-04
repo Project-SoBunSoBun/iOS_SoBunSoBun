@@ -114,8 +114,6 @@ class SettleUpView: UIViewController {
         
         configureUI()
         bind(reactor: reactor)
-        
-        reactor.action.onNext(.viewDidLoad)
     }
     
     override func viewDidLayoutSubviews() {
@@ -196,6 +194,9 @@ extension SettleUpView {
     }
     
     func bindAction(reactor: SettleUpReactor) {
+        // viewDidLoad시 액션 전달
+        reactor.action.onNext(.viewDidLoad)
+        
         // 전체 카테고리 선택
         allCategories.rx.tapGesture()
             .when(.recognized)
@@ -236,15 +237,6 @@ extension SettleUpView {
             }
             .disposed(by: disposeBag)
         
-        // Empty 상태 표시
-        reactor.state.map { $0.items.isEmpty }
-            .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isEmpty in
-                self?.tableViewEmptyDescLabel.isHidden = !isEmpty
-            })
-            .disposed(by: disposeBag)
-        
         // 로딩 상태
         reactor.state.map { $0.isLoading }
             .distinctUntilChanged()
@@ -253,6 +245,33 @@ extension SettleUpView {
                 print("로딩 중: \(isLoading)")
             })
             .disposed(by: disposeBag)
+        
+        // 선택된 카테고리에 따른 EmptyLabel 분기
+        Observable.combineLatest(
+            reactor.state.map { $0.items.isEmpty }.distinctUntilChanged(),
+            reactor.state.map { $0.selectedCategory }.distinctUntilChanged()
+        )
+        .observe(on: MainScheduler.instance)
+        .subscribe(onNext: { [weak self] isEmpty, category in
+            guard let self = self else { return }
+            
+            self.tableViewEmptyDescLabel.isHidden = !isEmpty
+            guard isEmpty else { return }
+            
+            switch category {
+            case .all, .incomplete:
+                self.tableViewEmptyDescLabel.attributedText = NSAttributedString(
+                    string: String(localized: "SettleUpTableViewEmpty"),
+                    attributes: body18.attributes(alignment: .center)
+                )
+            case .complete:
+                self.tableViewEmptyDescLabel.attributedText = NSAttributedString(
+                    string: String(localized: "SettleUpTableViewCompleteEmpty"),
+                    attributes: body18.attributes(alignment: .center)
+                )
+            }
+        })
+        .disposed(by: disposeBag)
     }
     
     private func updateCategorySelection(_ category: SettleUpCategory) {

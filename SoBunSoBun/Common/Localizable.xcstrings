@@ -849,6 +849,18 @@
         }
       }
     },
+    "SettleUpTableViewCompleteEmpty" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산을 완료한 모임이 없습니다."
+          }
+        }
+      }
+    },
     "SettleUpTableViewEmpty" : {
       "comment" : "SettleUpView.swift에서 사용",
       "extractionState" : "manual",
