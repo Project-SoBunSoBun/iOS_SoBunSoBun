@@ -17,6 +17,8 @@ enum AuthorizedAPI {
     case patchLocationVerification(address: String)
     case getHomeList(page: Int, size: Int)
     case getHomeListByCategories(category: [String], page: Int, size: Int)
+    // 정산
+    case mySettleUps(activeOnly: Int, page: Int, size: Int)
 }
 
 extension AuthorizedAPI: TargetType {
@@ -38,6 +40,8 @@ extension AuthorizedAPI: TargetType {
             return "/api/posts"
         case .getHomeListByCategories(category: let category, page: _, size: _):
             return "/api/posts/categories/\(category.joined(separator: ","))"
+        case .mySettleUps:
+            return "/api/settleups/my"
         }
     }
     
@@ -54,6 +58,8 @@ extension AuthorizedAPI: TargetType {
         case .getHomeList:
             return .get
         case .getHomeListByCategories:
+            return .get
+        case .mySettleUps:
             return .get
         }
     }
@@ -101,6 +107,10 @@ extension AuthorizedAPI: TargetType {
             let parameters = HomeListRequestModel(page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+        case .mySettleUps(activeOnly: let activeOnly, page: let page, size: let size):
+            let parameters = SettleUpMyRequestModel(activeOnly: activeOnly, page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
         }
     }
     
@@ -112,7 +122,8 @@ extension AuthorizedAPI: TargetType {
                 .getLocationVerification,
                 .patchLocationVerification,
                 .getHomeList,
-                .getHomeListByCategories:
+                .getHomeListByCategories,
+                .mySettleUps:
             return [:]
         }
     }

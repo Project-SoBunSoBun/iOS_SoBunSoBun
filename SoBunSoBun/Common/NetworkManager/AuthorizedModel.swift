@@ -43,35 +43,6 @@ struct LoginTokenModel: Encodable {
     let marketingOptionalAgreed: Bool
 }
 
-struct KakaoAuthResponse: Decodable {
-    let email: String
-    let nickname: String?
-    let profileImageUrl: String?
-    let loginToken: String
-    let newUser: Bool
-}
-
-struct UserModel: Decodable {
-    let accessToken: String
-    let refreshToken: String
-    let user: UserInfoModel
-    let accessTokenExpiresAtKst: String
-    let refreshTokenExpiresAtKst: String
-}
-
-struct UserInfoModel: Decodable {
-    let id: Int
-    let email: String
-    let nickname: String?
-    let profileImageUrl: String?
-    let role: String
-}
-
-struct CheckNicknameModel: Decodable {
-    let nickname: String
-    let available: Bool
-}
-
 // MARK: - 홈
 struct LocationVerificationModel: Decodable {
     let address, locationVerifiedAt: String?
@@ -90,4 +61,41 @@ struct HomeListRequestModel: Encodable {
 struct HomeListCategoryRequestModel: Encodable {
     let categories: [String]
     let page, size: Int
+}
+
+// MARK: - 정산
+struct SettleUpModel: Decodable {
+    let content: [SettleUpContentModel]
+    let pageable: SettleUpPageableModel
+    let totalElements, totalPages: Int
+    let last: Bool
+    let size, number: Int
+    let sort: SettleUpSortModel
+    let numberOfElements: Int
+    let first, empty: Bool
+}
+
+struct SettleUpContentModel: Decodable {
+    let id, groupPostId: Int
+    let groupPostTitle: String
+    let settledById: Int
+    let settledByNickname: String?
+    let status: Int
+    let title, locationName: String
+    let meetAt, createdAt, updatedAt: String
+}
+
+struct SettleUpPageableModel: Decodable {
+    let pageNumber, pageSize: Int
+    let sort: SettleUpSortModel
+    let offset: Int
+    let paged, unpaged: Bool
+}
+
+struct SettleUpSortModel: Decodable {
+    let sorted, empty, unsorted: Bool
+}
+
+struct SettleUpMyRequestModel: Encodable {
+    let activeOnly, page, size: Int
 }
