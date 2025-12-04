@@ -15,7 +15,7 @@ class HomeReactor: Reactor {
     let pageSize: Int = 20
     
     enum Action {
-        case initialized
+        case viewDidLoad
         case addCategoryTapped
         case getSelectedCategories([String])
         case loadMorePosts
@@ -54,7 +54,7 @@ class HomeReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .initialized:
+        case .viewDidLoad:
             return Observable.concat(
                 currentState.isLocationVerified ? .empty() : verifyLocation(),
                 Observable.just(.setPage(0)),
@@ -96,7 +96,7 @@ class HomeReactor: Reactor {
         switch mutation {
         case .verifyLocation(let address):
             newState.verifiedLocation = address
-            newState.isLocationVerified = !address.isEmpty && address != String(localized: "Error")
+            newState.isLocationVerified = !address.isEmpty && [String(localized: "Error"), String(localized: "LocationPermissionDenied")].contains(address) == false
         case .setAddCategoryTapped:
             newState.shouldShowBottomCategorySheet = ()
         case .setSelectedCategories(let selectedCategories):

@@ -22,6 +22,11 @@ enum AuthorizedAPI {
 }
 
 extension AuthorizedAPI: TargetType {
+    // interceptor retry 활성화
+    var validationType: ValidationType {
+        return .successCodes
+    }
+    
     var baseURL: URL {
         return URL(string: API_URL)!
     }

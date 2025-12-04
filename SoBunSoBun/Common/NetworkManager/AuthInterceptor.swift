@@ -32,10 +32,10 @@ final class AuthInterceptor: RequestInterceptor {
         let isAccessExpired = dateAccessTokenExpireAtKST < now
         
         // 현재 시간과 accessToken의 만료 시간을 비교
-//        if isAccessExpired {
-//            completion(.failure(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰 만료"])))
-//            return
-//        }
+        //        if isAccessExpired {
+        //            completion(.failure(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰 만료"])))
+        //            return
+        //        }
         
         // 헤더에 accessToken을 담아서 전달
         var urlRequest = urlRequest
@@ -98,24 +98,23 @@ final class AuthInterceptor: RequestInterceptor {
     
     // 리프레시 토큰을 사용하여 액세스 토큰을 재발급 후 Keychain에 저장
     private func refreshToken(completion: @escaping(Bool) -> Void) {
-        guard let refresh = KeyChain.shared.get(key: "REFRESH_TOKEN") else {
+        guard let refresh = KeyChain.shared.get(key: "REFRESH_TOKEN"),
+              let body = RefreshBodyModel(refreshToken: refresh).toDictionary() else {
             print("리프레시 토큰 없음")
             completion(false)
             return
         }
         
-        let parameters: [String: Any] = ["refreshToken": refresh]
-        
         AF.request("\(API_URL)/auth/token/refresh",
                    method: .post,
-                   parameters: parameters,
+                   parameters: body,
                    encoding: JSONEncoding.default)
         .validate(statusCode: 200..<300)
-        .responseDecodable(of: UserModel.self) { response in
+        .responseDecodable(of: RefreshResponseModel.self) { response in
             switch response.result {
-            case .success(let userModel):
-                KeyChain.shared.set(key: "ACCESS_TOKEN", value: userModel.accessToken)
-                KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(userModel.accessTokenExpiresAtKst))
+            case .success(let model):
+                KeyChain.shared.set(key: "ACCESS_TOKEN", value: model.accessToken)
+                KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: model.accessTokenExpiresAtKst)
                 completion(true)
             case .failure(let error):
                 print(error.localizedDescription)

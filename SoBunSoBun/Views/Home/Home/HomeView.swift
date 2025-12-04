@@ -303,10 +303,7 @@ extension HomeView {
     
     private func bindAction(reactor: HomeReactor) {
         // bind 호출 시 바로 실행
-        Observable.just(())
-            .map { Reactor.Action.initialized }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
+        reactor.action.onNext(.viewDidLoad)
         
         addCategoryButton.rx
             .tapGesture()
