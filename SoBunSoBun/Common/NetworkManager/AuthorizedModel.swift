@@ -65,17 +65,17 @@ struct HomeListCategoryRequestModel: Encodable {
 
 // MARK: - 정산
 struct SettleUpModel: Decodable {
-    let content: [Content]
-    let pageable: Pageable
+    let content: [SettleUpContentModel]
+    let pageable: SettleUpPageableModel
     let totalElements, totalPages: Int
     let last: Bool
     let size, number: Int
-    let sort: Sort
+    let sort: SettleUpSortModel
     let numberOfElements: Int
     let first, empty: Bool
 }
 
-struct Content: Decodable {
+struct SettleUpContentModel: Decodable {
     let id, groupPostId: Int
     let groupPostTitle: String
     let settledById: Int
@@ -85,13 +85,17 @@ struct Content: Decodable {
     let meetAt, createdAt, updatedAt: String
 }
 
-struct Pageable: Decodable {
+struct SettleUpPageableModel: Decodable {
     let pageNumber, pageSize: Int
-    let sort: Sort
+    let sort: SettleUpSortModel
     let offset: Int
     let paged, unpaged: Bool
 }
 
-struct Sort: Decodable {
+struct SettleUpSortModel: Decodable {
     let sorted, empty, unsorted: Bool
+}
+
+struct SettleUpMyRequestModel: Encodable {
+    let activeOnly, page, size: Int
 }

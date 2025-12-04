@@ -108,7 +108,9 @@ extension AuthorizedAPI: TargetType {
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
         case .mySettleUps(activeOnly: let activeOnly, page: let page, size: let size):
-            return .requestParameters(parameters: ["activeOnly": activeOnly, "page": page, "size": size], encoding: URLEncoding.queryString)
+            let parameters = SettleUpMyRequestModel(activeOnly: activeOnly, page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
         }
     }
     
@@ -120,9 +122,8 @@ extension AuthorizedAPI: TargetType {
                 .getLocationVerification,
                 .patchLocationVerification,
                 .getHomeList,
-                .getHomeListByCategories:
-            return [:]
-        case .mySettleUps:
+                .getHomeListByCategories,
+                .mySettleUps:
             return [:]
         }
     }

@@ -7,7 +7,6 @@
 
 import ReactorKit
 import RxSwift
-import Moya
 
 enum SettleUpCategory: Int {
     case all = 0
