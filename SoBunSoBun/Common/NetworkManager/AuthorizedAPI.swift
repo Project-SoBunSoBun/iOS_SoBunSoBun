@@ -18,7 +18,7 @@ enum AuthorizedAPI {
     case getHomeList(page: Int, size: Int)
     case getHomeListByCategories(category: [String], page: Int, size: Int)
     // 정산
-    case mySettleUps(activeOnly: String, page: Int, size: Int)
+    case mySettleUps(activeOnly: Int, page: Int, size: Int)
 }
 
 extension AuthorizedAPI: TargetType {
