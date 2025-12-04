@@ -7,6 +7,7 @@
 
 import ReactorKit
 import RxSwift
+import Moya
 
 enum SettleUpCategory: Int {
     case all = 0
@@ -35,12 +36,14 @@ class SettleUpReactor: Reactor {
         case setSelectedCategory(SettleUpCategory)
         case setItems([SettleUpItem])
         case setLoading(Bool)
+        case setError(String)
     }
     
     struct State {
         var selectedCategory: SettleUpCategory = .all
         var items: [SettleUpItem] = []
         var isLoading: Bool = false
+        @Pulse var errorMessage: String?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -66,36 +69,48 @@ class SettleUpReactor: Reactor {
             newState.items = items
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
+        case .setError(let message):
+            newState.errorMessage = message
         }
         return newState
     }
     
     private func loadItems(for category: SettleUpCategory? = nil) -> Observable<Mutation> {
-        // TODO: NetworkManager를 사용해서 서버에서 데이터 받아오기
         let selectedCategory = category ?? currentState.selectedCategory
+        
+        let activeOnly: Int
+        switch selectedCategory {
+        case .all:
+            activeOnly = 0
+        case .incomplete:
+            activeOnly = 1
+        case .complete:
+            activeOnly = 2
+        }
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
             
-            // 백엔드에서 API가 만들어지지 않아 임시의 목업데이터를 사용하여 테스트
-            // 추후 API가 만들어지면 수정 예정
-            Observable.just([
-                SettleUpItem(settleUpStatus: false, title: "공동구매 1", location: "서울시 관악구", meetingDate: "2025-11-19T15:00:00+09:00"),
-                SettleUpItem(settleUpStatus: false, title: "공동구매 2", location: "서울시 송파구", meetingDate: "2025-11-23T15:00:00+09:00"),
-                SettleUpItem(settleUpStatus: false, title: "공동구매 3", location: "서울시 동작구", meetingDate: "2025-11-28T15:00:00+09:00"),
-                SettleUpItem(settleUpStatus: true, title: "공동구매 4", location: "서울시 동작구", meetingDate: "2025-11-28T15:00:00+09:00"),
-            ])
-            .map { items -> [SettleUpItem] in
-                switch selectedCategory {
-                case .all:
-                    return items
-                case .incomplete:
-                    return items.filter { !$0.settleUpStatus }
-                case .complete:
-                    return items.filter { $0.settleUpStatus }
+            NetworkManager.shared.mySettleUps(activeOnly: activeOnly, page: 0, size: 20)
+                .asObservable()
+                .flatMap { SettleUpModel -> Observable<Mutation> in
+                    let items: [SettleUpItem] = SettleUpModel.content.map { content in
+                        let isCompleted = content.status == 2
+                        
+                        return SettleUpItem(
+                            settleUpStatus: isCompleted,
+                            title: content.groupPostTitle,
+                            location: content.locationName,
+                            meetingDate: content.meetAt
+                        )
+                    }
+                    
+                    return Observable.just(.setItems(items))
                 }
-            }
-            .map { .setItems($0) },
+                .catch { error in
+                    print("정산 목록 로드 실패 : \(error.localizedDescription)")
+                    return Observable.just(.setError("정산 목록을 불러오는데 실패했습니다."))
+                },
             
             Observable.just(.setLoading(false))
         ])
