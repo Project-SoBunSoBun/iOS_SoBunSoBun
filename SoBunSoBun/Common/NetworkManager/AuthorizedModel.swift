@@ -43,35 +43,6 @@ struct LoginTokenModel: Encodable {
     let marketingOptionalAgreed: Bool
 }
 
-struct KakaoAuthResponse: Decodable {
-    let email: String
-    let nickname: String?
-    let profileImageUrl: String?
-    let loginToken: String
-    let newUser: Bool
-}
-
-struct UserModel: Decodable {
-    let accessToken: String
-    let refreshToken: String
-    let user: UserInfoModel
-    let accessTokenExpiresAtKst: String
-    let refreshTokenExpiresAtKst: String
-}
-
-struct UserInfoModel: Decodable {
-    let id: Int
-    let email: String
-    let nickname: String?
-    let profileImageUrl: String?
-    let role: String
-}
-
-struct CheckNicknameModel: Decodable {
-    let nickname: String
-    let available: Bool
-}
-
 // MARK: - 홈
 struct LocationVerificationModel: Decodable {
     let address, locationVerifiedAt: String?
