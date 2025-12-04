@@ -17,9 +17,9 @@ final class NetworkManager {
     private init() {}
     
     // Public API 전용
-    private let provider = MoyaProvider<MultiTarget>()
+    private let provider = MoyaProvider<MultiTarget>(plugins: [MoyaLoggingPlugin()])
     // Authorized API 전용
-    private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared))
+    private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared), plugins: [MoyaLoggingPlugin()])
     
     // MARK: - 로그인
     // 서버에서 카카오 토큰을 통해 임시 토큰을 가져오는 메서드
@@ -116,4 +116,118 @@ final class NetworkManager {
         .filterSuccessfulStatusCodes()
         .map(PostListResponseModel.self)
     }
+}
+
+/// Moya 로그 플러그인
+final class MoyaLoggingPlugin: PluginType {
+    #if DEBUG
+    // Request를 보낼 때 호출
+    func willSend(_ request: RequestType, target: TargetType) {
+        guard let httpRequest = request.request else {
+            print("[오류] 유효하지 않은 요청")
+            return
+        }
+        
+        let url = httpRequest.description
+        let method = httpRequest.httpMethod ?? "unknown method"
+        
+        var log = "\n"
+        log.append("----------------------------------------------------\n")
+        log.append("[요청 시작]\n")
+        log.append("\n")
+        log.append("URL: \(url)\n")
+        log.append("METHOD: \(method)\n")
+        log.append("API: \(target)\n")
+        
+        if let headers = httpRequest.allHTTPHeaderFields, !headers.isEmpty {
+            log.append("HEADER: \(headers)\n")
+        }
+        
+        if let body = httpRequest.httpBody, let bodyString = String(bytes: body, encoding: .utf8) {
+            if let json = try? JSONSerialization.jsonObject(with: body, options: .mutableContainers),
+               let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted) {
+                log.append("BODY:")
+                log.append(String(decoding: jsonData, as: UTF8.self))
+                log.append("\n")
+            } else {
+                log.append("BODY: \(bodyString)\n")
+            }
+        }
+        
+        log.append("\n")
+        log.append("[요청 종료]\n")
+        log.append("----------------------------------------------------\n")
+        
+        print(log)
+    }
+    
+    // Response가 왔을 때
+    func didReceive(_ result: Result<Response, MoyaError>, target: TargetType) {
+        switch result {
+        case let .success(response):
+            onSuceed(response, target: target, isFromError: false)
+        case let .failure(error):
+            onFail(error, target: target)
+        }
+    }
+    
+    func onSuceed(_ response: Response, target: TargetType, isFromError: Bool) {
+        let request = response.request
+        let url = request?.url?.absoluteString ?? "nil"
+        let statusCode = response.statusCode
+        
+        var log = "\n"
+        log.append("----------------------------------------------------\n")
+        log.append("[통신 성공]\n")
+        log.append("\n")
+        log.append("URL: \(url)\n")
+        log.append("STATUS CODE: \(statusCode) \((200...299).contains(statusCode) ? "🟢" : "🔴")\n")
+        log.append("API: \(target)\n")
+        
+        // 밑의 내용은 응답을 표시하는 문자열입니다.
+        // 필요하다면 주석을 해제하십시오.
+        /*
+        response.response?.allHeaderFields.forEach {
+            log.append("\($0): \($1)\n")
+        }
+         
+        log.append("RESPONSE:\n")
+        if let reString = String(bytes: response.data, encoding: .utf8) {
+            if let json = try? JSONSerialization.jsonObject(with: response.data, options: .mutableContainers),
+               let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted) {
+                log.append(String(decoding: jsonData, as: UTF8.self))
+            } else {
+                log.append(reString)
+            }
+        }
+        log.append("\n")
+        */
+        
+        log.append("\n")
+        log.append("\(response.data.count) BYTES\n")
+        log.append("\n")
+        log.append("[통신 종료]\n")
+        log.append("----------------------------------------------------\n")
+        
+        print(log)
+    }
+    
+    func onFail(_ error: MoyaError, target: TargetType) {
+        if let response = error.response {
+            onSuceed(response, target: target, isFromError: true)
+            return
+        }
+        
+        var log = "\n"
+        log.append("----------------------------------------------------\n")
+        log.append("[통신 오류]\n")
+        log.append("\n")
+        log.append("\(error.errorCode) \(target)\n")
+        log.append("\(error.failureReason ?? error.errorDescription ?? "unknown error")\n")
+        log.append("\n")
+        log.append("----------------------------------------------------\n")
+        
+        print(log)
+    }
+    #endif
 }
