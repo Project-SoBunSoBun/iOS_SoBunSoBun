@@ -43,6 +43,18 @@ struct LoginTokenModel: Encodable {
     let marketingOptionalAgreed: Bool
 }
 
+// MARK: - 리프레시
+struct RefreshBodyModel: Encodable {
+    let refreshToken: String
+}
+
+struct RefreshResponseModel: Decodable {
+    let tokenType: String
+    let accessToken: String
+    let accessTokenExpiresAtKst: String
+    let expiresIn: Int
+}
+
 // MARK: - 홈
 struct LocationVerificationModel: Decodable {
     let address, locationVerifiedAt: String?
