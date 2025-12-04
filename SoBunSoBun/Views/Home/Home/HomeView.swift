@@ -153,7 +153,6 @@ class HomeView: UIViewController {
         tv.register(PostListTableViewCell.self, forCellReuseIdentifier: PostListTableViewCell.identifier)
         tv.estimatedRowHeight = 142
         tv.rowHeight = UITableView.automaticDimension
-        tv.showsVerticalScrollIndicator = false
         
         return tv
     }()
@@ -317,22 +316,15 @@ extension HomeView {
             .disposed(by: disposeBag)
         
         // 페이지네이션
-        tableView.rx.contentOffset
-            .map { [weak self] offset -> Bool in
+        tableView.rx.willDisplayCell
+            .filter { [weak self] cell, indexPath -> Bool in
                 guard let self = self else { return false }
                 
-                let currentOffset = offset.y
-                let maximumOffset = tableView.contentSize.height - tableView.frame.size.height
-                let frameHeight = tableView.frame.size.height
+                let totalCount = self.tableView.numberOfRows(inSection: 0)
+                let triggerCount = 3
                 
-                guard tableView.contentSize.height > frameHeight else {
-                    return false
-                }
-                
-                return currentOffset >= maximumOffset - (frameHeight * 0.5)
+                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
             }
-            .distinctUntilChanged()
-            .filter { $0 }
             .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
             .map { _ in Reactor.Action.loadMorePosts }
             .bind(to: reactor.action)
