@@ -105,13 +105,13 @@ struct SettleUpModel: Decodable {
 }
 
 struct Content: Decodable {
-    let id, groupPostID: Int
+    let id, groupPostId: Int
     let groupPostTitle: String
-    let settledByID: Int
+    let settledById: Int
     let settledByNickname: String?
     let status: Int
     let title, locationName: String
-    let meetAt, createdAt, updatedAt: Date
+    let meetAt, createdAt, updatedAt: String
 }
 
 struct Pageable: Decodable {
