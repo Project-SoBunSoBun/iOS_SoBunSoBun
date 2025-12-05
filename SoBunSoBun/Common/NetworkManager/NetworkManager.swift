@@ -133,18 +133,18 @@ final class NetworkManager {
 final class MoyaLoggingPlugin: PluginType {
     private let requestLogger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Network.Request"
+        category: "NetworkManager.Request"
     )
     
     private let responseLogger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Network.Response"
+        category: "NetworkManager.Response"
     )
     
     // Request를 보낼 때 호출
     func willSend(_ request: RequestType, target: TargetType) {
         guard let httpRequest = request.request else {
-            print("[오류] 유효하지 않은 요청")
+            requestLogger.critical("[오류] 유효하지 않은 요청")
             return
         }
         
@@ -222,7 +222,11 @@ final class MoyaLoggingPlugin: PluginType {
         log.append("\n")
         log.append("[통신 종료]\n")
         
-        requestLogger.log(level: (200...299).contains(statusCode) ? .debug : .fault, "\(log, privacy: .private)")
+        if (200...299).contains(statusCode) {
+            responseLogger.debug("\(log)")
+        } else {
+            responseLogger.critical("\(log)")
+        }
     }
     
     func onFail(_ error: MoyaError, target: TargetType) {
@@ -238,6 +242,6 @@ final class MoyaLoggingPlugin: PluginType {
         log.append("\n")
         log.append("[통신 종료]\n")
         
-        requestLogger.fault("\(log)")
+        responseLogger.critical("\(log)")
     }
 }
