@@ -175,7 +175,7 @@ final class MoyaLoggingPlugin: PluginType {
         log.append("\n")
         log.append("[요청 종료]\n")
         
-        requestLogger.debug("\(log, privacy: .private)")
+        requestLogger.debug("\(log)")
     }
     
     // Response가 왔을 때
@@ -238,6 +238,6 @@ final class MoyaLoggingPlugin: PluginType {
         log.append("\n")
         log.append("[통신 종료]\n")
         
-        requestLogger.fault("\(log, privacy: .private)")
+        requestLogger.fault("\(log)")
     }
 }
