@@ -206,13 +206,13 @@ class HomeReactor: Reactor {
                     
                     return .concat(mutations,
                                    .just(.setHasMore(!response.pageInfo.last)),
-                                   .just(.setLoading(false)))
+                                   .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance))
                 }
                 .catch { error in
                     print("게시글 목록 불러오기 실패: \(error.localizedDescription)")
                     return .concat([
                         isFirst ? .just(.setPosts([])) : .empty(),
-                        .just(.setLoading(false)),
+                        .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
                         .just(.setHasMore(false))
                     ])
                 }
