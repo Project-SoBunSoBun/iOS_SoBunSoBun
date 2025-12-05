@@ -10,6 +10,7 @@ import Moya
 import RxMoya
 import RxSwift
 import UIKit
+import OSLog
 
 final class NetworkManager {
     static let shared = NetworkManager()
@@ -130,7 +131,16 @@ final class NetworkManager {
 
 /// Moya 로그 플러그인
 final class MoyaLoggingPlugin: PluginType {
-    #if DEBUG
+    private let requestLogger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Network.Request"
+    )
+    
+    private let responseLogger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Network.Response"
+    )
+    
     // Request를 보낼 때 호출
     func willSend(_ request: RequestType, target: TargetType) {
         guard let httpRequest = request.request else {
@@ -141,9 +151,7 @@ final class MoyaLoggingPlugin: PluginType {
         let url = httpRequest.description
         let method = httpRequest.httpMethod ?? "unknown method"
         
-        var log = "\n"
-        log.append("----------------------------------------------------\n")
-        log.append("[요청 시작]\n")
+        var log: String = "[요청 시작]\n"
         log.append("\n")
         log.append("URL: \(url)\n")
         log.append("METHOD: \(method)\n")
@@ -166,9 +174,8 @@ final class MoyaLoggingPlugin: PluginType {
         
         log.append("\n")
         log.append("[요청 종료]\n")
-        log.append("----------------------------------------------------\n")
         
-        print(log)
+        requestLogger.debug("\(log, privacy: .private)")
     }
     
     // Response가 왔을 때
@@ -186,40 +193,36 @@ final class MoyaLoggingPlugin: PluginType {
         let url = request?.url?.absoluteString ?? "nil"
         let statusCode = response.statusCode
         
-        var log = "\n"
-        log.append("----------------------------------------------------\n")
-        log.append("[통신 성공]\n")
+        var log = "[통신 성공]\n"
         log.append("\n")
         log.append("URL: \(url)\n")
-        log.append("STATUS CODE: \(statusCode) \((200...299).contains(statusCode) ? "🟢" : "🔴")\n")
+        log.append("STATUS CODE: \(statusCode)\n")
         log.append("API: \(target)\n")
         
-        // 밑의 내용은 응답을 표시하는 문자열입니다.
-        // 필요하다면 주석을 해제하십시오.
-        /*
-        response.response?.allHeaderFields.forEach {
-            log.append("\($0): \($1)\n")
-        }
-         
-        log.append("RESPONSE:\n")
-        if let reString = String(bytes: response.data, encoding: .utf8) {
-            if let json = try? JSONSerialization.jsonObject(with: response.data, options: .mutableContainers),
-               let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted) {
-                log.append(String(decoding: jsonData, as: UTF8.self))
-            } else {
-                log.append(reString)
+        // 2xx로 시작하지 않은 status code만 response 내용을 표시
+        if !(200...299).contains(statusCode) {
+            response.response?.allHeaderFields.forEach {
+                log.append("\($0): \($1)\n")
             }
+            
+            log.append("RESPONSE:\n")
+            if let reString = String(bytes: response.data, encoding: .utf8) {
+                if let json = try? JSONSerialization.jsonObject(with: response.data, options: .mutableContainers),
+                   let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted) {
+                    log.append(String(decoding: jsonData, as: UTF8.self))
+                } else {
+                    log.append(reString)
+                }
+            }
+            log.append("\n")
         }
-        log.append("\n")
-        */
         
         log.append("\n")
         log.append("\(response.data.count) BYTES\n")
         log.append("\n")
         log.append("[통신 종료]\n")
-        log.append("----------------------------------------------------\n")
         
-        print(log)
+        requestLogger.log(level: (200...299).contains(statusCode) ? .debug : .fault, "\(log, privacy: .private)")
     }
     
     func onFail(_ error: MoyaError, target: TargetType) {
@@ -228,16 +231,13 @@ final class MoyaLoggingPlugin: PluginType {
             return
         }
         
-        var log = "\n"
-        log.append("----------------------------------------------------\n")
-        log.append("[통신 오류]\n")
+        var log = "[통신 오류]\n"
         log.append("\n")
         log.append("\(error.errorCode) \(target)\n")
         log.append("\(error.failureReason ?? error.errorDescription ?? "unknown error")\n")
         log.append("\n")
-        log.append("----------------------------------------------------\n")
+        log.append("[통신 종료]\n")
         
-        print(log)
+        requestLogger.fault("\(log, privacy: .private)")
     }
-    #endif
 }
