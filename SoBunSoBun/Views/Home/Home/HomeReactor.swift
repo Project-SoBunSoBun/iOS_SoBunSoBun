@@ -13,7 +13,7 @@ import OSLog
 class HomeReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Home.Home"
+        category: "Home.Home.Reactor"
     )
     
     private let disposeBag = DisposeBag()

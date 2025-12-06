@@ -14,7 +14,7 @@ import OSLog
 class SelectCategoriesReactor: Reactor {
     private static let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "SelectCategories"
+        category: "SelectCategories.Reactor"
     )
     
     let initialState: State
