@@ -58,7 +58,7 @@ func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatC
             }
         }
     } else {
-        logger.fault("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
         return "Error!"
     }
 }
@@ -77,7 +77,7 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
         
         let components = calendar.dateComponents([.day], from: now, to: targetDay)
         guard let day = components.day else {
-            logger.fault("components.day 생성 중 오류 발생")
+            logger.fault("components.day 생성 중 오류 발생: \(iso8601DatetimeString)")
             return "Error!"
         }
         
@@ -89,7 +89,7 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
             return "D+\(-day)"
         }
     } else {
-        logger.fault("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
         return "Error!"
     }
 }
@@ -108,7 +108,7 @@ func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
         
         return formatter.localizedString(for: date, relativeTo: Date())
     } else {
-        logger.fault("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
         return "Error!"
     }
 }
