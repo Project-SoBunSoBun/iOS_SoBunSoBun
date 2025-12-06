@@ -49,8 +49,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.rootViewController = nav
         window.makeKeyAndVisible()
         
-        logger.debug("[현재 ACCESS TOKEN]\n\n\(KeyChain.shared.get(key: "ACCESS_TOKEN") ?? "KeyChain에 저장되지 않음")")
-        // logger.debug("[현재 LOGIN TOKEN]\n\n\(KeyChain.shared.get(key: "LOGIN_TOKEN") ?? "KeyChain에 저장되지 않음")")
+        logger.debug("[저장된 ACCESS_TOKEN]\n\n\(KeyChain.shared.get(key: "ACCESS_TOKEN") ?? "KeyChain에 저장되지 않음")")
+        // logger.debug("[저장된 LOGIN_TOKEN]\n\n\(KeyChain.shared.get(key: "LOGIN_TOKEN") ?? "KeyChain에 저장되지 않음")")
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

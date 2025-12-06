@@ -128,7 +128,7 @@ final class AuthInterceptor: RequestInterceptor {
             case .success(let model):
                 KeyChain.shared.set(key: "ACCESS_TOKEN", value: model.accessToken)
                 KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: model.accessTokenExpiresAtKst)
-                logger.debug("[재발급된 ACCESS TOKEN]\n\n\(model.accessToken)")
+                logger.debug("[재발급한 ACCESS_TOKEN]\n\n\(model.accessToken)")
                 completion(true)
             case .failure(let error):
                 logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
