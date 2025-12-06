@@ -9,8 +9,14 @@ import UIKit
 import ImageIO
 import SnapKit
 import RxSwift
+import OSLog
 
 class BlueMeatballsRefreshController: UIRefreshControl {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "BlueMeatballsRefreshController"
+    )
+    
     private let disposeBag = DisposeBag()
     
     private let gifImageView: UIImageView = {
@@ -38,7 +44,7 @@ class BlueMeatballsRefreshController: UIRefreshControl {
         guard let gifURL = Bundle.main.url(forResource: "BlueMeatballs", withExtension: "gif"),
               let gifData = try? Data(contentsOf: gifURL),
               let source = CGImageSourceCreateWithData(gifData as CFData, nil) else {
-            print("BlueMeatballs GIF 파일을 찾지 못함")
+            logger.critical("BlueMeatballs GIF 파일을 찾지 못함")
             return
         }
         
