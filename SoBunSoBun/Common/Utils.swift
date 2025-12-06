@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import OSLog
 
 // safearea
 let scenes = UIApplication.shared.connectedScenes
@@ -32,6 +33,11 @@ func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
 
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
 func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatColon: Bool = true) -> String {
+    let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Utils"
+    )
+    
     if let date = ISO8601ToDate(iso8601DatetimeString) {
         let dateFormatter = DateFormatter()
         let calendar = Calendar.current
@@ -52,13 +58,18 @@ func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatC
             }
         }
     } else {
-        print("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생")
         return "Error!"
     }
 }
 
 // ISO8601 Datetime에서 D-Day 계산
 func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
+    let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Utils"
+    )
+    
     if let date = ISO8601ToDate(iso8601DatetimeString) {
         let calendar = Calendar.current
         let now = calendar.startOfDay(for: Date())
@@ -66,7 +77,7 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
         
         let components = calendar.dateComponents([.day], from: now, to: targetDay)
         guard let day = components.day else {
-            print("components.day 생성 중 오류 발생")
+            logger.fault("components.day 생성 중 오류 발생")
             return "Error!"
         }
         
@@ -78,12 +89,17 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
             return "D+\(-day)"
         }
     } else {
-        print("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생")
         return "Error!"
     }
 }
 
 func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
+    let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Utils"
+    )
+    
     if let date = ISO8601ToDate(iso8601DatetimeString) {
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = Locale.current
@@ -92,7 +108,7 @@ func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
         
         return formatter.localizedString(for: date, relativeTo: Date())
     } else {
-        print("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생")
         return "Error!"
     }
 }
@@ -111,7 +127,7 @@ func showLocationSettingAlert(_ vc: UIViewController) {
     }
     
     alert.onCancelTapped = {
-        print("취소됨")
+        
     }
     
     alert.show(on: vc)
