@@ -31,25 +31,26 @@ func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
 }
 
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
-func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatColon: Bool = true) -> String {
+func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String {
     if let date = ISO8601ToDate(iso8601DatetimeString) {
         let dateFormatter = DateFormatter()
         let calendar = Calendar.current
         let minutes = calendar.component(.minute, from: date)
         
-        if isFormatColon {
-            dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a hh:mm")
+        if minutes == 0 {
+            dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h")
             return dateFormatter.string(from: date)
-        } else {
-            if minutes == 0 {
-                dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h")
-                return dateFormatter.string(from: date)
-            } else {
-                dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h:mm")
-                return dateFormatter.string(from: date)
-                    .replacingOccurrences(of: ":", with: String(localized: "TimeHour") + " ")
-                + String(localized: "TimeMinute")
-            }
+        }
+        
+        switch Locale.current.language.languageCode?.identifier {
+        case "ko":
+            dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h:mm")
+            return dateFormatter.string(from: date)
+                .replacingOccurrences(of: ":", with: String(localized: "TimeHour") + " ")
+            + String(localized: "TimeMinute")
+        default:
+            dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h:mm")
+            return dateFormatter.string(from: date)
         }
     } else {
         print("isoFormatter.date 생성 중 오류 발생")

@@ -140,7 +140,7 @@ class PostList: UIView {
         // 시간 및 인원 표시
         dateStackView.addArrangedSubview(dateIcon)
         dateStackView.addArrangedSubview(dateLabel)
-        dateLabel.text = ISO8601ToLocalizedDateTimeString(model.meetAt, isFormatColon: false)
+        dateLabel.text = ISO8601ToLocalizedDateTimeString(model.meetAt)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         dateLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         dateStackView.addArrangedSubview(joinedLabel)
