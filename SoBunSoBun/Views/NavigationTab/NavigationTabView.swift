@@ -56,13 +56,6 @@ class NavigationTabView: UIViewController {
         bind(reactor: reactor)
         
         showViewController(index: 0)
-        
-        #if DEBUG
-        // 테스트 용
-        if let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") {
-            print(accessToken)
-        }
-        #endif
     }
     
     // MARK: - 레이아웃 설정

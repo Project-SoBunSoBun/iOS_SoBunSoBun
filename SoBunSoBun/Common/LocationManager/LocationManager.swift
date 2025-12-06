@@ -9,8 +9,14 @@ import UIKit
 import CoreLocation
 import RxSwift
 import RxCocoa
+import OSLog
 
 class LocationManager: NSObject {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "LocationManager"
+    )
+    
     static let shared = LocationManager()
     
     private let locationManager = CLLocationManager()
@@ -53,7 +59,7 @@ class LocationManager: NSObject {
     // 위치 가져오기
     func requestCurrentLocation() {
         guard isLocationAuthorized() else {
-            print("위치 권한 없음")
+            logger.debug("위치 권한 없음")
             requestLocationPermission()
             return
         }
@@ -88,16 +94,16 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("위치 가져오기 실패: \(error.localizedDescription)")
+        logger.error("위치 가져오기 실패: \(error.localizedDescription)")
         
         if let clError = error as? CLError {
             switch clError.code {
             case .denied:
-                print("위치 권한 거부됨")
+                logger.error("위치 권한 거부됨")
             case .locationUnknown:
-                print("위치를 확인할 수 없음")
+                logger.error("위치를 확인할 수 없음")
             default:
-                print("기타 위치 오류: \(clError.code)")
+                logger.error("기타 위치 오류: \("\(clError.code)")")
             }
         }
     }

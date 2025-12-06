@@ -6,8 +6,14 @@
 //
 
 import Foundation
+import OSLog
 
 final class KeyChain {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "KeyChain"
+    )
+    
     static let shared = KeyChain()
     
     private init() {}
@@ -15,7 +21,7 @@ final class KeyChain {
     // keyChain 저장 - C
     func set(key: String, value: String) {
         guard let valueData = value.data(using: .utf8) else {
-            print("valueData Error")
+            logger.critical("[KeyChain]\n\nvalue를 data형태로 변환 실패\n\nKEY: \(key)\nVALUE: \(value)")
             return
         }
         
@@ -30,9 +36,9 @@ final class KeyChain {
         
         // 성공 했을 때
         if status == errSecSuccess {
-            print("저장 성공")
+            logger.debug("[KeyChain]\n\n저장 성공\n\nKEY: \(key)\nVALUE: \(value)")
         } else { // 실패 했을 때
-            print("저장 실패")
+            logger.critical("[KeyChain]\n\n저장 실패\n\nKEY: \(key)\nVALUE: \(value)")
         }
     }
     
@@ -64,9 +70,9 @@ final class KeyChain {
         
         // 성공 했을 때
         if status == errSecSuccess {
-            print("삭제 성공")
+            logger.debug("[KeyChain]\n\n삭제 성공\n\nKEY: \(key)")
         } else { // 실패 했을 때
-            print("삭제 실패")
+            logger.critical("[KeyChain]\n\n삭제 성공\n\nKEY: \(key)")
         }
     }
 }
