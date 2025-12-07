@@ -8,8 +8,13 @@
 import UIKit
 import KakaoSDKAuth
 import RxKakaoSDKAuth
+import OSLog
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SceneDelegate"
+    )
     
     var window: UIWindow?
     
@@ -43,6 +48,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window.rootViewController = nav
         window.makeKeyAndVisible()
+        
+        logger.debug("[저장된 ACCESS_TOKEN]\n\n\(KeyChain.shared.get(key: "ACCESS_TOKEN") ?? "KeyChain에 저장되지 않음")")
+        // logger.debug("[저장된 LOGIN_TOKEN]\n\n\(KeyChain.shared.get(key: "LOGIN_TOKEN") ?? "KeyChain에 저장되지 않음")")
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

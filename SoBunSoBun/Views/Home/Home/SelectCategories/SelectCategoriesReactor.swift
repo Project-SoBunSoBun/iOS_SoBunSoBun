@@ -9,8 +9,14 @@ import Foundation
 import ReactorKit
 import RxSwift
 import RxCocoa
+import OSLog
 
 class SelectCategoriesReactor: Reactor {
+    private static let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SelectCategories.Reactor"
+    )
+    
     let initialState: State
     
     init(selectedCategories: [String]) {
@@ -62,7 +68,7 @@ class SelectCategoriesReactor: Reactor {
         let bundle = Bundle.main
         guard let path = bundle.path(forResource: "Localizable", ofType: "strings"),
               let dict = NSDictionary(contentsOfFile: path) as? [String: String] else {
-            print("Localizable.strings not found")
+            logger.fault("Localizable.strings not found")
             return []
         }
         
