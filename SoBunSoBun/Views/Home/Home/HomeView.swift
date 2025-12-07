@@ -157,8 +157,8 @@ class HomeView: UIViewController {
         return tv
     }()
     
-    private let refreshControl: UIRefreshControl = {
-        let rc = UIRefreshControl()
+    private let refreshControl: BlueMeatballsRefreshController = {
+        let rc = BlueMeatballsRefreshController()
         
         return rc
     }()
