@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import OSLog
 
 // safearea
 let scenes = UIApplication.shared.connectedScenes
@@ -31,34 +32,43 @@ func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
 }
 
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
-func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String, isFormatColon: Bool = true) -> String {
+func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String {
+    let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Utils"
+    )
+
     if let date = ISO8601ToDate(iso8601DatetimeString) {
-        let dateFormatter = DateFormatter()
         let calendar = Calendar.current
         let minutes = calendar.component(.minute, from: date)
         
-        if isFormatColon {
-            dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a hh:mm")
-            return dateFormatter.string(from: date)
-        } else {
-            if minutes == 0 {
-                dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h")
-                return dateFormatter.string(from: date)
-            } else {
-                dateFormatter.setLocalizedDateFormatFromTemplate("MMMd (E) a h:mm")
-                return dateFormatter.string(from: date)
-                    .replacingOccurrences(of: ":", with: String(localized: "TimeHour") + " ")
-                + String(localized: "TimeMinute")
-            }
+        let dateFormatter = DateFormatter()
+        let template = minutes == 0 ? "MMMd (E) a h" : "MMMd (E) a h:mm"
+        dateFormatter.setLocalizedDateFormatFromTemplate(template)
+        let formattedString = dateFormatter.string(from: date)
+        
+        switch Locale.current.language.languageCode?.identifier {
+        case "ko":
+            return minutes == 0 ?
+                    formattedString :
+                    formattedString.replacingOccurrences(of: ":", with: String(localized: "TimeHour") + " ")
+                    + String(localized: "TimeMinute")
+        default:
+            return formattedString
         }
     } else {
-        print("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
         return "Error!"
     }
 }
 
 // ISO8601 Datetime에서 D-Day 계산
 func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
+    let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Utils"
+    )
+    
     if let date = ISO8601ToDate(iso8601DatetimeString) {
         let calendar = Calendar.current
         let now = calendar.startOfDay(for: Date())
@@ -66,7 +76,7 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
         
         let components = calendar.dateComponents([.day], from: now, to: targetDay)
         guard let day = components.day else {
-            print("components.day 생성 중 오류 발생")
+            logger.fault("components.day 생성 중 오류 발생: \(iso8601DatetimeString)")
             return "Error!"
         }
         
@@ -78,12 +88,17 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
             return "D+\(-day)"
         }
     } else {
-        print("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
         return "Error!"
     }
 }
 
 func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
+    let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Utils"
+    )
+    
     if let date = ISO8601ToDate(iso8601DatetimeString) {
         let formatter = RelativeDateTimeFormatter()
         formatter.locale = Locale.current
@@ -92,7 +107,7 @@ func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
         
         return formatter.localizedString(for: date, relativeTo: Date())
     } else {
-        print("isoFormatter.date 생성 중 오류 발생")
+        logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
         return "Error!"
     }
 }
@@ -111,7 +126,7 @@ func showLocationSettingAlert(_ vc: UIViewController) {
     }
     
     alert.onCancelTapped = {
-        print("취소됨")
+        
     }
     
     alert.show(on: vc)

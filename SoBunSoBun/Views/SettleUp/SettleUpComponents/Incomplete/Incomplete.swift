@@ -246,7 +246,7 @@ class Incomplete: UIView {
                 dateStackView.addArrangedSubview($0)
             }
             
-            dateLabel.text = ISO8601ToLocalizedDateTimeString(meetingDate, isFormatColon: false)
+            dateLabel.text = ISO8601ToLocalizedDateTimeString(meetingDate)
             
             dateStackView.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview().inset(16)

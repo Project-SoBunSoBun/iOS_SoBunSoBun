@@ -9,8 +9,14 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import OSLog
 
 class SelectCategoriesView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SelectCategories.View"
+    )
+    
     typealias Reactor = SelectCategoriesReactor
     private let reactor: SelectCategoriesReactor
     
@@ -128,7 +134,7 @@ extension SelectCategoriesView {
             let bundle = Bundle.main
             guard let path = bundle.path(forResource: "Localizable", ofType: "strings"),
                   let dict = NSDictionary(contentsOfFile: path) as? [String: String] else {
-                print("Localizable.strings not found")
+                logger.critical("Localizable.strings not found")
                 return
             }
             

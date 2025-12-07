@@ -8,8 +8,14 @@
 import Foundation
 import Alamofire
 import Moya
+import OSLog
 
 final class AuthInterceptor: RequestInterceptor {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "AuthInterceptor"
+    )
+    
     static let shared = AuthInterceptor()
     
     private init() {}
@@ -45,9 +51,9 @@ final class AuthInterceptor: RequestInterceptor {
     }
     
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
-        print("retry 진입")
+        logger.debug("retry 진입")
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
-            print("401 오류가 아님")
+            logger.debug("401 오류가 아님")
             completion(.doNotRetryWithError(error))
             return
         }
@@ -55,7 +61,7 @@ final class AuthInterceptor: RequestInterceptor {
         guard let refreshTokenExpireAtKST = KeyChain.shared.get(key: "REFRESH_TOKEN_EXPIRE_AT_KST") else {
             // TODO: LogOut 구현하기 (ex 로그인 화면으로 이동)
             completion(.doNotRetry)
-            print("리프레시 토큰 만료 시간 정보 없음")
+            logger.fault("리프레시 토큰 만료 시간 정보 없음")
             return
         }
         
@@ -71,24 +77,29 @@ final class AuthInterceptor: RequestInterceptor {
         if isRefreshExpired {
             // TODO: LogOut 구현하기 (ex 로그인 화면으로 이동)
             completion(.doNotRetry)
-            print("리프레시 토큰 만료")
+            logger.debug("리프레시 토큰 만료")
             return
         }
         
         if isRefreshing {
-            print("이미 재발급 중")
+            logger.debug("이미 재발급 중")
             completion(.retry)
         } else {
             isRefreshing = true
             
-            refreshToken() { isSuccess in
+            refreshToken() { [weak self] isSuccess in
+                guard let self = self else {
+                    completion(.doNotRetry)
+                    return
+                }
+                
                 isRefreshing = false
                 
                 if isSuccess {
-                    print("액세스 토큰 재발급 완료")
+                    logger.debug("액세스 토큰 재발급 완료")
                     completion(.retry)
                 } else {
-                    print("리프레시 토큰 만료")
+                    logger.debug("리프레시 토큰 만료")
                     // TODO: 로그아웃 구현 (ex 로그인 화면으로 넘기기)
                     completion(.doNotRetry)
                 }
@@ -100,7 +111,7 @@ final class AuthInterceptor: RequestInterceptor {
     private func refreshToken(completion: @escaping(Bool) -> Void) {
         guard let refresh = KeyChain.shared.get(key: "REFRESH_TOKEN"),
               let body = RefreshBodyModel(refreshToken: refresh).toDictionary() else {
-            print("리프레시 토큰 없음")
+            logger.fault("리프레시 토큰 없음")
             completion(false)
             return
         }
@@ -110,14 +121,17 @@ final class AuthInterceptor: RequestInterceptor {
                    parameters: body,
                    encoding: JSONEncoding.default)
         .validate(statusCode: 200..<300)
-        .responseDecodable(of: RefreshResponseModel.self) { response in
+        .responseDecodable(of: RefreshResponseModel.self) { [weak self] response in
+            guard let self = self else { return }
+            
             switch response.result {
             case .success(let model):
                 KeyChain.shared.set(key: "ACCESS_TOKEN", value: model.accessToken)
                 KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: model.accessTokenExpiresAtKst)
+                logger.debug("[재발급한 ACCESS_TOKEN]\n\n\(model.accessToken)")
                 completion(true)
             case .failure(let error):
-                print(error.localizedDescription)
+                logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
                 completion(false)
             }
         }

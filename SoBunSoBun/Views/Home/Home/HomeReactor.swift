@@ -8,9 +8,16 @@
 import Foundation
 import ReactorKit
 import RxSwift
+import OSLog
 
 class HomeReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Home.Home.Reactor"
+    )
+    
     private let disposeBag = DisposeBag()
+    
     let initialState: State = State()
     let pageSize: Int = 20
     
@@ -132,7 +139,7 @@ class HomeReactor: Reactor {
                 }
             }
             .catch { error in
-                print("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
+                self.logger.fault("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "Error")))
             }
     }
@@ -149,7 +156,7 @@ class HomeReactor: Reactor {
                 return self.getAddressFromGeocoder(longitude: coords.longitude, latitude: coords.latitude)
             }
             .catch { error in
-                print("위치 권한 문제: \(error.localizedDescription)")
+                self.logger.error("위치 권한 문제: \(error.localizedDescription)")
                 return Observable.just(.setShowLocationSettingAlert)
             }
     }
@@ -166,7 +173,7 @@ class HomeReactor: Reactor {
                 return self.patchLocationVerification(address: text)
             }
             .catch { error in
-                print("지오코드 API 호출 실패: \(error.localizedDescription)")
+                self.logger.fault("지오코드 API 호출 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "Error")))
             }
     }
@@ -179,12 +186,12 @@ class HomeReactor: Reactor {
                 if let address = model.address {
                     return .verifyLocation(address)
                 } else {
-                    print("patch 후에도 address 적용 안 됨")
+                    self.logger.error("patch 후에도 address 적용 안 됨")
                     return .verifyLocation(String(localized: "Error"))
                 }
             }
             .catch { error in
-                print("위치 인증 실패: \(error.localizedDescription)")
+                self.logger.fault("위치 인증 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "Error")))
             }
     }
@@ -206,13 +213,13 @@ class HomeReactor: Reactor {
                     
                     return .concat(mutations,
                                    .just(.setHasMore(!response.pageInfo.last)),
-                                   .just(.setLoading(false)))
+                                   .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance))
                 }
                 .catch { error in
-                    print("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+                    self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
                     return .concat([
                         isFirst ? .just(.setPosts([])) : .empty(),
-                        .just(.setLoading(false)),
+                        .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
                         .just(.setHasMore(false))
                     ])
                 }
