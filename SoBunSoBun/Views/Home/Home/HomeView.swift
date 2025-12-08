@@ -278,7 +278,7 @@ class HomeView: UIViewController {
         // 글쓰기 버튼
         writeButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(safeareaBottom + 8 + NavigationBar.SHADOW_HEIGHT + 8 + 8)
+            make.bottom.equalToSuperview().inset(safeareaBottom + 8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8)
         }
     }
 }

@@ -34,7 +34,7 @@ class NavigationTabView: UIViewController {
     private var currentVC: UIViewController? = nil
     
     // MARK: - 디자인 요소
-    private lazy var navigationBar = NavigationBar(buttons: buttons)
+    private lazy var bottomNavigationBar = BottomNavigationBar(buttons: buttons)
     
     private let containerView: UIView = {
         let view = UIView()
@@ -70,9 +70,9 @@ class NavigationTabView: UIViewController {
             make.bottom.equalToSuperview()
         }
         
-        view.addSubview(navigationBar)
+        view.addSubview(bottomNavigationBar)
         
-        navigationBar.snp.makeConstraints { make in
+        bottomNavigationBar.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(8)
         }
@@ -111,7 +111,7 @@ extension NavigationTabView {
     }
     
     private func bindAction(reactor: NavigationTabReactor) {
-        navigationBar.didChangeIndex
+        bottomNavigationBar.didChangeIndex
             .map { Reactor.Action.selectIndex($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -126,8 +126,8 @@ extension NavigationTabView {
                 
                 showViewController(index: index)
                 
-                // NavigationBar 컴포넌트 상태 업데이트
-                navigationBar.updateSelectedIndex(index: index)
+                // BottomNavigationBar 컴포넌트 상태 업데이트
+                bottomNavigationBar.updateSelectedIndex(index: index)
             })
             .disposed(by: disposeBag)
     }

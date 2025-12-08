@@ -46,7 +46,7 @@ class PostListTableViewCell: UITableViewCell {
         view.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
             make.bottom.equalToSuperview().inset(isLast
-                                                 ? 8 + NavigationBar.SHADOW_HEIGHT + 8 + 8
+                                                 ? 8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8
                                                  : 0).priority(.high) // 중요 우선순위
         }
         
