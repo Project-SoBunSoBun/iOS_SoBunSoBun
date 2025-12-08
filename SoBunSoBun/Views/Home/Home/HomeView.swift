@@ -153,6 +153,11 @@ class HomeView: UIViewController {
         tv.register(PostListTableViewCell.self, forCellReuseIdentifier: PostListTableViewCell.identifier)
         tv.estimatedRowHeight = 142
         tv.rowHeight = UITableView.automaticDimension
+        tv.contentInset = .init(
+            top: 0,
+            left: 0,
+            bottom: 8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8,
+            right: 0)
         
         return tv
     }()
