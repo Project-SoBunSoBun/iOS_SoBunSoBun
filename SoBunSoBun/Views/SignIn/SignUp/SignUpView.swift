@@ -10,8 +10,14 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import ReactorKit
+import OSLog
 
 class SignUpView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SignUp.View"
+    )
+    
     typealias Reactor = SignUpReactor
     private let reactor = SignUpReactor()
     
@@ -343,7 +349,7 @@ extension SignUpView {
         }
         
         alert.onCancelTapped = {
-            print("취소됨")
+            self.logger.debug("취소됨")
         }
         
         alert.show(on: self)

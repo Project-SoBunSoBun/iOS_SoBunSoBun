@@ -9,8 +9,14 @@ import UIKit
 import ReactorKit
 import Moya
 import RxSwift
+import OSLog
 
 class NicknameSettingReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "NicknameSetting.Reactor"
+    )
+    
     let initialState = State()
     private let disposeBag = DisposeBag()
     
@@ -107,10 +113,11 @@ class NicknameSettingReactor: Reactor {
         if let moyaError = error as? MoyaError {
             switch moyaError {
             case .statusCode(let response):
-                if (400...499).contains(response.statusCode)  {
-                    print("에러 코드 출력 : \(response.statusCode)")
+                if (400...499).contains(response.statusCode) {
+                    self.logger.fault("에러 코드 출력: \(response.statusCode)")
                     return "잘못된 요청입니다. 입력 정보를 확인해주세요."
                 } else if response.statusCode >= 500 {
+                    self.logger.critical("에러 코드 출력: \(response.statusCode)")
                     return "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
                 }
             default:

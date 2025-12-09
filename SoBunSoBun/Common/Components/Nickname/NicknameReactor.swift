@@ -10,8 +10,14 @@ import Foundation
 import RxSwift
 import Moya
 import RxMoya
+import OSLog
 
 class NicknameReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Nickname.Reactor"
+    )
+    
     let initialState = State()
     
     private let disposeBag = DisposeBag()
@@ -60,9 +66,11 @@ class NicknameReactor: Reactor {
                                 return Observable.just(Mutation.unAvailable)
                             }
                         }
-                        .catch { error in
+                        .catch { [weak self] error in
+                            guard let self = self else { return Observable.empty() }
+                            
                             // 에러 코드 및 메시지 출력
-                            print("통신 에러 발생:", error.localizedDescription)
+                            self.logger.critical("통신 에러 발생: \(error.localizedDescription)")
                             return Observable.just(Mutation.error)
                         }
                 } else {

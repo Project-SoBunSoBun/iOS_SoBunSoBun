@@ -11,8 +11,14 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import Photos
+import OSLog
 
 class NicknameSettingView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "NicknameSetting.View"
+    )
+    
     typealias Reactor = NicknameSettingReactor
     private let reactor = NicknameSettingReactor()
     
@@ -147,7 +153,7 @@ class NicknameSettingView: UIViewController {
         }
         
         alertView.onCancelTapped = {
-            print("취소됨")
+            self.logger.debug("취소됨")
         }
         alertView.show(on: self)
     }
@@ -170,7 +176,8 @@ extension NicknameSettingView: UIImagePickerControllerDelegate, UINavigationCont
         // 이미지 크기 체크 (5MB 제한)
         if let imageData = image.jpegData(compressionQuality: 0.8) {
             let imageSizeInMB = Double(imageData.count) / (1024.0 * 1024.0)
-            print("이미지 사이즈: \(imageSizeInMB)")
+            self.logger.debug("이미지 사이즈: \(imageSizeInMB)")
+            
             if imageSizeInMB > 5.0 {
                 showImageSizeAlert()
                 return
@@ -235,7 +242,9 @@ extension NicknameSettingView {
         reactor.pulse(\.$shouldPopViewController)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
+                guard let self = self else { return }
+                
+                self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -243,9 +252,11 @@ extension NicknameSettingView {
         reactor.state.map { $0.isLoading }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { isLoading in
+            .subscribe(onNext: { [weak self] isLoading in
+                guard let self = self else { return }
+                
                 if isLoading {
-                    print("로딩 중...")
+                    self.logger.debug("로딩 중: \(isLoading)")
                 }
             })
             .disposed(by: disposeBag)
@@ -255,9 +266,10 @@ extension NicknameSettingView {
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
-                print("프로필 저장 성공")
-                // TODO: 다음 화면으로 이동
-                self?.navigationController?.pushViewController(SignUpCompletedView(), animated: true)
+                guard let self = self else { return }
+                
+                self.logger.debug("프로필 저장 성공")
+                self.navigationController?.pushViewController(SignUpCompletedView(), animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -266,10 +278,12 @@ extension NicknameSettingView {
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] message in
-                print("에러 발생: \(message)")
+                guard let self = self else { return }
+                
+                self.logger.debug("에러 발생: \(message)")
                 let alert = UIAlertController(title: String(localized: "Error"), message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: String(localized: "Confirm"), style: .default))
-                self?.present(alert, animated: true)
+                self.present(alert, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -278,7 +292,9 @@ extension NicknameSettingView {
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: {[weak self] _ in
-                self?.checkPhotoLibraryPermission()
+                guard let self = self else { return }
+                
+                self.checkPhotoLibraryPermission()
             })
             .disposed(by: disposeBag)
     }

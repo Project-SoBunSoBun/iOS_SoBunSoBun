@@ -10,8 +10,14 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import ReactorKit
+import OSLog
 
 class SettleUpView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SettleUp.View"
+    )
+    
     typealias Reactor = SettleUpReactor
     private let reactor = SettleUpReactor()
     
@@ -241,8 +247,10 @@ extension SettleUpView {
         reactor.state.map { $0.isLoading }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { isLoading in
-                print("로딩 중: \(isLoading)")
+            .subscribe(onNext: { [weak self] isLoading in
+                guard let self = self else { return }
+                
+                self.logger.debug("로딩 중: \(isLoading)")
             })
             .disposed(by: disposeBag)
         
