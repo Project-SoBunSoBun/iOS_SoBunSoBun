@@ -22,7 +22,7 @@ class TopNavigationBar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    weak var parentNavigationController: UINavigationController?
+    weak var parentViewController: UIViewController?
     
     private let backButton: UIButton = {
         var config = UIButton.Configuration.plain()
@@ -82,7 +82,7 @@ class TopNavigationBar: UIView {
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
-                parentNavigationController?.popViewController(animated: true)
+                parentViewController?.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
         
