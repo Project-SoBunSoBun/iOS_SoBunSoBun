@@ -10,8 +10,14 @@ import SnapKit
 import ReactorKit
 import RxSwift
 import RxCocoa
+import OSLog
 
 class SignUpCompletedView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SignUpCompleted.View"
+    )
+    
     typealias Reactor = SignUpCompletedReactor
     private let reactor = SignUpCompletedReactor()
     
@@ -143,7 +149,9 @@ extension SignUpCompletedView {
             .filter{ !$0.isEmpty }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] nickname in
-                self?.updateSubLabel(with: nickname)
+                guard let self = self else { return }
+                
+                self.updateSubLabel(with: nickname)
             })
             .disposed(by: disposeBag)
         
@@ -151,9 +159,11 @@ extension SignUpCompletedView {
         reactor.state.map { $0.isLoading }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { isLoading in
+            .subscribe(onNext: { [weak self] isLoading in
+                guard let self = self else { return }
+                
                 if isLoading {
-                    print("사용자 정보 로딩 중")
+                    self.logger.debug("사용자 정보 로딩 중")
                 }
             })
             .disposed(by: disposeBag)
@@ -163,7 +173,9 @@ extension SignUpCompletedView {
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
-                self?.navigateToHome()
+                guard let self = self else { return }
+                
+                self.navigateToHome()
             })
             .disposed(by: disposeBag)
         
@@ -172,10 +184,12 @@ extension SignUpCompletedView {
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] message in
-                print("에러 발생 : \(message)")
+                guard let self = self else { return }
+                
+                self.logger.debug("에러 발생: \(message)")
                 let alert = UIAlertController(title: String(localized: "Error"), message: message, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: String(localized: "Confirm"), style: .default))
-                self?.present(alert, animated: true)
+                self.present(alert, animated: true)
             })
             .disposed(by: disposeBag)
     }

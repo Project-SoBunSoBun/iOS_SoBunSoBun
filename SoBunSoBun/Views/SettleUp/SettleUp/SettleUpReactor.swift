@@ -7,6 +7,7 @@
 
 import ReactorKit
 import RxSwift
+import OSLog
 
 enum SettleUpCategory: Int {
     case all = 0
@@ -22,6 +23,11 @@ struct SettleUpItem {
 }
 
 class SettleUpReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SettleUp.Reactor"
+    )
+    
     let initialState = State()
     
     private let disposeBag = DisposeBag()
@@ -106,8 +112,10 @@ class SettleUpReactor: Reactor {
                     
                     return Observable.just(.setItems(items))
                 }
-                .catch { error in
-                    print("정산 목록 로드 실패 : \(error.localizedDescription)")
+                .catch { [weak self] error in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
                     return Observable.just(.setError("정산 목록을 불러오는데 실패했습니다."))
                 },
             
