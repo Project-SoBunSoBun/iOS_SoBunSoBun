@@ -127,6 +127,15 @@ final class NetworkManager {
         .filterSuccessfulStatusCodes()
         .map(SettleUpModel.self)
     }
+    
+    // 정산 삭제 메서드
+    func deleteSettleUp(id: Int) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.deleteSettleUp(id: id))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
 }
 
 /// Moya 로그 플러그인
