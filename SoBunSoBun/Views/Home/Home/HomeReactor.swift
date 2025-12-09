@@ -138,8 +138,10 @@ class HomeReactor: Reactor {
                     return self.getLocation()
                 }
             }
-            .catch { error in
-                self.logger.fault("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
+                logger.critical("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "Error")))
             }
     }
@@ -155,8 +157,10 @@ class HomeReactor: Reactor {
             .flatMap { coords -> Observable<Mutation> in
                 return self.getAddressFromGeocoder(longitude: coords.longitude, latitude: coords.latitude)
             }
-            .catch { error in
-                self.logger.error("위치 권한 문제: \(error.localizedDescription)")
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
+                logger.error("위치 권한 문제: \(error.localizedDescription)")
                 return Observable.just(.setShowLocationSettingAlert)
             }
     }
@@ -172,8 +176,10 @@ class HomeReactor: Reactor {
                 
                 return self.patchLocationVerification(address: text)
             }
-            .catch { error in
-                self.logger.fault("지오코드 API 호출 실패: \(error.localizedDescription)")
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
+                logger.critical("지오코드 API 호출 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "Error")))
             }
     }
@@ -190,8 +196,10 @@ class HomeReactor: Reactor {
                     return .verifyLocation(String(localized: "Error"))
                 }
             }
-            .catch { error in
-                self.logger.fault("위치 인증 실패: \(error.localizedDescription)")
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
+                logger.fault("위치 인증 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "Error")))
             }
     }
