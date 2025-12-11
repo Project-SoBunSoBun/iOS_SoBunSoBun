@@ -44,7 +44,7 @@ class SettleUp1stStepView: UIViewController {
             leading: 0,
             bottom: 0,
             trailing: 0)
-        config.image = .greyClose
+        config.image = .blackLeft
         config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
         
         button.configuration = config
