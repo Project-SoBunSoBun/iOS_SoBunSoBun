@@ -254,8 +254,10 @@ extension CustomAlertView {
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
-                self?.onPrimaryTapped?()
-                self?.removeFromSuperview()
+                guard let self = self else { return }
+                
+                self.onPrimaryTapped?()
+                self.removeFromSuperview()
             })
             .disposed(by: disposeBag)
         
