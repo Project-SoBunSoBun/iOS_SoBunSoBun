@@ -7,6 +7,9 @@
 
 import UIKit
 import SnapKit
+import OSLog
+import RxSwift
+import RxCocoa
 
 class Incomplete: UIView {
     init(frame: CGRect = .zero,
@@ -26,6 +29,18 @@ class Incomplete: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SettleUpComponents.Incomplete"
+    )
+    
+    private let disposeBag = DisposeBag()
+    
+    var onDeleteButtonTapped: (() -> Void)? // 삭제 버튼 클릭
+    var onSettleUpButtonTapped: (() -> Void)? // 정산하기 버튼 클릭
+    var onStatementCheckButtonTapped: (() -> Void)? // 정산서 확인 버튼 클릭
+    var onShareButtonTapped: (() -> Void)? // 공유하기 버튼 클릭
     
     // MARK: - 디자인 요소
     // 정산 여부 상태 label
@@ -155,10 +170,10 @@ class Incomplete: UIView {
         return bt
     }()
     
-    // 점 세개 버튼
-    private let menuButton: UIButton = {
+    // 삭제 버튼
+    private let deleteButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .greyHorizontalDot
+        config.image = .greyClose
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         let btn = UIButton(configuration: config)
@@ -198,7 +213,7 @@ class Incomplete: UIView {
             
             self.clipsToBounds = false
             
-            [statusLabel, titleLabel, locationStackView, dateStackView, settleUpButton, statementCheckButton, shareButton, menuButton].forEach {
+            [statusLabel, titleLabel, locationStackView, dateStackView, settleUpButton, statementCheckButton, shareButton, deleteButton].forEach {
                 self.addSubview($0)
             }
             
@@ -207,12 +222,48 @@ class Incomplete: UIView {
                 statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpComplete"), attributes: title12.attributes())
                 statusLabel.textColor = .review2
                 settleUpButton.isHidden = true
+                
+                statementCheckButton.rx.tap
+                    .subscribe(onNext: { [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.logger.debug("정산서 확인 버튼 터치")
+                        self.onStatementCheckButtonTapped?()
+                    })
+                    .disposed(by: disposeBag)
+                
+                shareButton.rx.tap
+                    .subscribe(onNext: { [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.logger.debug("공유 버튼 터치")
+                        self.onShareButtonTapped?()
+                    })
+                    .disposed(by: disposeBag)
+                
+                deleteButton.rx.tap
+                    .subscribe(onNext: { [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.logger.debug("삭제 버튼 터치")
+                        self.onDeleteButtonTapped?()
+                    })
+                    .disposed(by: disposeBag)
             } else {
                 statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpIncomplete"), attributes: title12.attributes())
                 statusLabel.textColor = .errorRed
                 statementCheckButton.isHidden = true
                 shareButton.isHidden = true
-                menuButton.isHidden = true
+                deleteButton.isHidden = true
+                
+                settleUpButton.rx.tap
+                    .subscribe(onNext: { [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.logger.debug("정산하기 버튼 터치")
+                        self.onSettleUpButtonTapped?()
+                    })
+                    .disposed(by: disposeBag)
             }
             
             // 정산 여부 Label
@@ -276,7 +327,7 @@ class Incomplete: UIView {
             }
             
             // 메뉴 버튼
-            menuButton.snp.makeConstraints { make in
+            deleteButton.snp.makeConstraints { make in
                 make.trailing.equalToSuperview().inset(16)
                 make.top.equalTo(statusLabel.snp.top)
             }

@@ -118,7 +118,7 @@ func showLocationSettingAlert(_ vc: UIViewController) {
         title: String(localized: "LocationSettingTitle")
     )
     
-    alert.onSettingsTapped = {
+    alert.onPrimaryTapped = {
         // 설정 앱으로 이동
         if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
             UIApplication.shared.open(settingsUrl)
