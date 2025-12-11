@@ -33,7 +33,6 @@ class SettleUpView: UIViewController {
         )
         title.attributedText = attributedText
         title.textColor = .neutral900
-        title.textAlignment = .left
         
         return title
     }()
