@@ -37,6 +37,15 @@ class SettleUp1stStepView: UIViewController {
     // 뒤로 가기 버튼
     private let backButton: UIButton = {
         let button = UIButton()
+        var config = UIButton.Configuration.plain()
+        
+        config.contentInsets = NSDirectionalEdgeInsets(
+            top: 0,
+            leading: 0,
+            bottom: 0,
+            trailing: 0)
+        
+        button.configuration = config
         button.setImage(UIImage(named: "BlackLeft"), for: .normal)
         
         return button
@@ -45,7 +54,7 @@ class SettleUp1stStepView: UIViewController {
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         configureUI()
         bind(reactor: reactor)
     }

@@ -28,7 +28,7 @@ class SettleUpTableViewCell: UITableViewCell {
     }
     
     func configure(with item: SettleUpItem,
-                   onMenuTapped: @escaping () -> Void = {},
+                   onDeleteTapped: @escaping () -> Void = {},
                    onSettleUpButtonTapped: @escaping () -> Void = {},
                    onStatementCheckButtonTapped: @escaping () -> Void = {},
                    onShareButtonTapped: @escaping () -> Void = {}
@@ -54,7 +54,7 @@ class SettleUpTableViewCell: UITableViewCell {
             make.bottom.equalToSuperview().inset(8)
         }
         
-        incompleteView?.onMenuButtonTapped = onMenuTapped
+        incompleteView?.onDeleteButtonTapped = onDeleteTapped
         incompleteView?.onSettleUpButtonTapped = onSettleUpButtonTapped
         incompleteView?.onStatementCheckButtonTapped = onStatementCheckButtonTapped
         incompleteView?.onShareButtonTapped = onShareButtonTapped

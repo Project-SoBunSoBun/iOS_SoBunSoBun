@@ -37,7 +37,7 @@ class Incomplete: UIView {
     
     private let disposeBag = DisposeBag()
     
-    var onMenuButtonTapped: (() -> Void)? // 메뉴 버튼 클릭
+    var onDeleteButtonTapped: (() -> Void)? // 삭제 버튼 클릭
     var onSettleUpButtonTapped: (() -> Void)? // 정산하기 버튼 클릭
     var onStatementCheckButtonTapped: (() -> Void)? // 정산서 확인 버튼 클릭
     var onShareButtonTapped: (() -> Void)? // 공유하기 버튼 클릭
@@ -245,8 +245,8 @@ class Incomplete: UIView {
                     .subscribe(onNext: { [weak self] in
                         guard let self = self else { return }
                         
-                        self.logger.debug("메뉴 버튼 터치")
-                        self.onMenuButtonTapped?()
+                        self.logger.debug("삭제 버튼 터치")
+                        self.onDeleteButtonTapped?()
                     })
                     .disposed(by: disposeBag)
             } else {
