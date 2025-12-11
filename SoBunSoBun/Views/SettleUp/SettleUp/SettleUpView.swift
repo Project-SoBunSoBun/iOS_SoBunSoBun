@@ -237,9 +237,24 @@ extension SettleUpView {
         
         // TableView 데이터 바인딩
         reactor.state.map { $0.items }
-            .bind(to: tableView.rx.items(cellIdentifier: "SettleUpTableViewCell", cellType: SettleUpTableViewCell.self)) { index, item, cell in
-                cell.configure(with: item)
+            .bind(to: tableView.rx.items(cellIdentifier: "SettleUpTableViewCell", cellType: SettleUpTableViewCell.self)) { [weak self] index, item, cell in
+                guard let self = self else { return }
+                
                 cell.selectionStyle = .none
+                cell.configure(with: item) {
+                    self.logger.debug("삭제 버튼 탭: id=\(item.id)")
+                    self.showDeleteAlert(id: item.id)
+                } onSettleUpButtonTapped: {
+                    self.logger.debug("정산하기 버튼 탭: id=\(item.id)")
+                    let vc = SettleUp1stStepView(id: item.id)
+                    self.navigationController?.pushViewController(vc, animated: true)
+                } onStatementCheckButtonTapped: {
+                    self.logger.debug("정산서 확인 버튼 탭: id=\(item.id)")
+                    // TODO: 정산서 화면으로 이동
+                } onShareButtonTapped: {
+                    self.logger.debug("공유 버튼 탭: id=\(item.id)")
+                    // TODO: 공유 기능 구현하기
+                }
             }
             .disposed(by: disposeBag)
         
@@ -286,6 +301,28 @@ extension SettleUpView {
         allCategories.isChecked = (category == .all)
         incompleteCategories.isChecked = (category == .incomplete)
         completeCategories.isChecked = (category == .complete)
+    }
+    
+    // 삭제 알림창
+    private func showDeleteAlert(id: Int) {
+        let alert = CustomAlertView(
+            title: String(localized: "SettleUpDeleteMessage1st"),
+            subTitle: String(localized: "SettleUpDeleteMessage2nd"),
+            primaryTitleKey: String(localized: "Delete"),
+            cancelTitleKey: String(localized: "Cancel")
+        )
+        
+        alert.isSubtitleEnabled = true
+        
+        alert.onPrimaryTapped = {
+            self.reactor.action.onNext(.deleteSettleUpTapped(id: id))
+        }
+        
+        alert.onCancelTapped = {
+            self.logger.debug("취소됨")
+        }
+        
+        alert.show(on: self)
     }
 }
 
