@@ -745,6 +745,17 @@
         }
       }
     },
+    "Register" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록하기"
+          }
+        }
+      }
+    },
     "SearchSomething" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -812,6 +823,18 @@
         }
       }
     },
+    "SettleUpAmount" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "금액"
+          }
+        }
+      }
+    },
     "SettleUpCheck" : {
       "comment" : "Incomplete.swift에서 사용",
       "extractionState" : "manual",
@@ -872,6 +895,54 @@
         }
       }
     },
+    "SettleUpItemName" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품명"
+          }
+        }
+      }
+    },
+    "SettleUpItemRegistered" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d개의 상품을 등록했습니다 확인 후 수정해주세요"
+          }
+        }
+      }
+    },
+    "SettleUpQuantity" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수량(개)"
+          }
+        }
+      }
+    },
+    "SettleUpRegisterItem" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품 등록하기"
+          }
+        }
+      }
+    },
     "SettleUpStart" : {
       "comment" : "CalculationCategory.swift에서 사용",
       "extractionState" : "manual",
@@ -904,6 +975,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "참여 중인 모임이 없습니다. 내 주변 모임을 확인해보세요!"
+          }
+        }
+      }
+    },
+    "SettleUpUnit" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단위"
+          }
+        }
+      }
+    },
+    "SettleUpWeight" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중량(g)"
           }
         }
       }
