@@ -907,6 +907,17 @@
         }
       }
     },
+    "SettleUpItemNamePlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품명을 입력해주세요"
+          }
+        }
+      }
+    },
     "SettleUpItemRegistered" : {
       "comment" : "SettleUp1stStepView.swift에서 사용",
       "extractionState" : "manual",
