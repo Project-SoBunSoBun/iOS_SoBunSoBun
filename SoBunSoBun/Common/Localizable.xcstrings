@@ -448,6 +448,17 @@
         }
       }
     },
+    "Count" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개"
+          }
+        }
+      }
+    },
     "DateTime" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -908,6 +919,7 @@
       }
     },
     "SettleUpItemNamePlaceholder" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -925,7 +937,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d개의 상품을 등록했습니다 확인 후 수정해주세요"
+            "value" : "%d개의 상품을 등록했습니다. 확인 후 수정해주세요."
           }
         }
       }
@@ -938,6 +950,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "수량(개)"
+          }
+        }
+      }
+    },
+    "SettleUpRegisteredItem" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록된 상품"
+          }
+        }
+      }
+    },
+    "SettleUpRegisteredItemCount" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d개의 상품"
+          }
+        }
+      }
+    },
+    "SettleUpRegisterEmpty" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 등록된 상품이 없습니다.\n상단의 ‘상품 추가’를 통해 추가해보세요."
           }
         }
       }
@@ -1100,6 +1148,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "이미 사용 중인 닉네임입니다"
+          }
+        }
+      }
+    },
+    "Won" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "원"
           }
         }
       }
