@@ -18,23 +18,33 @@ class BottomSheetView: UIViewController {
     let willDismiss = PublishRelay<Void>()
     
     private let contentViewController: UIViewController
-    private let heightRatio: CGFloat
+    private let sheetHeight: CGFloat
     private let cornerRadius: CGFloat
     private let dismissible: Bool
     
     private var containerViewHeightConstraint: Constraint?
     private var containerViewBottomConstraint: Constraint?
     
+    /// height는 1 미만은 비율, 이상은 고정값으로 간주됩니다.
     init(
         contentViewController: UIViewController,
-        heightRatio: CGFloat,
+        height: CGFloat,
         cornerRadius: CGFloat,
         dismissible: Bool = true
     ) {
         self.contentViewController = contentViewController
-        self.heightRatio = min(max(heightRatio, 0.0), 1.0)
         self.cornerRadius = cornerRadius
         self.dismissible = dismissible
+        
+        if height < 1.0 {
+            // 비율
+            let ratio = min(max(height, 0.0), 1.0)
+            self.sheetHeight = UIScreen.main.bounds.height * ratio
+        } else {
+            // 고정 높이
+            let maxHeight = UIScreen.main.bounds.height * 0.95
+            self.sheetHeight = min(height, maxHeight)
+        }
         
         super.init(nibName: nil, bundle: nil)
         
@@ -90,10 +100,8 @@ class BottomSheetView: UIViewController {
         containerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         containerView.clipsToBounds = true
         
-        let sheetHeight = UIScreen.main.bounds.height * heightRatio
-        
         containerView.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
             containerViewHeightConstraint = make.height.equalTo(sheetHeight).constraint
             containerViewBottomConstraint = make.top.equalTo(view.snp.bottom).constraint
         }

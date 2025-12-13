@@ -440,7 +440,7 @@ extension HomeView {
         // iOS 26이상 sheet detents 이슈로 인해 customize할 방법이 없어 직접 제작한 BottomSheetView를 사용하였습니다.
         let bottomSheet = BottomSheetView(
             contentViewController: sheetView,
-            heightRatio: 0.88,
+            height: 0.88,
             cornerRadius: 24)
         
         present(bottomSheet, animated: true)
