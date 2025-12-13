@@ -133,12 +133,12 @@ class SettleUp1stStepView: UIViewController {
     // 상품명 라벨
     private let itemNameLabel: UILabel = {
         let lb = UILabel()
-        let attiributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "SettleUpItemName"),
             attributes: title14.attributes(alignment: .left)
         )
         
-        lb.attributedText = attiributedText
+        lb.attributedText = attributedText
         lb.textColor = .neutral900
         
         return lb
@@ -165,12 +165,12 @@ class SettleUp1stStepView: UIViewController {
     // 단위 라벨
     private let unitLabel: UILabel = {
         let lb = UILabel()
-        let attiributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "SettleUpUnit"),
             attributes: title14.attributes(alignment: .left)
         )
         
-        lb.attributedText = attiributedText
+        lb.attributedText = attributedText
         lb.textColor = .neutral900
         
         return lb
@@ -271,11 +271,11 @@ class SettleUp1stStepView: UIViewController {
     // 금액 라벨
     private let amountLabel: UILabel = {
         let lb = UILabel()
-        let attiributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "SettleUpAmount"),
             attributes: title14.attributes(alignment: .left)
         )
-        lb.attributedText = attiributedText
+        lb.attributedText = attributedText
         lb.textColor = .neutral900
         
         return lb
@@ -320,12 +320,35 @@ class SettleUp1stStepView: UIViewController {
     // 등록하기 버튼
     private let registerButton = Button(title: String(localized: "Register"))
     
+    // 등록된 상품 Label
+    private let registeredItemLabel: UILabel = {
+        let lb = UILabel()
+        let attributedText = NSAttributedString(
+            string: String(localized: "SettleUpRegisteredItem"),
+            attributes: title18.attributes(alignment: .left)
+        )
+        lb.attributedText = attributedText
+        lb.textColor = .neutral900
+        
+        return lb
+    }()
+    
+    // 0개의 상품 Label
+    private let itemCountLabel: UILabel = {
+        let lb = UILabel()
+        lb.textColor = .neutral900
+        
+        return lb
+    }()
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureUI()
         bind(reactor: reactor)
+        
+        updateItemCountLabel(count: 0)
     }
     
     // MARK: - 레이아웃 설정
@@ -349,7 +372,7 @@ class SettleUp1stStepView: UIViewController {
             make.width.equalToSuperview()
         }
         
-        [stepLabel, titleLabel, subtitleBackground, registerItemBackground].forEach {
+        [stepLabel, titleLabel, subtitleBackground, registerItemBackground, registeredItemLabel, itemCountLabel].forEach {
             contentView.addSubview($0)
         }
         
@@ -439,6 +462,35 @@ class SettleUp1stStepView: UIViewController {
             make.bottom.equalToSuperview().inset(16)
             make.height.equalTo(52)
         }
+        
+        registeredItemLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(16)
+            make.top.equalTo(registerItemBackground.snp.bottom).offset(32)
+        }
+        
+        itemCountLabel.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
+            make.top.equalTo(registeredItemLabel)
+        }
+    }
+    
+    private func updateItemCountLabel(count: Int) {
+        let format = String(localized: "SettleUpRegisteredItemCount")
+        let fullText = String(format: format, count)
+        let countString = "\(count)"
+        
+        let attributedString = NSMutableAttributedString(
+            string: fullText,
+            attributes: body16.attributes(alignment: .right)
+        )
+        
+        if let range = fullText.range(of: countString) {
+            let nsRange = NSRange(range, in: fullText)
+            
+            attributedString.addAttribute(.foregroundColor, value: UIColor.primary400, range: nsRange)
+        }
+        
+        itemCountLabel.attributedText = attributedString
     }
 }
 
