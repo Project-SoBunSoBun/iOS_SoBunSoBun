@@ -76,7 +76,7 @@ class SearchTextField: UITextField {
     }
     
     override func textRect(forBounds bounds: CGRect) -> CGRect {
-        return bounds.inset(by: UIEdgeInsets(top: edgesPadding, left: leftPadding, bottom: edgesPadding, right: 0))
+        return bounds.inset(by: UIEdgeInsets(top: edgesPadding, left: leftPadding, bottom: edgesPadding, right: edgesPadding))
     }
     
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
