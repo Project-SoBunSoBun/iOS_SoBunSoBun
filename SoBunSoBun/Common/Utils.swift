@@ -112,6 +112,24 @@ func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
     }
 }
 
+// 문자열에서 날짜 계산
+func stringToDate(string: String, format: String) -> Date? {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = format
+    dateFormatter.locale = Locale.current
+    
+    return dateFormatter.date(from: string)
+}
+
+// 날짜에서 문자열 계산
+func dateToString(date: Date, format: String) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = format
+    dateFormatter.locale = Locale.current
+    
+    return dateFormatter.string(from: date)
+}
+
 // 위치 권한 설정 알림창
 func showLocationSettingAlert(_ vc: UIViewController) {
     let alert = CustomAlertView(
