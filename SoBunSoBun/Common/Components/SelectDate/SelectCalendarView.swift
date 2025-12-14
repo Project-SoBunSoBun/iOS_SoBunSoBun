@@ -281,6 +281,31 @@ extension SelectCalendarView {
                 cell.configure(model)
             }
             .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isPrevMonthEnabled }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] isEnabled in
+                guard let self = self else { return }
+                
+                prevButton.isEnabled = isEnabled
+                var config = prevButton.configuration
+                config?.image = isEnabled ? .blackChevronLeft : .greyChevronLeft
+                prevButton.configuration = config
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isNextMonthEnabled }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] isEnabled in
+                guard let self = self else { return }
+                
+                nextButton.isEnabled = isEnabled
+                var config = nextButton.configuration
+                config?.image = isEnabled ? .blackChevronRight : .greyChevronRight
+                nextButton.configuration = config
+            })
+            .disposed(by: disposeBag)
+        
     }
 }
 
