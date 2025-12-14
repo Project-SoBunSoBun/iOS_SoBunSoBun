@@ -1,5 +1,5 @@
 //
-//  SelectCalendarReactor.swift
+//  CalendarPickerReactor.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 12/13/25.
@@ -8,7 +8,7 @@
 import Foundation
 import ReactorKit
 
-class SelectCalendarReactor: Reactor {
+class CalendarPickerReactor: Reactor {
     let initialState: State
     private let calendar = Calendar.current
     

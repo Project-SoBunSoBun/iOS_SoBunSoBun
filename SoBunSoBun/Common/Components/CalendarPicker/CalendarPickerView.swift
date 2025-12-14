@@ -1,5 +1,5 @@
 //
-//  SelectCalendarView.swift
+//  CalendarPickerView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 12/11/25.
@@ -10,14 +10,14 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class SelectCalendarView: UIViewController {
-    typealias Reactor = SelectCalendarReactor
-    private let reactor: SelectCalendarReactor
+class CalendarPickerView: UIViewController {
+    typealias Reactor = CalendarPickerReactor
+    private let reactor: CalendarPickerReactor
     
     let selectedDateRelay = PublishRelay<String?>()
     
     init(selectedDate: Date? = nil) {
-        self.reactor = SelectCalendarReactor(selectedDate: selectedDate)
+        self.reactor = CalendarPickerReactor(selectedDate: selectedDate)
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -217,8 +217,8 @@ class SelectCalendarView: UIViewController {
     }
 }
 
-extension SelectCalendarView {
-    private func bind(reactor: SelectCalendarReactor) {
+extension CalendarPickerView {
+    private func bind(reactor: CalendarPickerReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
         
@@ -226,7 +226,7 @@ extension SelectCalendarView {
             .disposed(by: disposeBag)
     }
     
-    private func bindAction(reactor: SelectCalendarReactor) {
+    private func bindAction(reactor: CalendarPickerReactor) {
         prevButton.rx.tap
             .map { Reactor.Action.previousMonth }
             .bind(to: reactor.action)
@@ -250,7 +250,7 @@ extension SelectCalendarView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SelectCalendarReactor) {
+    private func bindState(reactor: CalendarPickerReactor) {
         reactor.state.map { $0.currentMonth }
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] date in
@@ -309,7 +309,7 @@ extension SelectCalendarView {
     }
 }
 
-extension SelectCalendarView: UICollectionViewDelegateFlowLayout {
+extension CalendarPickerView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.bounds.width / 7
         return CGSize(width: width, height: 40)
@@ -320,10 +320,10 @@ extension SelectCalendarView: UICollectionViewDelegateFlowLayout {
 // 미리보기
 import SwiftUI
 
-struct SelectCalendarViewController_Preview: PreviewProvider {
+struct CalendarPickerViewController_Preview: PreviewProvider {
     static var previews: some SwiftUI.View {
         UIViewControllerPreview {
-            SelectCalendarView()
+            CalendarPickerView()
         }
     }
 }

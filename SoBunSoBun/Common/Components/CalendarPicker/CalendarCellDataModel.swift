@@ -15,11 +15,4 @@ struct CalendarCellDataModel: Equatable {
     let isToday: Bool
     let isWeekend: Bool
     let isDisabled: Bool
-    
-    static func == (lhs: CalendarCellDataModel, rhs: CalendarCellDataModel) -> Bool {
-            return lhs.date == rhs.date &&
-                   lhs.isSelected == rhs.isSelected &&
-                   lhs.isCurrentMonth == rhs.isCurrentMonth &&
-                   lhs.isToday == rhs.isToday
-        }
 }
