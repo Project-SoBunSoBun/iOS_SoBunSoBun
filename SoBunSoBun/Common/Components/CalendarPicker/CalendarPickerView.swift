@@ -26,6 +26,8 @@ class CalendarPickerView: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private let calendar = Calendar.current
+    
     private let disposeBag = DisposeBag()
     
     // MARK: - 디자인 요소
@@ -36,6 +38,13 @@ class CalendarPickerView: UIViewController {
         
         return lb
     }
+    
+    let contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .backgroundWhite
+        
+        return view
+    }()
     
     private let yearLabel: UILabel = {
         let lb = UILabel()
@@ -106,9 +115,13 @@ class CalendarPickerView: UIViewController {
     private var currentDate = Date()
     
     private var calendarDates: [Date?] = []
-    private let calendar = Calendar.current
     
-    private let button = Button(title: String(localized: "Specify"))
+    private let button = {
+        let btn = Button(title: String(localized: "Specify"))
+        btn.isEnabled = false
+        
+        return btn
+    }()
     
     // MARK: - 생명주기
     override func viewDidLoad() {
@@ -131,8 +144,14 @@ class CalendarPickerView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
+        view.addSubview(contentView)
+        
+        contentView.snp.makeConstraints { make in
+            make.horizontalEdges.top.equalToSuperview()
+        }
+        
         [yearLabel, headerView, weekdayStackView, calendarCollectionView, button].forEach {
-            view.addSubview($0)
+            contentView.addSubview($0)
         }
         
         yearLabel.snp.makeConstraints { make in
@@ -151,7 +170,7 @@ class CalendarPickerView: UIViewController {
         
         prevButton.snp.makeConstraints { make in
             make.leading.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.verticalEdges.equalToSuperview()
         }
         
         monthLabel.snp.makeConstraints { make in
@@ -160,7 +179,7 @@ class CalendarPickerView: UIViewController {
         
         nextButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
-            make.centerY.equalToSuperview()
+            make.verticalEdges.equalToSuperview()
         }
         
         weekdayStackView.snp.makeConstraints { make in
@@ -306,6 +325,13 @@ extension CalendarPickerView {
             })
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.selectedDate }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                button.isEnabled = date != nil
+            })
+            .disposed(by: disposeBag)
     }
 }
 
