@@ -27,7 +27,8 @@ class CustomWheelPicker: UIView {
         items: [String],
         itemHeight: CGFloat,
         selectedValue: String?,
-        isInfiniteScroll: Bool
+        isInfiniteScroll: Bool,
+        initialIndex: Int = 0
     ) {
         self.items = items
         self.itemHeight = itemHeight
@@ -44,10 +45,9 @@ class CustomWheelPicker: UIView {
             if let selectedValue = selectedValue,
                let index = items.firstIndex(of: selectedValue) {
                 selectedValueRelay.accept(selectedValue)
-                
-                initialScrollToRow(index: index, animated: false)
+                initialScrollToRow(index: index + initialIndex)
             } else {
-                initialScrollToRow(index: 0, animated: false)
+                initialScrollToRow(index: initialIndex)
             }
         }
         
@@ -128,7 +128,7 @@ extension CustomWheelPicker {
                 guard let self = self else { return }
                 
                 let actualIndex = row % items.count
-                let isSelected = items[actualIndex] == self.selectedValueRelay.value
+                let isSelected = items[actualIndex] == selectedValueRelay.value
                 
                 cell.configure(text: self.items[actualIndex], isSelected: isSelected)
             }
@@ -226,7 +226,7 @@ extension CustomWheelPicker {
         hapticGenerator.prepare()
     }
     
-    private func initialScrollToRow(index: Int, animated: Bool) {
+    private func initialScrollToRow(index: Int) {
         guard index >= 0 && index < (isInfiniteScroll ? items.count * multiplier : items.count) else { return }
         
         if isInfiniteScroll {
@@ -236,13 +236,13 @@ extension CustomWheelPicker {
             tableView.scrollToRow(
                 at: IndexPath(row: target, section: 0),
                 at: .middle,
-                animated: animated
+                animated: false
             )
         } else {
             tableView.scrollToRow(
                 at: IndexPath(row: index, section: 0),
                 at: .middle,
-                animated: animated
+                animated: false
             )
         }
     }
