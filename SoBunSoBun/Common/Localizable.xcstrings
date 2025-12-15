@@ -448,6 +448,17 @@
         }
       }
     },
+    "CreatePostTimePickerTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새로운 모임의 만남 시간을\n지정해 주세요."
+          }
+        }
+      }
+    },
     "DateTime" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -525,6 +536,17 @@
         }
       }
     },
+    "GroupTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임 제목"
+          }
+        }
+      }
+    },
     "Home" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -547,6 +569,17 @@
         }
       }
     },
+    "InsertMarket" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지점을 입력해주세요"
+          }
+        }
+      }
+    },
     "InsertNickname" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -554,6 +587,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "닉네임을 입력해주세요"
+          }
+        }
+      }
+    },
+    "InsertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제목을 입력해주세요"
+          }
+        }
+      }
+    },
+    "ItemKeywords" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품 키워드"
           }
         }
       }
@@ -657,6 +712,28 @@
         }
       }
     },
+    "MaximumMembers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대인원"
+          }
+        }
+      }
+    },
+    "MinimumMembers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소인원"
+          }
+        }
+      }
+    },
     "Mypage" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -730,6 +807,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$(region)@ 인증"
+          }
+        }
+      }
+    },
+    "RegisterPostInfo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "<안내> 명예훼손, 광고/홍보 목적의 글, 온라인 공동구매, 해외 직구 및 배송 글은 올리실 수가 없어요."
+          }
+        }
+      }
+    },
+    "RegisterPostTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "글 등록하기"
           }
         }
       }
@@ -915,6 +1014,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "최신순"
+          }
+        }
+      }
+    },
+    "Specify" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지정하기"
           }
         }
       }
