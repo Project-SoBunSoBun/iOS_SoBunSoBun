@@ -131,15 +131,6 @@ class CalendarPickerView: UIViewController {
         bind(reactor: reactor)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        if let selectedDate = reactor.currentState.confirmedDate {
-            let dateString = dateToString(date: selectedDate, format: "yyyy - MM - dd")
-            selectedDateRelay.accept(dateString)
-        }
-    }
-    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
@@ -231,7 +222,7 @@ class CalendarPickerView: UIViewController {
         button.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(calendarCollectionView.snp.bottom).offset(16)
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().inset(safeareaBottom)
         }
     }
 }
@@ -329,7 +320,20 @@ extension CalendarPickerView {
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] date in
                 guard let self = self else { return }
+                
                 button.isEnabled = date != nil
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.confirmedDate }
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] date in
+                guard let self = self else { return }
+                
+                if let selectedDate = reactor.currentState.confirmedDate {
+                    let dateString = dateToString(date: selectedDate, format: "yyyy - MM - dd")
+                    selectedDateRelay.accept(dateString)
+                }
             })
             .disposed(by: disposeBag)
     }
