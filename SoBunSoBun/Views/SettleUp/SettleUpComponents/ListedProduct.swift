@@ -45,7 +45,7 @@ class ListedProduct: UIView {
     var onDeleteButtonTapped: (() -> Void)? // 삭제 버튼 클릭
     
     // MARK: - 디자인 요소
-    // 상품 명
+    // 상품명
     private let itemNameLabel: UILabel = {
         let lb = UILabel()
         lb.textColor = .neutral900
@@ -143,7 +143,7 @@ class ListedProduct: UIView {
             self.addSubview($0)
         }
         
-        // 상품 명
+        // 상품명
         itemNameLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(16)
