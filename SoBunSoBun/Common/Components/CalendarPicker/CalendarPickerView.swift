@@ -14,11 +14,14 @@ class CalendarPickerView: UIViewController {
     typealias Reactor = CalendarPickerReactor
     private let reactor: CalendarPickerReactor
     
+    let dateFormat: String
     let selectedDateRelay = PublishRelay<String?>()
     
-    init(selectedDate: Date? = nil) {
-        self.reactor = CalendarPickerReactor(selectedDate: selectedDate)
+    init(selectedDate: String? = nil, format: String = "yyyy - MM - dd") {
+        let date = stringToDate(string: selectedDate ?? "", format: format)
         
+        self.reactor = CalendarPickerReactor(selectedDate: date)
+        self.dateFormat = format
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -331,7 +334,7 @@ extension CalendarPickerView {
                 guard let self = self else { return }
                 
                 if let selectedDate = reactor.currentState.confirmedDate {
-                    let dateString = dateToString(date: selectedDate, format: "yyyy - MM - dd")
+                    let dateString = dateToString(date: selectedDate, format: dateFormat)
                     selectedDateRelay.accept(dateString)
                 }
             })
