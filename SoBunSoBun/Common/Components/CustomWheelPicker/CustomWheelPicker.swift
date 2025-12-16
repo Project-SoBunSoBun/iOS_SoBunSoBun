@@ -45,7 +45,7 @@ class CustomWheelPicker: UIView {
             if let selectedValue = selectedValue,
                let index = items.firstIndex(of: selectedValue) {
                 selectedValueRelay.accept(selectedValue)
-                initialScrollToRow(index: index + initialIndex)
+                initialScrollToRow(index: index)
             } else {
                 initialScrollToRow(index: initialIndex)
             }

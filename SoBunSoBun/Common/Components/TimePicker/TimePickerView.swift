@@ -224,7 +224,7 @@ struct TimePickerViewController_Preview: PreviewProvider {
     static var previews: some SwiftUI.View {
         UIViewControllerPreview {
             TimePickerView(
-                title: String(localized: "CreatePostTimePickerTitle"),
+                title: String(localized: "RegisterPostTimePickerTitle"),
                 selectedHour: nil,
                 selectedMinute: nil,
                 selectedPeriod: nil
