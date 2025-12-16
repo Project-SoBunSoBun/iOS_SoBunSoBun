@@ -38,14 +38,6 @@ class TimePickerView: UIViewController {
             selectedPeriod: selectedPeriod
         )
         
-        if let selectedHour,
-           let selectedMinute,
-           let selectedPeriod {
-            selectedTimeRelay.accept("\(selectedPeriod) \(selectedHour):\(selectedMinute)")
-        } else {
-            selectedTimeRelay.accept(nil)
-        }
-        
         var titleAttributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .left)
         titleAttributes[.foregroundColor] = UIColor.neutral900
         
@@ -137,14 +129,6 @@ class TimePickerView: UIViewController {
         bind(reactor: reactor)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        if let selectedTime = reactor.currentState.confirmedTime {
-            selectedTimeRelay.accept(selectedTime)
-        }
-    }
-    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
@@ -181,7 +165,7 @@ class TimePickerView: UIViewController {
         button.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(pickerStackView.snp.bottom).offset(40)
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().inset(safeareaBottom)
         }
     }
 }
@@ -223,6 +207,11 @@ extension TimePickerView {
                 
                 button.isEnabled = hour != nil && minute != nil && period != nil
             })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.confirmedTime }
+            .compactMap { $0 }
+            .bind(to: selectedTimeRelay)
             .disposed(by: disposeBag)
     }
 }
