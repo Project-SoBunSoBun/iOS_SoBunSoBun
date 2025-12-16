@@ -591,6 +591,30 @@
         }
       }
     },
+    "ListedProductEdit" : {
+      "comment" : "ListedProduct.Swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수정하기"
+          }
+        }
+      }
+    },
+    "ListedProductItemTotal" : {
+      "comment" : "ListedProduct.Swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d개 %d원"
+          }
+        }
+      }
+    },
     "Loading" : {
       "extractionState" : "manual",
       "localizations" : {
