@@ -72,6 +72,14 @@ class BottomSheetView: UIViewController {
         return view
     }()
     
+    private let handleBar: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = false
+        
+        return view
+    }()
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -113,6 +121,12 @@ class BottomSheetView: UIViewController {
             make.top.equalToSuperview()
             make.horizontalEdges.bottom.equalToSuperview()
         }
+        
+        containerView.addSubview(handleBar)
+        handleBar.snp.makeConstraints { make in
+            make.horizontalEdges.top.equalToSuperview()
+            make.height.equalTo(44) // Apple 터치 권장 높이
+        }
     }
 }
 
@@ -131,7 +145,7 @@ extension BottomSheetView{
             .disposed(by: disposeBag)
         
         // Pan Gesture
-        containerView.rx
+        handleBar.rx
             .panGesture()
             .skip(1) // 첫 번째 이벤트 스킵
             .subscribe(onNext: { [weak self] gesture in
@@ -209,7 +223,7 @@ extension BottomSheetView{
         }
     }
     
-    private func handleDismiss() {
+    func handleDismiss() {
         willDismiss.accept(())
         animateDismiss()
     }
