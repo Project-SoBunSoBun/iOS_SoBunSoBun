@@ -205,7 +205,6 @@ class CalendarPickerView: UIViewController {
             view.addSubview(label)
             
             view.snp.makeConstraints { make in
-                make.width.equalTo(30)
                 make.height.equalTo(40)
             }
             
