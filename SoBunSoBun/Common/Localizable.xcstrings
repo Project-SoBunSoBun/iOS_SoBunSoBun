@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "00 : 00" : {
+
+    },
     "AllAgree" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -415,6 +418,17 @@
         }
       }
     },
+    "Characters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자"
+          }
+        }
+      }
+    },
     "Chat" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -448,13 +462,24 @@
         }
       }
     },
-    "CreatePostTimePickerTitle" : {
+    "Date" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "새로운 모임의 만남 시간을\n지정해 주세요."
+            "value" : "날짜"
+          }
+        }
+      }
+    },
+    "DatePlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연도 - 월 - 일"
           }
         }
       }
@@ -565,6 +590,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "이미지 크기 초과"
+          }
+        }
+      }
+    },
+    "InsertContent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내용을 입력해주세요"
           }
         }
       }
@@ -767,6 +803,17 @@
         }
       }
     },
+    "Notes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전달 사항"
+          }
+        }
+      }
+    },
     "NumberOfParticipants" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -800,6 +847,17 @@
         }
       }
     },
+    "PlannedItems" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구매 예정 품목"
+          }
+        }
+      }
+    },
     "RegionVerified" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -811,6 +869,17 @@
         }
       }
     },
+    "Register" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록하기"
+          }
+        }
+      }
+    },
     "RegisterPostInfo" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -818,6 +887,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "<안내> 명예훼손, 광고/홍보 목적의 글, 온라인 공동구매, 해외 직구 및 배송 글은 올리실 수가 없어요."
+          }
+        }
+      }
+    },
+    "RegisterPostTimePickerTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새로운 모임의 만남 시간을\n지정해 주세요."
           }
         }
       }
@@ -1036,6 +1116,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "시작하기"
+          }
+        }
+      }
+    },
+    "Time" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시간"
           }
         }
       }
