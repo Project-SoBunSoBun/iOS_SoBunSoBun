@@ -341,6 +341,27 @@ class SettleUp1stStepView: UIViewController {
         return lb
     }()
     
+    // 공백 상태 메시지를 추가 할 View
+    private let emptyStateView: UIView = {
+        let view = UIView()
+        
+        return view
+    }()
+    
+    // 공백 상태 메시지
+    private let emptyStateLabel: UILabel = {
+        let lb = UILabel()
+        let attributedText = NSAttributedString(
+            string: String(localized: "SettleUpRegisterEmpty"),
+            attributes: body16.attributes(alignment: .center)
+        )
+        lb.attributedText = attributedText
+        lb.textColor = .neutral300
+        lb.numberOfLines = 0
+        
+        return lb
+    }()
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -372,7 +393,7 @@ class SettleUp1stStepView: UIViewController {
             make.width.equalToSuperview()
         }
         
-        [stepLabel, titleLabel, subtitleBackground, registerItemBackground, registeredItemLabel, itemCountLabel].forEach {
+        [stepLabel, titleLabel, subtitleBackground, registerItemBackground, registeredItemLabel, itemCountLabel, emptyStateView, emptyStateLabel].forEach {
             contentView.addSubview($0)
         }
         
@@ -471,6 +492,17 @@ class SettleUp1stStepView: UIViewController {
         itemCountLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
             make.top.equalTo(registeredItemLabel)
+        }
+        
+        emptyStateView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(registeredItemLabel.snp.bottom)
+            make.bottom.equalToSuperview()
+            make.height.equalTo(160)
+        }
+        
+        emptyStateLabel.snp.makeConstraints { make in
+            make.center.equalTo(emptyStateView)
         }
     }
     
