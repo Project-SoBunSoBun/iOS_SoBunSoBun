@@ -1062,6 +1062,18 @@
         }
       }
     },
+    "SettleUpTotalPrice" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "총 금액"
+          }
+        }
+      }
+    },
     "SettleUpUnit" : {
       "comment" : "SettleUp1stStepView.swift에서 사용",
       "extractionState" : "manual",
