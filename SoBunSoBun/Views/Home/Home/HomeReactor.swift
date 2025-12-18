@@ -67,33 +67,37 @@ class HomeReactor: Reactor {
                 Observable.just(.setPage(0)),
                 loadPosts(page: 0, isFirst: true)
             )
+            
         case .addCategoryTapped:
             return Observable.just(.setAddCategoryTapped)
+            
         case .getSelectedCategories(let selectedCategories):
-            return Observable.concat([
+            return Observable.concat(
                 .just(.setSelectedCategories(selectedCategories)),
                 .just(.setRefreshing(true)),
                 .just(.setPage(0)),
                 loadPosts(page: 0, isFirst: true, categories: selectedCategories),
                 .just(.setRefreshing(false))
-            ])
+            )
+            
         case .loadMorePosts:
             guard !currentState.isLoading && currentState.hasMore else {
                 return .empty()
             }
             
             let nextPage = currentState.page + 1
-            return Observable.concat([
+            return Observable.concat(
                 .just(.setPage(nextPage)),
                 loadPosts(page: nextPage, isFirst: false)
-            ])
+            )
+            
         case .refresh:
-            return Observable.concat([
+            return Observable.concat(
                 .just(.setRefreshing(true)),
                 .just(.setPage(0)),
                 loadPosts(page: 0, isFirst: true),
                 .just(.setRefreshing(false))
-            ])
+            )
         }
     }
     
@@ -104,23 +108,32 @@ class HomeReactor: Reactor {
         case .verifyLocation(let address):
             newState.verifiedLocation = address
             newState.isLocationVerified = !address.isEmpty && [String(localized: "Error"), String(localized: "LocationPermissionDenied")].contains(address) == false
+            
         case .setAddCategoryTapped:
             newState.shouldShowBottomCategorySheet = ()
+            
         case .setSelectedCategories(let selectedCategories):
             newState.selectedCategories = selectedCategories
+            
         case .setShowLocationSettingAlert:
             newState.shouldShowLocationSettingAlert = ()
             newState.verifiedLocation = String(localized: "LocationPermissionDenied")
+            
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
+            
         case .setRefreshing(let isRefreshing):
             newState.isRefreshing = isRefreshing
+            
         case .setPosts(let posts):
             newState.posts = posts
+            
         case .appendPosts(let posts):
             newState.posts.append(contentsOf: posts)
+            
         case .setPage(let page):
             newState.page = page
+            
         case .setHasMore(let hasMore):
             newState.hasMore = hasMore
         }
@@ -225,11 +238,11 @@ class HomeReactor: Reactor {
                 }
                 .catch { error in
                     self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
-                    return .concat([
+                    return .concat(
                         isFirst ? .just(.setPosts([])) : .empty(),
                         .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
                         .just(.setHasMore(false))
-                    ])
+                    )
                 }
         ])
     }
