@@ -362,14 +362,78 @@ class SettleUp1stStepView: UIViewController {
         return lb
     }()
     
+    // ListedProduct가 들어갈 StackView
+    private let productStackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.distribution = .fill
+        sv.alignment = .fill
+        sv.spacing = 0
+        
+        return sv
+    }()
+    
+    // 상품 등록 Test
+    private let listedProduct1 = ListedProduct(itemName: "상품명 1", itemCount: 4, itemPrice: 20000, unitIndex: 1)
+    
+    // 총 금액 Label과 총 금액원 Label이 들어갈 StackView
+    private let totalLabelStackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.alignment = .center
+        sv.distribution = .fill
+        
+        return sv
+    }()
+    
+    // totalLabelStackView의 배경
+    private let totalBackgroundView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .neutral50
+        view.layer.cornerRadius = 12
+        view.clipsToBounds = true
+        
+        return view
+    }()
+    
+    // 총 금액 Label
+    private let totalLabel: UILabel = {
+        let lb = UILabel()
+        let attributedText = NSAttributedString(
+            string: String(localized: "SettleUpTotalPrice"),
+            attributes: title18.attributes(alignment: .left)
+        )
+        lb.attributedText = attributedText
+        lb.textColor = .primary400
+        
+        return lb
+    }()
+    
+    // 총 금액 원 Label
+    private let totalPriceLabel: UILabel = {
+        let lb = UILabel()
+        let won = String(localized: "Won")
+        let attributedText = NSAttributedString(
+            string: "0\(won)",
+            attributes: title18.attributes(alignment: .right)
+        )
+        lb.attributedText = attributedText
+        lb.textColor = .neutral900
+        
+        return lb
+    }()
+    
+    // 정산하기 버튼
+    private let settleUpButton = Button(title: String(localized: "SettleUpStart"))
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        updateItemCountLabel(count: 0)
+        
         configureUI()
         bind(reactor: reactor)
-        
-        updateItemCountLabel(count: 0)
     }
     
     // MARK: - 레이아웃 설정
@@ -405,6 +469,12 @@ class SettleUp1stStepView: UIViewController {
         
         [quantityButton, weightButton].forEach {
             unitButtonContainer.addArrangedSubview($0)
+        }
+        
+        totalBackgroundView.addSubview(totalLabelStackView)
+        
+        [totalLabel, totalPriceLabel].forEach {
+            totalLabelStackView.addArrangedSubview($0)
         }
         
         backButton.snp.makeConstraints { make in
@@ -486,12 +556,12 @@ class SettleUp1stStepView: UIViewController {
         
         registeredItemLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
-            make.top.equalTo(registerItemBackground.snp.bottom).offset(32)
+            make.top.equalTo(registerItemBackground.snp.bottom).offset(34)
         }
         
         itemCountLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
-            make.top.equalTo(registeredItemLabel)
+            make.centerY.equalTo(registeredItemLabel)
         }
         
         emptyStateView.snp.makeConstraints { make in
@@ -523,6 +593,44 @@ class SettleUp1stStepView: UIViewController {
         }
         
         itemCountLabel.attributedText = attributedString
+    }
+    
+    // 상품이 추가되었을 때 사용 할 함수
+    private func remakeConstraints() {
+        [emptyStateView, emptyStateLabel].forEach {
+            $0.removeFromSuperview()
+        }
+        
+        [productStackView, totalBackgroundView, settleUpButton].forEach {
+            contentView.addSubview($0)
+        }
+        
+        productStackView.addArrangedSubview(listedProduct1)
+        
+        productStackView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(registeredItemLabel.snp.bottom)
+            make.bottom.equalTo(totalBackgroundView.snp.top).offset(-16)
+        }
+        
+        totalBackgroundView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(productStackView.snp.bottom).offset(16)
+        }
+        
+        totalLabelStackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
+        }
+        
+        settleUpButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(totalBackgroundView.snp.bottom).offset(16)
+            make.height.equalTo(64)
+            make.bottom.equalToSuperview()
+        }
+        
+        let count = productStackView.arrangedSubviews.count
+        updateItemCountLabel(count: count)
     }
 }
 
