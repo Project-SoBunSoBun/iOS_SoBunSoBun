@@ -230,6 +230,7 @@ class CalendarPickerView: UIViewController {
 }
 
 extension CalendarPickerView {
+    // reactor와 view 연결
     private func bind(reactor: CalendarPickerReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)

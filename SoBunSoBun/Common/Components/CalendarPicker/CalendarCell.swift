@@ -9,6 +9,16 @@ import UIKit
 import SnapKit
 
 class CalendarCell: UICollectionViewCell {
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
+        configureUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let dayLabel: UILabel = {
         let lb = UILabel()
         lb.font = body14.font
@@ -25,16 +35,6 @@ class CalendarCell: UICollectionViewCell {
         
         return view
     }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        configureUI()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     private func configureUI() {
         selectedCircle.isHidden = true

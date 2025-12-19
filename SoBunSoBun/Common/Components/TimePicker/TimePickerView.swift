@@ -18,7 +18,6 @@ class TimePickerView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    // MARK: - 디자인 요소
     private let visibleItemCount: Int = 3
     private let itemHeight: CGFloat = 72
     
@@ -38,11 +37,13 @@ class TimePickerView: UIViewController {
             selectedPeriod: selectedPeriod
         )
         
+        // 제목 설정
         var titleAttributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .left)
         titleAttributes[.foregroundColor] = UIColor.neutral900
         
         titleLabel.attributedText = NSAttributedString(string: title, attributes: titleAttributes)
         
+        // 시 설정
         let hours: [String] = (1...12).map { String($0) }
         
         hourPicker = CustomWheelPicker(
@@ -54,6 +55,7 @@ class TimePickerView: UIViewController {
             initialIndex: hours.count - 1
         )
         
+        // 분 설정
         let minutes: [String] = ["00", "30"]
         
         minutePicker = CustomWheelPicker(
@@ -72,6 +74,7 @@ class TimePickerView: UIViewController {
         let amSymbol = formatter.amSymbol ?? "AM"
         let pmSymbol = formatter.pmSymbol ?? "PM"
         
+        // 오전, 오후 설정
         let periods: [String] = [amSymbol, pmSymbol]
         
         periodPicker = CustomWheelPicker(
@@ -90,6 +93,7 @@ class TimePickerView: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - 디자인 요소
     let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = .backgroundWhite
@@ -171,6 +175,7 @@ class TimePickerView: UIViewController {
 }
 
 extension TimePickerView {
+    // reactor와 view 연결
     private func bind(reactor: TimePickerReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)

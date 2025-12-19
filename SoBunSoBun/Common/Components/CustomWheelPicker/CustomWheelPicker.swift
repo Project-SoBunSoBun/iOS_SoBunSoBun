@@ -176,12 +176,14 @@ extension CustomWheelPicker {
             .disposed(by: disposeBag)
     }
     
+    // 중앙 cell 값 가져오기
     private func getMiddleRowIndex() -> IndexPath? {
         let centerPoint: CGPoint = .init(x: tableView.bounds.midX, y: tableView.bounds.midY)
         
         return tableView.indexPathForRow(at: centerPoint)
     }
     
+    // cell 레이아웃 업데이트
     private func updateCells() {
         tableView.visibleCells.forEach { cell in
             guard let pickerCell = cell as? WheelPickerCell,
@@ -197,6 +199,7 @@ extension CustomWheelPicker {
         }
     }
     
+    // selectedValueRelay 적용
     private func updateSelectedValue() {
         guard let indexPath = getMiddleRowIndex() else { return }
         
@@ -208,6 +211,7 @@ extension CustomWheelPicker {
         }
     }
     
+    // 중간 셀로 snap 이동
     private func snapToMiddleItem() {
         if let indexPath = getMiddleRowIndex() {
             tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
@@ -221,11 +225,13 @@ extension CustomWheelPicker {
         }
     }
     
+    // 햅틱 피드백
     private func triggerHaptic() {
         hapticGenerator.impactOccurred()
         hapticGenerator.prepare()
     }
     
+    // 초기화 전용 스크롤 이동 함수
     private func initialScrollToRow(index: Int) {
         guard index >= 0 && index < (isInfiniteScroll ? items.count * multiplier : items.count) else { return }
         
