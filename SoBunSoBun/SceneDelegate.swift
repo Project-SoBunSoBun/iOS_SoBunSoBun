@@ -31,6 +31,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
+        window.backgroundColor = .backgroundWhite
+        
+        // 텍스트 입력창 밖 tap할 시 키보드 내리기
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false
+        window.addGestureRecognizer(tapGesture)
+        
         var nav: UINavigationController
         
         let now = Date()
@@ -51,6 +58,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         logger.debug("[저장된 ACCESS_TOKEN]\n\n\(KeyChain.shared.get(key: "ACCESS_TOKEN") ?? "KeyChain에 저장되지 않음")")
         // logger.debug("[저장된 LOGIN_TOKEN]\n\n\(KeyChain.shared.get(key: "LOGIN_TOKEN") ?? "KeyChain에 저장되지 않음")")
+    }
+    
+    @objc private func dismissKeyboard() {
+        window?.endEditing(true)
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
