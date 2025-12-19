@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
-    "00 : 00" : {
-
-    },
     "AllAgree" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -440,6 +437,17 @@
         }
       }
     },
+    "CheckYourInputs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "입력을 확인해주세요."
+          }
+        }
+      }
+    },
     "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -529,6 +537,17 @@
       }
     },
     "Error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오류"
+          }
+        }
+      }
+    },
+    "ErrorMessage" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -880,6 +899,17 @@
         }
       }
     },
+    "RegisterPostDeadlineInfoMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임 날짜를 기준으로, 신청 마감일은 하루 전으로 자동 설정됩니다."
+          }
+        }
+      }
+    },
     "RegisterPostInfo" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -887,6 +917,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "<안내> 명예훼손, 광고/홍보 목적의 글, 온라인 공동구매, 해외 직구 및 배송 글은 올리실 수가 없어요."
+          }
+        }
+      }
+    },
+    "RegisterPostSuccess" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임글이\n성공적으로\n게시되었습니다!"
           }
         }
       }
