@@ -140,7 +140,8 @@ class HomeReactor: Reactor {
             
         case .verifyLocation(let address):
             newState.verifiedLocation = address
-            newState.isLocationVerified = !address.isEmpty && [String(localized: "ErrorMessage"), String(localized: "LocationPermissionDenied")].contains(address) == false
+            newState.isLocationVerified = !address.isEmpty &&
+            [String(localized: "ErrorMessage"), String(localized: "LocationPermissionDenied")].contains(address) == false
             
         case .setNotificationsView:
             newState.shouldPushNotificationsView = ()
@@ -183,6 +184,7 @@ class HomeReactor: Reactor {
         return newState
     }
     
+    // 서버로부터 위치 인증 정보 불러오기
     private func verifyLocation() -> Observable<Mutation> {
         return NetworkManager.shared.getLocationVefirication()
             .asObservable()
@@ -201,7 +203,7 @@ class HomeReactor: Reactor {
             }
     }
     
-    // 위치 가져오기
+    // 디바이스로부터 위치 정보 가져오기
     private func getLocation() -> Observable<Mutation> {
         // 현재 권한 상태 확인
         let authStatus = LocationManager.shared.getCurrentAuthorizationStatus()
@@ -212,6 +214,10 @@ class HomeReactor: Reactor {
             
             return LocationManager.shared.currentAuthorizationStatus
                 .skip(1) // 현재 상태 스킵
+                .filter { status in // 권한 요청 후 상태만
+                    status != .notDetermined
+                }
+                .take(1) // 한 번만
                 .timeout(.seconds(30), scheduler: MainScheduler.instance) // 30초 타임아웃
                 .flatMap { status -> Observable<Mutation> in
                     switch status {
@@ -219,15 +225,16 @@ class HomeReactor: Reactor {
                         return self.requestLocationAndProcess()
                         
                     case .denied, .restricted: // 권한 거부됨
-                        self.logger.error("위치 권한 거부됨")
+                        self.logger.error("위치 권한 요청 후 거부됨")
                         return .just(.setShowLocationSettingAlert)
                         
-                    default:
+                    default: // 뭔가 잘못 됨
+                        self.logger.error("위치 권한 요청 후 무언가 잘못 됨: \(status.rawValue)")
                         return .just(.verifyLocation(String(localized: "ErrorMessage")))
                     }
                 }
                 .catch { error in
-                    self.logger.error("권한 요청 오류: \(error.localizedDescription)")
+                    self.logger.error("위치 권한 요청 오류: \(error.localizedDescription)")
                     return .just(.setShowLocationSettingAlert)
                 }
             
@@ -239,11 +246,12 @@ class HomeReactor: Reactor {
             return .just(.setShowLocationSettingAlert)
             
         default:
+            logger.error("위치 권한이 무언가 잘못 됨: \(authStatus.rawValue)")
             return .just(.verifyLocation(String(localized: "ErrorMessage")))
         }
     }
 
-    // 위치 요청 및 처리
+    // 디바이스로부터 현재 위치 정보 불러온 후 지오코더 API 호출
     private func requestLocationAndProcess() -> Observable<Mutation> {
         LocationManager.shared.requestCurrentLocation()
         
@@ -270,6 +278,7 @@ class HomeReactor: Reactor {
                 let structure = model.response.result[0].structure
                 let text = [structure.level1, structure.level2, structure.level3]
                     .joined(separator: " ")
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
                 
                 return self.patchLocationVerification(address: text)
             }
@@ -281,7 +290,7 @@ class HomeReactor: Reactor {
             }
     }
     
-    // 위치 인증 갱신
+    // 서버에 위치 인증 갱신
     private func patchLocationVerification(address: String) -> Observable<Mutation> {
         return NetworkManager.shared.patchLocationVerification(address: address)
             .asObservable()
