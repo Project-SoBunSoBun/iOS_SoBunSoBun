@@ -72,7 +72,7 @@ final class KeyChain {
         if status == errSecSuccess {
             logger.debug("[KeyChain]\n\n삭제 성공\n\nKEY: \(key)")
         } else { // 실패 했을 때
-            logger.fault("[KeyChain]\n\n삭제 실패\n\nKEY: \(key)")
+            logger.debug("[KeyChain]\n\n삭제 실패\n\nKEY: \(key)")
         }
     }
 }
