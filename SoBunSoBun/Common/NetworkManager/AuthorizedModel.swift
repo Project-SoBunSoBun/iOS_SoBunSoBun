@@ -14,11 +14,10 @@ struct PostListResponseModel: Decodable {
 }
 
 struct PostModel: Decodable {
-    let id: Int
+    let id, minMembers, maxMembers, joinedMembers: Int
     let owner: PostOwnerModel
-    let title, categoryCode, content, itemsText, notesText, locationName, meetAt, deadlineAt: String
-    let minMembers, maxMembers, joinedMembers: Int
-    let status, createdAt, updatedAt: String
+    let title, categoryCode, itemsText, notesText, locationName, meetAt, deadlineAt, status, createdAt, updatedAt: String
+    let content: String?
 }
 
 struct PostOwnerModel: Decodable {
@@ -73,6 +72,11 @@ struct HomeListRequestModel: Encodable {
 struct HomeListCategoryRequestModel: Encodable {
     let categories: [String]
     let page, size: Int
+}
+
+struct RegisterPostBodyModel: Encodable {
+    let title, categories, locationName, meetAt, deadlineAt, itemsText, notesText: String
+    let minMembers, maxMembers: Int
 }
 
 // MARK: - 정산

@@ -448,6 +448,17 @@
         }
       }
     },
+    "CheckYourMinimumMembers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소인원은 최대인원보다 많을 수 없습니다"
+          }
+        }
+      }
+    },
     "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -767,6 +778,17 @@
         }
       }
     },
+    "Maximum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대"
+          }
+        }
+      }
+    },
     "MaximumMembers" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -774,6 +796,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "최대인원"
+          }
+        }
+      }
+    },
+    "Minimum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소"
           }
         }
       }
@@ -851,6 +884,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "최소 %1$(min)lld명 / 최대 %2$(max)lld명"
+          }
+        }
+      }
+    },
+    "PeopleCount" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "명"
           }
         }
       }

@@ -112,7 +112,7 @@ func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
     }
 }
 
-// 문자열에서 날짜 계산
+// String 타입에서 Date 타입 변환
 func stringToDate(string: String, format: String) -> Date? {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = format
@@ -121,8 +121,8 @@ func stringToDate(string: String, format: String) -> Date? {
     return dateFormatter.date(from: string)
 }
 
-// 날짜에서 문자열 계산
-func dateToString(date: Date, format: String) -> String {
+// Date 타입에서 String 타입 변환
+func dateToString(date: Date, format: String) -> String? {
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = format
     dateFormatter.locale = Locale.current
@@ -130,8 +130,16 @@ func dateToString(date: Date, format: String) -> String {
     return dateFormatter.string(from: date)
 }
 
+// Date 타입에서 ISO8601 형태 String 타입 변환
+func dateToISO8601String(date: Date) -> String? {
+    let dateFormatter = ISO8601DateFormatter()
+    dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+
+    return dateFormatter.string(from: date)
+}
+
 // 위치 권한 설정 알림창
-func showLocationSettingAlert(_ vc: UIViewController) {
+func showLocationSettingAlert(_ vc: UIViewController, cancelAction: (() -> Void)? = nil) {
     let alert = CustomAlertView(
         title: String(localized: "LocationSettingTitle")
     )
@@ -143,11 +151,41 @@ func showLocationSettingAlert(_ vc: UIViewController) {
         }
     }
     
-    alert.onCancelTapped = {
-        
-    }
+    alert.onCancelTapped = cancelAction
     
     alert.show(on: vc)
+}
+
+// alert 표시
+func showAlert(
+    title: String,
+    message: String? = nil,
+    prefferredStyle: UIAlertController.Style = .alert,
+    confirmTitle: String? = nil,
+    confirmAction: (() -> Void)? = nil,
+    cancelTitle: String? = nil,
+    cancelAction: (() -> Void)? = nil,
+    vc: UIViewController
+) {
+    let alert = UIAlertController(title: title, message: message, preferredStyle: prefferredStyle)
+    
+    if let confirmTitle, let confirmAction {
+        let action = UIAlertAction(title: confirmTitle, style: .default) { _ in
+            confirmAction()
+        }
+        
+        alert.addAction(action)
+    }
+    
+    if let cancelTitle, let cancelAction {
+        let action = UIAlertAction(title: cancelTitle, style: .cancel) { _ in
+            cancelAction()
+        }
+        
+        alert.addAction(action)
+    }
+    
+    vc.present(alert, animated: true)
 }
 
 extension Encodable {

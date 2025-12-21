@@ -118,6 +118,15 @@ final class NetworkManager {
         .map(PostListResponseModel.self)
     }
     
+    // 글 등록
+    func registerPost(model: RegisterPostBodyModel) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.registerPost(model: model))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
+    
     // MARK: - 정산
     // 서버에서 유저별 정산 목록을 받아오는 메서드
     func mySettleUps(activeOnly: Int, page: Int, size: Int) -> Single<SettleUpModel> {
