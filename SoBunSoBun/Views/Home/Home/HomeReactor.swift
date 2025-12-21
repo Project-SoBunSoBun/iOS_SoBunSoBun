@@ -83,7 +83,7 @@ class HomeReactor: Reactor {
             return .concat([
                 currentState.isLocationVerified ? .empty() : verifyLocation(),
                 .just(.setPage(0)),
-                loadPosts(page: 0, isFirst: true)
+                loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories)
             ])
             
         case .searchTapped:
@@ -118,14 +118,14 @@ class HomeReactor: Reactor {
             let nextPage = currentState.page + 1
             return .concat([
                 .just(.setPage(nextPage)),
-                loadPosts(page: nextPage, isFirst: false)
+                loadPosts(page: nextPage, isFirst: false, categories: currentState.selectedCategories)
             ])
             
         case .refresh:
             return .concat([
                 .just(.setRefreshing(true)),
                 .just(.setPage(0)),
-                loadPosts(page: 0, isFirst: true),
+                loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories),
                 .just(.setRefreshing(false))
             ])
         }

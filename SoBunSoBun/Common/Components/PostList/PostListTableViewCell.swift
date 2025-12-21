@@ -45,6 +45,7 @@ class PostListTableViewCell: UITableViewCell {
         
         view.snp.makeConstraints { make in
             make.edges.equalToSuperview().priority(.high)
+            make.width.equalToSuperview()
         }
         
         self.view = view

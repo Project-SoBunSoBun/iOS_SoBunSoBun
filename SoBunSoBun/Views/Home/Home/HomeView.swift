@@ -208,6 +208,12 @@ class HomeView: UIViewController {
         super.viewWillAppear(animated)
         
         reactor.action.onNext(.viewWillAppear)
+        
+        DispatchQueue.main.async {
+            if self.tableView.numberOfRows(inSection: 0) > 0 {
+                self.tableView.scrollToRow(at: .init(row: 0, section: 0), at: .top, animated: false)
+            }
+        }
     }
     
     // MARK: - 레이아웃 설정
@@ -255,16 +261,16 @@ class HomeView: UIViewController {
         // 검색창
         searchTextField.isEnabled = false
         searchTextField.snp.makeConstraints { make in
-            make.top.equalTo(myProfileButton.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(myProfileButton.snp.bottom).offset(8)
         }
         
         // 카테고리 목록
         categoriesScrollView.addSubview(categoriesStackView)
         
         categoriesScrollView.snp.makeConstraints { make in
-            make.top.equalTo(searchTextField.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(searchTextField.snp.bottom).offset(8)
             make.height.equalTo(51)
         }
         
@@ -281,9 +287,10 @@ class HomeView: UIViewController {
         tableView.refreshControl = refreshControl
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(categoriesScrollView.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(categoriesScrollView.snp.bottom).offset(8)
             make.bottom.equalToSuperview()
+            make.width.equalToSuperview()
         }
         
         // 글쓰기 버튼
@@ -419,7 +426,6 @@ extension HomeView {
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.posts }
-            .distinctUntilChanged { $0.count == $1.count } // 개수 비교
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(
                 cellIdentifier: PostListTableViewCell.identifier,
