@@ -62,7 +62,7 @@ class RegisterPostView: UIViewController {
     
     private let groupTitleTextField: TextFieldUnderline = {
         let tfu = TextFieldUnderline(maxLength: 120)
-        tfu.setPlaceholder(String(localized: "InsertTitle"))
+        tfu.placeholder = String(localized: "InsertTitle")
         
         return tfu
     }()
@@ -145,7 +145,7 @@ class RegisterPostView: UIViewController {
     
     private let minimumTextField: TextFieldMember = {
         let tfm = TextFieldMember(minValue: 2, maxValue: 10)
-        tfm.setPlaceholder(String(tfm.minValue))
+        tfm.placeholder = String(tfm.minValue)
         
         return tfm
     }()
@@ -161,7 +161,7 @@ class RegisterPostView: UIViewController {
     
     private let maximumTextField: TextFieldMember = {
         let tfm = TextFieldMember(minValue: 2, maxValue: 10)
-        tfm.setPlaceholder(String(tfm.maxValue))
+        tfm.placeholder = String(tfm.maxValue)
         
         return tfm
     }()
@@ -175,7 +175,7 @@ class RegisterPostView: UIViewController {
     
     private let marketTextField: TextFieldUnderline = {
         let tfu = TextFieldUnderline(maxLength: 120)
-        tfu.setPlaceholder(String(localized: "InsertMarket"))
+        tfu.placeholder = String(localized: "InsertMarket")
         
         return tfu
     }()
@@ -233,7 +233,12 @@ class RegisterPostView: UIViewController {
         return lb
     }()
     
-    private let plannedItemsTextView = AutoHeightTextView(minHeight: 112, maxLength: 100, placeholder: String(localized: "InsertContent"))
+    private let plannedItemsTextView: AutoHeightTextView = {
+        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 100)
+        ahtv.placeholder = String(localized: "InsertContent")
+        
+        return ahtv
+    }()
     
     private let notesTitleLabel: UILabel = {
         let lb = titleLabel()
@@ -242,7 +247,12 @@ class RegisterPostView: UIViewController {
         return lb
     }()
     
-    private let notesTextView = AutoHeightTextView(minHeight: 240, maxLength: 250, placeholder: String(localized: "InsertContent"))
+    private let notesTextView: AutoHeightTextView = {
+        let ahtv = AutoHeightTextView(minHeight: 240, maxLength: 250)
+        ahtv.placeholder = String(localized: "InsertContent")
+        
+        return ahtv
+    }()
     
     private let registerButton = Button(title: String(localized: "Register"))
     

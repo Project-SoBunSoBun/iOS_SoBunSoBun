@@ -8,9 +8,9 @@
 import UIKit
 import SnapKit
 
-class TextFieldPicker: UITextField {
+class TextFieldPicker: BaseTextField {
     init(frame: CGRect = .zero, icon: UIImage) {
-        super.init(frame: frame)
+        super.init(frame: frame, fontStyle: body16, showCursor: false)
         configureUI(icon: icon)
     }
     
@@ -40,9 +40,6 @@ class TextFieldPicker: UITextField {
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor.primary100.cgColor
         self.frame = CGRectInset(self.frame, -self.layer.borderWidth, -self.layer.borderWidth)
-        
-        // 폰트 설정
-        self.font = body16.font
         
         // 아이콘 설정
         rightDecoView.image = icon

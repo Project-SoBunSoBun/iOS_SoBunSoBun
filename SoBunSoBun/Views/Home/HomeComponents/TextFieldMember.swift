@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class TextFieldMember: UITextField {
+class TextFieldMember: BaseTextField {
     let minValue: Int
     let maxValue: Int
     
@@ -16,7 +16,7 @@ class TextFieldMember: UITextField {
         self.minValue = minValue
         self.maxValue = maxValue
         
-        super.init(frame: frame)
+        super.init(frame: frame, fontStyle: body16)
         
         configureUI()
     }
@@ -43,20 +43,10 @@ class TextFieldMember: UITextField {
     private lazy var leftContainer: UIView = UIView(frame: CGRect(x: 0, y: 0, width: edgesPadding, height: rightDecoView.frame.height))
     private lazy var rightContainer: UIView = UIView(frame: CGRect(x: 0, y: 0, width: edgesPadding + rightDecoView.frame.width, height: rightDecoView.frame.height))
     
-    func setPlaceholder(_ text: String) {
-        var attributes: [NSAttributedString.Key: Any] = body16.attributes()
-        attributes[.foregroundColor] = UIColor.neutral300
-        
-        self.attributedPlaceholder = NSAttributedString(string: text, attributes: body16.attributes())
-    }
-    
     private func configureUI() {
         self.delegate = self
         
         self.backgroundColor = .backgroundWhite
-        
-        // 커서 숨기기
-        self.tintColor = .clear
         
         // 모서리
         self.layer.cornerRadius = 16
@@ -65,9 +55,6 @@ class TextFieldMember: UITextField {
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor.primary100.cgColor
         self.frame = CGRectInset(self.frame, -self.layer.borderWidth, -self.layer.borderWidth)
-        
-        // 폰트 설정
-        self.font = body16.font
         
         // 오른쪽 정렬
         self.textAlignment = .right
@@ -95,72 +82,6 @@ class TextFieldMember: UITextField {
     override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
         return textRect(forBounds: bounds)
     }
-    
-    // 커서 설정
-    private var cursorLayer: CAShapeLayer?
-    private let cursorLineWidth: CGFloat = 1.5
-    
-    private func updateCursorLayer() {
-        // 기존 레이어 제거
-        cursorLayer?.removeFromSuperlayer()
-        cursorLayer = nil
-        
-        // 커스텀 레이어 추가
-        guard isFirstResponder else { return }
-        
-        guard let selectedRange = selectedTextRange else { return }
-        
-        var caretRect = self.firstRect(for: selectedRange)
-        caretRect = self.convert(caretRect, from: self.textInputView)
-        
-        let fontHeight = self.font?.lineHeight ?? 20
-        
-        let layer = CAShapeLayer()
-        let path = UIBezierPath(
-            roundedRect: CGRect(
-                x: caretRect.origin.x + 1,
-                y: caretRect.origin.y,
-                width: cursorLineWidth,
-                height: fontHeight
-            ), cornerRadius: cursorLineWidth / 2
-        )
-        
-        layer.path = path.cgPath
-        layer.strokeColor = UIColor.primary400.cgColor
-        layer.fillColor = UIColor.primary400.cgColor
-        layer.lineWidth = cursorLineWidth
-        
-        // 깜빡이는 애니메이션
-        let animation = CABasicAnimation(keyPath: "opacity")
-        animation.fromValue = 1.0
-        animation.toValue = 0.0
-        animation.duration = 0.5
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        animation.autoreverses = true
-        animation.repeatCount = .infinity
-        layer.add(animation, forKey: "blink")
-        
-        self.layer.addSublayer(layer)
-        cursorLayer = layer
-    }
-    
-    override func becomeFirstResponder() -> Bool {
-        let result = super.becomeFirstResponder()
-        updateCursorLayer()
-        return result
-    }
-    
-    override func resignFirstResponder() -> Bool {
-        let result = super.resignFirstResponder()
-        cursorLayer?.removeFromSuperlayer()
-        cursorLayer = nil
-        return result
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateCursorLayer()
-    }
 }
 
 extension TextFieldMember: UITextFieldDelegate {
@@ -187,11 +108,6 @@ extension TextFieldMember: UITextFieldDelegate {
         guard Int(updatedText) != nil else { return false }
         
         return true
-    }
-    
-    // 텍스트 변경 시 커서 업데이트
-    func textFieldDidChangeSelection(_ textField: UITextField) {
-        updateCursorLayer()
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
