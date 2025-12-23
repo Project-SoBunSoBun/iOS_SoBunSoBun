@@ -1,5 +1,5 @@
 //
-//  NavigationBar.swift
+//  BottomNavigationBar.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 10/18/25.
@@ -11,7 +11,7 @@ import SwiftUI
 import RxSwift
 import RxCocoa
 
-class NavigationBar: UIView {
+class BottomNavigationBar: UIView {
     private let disposeBag = DisposeBag()
     
     static let SHADOW_WIDTH: CGFloat = 344
@@ -183,7 +183,7 @@ class NavigationBar: UIView {
             }
     }
     
-    // NavigationBar 상태 변경
+    // BottomNavigationBar 상태 변경
     func updateSelectedIndex(index: Int) {
         updateIndicator(index: index)
         

@@ -17,6 +17,7 @@ enum AuthorizedAPI {
     case patchLocationVerification(address: String)
     case getHomeList(page: Int, size: Int)
     case getHomeListByCategories(category: [String], page: Int, size: Int)
+    case registerPost(model: RegisterPostBodyModel)
     // 정산
     case mySettleUps(activeOnly: Int, page: Int, size: Int)
     case deleteSettleUp(id: Int)
@@ -46,6 +47,8 @@ extension AuthorizedAPI: TargetType {
             return "/api/posts"
         case .getHomeListByCategories(category: let category, page: _, size: _):
             return "/api/posts/categories/\(category.joined(separator: ","))"
+        case .registerPost:
+            return "/api/posts"
         case .mySettleUps:
             return "/api/settleups/my"
         case .deleteSettleUp(id: let id):
@@ -67,6 +70,8 @@ extension AuthorizedAPI: TargetType {
             return .get
         case .getHomeListByCategories:
             return .get
+        case .registerPost:
+            return .post
         case .mySettleUps:
             return .get
         case .deleteSettleUp:
@@ -101,22 +106,31 @@ extension AuthorizedAPI: TargetType {
             let urlParameters = ["nickname": nickname]
             
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
+            
         case .myProfile:
             return .requestPlain
+            
         case .getLocationVerification:
             return .requestPlain
+            
         case .patchLocationVerification(address: let address):
             let body = LocationVerificationBodyModel(address: address)
             
             return .requestJSONEncodable(body)
+            
         case .getHomeList(page: let page, size: let size):
             let parameters = HomeListRequestModel(page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            
         case .getHomeListByCategories(category: _, page: let page, size: let size):
             let parameters = HomeListRequestModel(page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            
+        case .registerPost(model: let model):
+            return .requestJSONEncodable(model)
+        
         case .mySettleUps(activeOnly: let activeOnly, page: let page, size: let size):
             let parameters = SettleUpMyRequestModel(activeOnly: activeOnly, page: page, size: size)
             
@@ -135,8 +149,8 @@ extension AuthorizedAPI: TargetType {
                 .patchLocationVerification,
                 .getHomeList,
                 .getHomeListByCategories,
-                .mySettleUps,
-                .deleteSettleUp:
+                .registerPost,
+                .mySettleUps:
             return [:]
         }
     }
