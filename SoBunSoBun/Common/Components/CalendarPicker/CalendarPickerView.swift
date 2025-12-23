@@ -30,7 +30,6 @@ class CalendarPickerView: UIViewController {
     }
     
     private let calendar = Calendar.current
-    
     private let disposeBag = DisposeBag()
     
     // MARK: - 디자인 요소
@@ -184,7 +183,6 @@ class CalendarPickerView: UIViewController {
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale.current
         
-        
         guard let weekdays = dateFormatter.veryShortWeekdaySymbols else {
             return
         }
@@ -256,7 +254,12 @@ extension CalendarPickerView {
             .disposed(by: disposeBag)
         
         calendarCollectionView.rx.itemSelected
-            .compactMap { [weak self] indexPath in self?.reactor.currentState.calendarData[indexPath.item].date
+            .compactMap { [weak self] indexPath in
+                guard let self = self else {
+                    return nil
+                }
+                
+                return reactor.currentState.calendarData[indexPath.item].date
             }
             .map { Reactor.Action.selectDate($0) }
             .bind(to: reactor.action)

@@ -80,53 +80,53 @@ class HomeReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            return .concat([
-                currentState.isLocationVerified ? .empty() : verifyLocation(),
-                .just(.setPage(0)),
+            return Observable.concat([
+                currentState.isLocationVerified ? Observable.empty() : verifyLocation(),
+                Observable.just(.setPage(0)),
                 loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories)
             ])
             
         case .searchTapped:
-            return .just(.setSearchView)
+            return Observable.just(.setSearchView)
             
         case .notificationsTapped:
-            return .just(.setNotificationsView)
+            return Observable.just(.setNotificationsView)
             
         case .myProfileTapped:
-            return .just(.setMyProfileView)
+            return Observable.just(.setMyProfileView)
             
         case .addCategoryTapped:
-            return .just(.setAddCategoryTapped)
+            return Observable.just(.setAddCategoryTapped)
             
         case .getSelectedCategories(let selectedCategories):
-            return .concat([
-                .just(.setSelectedCategories(selectedCategories)),
-                .just(.setRefreshing(true)),
-                .just(.setPage(0)),
+            return Observable.concat([
+                Observable.just(.setSelectedCategories(selectedCategories)),
+                Observable.just(.setRefreshing(true)),
+                Observable.just(.setPage(0)),
                 loadPosts(page: 0, isFirst: true, categories: selectedCategories),
-                .just(.setRefreshing(false))
+                Observable.just(.setRefreshing(false))
             ])
             
         case .registerPostTapped:
-            return .just(.setRegisterPostView)
+            return Observable.just(.setRegisterPostView)
             
         case .loadMorePosts:
             guard !currentState.isLoading && currentState.hasMore else {
-                return .empty()
+                return Observable.empty()
             }
             
             let nextPage = currentState.page + 1
-            return .concat([
-                .just(.setPage(nextPage)),
+            return Observable.concat([
+                Observable.just(.setPage(nextPage)),
                 loadPosts(page: nextPage, isFirst: false, categories: currentState.selectedCategories)
             ])
             
         case .refresh:
-            return .concat([
-                .just(.setRefreshing(true)),
-                .just(.setPage(0)),
+            return Observable.concat([
+                Observable.just(.setRefreshing(true)),
+                Observable.just(.setPage(0)),
                 loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories),
-                .just(.setRefreshing(false))
+                Observable.just(.setRefreshing(false))
             ])
         }
     }
@@ -190,7 +190,7 @@ class HomeReactor: Reactor {
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 if let address = model.address, !model.expired {
-                    return .just(.verifyLocation(address))
+                    return Observable.just(.verifyLocation(address))
                 } else {
                     return self.getLocation()
                 }
@@ -199,7 +199,7 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.critical("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
-                return .just(.verifyLocation(String(localized: "ErrorMessage")))
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage")))
             }
     }
     
@@ -226,16 +226,16 @@ class HomeReactor: Reactor {
                         
                     case .denied, .restricted: // 권한 거부됨
                         self.logger.error("위치 권한 요청 후 거부됨")
-                        return .just(.setShowLocationSettingAlert)
+                        return Observable.just(.setShowLocationSettingAlert)
                         
                     default: // 뭔가 잘못 됨
                         self.logger.error("위치 권한 요청 후 무언가 잘못 됨: \(status.rawValue)")
-                        return .just(.verifyLocation(String(localized: "ErrorMessage")))
+                        return Observable.just(.verifyLocation(String(localized: "ErrorMessage")))
                     }
                 }
                 .catch { error in
                     self.logger.error("위치 권한 요청 오류: \(error.localizedDescription)")
-                    return .just(.setShowLocationSettingAlert)
+                    return Observable.just(.setShowLocationSettingAlert)
                 }
             
         case .authorizedWhenInUse, .authorizedAlways: // 이미 권한이 있는 경우
@@ -243,14 +243,14 @@ class HomeReactor: Reactor {
             
         case .denied, .restricted: // 권한 거부
             logger.error("위치 권한 거부됨")
-            return .just(.setShowLocationSettingAlert)
+            return Observable.just(.setShowLocationSettingAlert)
             
         default:
             logger.error("위치 권한이 무언가 잘못 됨: \(authStatus.rawValue)")
-            return .just(.verifyLocation(String(localized: "ErrorMessage")))
+            return Observable.just(.verifyLocation(String(localized: "ErrorMessage")))
         }
     }
-
+    
     // 디바이스로부터 현재 위치 정보 불러온 후 지오코더 API 호출
     private func requestLocationAndProcess() -> Observable<Mutation> {
         LocationManager.shared.requestCurrentLocation()
@@ -266,7 +266,7 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.error("위치 가져오기 실패: \(error.localizedDescription)")
-                return .just(.verifyLocation(String(localized: "ErrorMessage")))
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage")))
             }
     }
     
@@ -286,7 +286,7 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.critical("지오코드 API 호출 실패: \(error.localizedDescription)")
-                return .just(.verifyLocation(String(localized: "ErrorMessage")))
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage")))
             }
     }
     
@@ -306,7 +306,7 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.fault("위치 인증 실패: \(error.localizedDescription)")
-                return .just(.verifyLocation(String(localized: "ErrorMessage")))
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage")))
             }
     }
     
@@ -318,24 +318,25 @@ class HomeReactor: Reactor {
         : NetworkManager.shared.getHomeListByCategories(categories: categories, page: page, size: pageSize)
         
         return Observable.concat([
-            .just(.setLoading(true)),
+            Observable.just(.setLoading(true)),
             api.asObservable()
                 .flatMap { response -> Observable<Mutation> in
                     let mutations: Observable<Mutation> = isFirst
-                    ? .just(.setPosts(response.posts))
-                    : .just(.appendPosts(response.posts))
+                    ? Observable.just(.setPosts(response.posts))
+                    : Observable.just(.appendPosts(response.posts))
                     
-                    return .concat([mutations,
-                                   .just(.setHasMore(!response.pageInfo.last)),
-                                   .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
+                    return Observable.concat([
+                        mutations,
+                        Observable.just(.setHasMore(!response.pageInfo.last)),
+                        Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
                     ])
                 }
                 .catch { error in
                     self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
-                    return .concat([
-                        isFirst ? .just(.setPosts([])) : .empty(),
-                        .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                        .just(.setHasMore(false))
+                    return Observable.concat([
+                        isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
+                        Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
+                        Observable.just(.setHasMore(false))
                     ])
                 }
         ])

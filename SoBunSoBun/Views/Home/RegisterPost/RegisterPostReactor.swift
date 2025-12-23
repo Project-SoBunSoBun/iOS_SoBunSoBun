@@ -90,40 +90,40 @@ class RegisterPostReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .titleTextChanged(let title):
-            return .just(.setTitle(title))
+            return Observable.just(.setTitle(title))
             
         case .addCategoryTapped:
-            return .just(.setAddCategoryTapped)
+            return Observable.just(.setAddCategoryTapped)
             
         case .setSelectedCategories(let selectedCategories):
-            return .just(.setSelectedCategories(selectedCategories))
+            return Observable.just(.setSelectedCategories(selectedCategories))
             
         case .minimumMembersTextChanged(let members):
-            return .just(.setMinimumMembers(members))
+            return Observable.just(.setMinimumMembers(members))
             
         case .maximumMembersTextChanged(let members):
-            return .just(.setMaximumMembers(members))
+            return Observable.just(.setMaximumMembers(members))
             
         case .locationTextChanged(let location):
-            return .just(.setLocation(location))
+            return Observable.just(.setLocation(location))
             
         case .setDateTextFieldTapped:
-            return .just(.setDateTextFieldTapped)
+            return Observable.just(.setDateTextFieldTapped)
             
         case .setDate(let date):
-            return .just(.setDate(date))
+            return Observable.just(.setDate(date))
             
         case .setTimeTextFieldTapped:
-            return .just(.setTimeTextFieldTapped)
+            return Observable.just(.setTimeTextFieldTapped)
             
         case .setTime(let time):
-            return .just(.setTime(time))
+            return Observable.just(.setTime(time))
             
         case .plannedItemsTextChanged(let items):
-            return .just(.setPlannedItems(items))
+            return Observable.just(.setPlannedItems(items))
             
         case .notesTextChanged(let notes):
-            return .just(.setNotes(notes))
+            return Observable.just(.setNotes(notes))
             
         case .registerButtonTapped:
             return registerPost()
@@ -201,16 +201,16 @@ class RegisterPostReactor: Reactor {
               let deadlineAtDate: Date = Calendar.current.date(byAdding: .day, value: -1, to: convertedDate),
               let deadlineAtDateString: String = dateToISO8601String(date: deadlineAtDate) else {
             self.logger.fault("RegisterPostBodyModel 생성 실패")
-            return .concat([
-                .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                .just(.setErrorMessage(String(localized: "CheckYourInputs")))
+            return Observable.concat([
+                Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
+                Observable.just(.setErrorMessage(String(localized: "CheckYourInputs")))
             ])
         }
         
         guard maximumMembers >= minimumMembers else {
-            return .concat([
-                .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                .just(.setErrorMessage(String(localized: "CheckYourMinimumMembers")))
+            return Observable.concat([
+                Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
+                Observable.just(.setErrorMessage(String(localized: "CheckYourMinimumMembers")))
             ])
         }
         
@@ -226,22 +226,24 @@ class RegisterPostReactor: Reactor {
             maxMembers: maximumMembers
         )
         
-        return .concat([
-            .just(.setLoading(true)),
+        return Observable.concat([
+            Observable.just(.setLoading(true)),
             NetworkManager.shared.registerPost(model: model)
                 .asObservable()
                 .flatMap { _ -> Observable<Mutation> in
                     self.logger.debug("\(title) 게시글 등록 성공")
-                    return .concat([
-                        .just(.setLoading(false)),
-                        .just(.success)
+                    
+                    return Observable.concat([
+                        Observable.just(.setLoading(false)),
+                        Observable.just(.success)
                     ])
                 }
                 .catch { error in
                     self.logger.fault("게시글 등록 실패: \(error.localizedDescription)")
-                    return .concat([
-                        .just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                        .just(.setErrorMessage(String(localized: "ErrorMessage")))
+                    
+                    return Observable.concat([
+                        Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
+                        Observable.just(.setErrorMessage(String(localized: "ErrorMessage")))
                     ])
                 }
         ])

@@ -144,9 +144,8 @@ class AutoHeightTextView: UITextView {
         layoutIfNeeded()
         
         DispatchQueue.main.async { [weak self] in
-                    self?.updateCursorLayer()
-                }
-
+            self?.updateCursorLayer()
+        }
     }
     
     private func applyLineHeight() {
@@ -214,6 +213,7 @@ class AutoHeightTextView: UITextView {
     override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
         updateCursorLayer()
+        
         return result
     }
     
@@ -221,6 +221,7 @@ class AutoHeightTextView: UITextView {
         let result = super.resignFirstResponder()
         cursorLayer?.removeFromSuperlayer()
         cursorLayer = nil
+        
         return result
     }
     

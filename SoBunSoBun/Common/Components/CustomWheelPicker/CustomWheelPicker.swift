@@ -151,6 +151,7 @@ extension CustomWheelPicker {
             .filter { !$0 } // willDecelerate가 false일 때
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
+                
                 snapToMiddleItem()
             })
             .disposed(by: disposeBag)
@@ -160,6 +161,7 @@ extension CustomWheelPicker {
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
+                
                 snapToMiddleItem()
             })
             .disposed(by: disposeBag)
@@ -171,6 +173,7 @@ extension CustomWheelPicker {
             .skip(1)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
+                
                 triggerHaptic()
             })
             .disposed(by: disposeBag)
