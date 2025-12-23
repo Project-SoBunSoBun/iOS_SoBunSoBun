@@ -20,6 +20,7 @@ enum AuthorizedAPI {
     case registerPost(model: RegisterPostBodyModel)
     // 정산
     case mySettleUps(activeOnly: Int, page: Int, size: Int)
+    case deleteSettleUp(id: Int)
 }
 
 extension AuthorizedAPI: TargetType {
@@ -50,6 +51,8 @@ extension AuthorizedAPI: TargetType {
             return "/api/posts"
         case .mySettleUps:
             return "/api/settleups/my"
+        case .deleteSettleUp(id: let id):
+            return "/api/settleups/\(id)"
         }
     }
     
@@ -71,6 +74,8 @@ extension AuthorizedAPI: TargetType {
             return .post
         case .mySettleUps:
             return .get
+        case .deleteSettleUp:
+            return .delete
         }
     }
     
@@ -130,6 +135,8 @@ extension AuthorizedAPI: TargetType {
             let parameters = SettleUpMyRequestModel(activeOnly: activeOnly, page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+        case .deleteSettleUp:
+            return .requestPlain
         }
     }
     

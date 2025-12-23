@@ -15,14 +15,31 @@ class CustomAlertView: UIView {
     typealias Reactor = CustomAlertViewReactor
     private let reactor = CustomAlertViewReactor()
     
-    var onSettingsTapped: (() -> Void)?
+    var onPrimaryTapped: (() -> Void)?
     var onCancelTapped: (() -> Void)?
     
     var disposeBag = DisposeBag()
     
-    init(title: String, frame: CGRect = .zero) {
+    var isSubtitleEnabled: Bool = false {
+        didSet {
+            subtitleLabel.isHidden = !isSubtitleEnabled
+            setTitleSpacing(isSubtitleEnabled: isSubtitleEnabled)
+        }
+    }
+    
+    init(title: String,
+         subTitle: String? = nil,
+         primaryTitleKey: String = String(localized: "GoToSetting"),
+         cancelTitleKey: String = String(localized: "Cancel"),
+         frame: CGRect = .zero
+    ){
         super.init(frame: frame)
-        configureUI(title: title)
+        configureUI(
+            title: title,
+            subtitle: subTitle,
+            primaryTitleKey: primaryTitleKey,
+            cancelTitleKey: cancelTitleKey
+        )
         bind(reactor: reactor)
     }
     
@@ -40,7 +57,7 @@ class CustomAlertView: UIView {
         ctView.clipsToBounds = true
         ctView.isLayoutMarginsRelativeArrangement = true
         ctView.layoutMargins = UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0)
-                
+        
         return ctView
     }()
     
@@ -53,6 +70,15 @@ class CustomAlertView: UIView {
         return titleLabel
     }()
     
+    private let subtitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.textColor = .neutral900
+        lb.textAlignment = .center
+        lb.numberOfLines = 0
+        
+        return lb
+    }()
+    
     private let buttonStackView: UIStackView = {
         let buttonStackView = UIStackView()
         buttonStackView.axis = .vertical
@@ -61,16 +87,11 @@ class CustomAlertView: UIView {
         return buttonStackView
     }()
     
-    private let settingsButton: UIButton = {
+    private let primaryButton: UIButton = {
         var config = UIButton.Configuration.plain()
         var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary400
         
-        let attributedTitle = NSAttributedString(
-            string: String(localized: "GoToSetting"),
-            attributes: attributes
-        )
-        config.attributedTitle = AttributedString(attributedTitle)
         config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
         
         let button = UIButton(configuration: config)
@@ -83,11 +104,6 @@ class CustomAlertView: UIView {
         var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.neutral700
         
-        let attributedTitle = NSAttributedString(
-            string: String(localized: "Cancel"),
-            attributes: attributes
-        )
-        config.attributedTitle = AttributedString(attributedTitle)
         config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
         
         let button = UIButton(configuration: config)
@@ -109,24 +125,55 @@ class CustomAlertView: UIView {
         return divider
     }()
     
-    private func configureUI(title: String) {
+    private func configureUI(title: String,
+                             subtitle: String?,
+                             primaryTitleKey: String,
+                             cancelTitleKey: String) {
         self.backgroundColor = .alertBackgroundBlack
         
-        let attributedText = NSAttributedString(
+        // title
+        let titleAttributedText = NSAttributedString(
             string: title,
             attributes: title16.attributes(alignment: .center)
         )
-        titleLabel.attributedText = attributedText
+        titleLabel.attributedText = titleAttributedText
+        
+        // subTitle
+        if let subtitle = subtitle {
+            subtitleLabel.attributedText = NSAttributedString(
+                string: subtitle,
+                attributes: body14.attributes(alignment: .center)
+            )
+        }
+        
+        // primary localized
+        var primaryAttributes: [NSAttributedString.Key:Any] = title16.attributes(alignment: .center)
+        primaryAttributes[.foregroundColor] = UIColor.primary400
+        
+        let primaryAttributedTitle = NSAttributedString(
+            string: primaryTitleKey,
+            attributes: primaryAttributes
+        )
+        primaryButton.configuration?.attributedTitle = AttributedString(primaryAttributedTitle)
+        
+        // cancel localized
+        var cancelAttributes: [NSAttributedString.Key:Any] = title16.attributes(alignment: .center)
+        cancelAttributes[.foregroundColor] = UIColor.neutral700
+        
+        let cancelAttributedTitle = NSAttributedString(
+            string: cancelTitleKey,
+            attributes: cancelAttributes
+        )
+        cancelButton.configuration?.attributedTitle = AttributedString(cancelAttributedTitle)
         
         self.addSubview(containerView)
         
-        [titleLabel, firstDivider, settingsButton, secondDivider, cancelButton].forEach {
+        [titleLabel, subtitleLabel, firstDivider, primaryButton, secondDivider, cancelButton].forEach {
             containerView.addArrangedSubview($0)
         }
         
-        
         containerView.setCustomSpacing(16, after: titleLabel)
-
+        
         containerView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.equalToSuperview().multipliedBy(0.72)
@@ -136,12 +183,17 @@ class CustomAlertView: UIView {
             make.horizontalEdges.equalToSuperview().inset(16)
         }
         
+        subtitleLabel.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(titleLabel.snp.bottom).offset(10)
+        }
+        
         firstDivider.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.height.equalTo(1)
         }
         
-        settingsButton.snp.makeConstraints { make in
+        primaryButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
         }
         
@@ -153,6 +205,11 @@ class CustomAlertView: UIView {
             make.horizontalEdges.equalToSuperview()
             make.height.equalTo(1)
         }
+    }
+    
+    private func setTitleSpacing(isSubtitleEnabled: Bool) {
+        containerView.setCustomSpacing(isSubtitleEnabled ? 10 : 16, after: titleLabel)
+        containerView.setCustomSpacing(isSubtitleEnabled ? 16 : 0, after: subtitleLabel)
     }
     
     func show(on viewController: UIViewController) {
@@ -180,7 +237,7 @@ extension CustomAlertView {
     
     private func bindAction(reactor: CustomAlertViewReactor) {
         // 설정 버튼 탭
-        settingsButton.rx.tap
+        primaryButton.rx.tap
             .map { Reactor.Action.settingButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -197,8 +254,10 @@ extension CustomAlertView {
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
-                self?.onSettingsTapped?()
-                self?.removeFromSuperview()
+                guard let self = self else { return }
+                
+                self.onPrimaryTapped?()
+                self.removeFromSuperview()
             })
             .disposed(by: disposeBag)
         

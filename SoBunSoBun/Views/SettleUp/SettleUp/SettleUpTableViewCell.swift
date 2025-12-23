@@ -27,7 +27,12 @@ class SettleUpTableViewCell: UITableViewCell {
         incompleteView = nil
     }
     
-    func configure(with item: SettleUpItem) {
+    func configure(with item: SettleUpItem,
+                   onDeleteTapped: @escaping () -> Void = {},
+                   onSettleUpButtonTapped: @escaping () -> Void = {},
+                   onStatementCheckButtonTapped: @escaping () -> Void = {},
+                   onShareButtonTapped: @escaping () -> Void = {}
+    ) {
         self.backgroundColor = .clear
         self.contentView.backgroundColor = .clear
         
@@ -48,5 +53,10 @@ class SettleUpTableViewCell: UITableViewCell {
             make.top.equalToSuperview().offset(8)
             make.bottom.equalToSuperview().inset(8)
         }
+        
+        incompleteView?.onDeleteButtonTapped = onDeleteTapped
+        incompleteView?.onSettleUpButtonTapped = onSettleUpButtonTapped
+        incompleteView?.onStatementCheckButtonTapped = onStatementCheckButtonTapped
+        incompleteView?.onShareButtonTapped = onShareButtonTapped
     }
 }

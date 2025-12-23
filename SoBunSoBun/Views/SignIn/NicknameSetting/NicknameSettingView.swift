@@ -143,10 +143,11 @@ class NicknameSettingView: UIViewController {
     
     // 권한 요청이 없을 때 실행 될 설정으로 이동시키는 알러트
     private func showPermissionAlert() {
-        let alertView = CustomAlertView(title: String(localized: "GalleryPermissionMessage")
+        let alertView = CustomAlertView(
+            title: String(localized: "GalleryPermissionMessage")
         )
         
-        alertView.onSettingsTapped = {
+        alertView.onPrimaryTapped = {
             if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsURL)
             }
