@@ -610,7 +610,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d개 %d원"
+            "value" : "%d개 %@원"
           }
         }
       }
@@ -842,6 +842,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "정산"
+          }
+        }
+      }
+    },
+    "SettleUp1stStepDeleteMessage" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록된 상품을 삭제하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SettleUp1stStepEditMessage" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록된 상품을 수정하시겠습니까?"
           }
         }
       }
