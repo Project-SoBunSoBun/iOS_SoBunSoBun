@@ -49,6 +49,8 @@ class ListedProduct: UIView {
     private let itemNameLabel: UILabel = {
         let lb = UILabel()
         lb.textColor = .neutral900
+        lb.numberOfLines = 1
+        lb.lineBreakMode = .byTruncatingTail
         
         return lb
     }()
@@ -68,31 +70,30 @@ class ListedProduct: UIView {
         
         var attributedString = NSAttributedString(string: String(localized: "ListedProductEdit"), attributes: title14.attributes())
         
-        
         config.attributedTitle = .init(attributedString)
-        config.baseBackgroundColor = .neutral50
-        config.baseForegroundColor = .primary400
+        config.baseBackgroundColor = .backgroundWhite
+        config.baseForegroundColor = .primary300
         config.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
         
         bt.configuration = config
         bt.layer.cornerRadius = 8
         bt.clipsToBounds = true
+        bt.layer.borderWidth = 1
+        bt.layer.borderColor = UIColor.primary100.cgColor
         
         return bt
     }()
     
     // 삭제 버튼
     private let deleteButton: UIButton = {
-        var config = UIButton.Configuration.filled()
-        config.baseBackgroundColor = .neutral50
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 27)
-        config.image = .blueFail
+        var config = UIButton.Configuration.plain()
+        config.baseBackgroundColor = .clear
+        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
+        config.image = .greyClose
         config.imagePadding = 0
-        config.contentInsets = .init(top: 9, leading: 9, bottom: 9, trailing: 9)
+        config.contentInsets = .init(top: 6, leading: 6, bottom: 6, trailing: 6)
         
         let bt = UIButton(configuration: config)
-        bt.layer.cornerRadius = 13.5
-        bt.clipsToBounds = true
         
         return bt
     }()
@@ -103,6 +104,16 @@ class ListedProduct: UIView {
         dv.backgroundColor = .primary100
         
         return dv
+    }()
+    
+    // 천단위 콤마 Formatter
+    private let priceFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        formatter.maximumFractionDigits = 0
+        
+        return formatter
     }()
     
     // MARK: - 레이아웃 설정
@@ -121,55 +132,58 @@ class ListedProduct: UIView {
         
         // 상품 수량 or 중량,  총 가격
         let won = String(localized: "Won")
+        let priceString = priceFormatter.string(from: NSNumber(value: itemPrice)) ?? "\(itemPrice)"
         let totalText: String
         
         switch unitIndex {
         case 1:
             let format = String(localized: "ListedProductItemTotal")
-            totalText = String(format: format, itemCount, itemPrice)
+            totalText = String(format: format, itemCount, priceString)
         case 2:
             totalText = "\(itemCount)g \(itemPrice)\(won)"
         
         default:
             let format = String(localized: "ListedProductItemTotal")
-            totalText = String(format: format, itemCount, itemPrice)
+            totalText = String(format: format, itemCount, priceString)
         }
         
         itemTotalLabel.attributedText = NSAttributedString(
             string: totalText,
             attributes: body16.attributes(alignment: .left))
         
-        [itemNameLabel, itemTotalLabel, deleteButton, editButton, divider].forEach {
+        [itemNameLabel, deleteButton, itemTotalLabel, editButton, divider].forEach {
             self.addSubview($0)
         }
         
         // 상품명
         itemNameLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.leading.equalToSuperview()
+            make.trailing.equalTo(deleteButton.snp.leading).offset(-8)
             make.top.equalToSuperview().offset(16)
-        }
-        
-        // 상품 수량 or 중량,  총 가격
-        itemTotalLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(16)
-            make.top.equalTo(itemNameLabel.snp.bottom).offset(8)
         }
         
         // 삭제 버튼
         deleteButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(16)
-            make.centerY.equalTo(itemTotalLabel)
+            make.trailing.equalToSuperview()
+            make.centerY.equalTo(itemNameLabel)
+            make.size.equalTo(24)
+        }
+        
+        // 상품 수량 or 중량,  총 가격
+        itemTotalLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview()
+            make.top.equalTo(itemNameLabel.snp.bottom).offset(16)
         }
         
         // 수정하기 버튼
         editButton.snp.makeConstraints { make in
-            make.trailing.equalTo(deleteButton.snp.leading).offset(-8)
-            make.centerY.equalTo(deleteButton)
+            make.trailing.equalToSuperview()
+            make.centerY.equalTo(itemTotalLabel)
         }
         
         // 구분선
         divider.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview()
             make.top.equalTo(itemTotalLabel.snp.bottom).offset(16)
             make.bottom.equalToSuperview()
             make.height.equalTo(1)
