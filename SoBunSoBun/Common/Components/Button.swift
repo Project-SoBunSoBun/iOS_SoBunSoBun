@@ -38,4 +38,8 @@ class Button: UIButton {
             make.height.equalTo(64)
         }
     }
+    
+    func changeTitle(title: String) {
+        self.setTitle(title, for: .normal)
+    }
 }
