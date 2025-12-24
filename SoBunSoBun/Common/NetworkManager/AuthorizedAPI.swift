@@ -150,7 +150,8 @@ extension AuthorizedAPI: TargetType {
                 .getHomeList,
                 .getHomeListByCategories,
                 .registerPost,
-                .mySettleUps:
+                .mySettleUps,
+                .deleteSettleUp:
             return [:]
         }
     }
