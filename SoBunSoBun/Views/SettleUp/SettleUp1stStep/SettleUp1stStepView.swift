@@ -373,9 +373,6 @@ class SettleUp1stStepView: UIViewController {
         return sv
     }()
     
-    // 상품 등록 Test
-    private let listedProduct1 = ListedProduct(itemName: "상품명 1", itemCount: 4, itemPrice: 20000, unitIndex: 1)
-    
     // 총 금액 Label과 총 금액원 Label이 들어갈 StackView
     private let totalLabelStackView: UIStackView = {
         let sv = UIStackView()
@@ -676,7 +673,8 @@ class SettleUp1stStepView: UIViewController {
             }
             
             totalLabelStackView.snp.makeConstraints { make in
-                make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
+                make.horizontalEdges.equalToSuperview().inset(16)
+                make.verticalEdges.equalToSuperview().inset(10)
             }
             
             settleUpButton.snp.makeConstraints { make in
@@ -710,6 +708,10 @@ class SettleUp1stStepView: UIViewController {
             }
             
             productStackView.addArrangedSubview(view)
+            
+            view.snp.makeConstraints { make in
+                make.horizontalEdges.width.equalToSuperview()
+            }
         }
     }
     
