@@ -140,7 +140,7 @@ class ListedProduct: UIView {
             let format = String(localized: "ListedProductItemTotal")
             totalText = String(format: format, itemCount, priceString)
         case 2:
-            totalText = "\(itemCount)g \(itemPrice)\(won)"
+            totalText = "\(itemCount)g \(priceString)\(won)"
         
         default:
             let format = String(localized: "ListedProductItemTotal")
@@ -158,7 +158,7 @@ class ListedProduct: UIView {
         // 상품명
         itemNameLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
-            make.trailing.equalTo(deleteButton.snp.leading).offset(-8)
+            make.trailing.equalTo(deleteButton.snp.leading).offset(-12)
             make.top.equalToSuperview().offset(16)
         }
         
