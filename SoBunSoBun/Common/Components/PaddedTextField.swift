@@ -8,10 +8,10 @@
 import UIKit
 
 final class PaddedTextField: UITextField {
-    var padding = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16)
+    var padding = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
     
     func configurePadding(width: Int) {
-        padding = UIEdgeInsets(top: 10, left: 16, bottom: 10, right: CGFloat(24 + width))
+        padding = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: CGFloat(24 + width))
         
         layoutSubviews()
     }
