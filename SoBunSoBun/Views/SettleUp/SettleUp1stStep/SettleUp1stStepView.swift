@@ -423,6 +423,16 @@ class SettleUp1stStepView: UIViewController {
         return lb
     }()
     
+    // 천단위 콤마 Formatter
+    private let priceFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        formatter.maximumFractionDigits = 0
+        
+        return formatter
+    }()
+    
     // 정산하기 버튼
     private let settleUpButton = Button(title: String(localized: "SettleUpStart"))
     
@@ -430,10 +440,10 @@ class SettleUp1stStepView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        updateItemCountLabel(count: 0)
-        
         configureUI()
         bind(reactor: reactor)
+        
+        updateItemCountLabel(count: 0)
     }
     
     // MARK: - 레이아웃 설정
@@ -595,42 +605,154 @@ class SettleUp1stStepView: UIViewController {
         itemCountLabel.attributedText = attributedString
     }
     
-    // 상품이 추가되었을 때 사용 할 함수
-    private func remakeConstraints() {
+    private func updateSubTitleLabel(count: Int) {
+        let format = String(localized: "SettleUpItemRegistered")
+        
+        let attributedText = NSAttributedString(
+            string: String(format: format, count),
+            attributes: body14.attributes(alignment: .center)
+        )
+        
+        subtitleLabel.attributedText = attributedText
+    }
+    
+    private func renderProducts(products: [ListedProductModel]) {
+        productStackView.arrangedSubviews.forEach {
+            productStackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        
+        if products.isEmpty {
+            showEmptyState()
+        } else {
+            showProductList(products: products)
+        }
+        
+        updateItemCountLabel(count: products.count)
+        updateSubTitleLabel(count: products.count)
+    }
+    
+    private func showEmptyState() {
+        productStackView.removeFromSuperview()
+        totalBackgroundView.removeFromSuperview()
+        settleUpButton.removeFromSuperview()
+        
+        if emptyStateView.superview == nil {
+            [emptyStateView, emptyStateLabel].forEach {
+                contentView.addSubview($0)
+            }
+            
+            emptyStateView.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
+                make.top.equalTo(registeredItemLabel.snp.bottom)
+                make.bottom.equalToSuperview()
+                make.height.equalTo(160)
+            }
+            
+            emptyStateLabel.snp.remakeConstraints { make in
+                make.center.equalTo(emptyStateView)
+            }
+        }
+    }
+    
+    private func showProductList(products: [ListedProductModel]) {
         [emptyStateView, emptyStateLabel].forEach {
             $0.removeFromSuperview()
         }
         
-        [productStackView, totalBackgroundView, settleUpButton].forEach {
-            contentView.addSubview($0)
+        if productStackView.superview == nil {
+            [productStackView, totalBackgroundView, settleUpButton].forEach {
+                contentView.addSubview($0)
+            }
+            
+            productStackView.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16)
+                make.top.equalTo(registeredItemLabel.snp.bottom).offset(16)
+            }
+            
+            totalBackgroundView.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16)
+                make.top.equalTo(productStackView.snp.bottom).offset(16)
+            }
+            
+            totalLabelStackView.snp.makeConstraints { make in
+                make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
+            }
+            
+            settleUpButton.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16)
+                make.top.equalTo(totalBackgroundView.snp.bottom).offset(16)
+                make.height.equalTo(64)
+                make.bottom.equalToSuperview().inset(16)
+            }
         }
         
-        productStackView.addArrangedSubview(listedProduct1)
+        products.enumerated().forEach { index, product in
+            let view = ListedProduct(
+                itemName: product.name,
+                itemCount: product.count,
+                itemPrice: product.price,
+                unitIndex: product.unitIndex
+            )
+            
+            // 수정하기 버튼 이벤트 처리
+            view.onEditButtonTapped = { [weak self] in
+                guard let self = self else { return }
+                
+                self.showEditItemAlert(index: index)
+            }
+            
+            // 삭제 버튼 이벤트 처리
+            view.onDeleteButtonTapped = { [weak self] in
+                guard let self = self else { return }
+                
+                self.showDeleteItemAlert(index: index)
+            }
+            
+            productStackView.addArrangedSubview(view)
+        }
+    }
+    
+    // 삭제 알림창
+    private func showDeleteItemAlert(index: Int) {
+        let alert = CustomAlertView(
+            title: String(localized: "SettleUp1stStepDeleteMessage"),
+            primaryTitleKey: String(localized: "Delete"),
+            cancelTitleKey: String(localized: "Cancel")
+        )
         
-        productStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(registeredItemLabel.snp.bottom)
-            make.bottom.equalTo(totalBackgroundView.snp.top).offset(-16)
+        alert.isSubtitleEnabled = false
+        
+        alert.onPrimaryTapped = {
+            self.reactor.action.onNext(.productDeleted(index))
         }
         
-        totalBackgroundView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(productStackView.snp.bottom).offset(16)
+        alert.onCancelTapped = {
+            self.logger.debug("취소됨")
         }
         
-        totalLabelStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 10, left: 16, bottom: 10, right: 16))
+        alert.show(on: self)
+    }
+    
+    // 수정 알림창
+    private func showEditItemAlert(index: Int) {
+        let alert = CustomAlertView(
+            title: String(localized: "SettleUp1stStepEditMessage"),
+            primaryTitleKey: String(localized: "ListedProductEdit"),
+            cancelTitleKey: String(localized: "Cancel")
+        )
+        
+        alert.isSubtitleEnabled = false
+        
+        alert.onPrimaryTapped = {
+            self.reactor.action.onNext(.productEdited(index))
         }
         
-        settleUpButton.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(totalBackgroundView.snp.bottom).offset(16)
-            make.height.equalTo(64)
-            make.bottom.equalToSuperview()
+        alert.onCancelTapped = {
+            self.logger.debug("취소됨")
         }
         
-        let count = productStackView.arrangedSubviews.count
-        updateItemCountLabel(count: count)
+        alert.show(on: self)
     }
 }
 
@@ -647,6 +769,44 @@ extension SettleUp1stStepView {
             .map { Reactor.Action.backButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        // 수량 버튼 탭
+        quantityButton.rx.tap
+            .map { Reactor.Action.unitButtonTapped(1) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 중량 버튼 탭
+        weightButton.rx.tap
+            .map { Reactor.Action.unitButtonTapped(2) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 등록하기 버튼 활성화 여부
+        Observable.combineLatest(
+            itemNameTextField.rx.text.orEmpty,
+            itemCountTextField.rx.text.orEmpty,
+            itemAmountTextField.rx.text.orEmpty
+        )
+        .map { !$0.0.isEmpty && !$0.1.isEmpty && !$0.2.isEmpty }
+        .bind(to: registerButton.rx.isEnabled)
+        .disposed(by: disposeBag)
+        
+        // 등록하기 버튼 탭
+        registerButton.rx.tap
+            .withLatestFrom(
+                Observable.combineLatest(
+                    itemNameTextField.rx.text.orEmpty,
+                    itemCountTextField.rx.text.orEmpty,
+                    itemAmountTextField.rx.text.orEmpty
+                )
+            )
+            .map { name, count, amount in
+                Reactor.Action.registerButtonTapped(name: name, count: count, amount: amount)
+            }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
     }
     
     private func bindState(reactor: SettleUp1stStepReactor) {
@@ -659,6 +819,157 @@ extension SettleUp1stStepView {
                 self.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
+        
+        // 선택된 단위에 따라 UI 업데이트
+        reactor.state.map { $0.selectedUnitIndex }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] selectedIndex in
+                guard let self = self else { return }
+                
+                self.updateUnitSelection(selectedIndex: selectedIndex)
+            })
+            .disposed(by: disposeBag)
+        
+        // 스택뷰에 상품 등록하기
+        reactor.state.map { $0.products }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] products in
+                guard let self = self else { return }
+                
+                self.renderProducts(products: products)
+            })
+            .disposed(by: disposeBag)
+        
+        // 등록 후 TextField 초기화
+        reactor.state.map { $0.products.count }
+            .distinctUntilChanged()
+            .skip(1)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.itemNameTextField.text = ""
+                self.itemCountTextField.text = ""
+                self.itemAmountTextField.text = ""
+                
+                self.itemNameTextField.sendActions(for: .editingChanged)
+                self.itemCountTextField.sendActions(for: .editingChanged)
+                self.itemAmountTextField.sendActions(for: .editingChanged)
+            })
+            .disposed(by: disposeBag)
+        
+        // 총 금액 라벨 UI 업데이트
+        reactor.state.map { $0.totalPrice }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] total in
+                guard let self = self else { return }
+                
+                let won = String(localized: "Won")
+                let formattedNumber = priceFormatter.string(from: NSNumber(value: total)) ?? "\(total)"
+                let format = "\(formattedNumber)\(won)"
+                let attributedText = NSAttributedString(
+                    string: format,
+                    attributes: title18.attributes(alignment: .right)
+                )
+                
+                self.totalPriceLabel.attributedText = attributedText
+            })
+            .disposed(by: disposeBag)
+        
+        // 상품 수정하기 클릭 후 라벨 업데이트
+        reactor.state.map { $0.editingProduct }
+            .distinctUntilChanged()
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] product in
+                guard let self = self else { return }
+                
+                self.itemNameTextField.text = product.name
+                self.reactor.action.onNext(.unitButtonTapped(product.unitIndex))
+                
+                DispatchQueue.main.async {
+                    self.itemCountTextField.text = "\(product.count)"
+                    self.itemAmountTextField.text = "\(product.price)"
+                    
+                    self.itemNameTextField.sendActions(for: .editingChanged)
+                    self.itemCountTextField.sendActions(for: .editingChanged)
+                    self.itemAmountTextField.sendActions(for: .editingChanged)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 등록하기(수정하기) 버튼 텍스트 변경
+        reactor.state.map { $0.isEditing }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isEditing in
+                guard let self = self else { return }
+                
+                let title = isEditing ? String(localized: "ListedProductEdit") : String(localized: "Register")
+                
+                self.registerButton.changeTitle(title: title)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func updateUnitSelection(selectedIndex: Int) {
+        if selectedIndex == 1 {
+            var quantityConfig = quantityButton.configuration
+            quantityConfig?.baseBackgroundColor = .primary100
+            quantityConfig?.baseForegroundColor = .primary400
+            quantityButton.configuration = quantityConfig
+            quantityButton.layer.borderWidth = 2
+            quantityButton.layer.borderColor = UIColor.primary400.cgColor
+            
+            var weightConfig = weightButton.configuration
+            weightConfig?.baseBackgroundColor = .primary50
+            weightConfig?.baseForegroundColor = .primary300
+            weightButton.configuration = weightConfig
+            weightButton.layer.borderWidth = 0
+            
+            // itemCountTextField rightView 업데이트
+            updateTextFieldUnit(textField: itemCountTextField, unit: String(localized: "Count"))
+        } else {
+            var quantityConfig = quantityButton.configuration
+            quantityConfig?.baseBackgroundColor = .primary50
+            quantityConfig?.baseForegroundColor = .primary300
+            quantityButton.configuration = quantityConfig
+            quantityButton.layer.borderWidth = 0
+            
+            var weightConfig = weightButton.configuration
+            weightConfig?.baseBackgroundColor = .primary100
+            weightConfig?.baseForegroundColor = .primary400
+            weightButton.configuration = weightConfig
+            weightButton.layer.borderWidth = 2
+            weightButton.layer.borderColor = UIColor.primary400.cgColor
+            
+            // itemCountTextField rightView 업데이트
+            updateTextFieldUnit(textField: itemCountTextField, unit: "g")
+        }
+    }
+    
+    private func updateTextFieldUnit(textField: UITextField, unit: String) {
+        let label = UILabel(frame: .init())
+        label.text = unit
+        label.font = body16.font
+        label.textColor = .neutral900
+        
+        let container = UIView()
+        container.addSubview(label)
+        label.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 16))
+        }
+        
+        if let paddedTextField = textField as? PaddedTextField {
+            paddedTextField.configurePadding(width: Int(14))
+        }
+        
+        textField.rightView = container
+        textField.rightViewMode = .always
+        textField.text = ""
     }
 }
 
