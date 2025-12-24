@@ -130,6 +130,8 @@ class ListedProduct: UIView {
             attributes: title16.attributes(alignment: .left)
         )
         
+        itemNameLabel.lineBreakMode = .byTruncatingTail
+        
         // 상품 수량 or 중량,  총 가격
         let won = String(localized: "Won")
         let priceString = priceFormatter.string(from: NSNumber(value: itemPrice)) ?? "\(itemPrice)"
@@ -158,7 +160,7 @@ class ListedProduct: UIView {
         // 상품명
         itemNameLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
-            make.trailing.equalTo(deleteButton.snp.leading).offset(-12)
+            make.trailing.equalTo(deleteButton.snp.leading).offset(-8)
             make.top.equalToSuperview().offset(16)
         }
         
@@ -168,7 +170,7 @@ class ListedProduct: UIView {
             make.centerY.equalTo(itemNameLabel)
             make.size.equalTo(24)
         }
-        
+
         // 상품 수량 or 중량,  총 가격
         itemTotalLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
