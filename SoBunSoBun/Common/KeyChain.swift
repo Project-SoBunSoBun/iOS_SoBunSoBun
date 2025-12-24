@@ -38,7 +38,7 @@ final class KeyChain {
         if status == errSecSuccess {
             logger.debug("[KeyChain]\n\n저장 성공\n\nKEY: \(key)\nVALUE: \(value)")
         } else { // 실패 했을 때
-            logger.critical("[KeyChain]\n\n저장 실패\n\nKEY: \(key)\nVALUE: \(value)")
+            logger.fault("[KeyChain]\n\n저장 실패\n\nKEY: \(key)\nVALUE: \(value)")
         }
     }
     
@@ -72,7 +72,7 @@ final class KeyChain {
         if status == errSecSuccess {
             logger.debug("[KeyChain]\n\n삭제 성공\n\nKEY: \(key)")
         } else { // 실패 했을 때
-            logger.critical("[KeyChain]\n\n삭제 성공\n\nKEY: \(key)")
+            logger.debug("[KeyChain]\n\n삭제 실패\n\nKEY: \(key)")
         }
     }
 }

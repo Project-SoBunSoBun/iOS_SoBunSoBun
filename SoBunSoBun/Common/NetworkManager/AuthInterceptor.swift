@@ -26,6 +26,9 @@ final class AuthInterceptor: RequestInterceptor {
               let accessTokenExpireAtKST = KeyChain.shared.get(key: "ACCESS_TOKEN_EXPIRE_AT_KST")
         else {
             // TODO: LogOut 구현하기 (ex 로그인 화면으로 이동)
+            logger.debug("ACCESS_TOKEN과 ACCESS_TOKEN_EXPIRE_AT_KST가 Keychain에 존재하지 않습니다.")
+            logger.fault("API 요청 중 오류가 발생했습니다. 요청을 중단하고 로그아웃 처리됩니다.")
+            
             return
         }
         

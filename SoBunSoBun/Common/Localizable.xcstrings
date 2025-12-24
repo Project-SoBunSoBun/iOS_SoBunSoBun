@@ -415,6 +415,17 @@
         }
       }
     },
+    "Characters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자"
+          }
+        }
+      }
+    },
     "Chat" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -422,6 +433,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "채팅"
+          }
+        }
+      }
+    },
+    "CheckYourInputs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "입력을 확인해주세요."
+          }
+        }
+      }
+    },
+    "CheckYourMinimumMembers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소인원은 최대인원보다 많을 수 없습니다"
           }
         }
       }
@@ -455,6 +488,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "개"
+          }
+        }
+      }
+    },
+    "Date" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "날짜"
+          }
+        }
+      }
+    },
+    "DatePlaceholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연도 - 월 - 일"
           }
         }
       }
@@ -520,6 +575,17 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
+            "value" : "오류"
+          }
+        }
+      }
+    },
+    "ErrorMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "오류가 발생했습니다."
           }
         }
@@ -547,6 +613,17 @@
         }
       }
     },
+    "GroupTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임 제목"
+          }
+        }
+      }
+    },
     "Home" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -569,6 +646,28 @@
         }
       }
     },
+    "InsertContent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내용을 입력해주세요"
+          }
+        }
+      }
+    },
+    "InsertMarket" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지점을 입력해주세요"
+          }
+        }
+      }
+    },
     "InsertNickname" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -576,6 +675,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "닉네임을 입력해주세요"
+          }
+        }
+      }
+    },
+    "InsertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제목을 입력해주세요"
+          }
+        }
+      }
+    },
+    "ItemKeywords" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품 키워드"
           }
         }
       }
@@ -703,6 +824,50 @@
         }
       }
     },
+    "Maximum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대"
+          }
+        }
+      }
+    },
+    "MaximumMembers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대인원"
+          }
+        }
+      }
+    },
+    "Minimum" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소"
+          }
+        }
+      }
+    },
+    "MinimumMembers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소인원"
+          }
+        }
+      }
+    },
     "Mypage" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -736,6 +901,17 @@
         }
       }
     },
+    "Notes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전달 사항"
+          }
+        }
+      }
+    },
     "NumberOfParticipants" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -758,6 +934,17 @@
         }
       }
     },
+    "PeopleCount" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "명"
+          }
+        }
+      }
+    },
     "PersonalInfomationAgree" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -765,6 +952,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "[필수] 개인정보 수집 및 이용 동의"
+          }
+        }
+      }
+    },
+    "PlannedItems" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구매 예정 품목"
           }
         }
       }
@@ -787,6 +985,72 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "등록하기"
+          }
+        }
+      }
+    },
+    "Register" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록하기"
+          }
+        }
+      }
+    },
+    "RegisterPostDeadlineInfoMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임 날짜를 기준으로, 신청 마감일은 하루 전으로 자동 설정됩니다."
+          }
+        }
+      }
+    },
+    "RegisterPostInfo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "<안내> 명예훼손, 광고/홍보 목적의 글, 온라인 공동구매, 해외 직구 및 배송 글은 올리실 수가 없어요."
+          }
+        }
+      }
+    },
+    "RegisterPostSuccess" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임글이\n성공적으로\n게시되었습니다!"
+          }
+        }
+      }
+    },
+    "RegisterPostTimePickerTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새로운 모임의 만남 시간을\n지정해 주세요."
+          }
+        }
+      }
+    },
+    "RegisterPostTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "글 등록하기"
           }
         }
       }
@@ -1168,6 +1432,17 @@
         }
       }
     },
+    "Specify" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지정하기"
+          }
+        }
+      }
+    },
     "Start" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1175,6 +1450,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "시작하기"
+          }
+        }
+      }
+    },
+    "Time" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시간"
           }
         }
       }

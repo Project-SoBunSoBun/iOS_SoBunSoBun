@@ -66,7 +66,7 @@ class HomeView: UIViewController {
         return iv
     }()
     
-    private let mypageButton: UIButton = {
+    private let myProfileButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.image = .glassUser
         config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
@@ -153,6 +153,11 @@ class HomeView: UIViewController {
         tv.register(PostListTableViewCell.self, forCellReuseIdentifier: PostListTableViewCell.identifier)
         tv.estimatedRowHeight = 142
         tv.rowHeight = UITableView.automaticDimension
+        tv.contentInset = .init(
+            top: 0,
+            left: 0,
+            bottom: 8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8,
+            right: 0)
         
         return tv
     }()
@@ -163,7 +168,7 @@ class HomeView: UIViewController {
         return rc
     }()
     
-    private let writeButton: UIButton = {
+    private let registerPostButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.background.backgroundColor = .primary500
         config.cornerStyle = .fixed
@@ -199,12 +204,24 @@ class HomeView: UIViewController {
         bind(reactor: reactor)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        reactor.action.onNext(.viewWillAppear)
+        
+        DispatchQueue.main.async {
+            if self.tableView.numberOfRows(inSection: 0) > 0 {
+                self.tableView.scrollToRow(at: .init(row: 0, section: 0), at: .top, animated: false)
+            }
+        }
+    }
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
-        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, mypageButton, notificationButton, locationLabel, searchTextField, categoriesScrollView, tableView, writeButton].forEach {
+        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, categoriesScrollView, tableView, registerPostButton].forEach {
             view.addSubview($0)
         }
         
@@ -225,13 +242,13 @@ class HomeView: UIViewController {
             make.top.equalTo(logoImageView.snp.bottom).offset(20)
         }
         
-        mypageButton.snp.makeConstraints { make in
+        myProfileButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(4)
             make.centerY.equalTo(locationIconImageView)
         }
         
         notificationButton.snp.makeConstraints { make in
-            make.trailing.equalTo(mypageButton.snp.leading)
+            make.trailing.equalTo(myProfileButton.snp.leading)
             make.centerY.equalTo(locationIconImageView)
         }
         
@@ -244,16 +261,16 @@ class HomeView: UIViewController {
         // 검색창
         searchTextField.isEnabled = false
         searchTextField.snp.makeConstraints { make in
-            make.top.equalTo(mypageButton.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(myProfileButton.snp.bottom).offset(8)
         }
         
         // 카테고리 목록
         categoriesScrollView.addSubview(categoriesStackView)
         
         categoriesScrollView.snp.makeConstraints { make in
-            make.top.equalTo(searchTextField.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(searchTextField.snp.bottom).offset(8)
             make.height.equalTo(51)
         }
         
@@ -270,15 +287,16 @@ class HomeView: UIViewController {
         tableView.refreshControl = refreshControl
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(categoriesScrollView.snp.bottom).offset(8)
             make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(categoriesScrollView.snp.bottom).offset(8)
             make.bottom.equalToSuperview()
+            make.width.equalToSuperview()
         }
         
         // 글쓰기 버튼
-        writeButton.snp.makeConstraints { make in
+        registerPostButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(safeareaBottom + 8 + NavigationBar.SHADOW_HEIGHT + 8 + 8)
+            make.bottom.equalToSuperview().inset(safeareaBottom + 8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8)
         }
     }
 }
@@ -288,22 +306,15 @@ extension HomeView {
     private func bind(reactor: HomeReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
-        
-        searchTextField.rx
-            .tapGesture()
-            .when(.recognized)
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                // TODO: 검색 뷰 이동
-                print("검색 뷰 이동")
-            })
-            .disposed(by: disposeBag)
     }
     
     private func bindAction(reactor: HomeReactor) {
-        // bind 호출 시 바로 실행
-        reactor.action.onNext(.viewDidLoad)
+        searchTextField.rx
+            .tapGesture()
+            .when(.recognized)
+            .map { _ in Reactor.Action.searchTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
         
         addCategoryButton.rx
             .tapGesture()
@@ -312,18 +323,18 @@ extension HomeView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // 페이지네이션
-        tableView.rx.willDisplayCell
-            .filter { [weak self] cell, indexPath -> Bool in
-                guard let self = self else { return false }
-                
-                let totalCount = self.tableView.numberOfRows(inSection: 0)
-                let triggerCount = 3
-                
-                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
-            }
-            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
-            .map { _ in Reactor.Action.loadMorePosts }
+        notificationButton.rx.tap
+            .map { Reactor.Action.notificationsTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        myProfileButton.rx.tap
+            .map { Reactor.Action.myProfileTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        registerPostButton.rx.tap
+            .map { Reactor.Action.registerPostTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -348,6 +359,33 @@ extension HomeView {
         reactor.state
             .map { $0.verifiedLocation }
             .bind(to: locationLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldPushNotificationsView)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                // TODO: 알림 뷰 이동 기능 추가
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldPushMyProfileView)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                // TODO: 내 프로필 뷰 이동 기능 추가
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldPushSearchView)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                // TODO: 검색 뷰 이동 기능 추가
+            })
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$shouldShowBottomCategorySheet)
@@ -378,8 +416,16 @@ extension HomeView {
             })
             .disposed(by: disposeBag)
         
+        reactor.pulse(\.$shouldPushRegisterPostView)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(RegisterPostView(), animated: false)
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.posts }
-            .distinctUntilChanged { $0.count == $1.count } // 개수 비교
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(
                 cellIdentifier: PostListTableViewCell.identifier,
@@ -389,6 +435,21 @@ extension HomeView {
                 
                 cell.configureUI(model: model, isLast: isLast)
             }
+            .disposed(by: disposeBag)
+        
+        // 페이지네이션
+        tableView.rx.willDisplayCell
+            .filter { [weak self] cell, indexPath -> Bool in
+                guard let self = self else { return false }
+                
+                let totalCount = self.tableView.numberOfRows(inSection: 0)
+                let triggerCount = 3
+                
+                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
+            }
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .map { _ in Reactor.Action.loadMorePosts }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.isRefreshing }
@@ -435,7 +496,7 @@ extension HomeView {
         // iOS 26이상 sheet detents 이슈로 인해 customize할 방법이 없어 직접 제작한 BottomSheetView를 사용하였습니다.
         let bottomSheet = BottomSheetView(
             contentViewController: sheetView,
-            heightRatio: 0.88,
+            height: 0.88,
             cornerRadius: 24)
         
         present(bottomSheet, animated: true)
