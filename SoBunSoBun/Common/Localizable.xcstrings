@@ -877,6 +877,17 @@
         }
       }
     },
+    "Notice" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림"
+          }
+        }
+      }
+    },
     "NumberOfParticipants" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1291,6 +1302,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "글쓰기"
+          }
+        }
+      }
+    },
+    "YouShouldSignInAgain" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재로그인이 필요합니다."
           }
         }
       }
