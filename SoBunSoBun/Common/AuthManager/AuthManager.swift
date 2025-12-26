@@ -37,7 +37,9 @@ class AuthManager {
     }
     
     func showLogOutAlert() {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
             if let currentVC = window?.rootViewController {
                 showAlert(
                     title: String(localized: "Notice"),
@@ -53,7 +55,9 @@ class AuthManager {
     }
     
     func switchToLoginView() {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
             if let sceneDelegate = windowScene?.delegate as? SceneDelegate {
                 let vc = UINavigationController(rootViewController: LoginView())
                 vc.isNavigationBarHidden = true
