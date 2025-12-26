@@ -22,29 +22,13 @@ final class AuthInterceptor: RequestInterceptor {
     
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         // 저장된 액세스 토큰과 액세스 토큰 만료 시간을 가져오기
-        guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN"),
-              let accessTokenExpireAtKST = KeyChain.shared.get(key: "ACCESS_TOKEN_EXPIRE_AT_KST")
-        else {
-            // TODO: LogOut 구현하기 (ex 로그인 화면으로 이동)
+        guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
+            AuthManager.shared.logout()
             logger.debug("ACCESS_TOKEN과 ACCESS_TOKEN_EXPIRE_AT_KST가 Keychain에 존재하지 않습니다.")
             logger.fault("API 요청 중 오류가 발생했습니다. 요청을 중단하고 로그아웃 처리됩니다.")
             
             return
         }
-        
-        let now = Date()
-        
-        guard let dateAccessTokenExpireAtKST = ISO8601ToDate(accessTokenExpireAtKST) else {
-            return
-        }
-        
-        let isAccessExpired = dateAccessTokenExpireAtKST < now
-        
-        // 현재 시간과 accessToken의 만료 시간을 비교
-        //        if isAccessExpired {
-        //            completion(.failure(NSError(domain: "APIService", code: 401, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰 만료"])))
-        //            return
-        //        }
         
         // 헤더에 accessToken을 담아서 전달
         var urlRequest = urlRequest
@@ -55,22 +39,29 @@ final class AuthInterceptor: RequestInterceptor {
     
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
         logger.debug("retry 진입")
+        
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
             logger.debug("401 오류가 아님")
             completion(.doNotRetryWithError(error))
+            
             return
         }
         
         guard let refreshTokenExpireAtKST = KeyChain.shared.get(key: "REFRESH_TOKEN_EXPIRE_AT_KST") else {
-            // TODO: LogOut 구현하기 (ex 로그인 화면으로 이동)
+            AuthManager.shared.logout()
             completion(.doNotRetry)
             logger.fault("리프레시 토큰 만료 시간 정보 없음")
+            
             return
         }
         
         let now = Date()
         
         guard let dateRefreshTokenExpireAtKST = ISO8601ToDate(refreshTokenExpireAtKST) else {
+            AuthManager.shared.logout()
+            completion(.doNotRetry)
+            logger.fault("리프레시 토큰 만료 시간 ISO8601ToDate 형태 변환 실패")
+            
             return
         }
         
@@ -78,9 +69,10 @@ final class AuthInterceptor: RequestInterceptor {
         
         // 현재 시간과 refreshToken의 만료 시간을 비교
         if isRefreshExpired {
-            // TODO: LogOut 구현하기 (ex 로그인 화면으로 이동)
+            AuthManager.shared.logout()
             completion(.doNotRetry)
             logger.debug("리프레시 토큰 만료")
+            
             return
         }
         
@@ -103,7 +95,7 @@ final class AuthInterceptor: RequestInterceptor {
                     completion(.retry)
                 } else {
                     logger.debug("리프레시 토큰 만료")
-                    // TODO: 로그아웃 구현 (ex 로그인 화면으로 넘기기)
+                    AuthManager.shared.logout()
                     completion(.doNotRetry)
                 }
             }
@@ -114,8 +106,10 @@ final class AuthInterceptor: RequestInterceptor {
     private func refreshToken(completion: @escaping(Bool) -> Void) {
         guard let refresh = KeyChain.shared.get(key: "REFRESH_TOKEN"),
               let body = RefreshBodyModel(refreshToken: refresh).toDictionary() else {
+            AuthManager.shared.logout()
             logger.fault("리프레시 토큰 없음")
             completion(false)
+            
             return
         }
         
@@ -134,6 +128,7 @@ final class AuthInterceptor: RequestInterceptor {
                 logger.debug("[재발급한 ACCESS_TOKEN]\n\n\(model.accessToken)")
                 completion(true)
             case .failure(let error):
+                AuthManager.shared.logout()
                 logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
                 completion(false)
             }

@@ -254,11 +254,7 @@ extension CalendarPickerView {
             .disposed(by: disposeBag)
         
         calendarCollectionView.rx.itemSelected
-            .compactMap { [weak self] indexPath in
-                guard let self = self else {
-                    return nil
-                }
-                
+            .compactMap { indexPath in
                 return reactor.currentState.calendarData[indexPath.item].date
             }
             .map { Reactor.Action.selectDate($0) }

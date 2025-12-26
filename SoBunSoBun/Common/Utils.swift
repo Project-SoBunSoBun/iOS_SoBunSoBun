@@ -9,11 +9,12 @@ import Foundation
 import UIKit
 import OSLog
 
-// safearea
+// window
 let scenes = UIApplication.shared.connectedScenes
 let windowScene = scenes.first as? UIWindowScene
 let window = windowScene?.windows.first
 
+// safearea
 let safeareaTop = window?.safeAreaInsets.top ?? 0
 let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
 
