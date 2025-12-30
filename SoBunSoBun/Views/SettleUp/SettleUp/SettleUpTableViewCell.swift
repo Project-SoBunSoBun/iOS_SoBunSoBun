@@ -27,7 +27,7 @@ class SettleUpTableViewCell: UITableViewCell {
         incompleteView = nil
     }
     
-    func configure(with item: SettleUpItem,
+    func configure(with item: SettleUpItemModel,
                    onDeleteTapped: @escaping () -> Void = {},
                    onSettleUpButtonTapped: @escaping () -> Void = {},
                    onStatementCheckButtonTapped: @escaping () -> Void = {},
