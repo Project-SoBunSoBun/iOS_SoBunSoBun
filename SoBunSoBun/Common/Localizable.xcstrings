@@ -989,17 +989,6 @@
         }
       }
     },
-    "Register" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "등록하기"
-          }
-        }
-      }
-    },
     "RegisterPostDeadlineInfoMessage" : {
       "extractionState" : "manual",
       "localizations" : {
