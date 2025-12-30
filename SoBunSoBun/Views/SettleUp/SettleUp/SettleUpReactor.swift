@@ -15,14 +15,6 @@ enum SettleUpCategory: Int {
     case complete = 2
 }
 
-struct SettleUpItem {
-    let id: Int
-    let settleUpStatus: Bool
-    let title: String
-    let location: String
-    let meetingDate: String
-}
-
 class SettleUpReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
@@ -41,14 +33,14 @@ class SettleUpReactor: Reactor {
     
     enum Mutation {
         case setSelectedCategory(SettleUpCategory)
-        case setItems([SettleUpItem])
+        case setItems([SettleUpItemModel])
         case setLoading(Bool)
         case setError(String)
     }
     
     struct State {
         var selectedCategory: SettleUpCategory = .all
-        var items: [SettleUpItem] = []
+        var items: [SettleUpItemModel] = []
         var isLoading: Bool = false
         @Pulse var errorMessage: String?
     }
@@ -103,10 +95,10 @@ class SettleUpReactor: Reactor {
             NetworkManager.shared.mySettleUps(activeOnly: activeOnly, page: 0, size: 20)
                 .asObservable()
                 .flatMap { SettleUpModel -> Observable<Mutation> in
-                    let items: [SettleUpItem] = SettleUpModel.content.map { content in
+                    let items: [SettleUpItemModel] = SettleUpModel.content.map { content in
                         let isCompleted = content.status == 2
                         
-                        return SettleUpItem(
+                        return SettleUpItemModel(
                             id: content.id,
                             settleUpStatus: isCompleted,
                             title: content.groupPostTitle,
