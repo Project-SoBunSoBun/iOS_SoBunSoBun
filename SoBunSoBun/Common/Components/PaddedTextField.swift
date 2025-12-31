@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class PaddedTextField: UITextField {
+class PaddedTextField: UITextField {
     var padding = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
     
     func configurePadding(width: Int) {
