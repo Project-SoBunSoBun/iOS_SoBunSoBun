@@ -7,13 +7,6 @@
 
 import ReactorKit
 
-struct ListedProductModel: Equatable {
-    let name: String
-    let count: Int
-    let price: Int
-    let unitIndex: Int
-}
-
 class SettleUp1stStepReactor: Reactor {
     let initialState = State()
     
@@ -58,7 +51,7 @@ class SettleUp1stStepReactor: Reactor {
             guard let count = Int(countStirng),
                   let price = Int(amountString)
             else {
-                return .empty()
+                return Observable.empty()
             }
             
             let product = ListedProductModel(

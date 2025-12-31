@@ -30,10 +30,6 @@ class ListedProduct: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func layoutIfNeeded() {
-        super.layoutIfNeeded()
-    }
-    
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "SettleUpComponents.ListedProduct"
@@ -91,7 +87,6 @@ class ListedProduct: UIView {
         config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
         config.image = .greyClose
         config.imagePadding = 0
-        config.contentInsets = .init(top: 6, leading: 6, bottom: 6, trailing: 6)
         
         let bt = UIButton(configuration: config)
         

@@ -187,50 +187,16 @@ class SettleUp1stStepView: UIViewController {
     }()
     
     // 수량(개) 버튼
-    private let quantityButton: UIButton = {
-        let bt = UIButton()
-        var config = UIButton.Configuration.filled()
-        
-        var attributedString = AttributedString(
-            String(localized: "SettleUpQuantity")
-        )
-        attributedString.font = title16.font
-        
-        config.attributedTitle = attributedString
-        config.baseBackgroundColor = .primary100
-        config.baseForegroundColor = .primary400
-        config.contentInsets = .init(top: 16, leading: 12, bottom: 16, trailing: 12)
-        
-        bt.configuration = config
-        bt.layer.cornerRadius = 14
-        bt.clipsToBounds = true
-        bt.layer.borderColor = UIColor.primary400.cgColor
-        bt.layer.borderWidth = 2
-        
-        return bt
-    }()
+    private let quantityButton = UnitButton(
+        titleKey: "SettleUpQuantity",
+        isSelected: true
+    )
     
     // 중량(g) 버튼
-    private let weightButton: UIButton = {
-        let bt = UIButton()
-        var config = UIButton.Configuration.filled()
-        
-        var attributedString = AttributedString(
-            String(localized: "SettleUpWeight")
-        )
-        attributedString.font = title16.font
-        
-        config.attributedTitle = attributedString
-        config.baseBackgroundColor = .primary50
-        config.baseForegroundColor = .primary300
-        config.contentInsets = .init(top: 16, leading: 12, bottom: 16, trailing: 12)
-        
-        bt.configuration = config
-        bt.layer.cornerRadius = 14
-        bt.clipsToBounds = true
-        
-        return bt
-    }()
+    private let weightButton = UnitButton(
+        titleKey: "SettleUpWeight",
+        isSelected: false
+    )
     
     // 단위 textField
     private let itemCountTextField: UITextField = {
@@ -454,7 +420,7 @@ class SettleUp1stStepView: UIViewController {
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(backButton.snp.bottom)
-            make.bottom.equalToSuperview()
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
         scrollView.addSubview(contentView)
@@ -498,13 +464,12 @@ class SettleUp1stStepView: UIViewController {
         titleLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(stepLabel.snp.bottom).offset(8)
-            make.height.equalTo(32)
         }
         
         subtitleBackground.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.height.equalTo(64)
+            make.height.equalTo(74)
         }
         
         subtitleLabel.snp.makeConstraints { make in
@@ -563,7 +528,7 @@ class SettleUp1stStepView: UIViewController {
         
         registeredItemLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(16)
-            make.top.equalTo(registerItemBackground.snp.bottom).offset(34)
+            make.top.equalTo(registerItemBackground.snp.bottom).offset(24)
         }
         
         itemCountLabel.snp.makeConstraints { make in
@@ -680,7 +645,6 @@ class SettleUp1stStepView: UIViewController {
             settleUpButton.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview().inset(16)
                 make.top.equalTo(totalBackgroundView.snp.bottom).offset(16)
-                make.height.equalTo(64)
                 make.bottom.equalToSuperview().inset(16)
             }
         }
@@ -918,39 +882,27 @@ extension SettleUp1stStepView {
     }
     
     private func updateUnitSelection(selectedIndex: Int) {
-        if selectedIndex == 1 {
-            var quantityConfig = quantityButton.configuration
-            quantityConfig?.baseBackgroundColor = .primary100
-            quantityConfig?.baseForegroundColor = .primary400
-            quantityButton.configuration = quantityConfig
-            quantityButton.layer.borderWidth = 2
-            quantityButton.layer.borderColor = UIColor.primary400.cgColor
-            
-            var weightConfig = weightButton.configuration
-            weightConfig?.baseBackgroundColor = .primary50
-            weightConfig?.baseForegroundColor = .primary300
-            weightButton.configuration = weightConfig
-            weightButton.layer.borderWidth = 0
-            
-            // itemCountTextField rightView 업데이트
-            updateTextFieldUnit(textField: itemCountTextField, unit: String(localized: "Count"))
-        } else {
-            var quantityConfig = quantityButton.configuration
-            quantityConfig?.baseBackgroundColor = .primary50
-            quantityConfig?.baseForegroundColor = .primary300
-            quantityButton.configuration = quantityConfig
-            quantityButton.layer.borderWidth = 0
-            
-            var weightConfig = weightButton.configuration
-            weightConfig?.baseBackgroundColor = .primary100
-            weightConfig?.baseForegroundColor = .primary400
-            weightButton.configuration = weightConfig
-            weightButton.layer.borderWidth = 2
-            weightButton.layer.borderColor = UIColor.primary400.cgColor
-            
-            // itemCountTextField rightView 업데이트
-            updateTextFieldUnit(textField: itemCountTextField, unit: "g")
-        }
+        let isQuantity = selectedIndex == 1
+        
+        // quantityButton 설정
+        var quantityConfig = quantityButton.configuration
+        quantityConfig?.baseBackgroundColor = isQuantity ? .primary100 : .primary50
+        quantityConfig?.baseForegroundColor = isQuantity ? .primary400 : .primary300
+        quantityButton.configuration = quantityConfig
+        quantityButton.layer.borderWidth = isQuantity ? 2 : 0
+        quantityButton.layer.borderColor = isQuantity ? UIColor.primary400.cgColor : nil
+        
+        // weightButton 설정
+        var weightConfig = weightButton.configuration
+        weightConfig?.baseBackgroundColor = isQuantity ? .primary50 : .primary100
+        weightConfig?.baseForegroundColor = isQuantity ? .primary300 : .primary400
+        weightButton.configuration = weightConfig
+        weightButton.layer.borderWidth = isQuantity ? 0 : 2
+        weightButton.layer.borderColor = isQuantity ? nil : UIColor.primary400.cgColor
+        
+        // unit text 업데이트
+        let unitText = isQuantity ? String(localized: "Count") : "g"
+        updateTextFieldUnit(textField: itemCountTextField, unit: unitText)
     }
     
     private func updateTextFieldUnit(textField: UITextField, unit: String) {
