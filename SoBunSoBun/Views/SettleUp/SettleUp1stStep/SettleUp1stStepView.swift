@@ -199,40 +199,9 @@ class SettleUp1stStepView: UIViewController {
     )
     
     // 단위 textField
-    private let itemCountTextField: UITextField = {
-        let tf = PaddedTextField()
-        tf.layer.cornerRadius = 16
-        tf.layer.borderWidth = 1
-        tf.layer.borderColor = UIColor.primary100.cgColor
-        tf.font = body16.font
-        tf.textColor = .neutral900
-        tf.backgroundColor = .backgroundWhite
-        tf.attributedPlaceholder = NSAttributedString(
-            string: "0",
-            attributes: [
-                .foregroundColor: UIColor.neutral300
-            ]
-        )
-        tf.textAlignment = .right
-        
-        let label = UILabel(frame: .init())
-        label.text = String(localized: "Count")
-        label.font = body16.font
-        label.textColor = .neutral900
-        
-        let container = UIView()
-        container.addSubview(label)
-        label.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 16))
-        }
-        label.sizeToFit()
-        
-        tf.configurePadding(width: Int(label.bounds.width))
-        tf.rightView = container
-        tf.rightViewMode = .always
-        
-        return tf
-    }()
+    private let itemCountTextField = RightViewTextField(
+        rightText: String(localized: "Count")
+    )
     
     // 금액 라벨
     private let amountLabel: UILabel = {
@@ -248,43 +217,13 @@ class SettleUp1stStepView: UIViewController {
     }()
     
     // 금액 textField
-    private let itemAmountTextField: UITextField = {
-        let tf = PaddedTextField()
-        tf.layer.cornerRadius = 16
-        tf.layer.borderWidth = 1
-        tf.layer.borderColor = UIColor.primary100.cgColor
-        tf.font = body16.font
-        tf.textColor = .neutral900
-        tf.backgroundColor = .backgroundWhite
-        tf.attributedPlaceholder = NSAttributedString(
-            string: "0",
-            attributes: [
-                .foregroundColor: UIColor.neutral300
-            ]
-        )
-        tf.textAlignment = .right
-        
-        let label = UILabel(frame: .init())
-        label.text = String(localized: "Won")
-        label.font = body16.font
-        label.textColor = .neutral900
-        
-        let container = UIView()
-        container.addSubview(label)
-        label.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 16))
-        }
-        label.sizeToFit()
-        
-        tf.configurePadding(width: Int(label.bounds.width))
-        tf.rightView = container
-        tf.rightViewMode = .always
-        
-        return tf
-    }()
+    private let itemAmountTextField = RightViewTextField(
+        rightText: String(localized: "Won")
+    )
     
     // 등록하기 버튼
-    private let registerButton = Button(title: String(localized: "Register"))
+    private let registerButton = Button(title: String(localized: "Register")
+    )
     
     // 등록된 상품 Label
     private let registeredItemLabel: UILabel = {
