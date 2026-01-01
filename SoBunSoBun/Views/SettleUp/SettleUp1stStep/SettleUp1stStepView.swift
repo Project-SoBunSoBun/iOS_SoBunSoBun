@@ -384,9 +384,9 @@ class SettleUp1stStepView: UIViewController {
         }
         
         backButton.snp.makeConstraints { make in
-            make.size.equalTo(48)
             make.leading.equalToSuperview().offset(4)
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.size.equalTo(48)
         }
         
         stepLabel.snp.makeConstraints { make in
@@ -473,7 +473,7 @@ class SettleUp1stStepView: UIViewController {
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(registeredItemLabel.snp.bottom)
             make.bottom.equalToSuperview()
-            make.height.equalTo(160)
+            make.height.greaterThanOrEqualTo(160)
         }
         
         emptyStateLabel.snp.makeConstraints { make in
@@ -541,7 +541,7 @@ class SettleUp1stStepView: UIViewController {
                 make.horizontalEdges.equalToSuperview()
                 make.top.equalTo(registeredItemLabel.snp.bottom)
                 make.bottom.equalToSuperview()
-                make.height.equalTo(160)
+                make.height.greaterThanOrEqualTo(160)
             }
             
             emptyStateLabel.snp.remakeConstraints { make in

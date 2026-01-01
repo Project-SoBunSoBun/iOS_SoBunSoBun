@@ -22,16 +22,9 @@ final class RightViewTextField: PaddedTextField {
         layer.cornerRadius = 16
         layer.borderWidth = 1
         layer.borderColor = UIColor.primary100.cgColor
-        textColor = .neutral900
         backgroundColor = .backgroundWhite
         textAlignment = .right
-        
-        attributedPlaceholder = NSAttributedString(
-            string: "0",
-            attributes: [
-                .foregroundColor: UIColor.neutral300
-            ]
-        )
+        self.placeholder = String("0")
         
         let label = UILabel(frame: .zero)
         label.text = rightText

@@ -115,6 +115,7 @@ class SettleUp1stStepReactor: Reactor {
                 newState.products.remove(at: index)
                 newState.isEditing = true
             }
+            
         case .setEditing(let isEditing):
             newState.isEditing = isEditing
         }
