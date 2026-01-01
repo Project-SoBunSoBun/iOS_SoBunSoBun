@@ -10,7 +10,7 @@ import SnapKit
 
 final class RightViewTextField: PaddedTextField {
     init(rightText: String) {
-        super.init(frame: .zero)
+        super.init(frame: .zero, fontStyle: body16)
         configureUI(rightText: rightText)
     }
     
@@ -22,7 +22,6 @@ final class RightViewTextField: PaddedTextField {
         layer.cornerRadius = 16
         layer.borderWidth = 1
         layer.borderColor = UIColor.primary100.cgColor
-        font = body16.font
         textColor = .neutral900
         backgroundColor = .backgroundWhite
         textAlignment = .right
