@@ -71,14 +71,14 @@ class InformationCard: UIView {
     private lazy var participantsDescLabel: UILabel = descLabel()
     
     // 지점 위치
-    private lazy var marketLocationStackView: UIStackView = horizontalStackView()
-    private lazy var marketLocationTitleLabel: UILabel = {
+    private lazy var meetingLocationStackView: UIStackView = horizontalStackView()
+    private lazy var meetingLocationTitleLabel: UILabel = {
         let lb = titleLabel()
-        lb.text = String(localized: "MarketLocation")
+        lb.text = String(localized: "MeetingLocation")
         
         return lb
     }()
-    private lazy var marketLocationDescLabel: UILabel = descLabel()
+    private lazy var meetingLocationDescLabel: UILabel = descLabel()
     
     // 날짜 및 시간
     private lazy var dateTimeStackView: UIStackView = horizontalStackView()
@@ -122,13 +122,13 @@ class InformationCard: UIView {
             }
             
             // 지점 위치
-            marketLocationStackView.addArrangedSubview(marketLocationTitleLabel)
-            marketLocationStackView.addArrangedSubview(marketLocationDescLabel)
-            marketLocationDescLabel.text = location
+            meetingLocationStackView.addArrangedSubview(meetingLocationTitleLabel)
+            meetingLocationStackView.addArrangedSubview(meetingLocationDescLabel)
+            meetingLocationDescLabel.text = location
             
-            addSubview(marketLocationStackView)
+            addSubview(meetingLocationStackView)
             
-            marketLocationStackView.snp.makeConstraints { make in
+            meetingLocationStackView.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview().inset(16)
                 make.top.equalTo(participantsStackView.snp.bottom).offset(8)
             }
@@ -142,7 +142,7 @@ class InformationCard: UIView {
             
             dateTimeStackView.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview().inset(16)
-                make.top.equalTo(marketLocationStackView.snp.bottom).offset(8)
+                make.top.equalTo(meetingLocationStackView.snp.bottom).offset(8)
             }
             
             // 마감일

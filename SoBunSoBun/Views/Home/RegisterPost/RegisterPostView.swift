@@ -166,16 +166,16 @@ class RegisterPostView: UIViewController {
         return tfm
     }()
     
-    private let marketTitleLabel: UILabel = {
+    private let locationTitleLabel: UILabel = {
         let lb = titleLabel()
-        lb.text = String(localized: "MarketLocation")
+        lb.text = String(localized: "MeetingLocation")
         
         return lb
     }()
     
-    private let marketTextField: TextFieldUnderline = {
+    private let locationTextField: TextFieldUnderline = {
         let tfu = TextFieldUnderline(maxLength: 120)
-        tfu.placeholder = String(localized: "InsertMarket")
+        tfu.placeholder = String(localized: "InsertLocation")
         
         return tfu
     }()
@@ -316,7 +316,7 @@ class RegisterPostView: UIViewController {
             make.width.equalToSuperview()
         }
         
-        [infoLabel, groupTitleLabel, groupTitleTextField, keywordTitleLabel, categoriesScrollView, membersStackView, marketTitleLabel, marketTextField, dateTimeStackView, deadlineInfoLabel, plannedItemsTitleLabel, plannedItemsTextView, notesTitleLabel, notesTextView, registerButton].forEach {
+        [infoLabel, groupTitleLabel, groupTitleTextField, keywordTitleLabel, categoriesScrollView, membersStackView, locationTitleLabel, locationTextField, dateTimeStackView, deadlineInfoLabel, plannedItemsTitleLabel, plannedItemsTextView, notesTitleLabel, notesTextView, registerButton].forEach {
             contentView.addSubview($0)
         }
         
@@ -373,19 +373,19 @@ class RegisterPostView: UIViewController {
                 }
             }
         
-        marketTitleLabel.snp.makeConstraints { make in
+        locationTitleLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(membersStackView.snp.bottom).offset(32)
         }
         
-        marketTextField.snp.makeConstraints { make in
+        locationTextField.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(marketTitleLabel.snp.bottom).offset(8)
+            make.top.equalTo(locationTitleLabel.snp.bottom).offset(8)
         }
         
         dateTimeStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(marketTextField.snp.bottom).offset(32)
+            make.top.equalTo(locationTextField.snp.bottom).offset(32)
         }
         
         [dateContainerView, timeContainerView].forEach {
@@ -468,7 +468,7 @@ extension RegisterPostView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        marketTextField.rx.text.orEmpty
+        locationTextField.rx.text.orEmpty
             .map { Reactor.Action.locationTextChanged($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
