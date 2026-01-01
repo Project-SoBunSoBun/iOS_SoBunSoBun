@@ -7,7 +7,15 @@
 
 import UIKit
 
-class PaddedTextField: UITextField {
+class PaddedTextField: BaseTextField {
+    override init(frame: CGRect = .zero, fontStyle: FontStyle, showCursor: Bool = true) {
+        super.init(frame: frame, fontStyle: fontStyle, showCursor: showCursor)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     var padding = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
     
     func configurePadding(width: Int) {
