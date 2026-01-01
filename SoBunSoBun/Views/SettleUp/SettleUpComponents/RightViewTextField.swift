@@ -47,10 +47,19 @@ final class RightViewTextField: PaddedTextField {
                 UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 16)
             )
         }
-        label.sizeToFit()
-        
-        configurePadding(width: Int(label.bounds.width))
+
+        configurePadding(width: Int(14))
         rightView = container
         rightViewMode = .always
+    }
+    
+    func updateRightViewText(_ text: String) {
+        guard let container = rightView else { return }
+        
+        if let label = container.subviews.first as? UILabel {
+            label.text = text
+
+            configurePadding(width: Int(14))
+        }
     }
 }
