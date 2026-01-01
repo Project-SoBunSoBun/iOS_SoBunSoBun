@@ -840,29 +840,7 @@ extension SettleUp1stStepView {
         weightButton.layer.borderColor = isQuantity ? nil : UIColor.primary400.cgColor
         
         // unit text 업데이트
-        let unitText = isQuantity ? String(localized: "Count") : "g"
-        updateTextFieldUnit(textField: itemCountTextField, unit: unitText)
-    }
-    
-    private func updateTextFieldUnit(textField: UITextField, unit: String) {
-        let label = UILabel(frame: .init())
-        label.text = unit
-        label.font = body16.font
-        label.textColor = .neutral900
-        
-        let container = UIView()
-        container.addSubview(label)
-        label.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 16))
-        }
-        
-        if let paddedTextField = textField as? PaddedTextField {
-            paddedTextField.configurePadding(width: Int(14))
-        }
-        
-        textField.rightView = container
-        textField.rightViewMode = .always
-        textField.text = ""
+        itemCountTextField.updateRightViewText(isQuantity ? String(localized: "Count") : "g")
     }
 }
 
