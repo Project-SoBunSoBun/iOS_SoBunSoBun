@@ -145,19 +145,13 @@ class SettleUp1stStepView: UIViewController {
     }()
     
     private let itemNameTextField: UITextField = {
-        let tf = PaddedTextField()
+        let tf = PaddedTextField(fontStyle: body16)
         tf.layer.cornerRadius = 16
         tf.layer.borderWidth = 1
         tf.layer.borderColor = UIColor.primary100.cgColor
-        tf.font = body16.font
         tf.textColor = .neutral900
         tf.backgroundColor = .backgroundWhite
-        tf.attributedPlaceholder = NSAttributedString(
-            string: String(localized: "SettleUpItemNamePlaceholder"),
-            attributes: [
-                .foregroundColor: UIColor.neutral300
-            ]
-        )
+        tf.placeholder = String(localized: "SettleUpItemNamePlaceholder")
         
         return tf
     }()
