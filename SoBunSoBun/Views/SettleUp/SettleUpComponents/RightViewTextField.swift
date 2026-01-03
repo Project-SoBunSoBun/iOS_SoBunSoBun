@@ -7,10 +7,13 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 final class RightViewTextField: PaddedTextField {
-    init(rightText: String) {
+    init(rightText: String, keyboardType: UIKeyboardType = .numberPad) {
         super.init(frame: .zero, fontStyle: body16)
+        self.keyboardType = keyboardType
         configureUI(rightText: rightText)
     }
     
@@ -39,7 +42,7 @@ final class RightViewTextField: PaddedTextField {
                 UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 16)
             )
         }
-
+        
         configurePadding(width: Int(14))
         rightView = container
         rightViewMode = .always
@@ -50,8 +53,59 @@ final class RightViewTextField: PaddedTextField {
         
         if let label = container.subviews.first as? UILabel {
             label.text = text
-
+            
             configurePadding(width: Int(14))
         }
+    }
+}
+
+extension Reactive where Base: RightViewTextField {
+    /// 천 단위 콤마가 포함된 숫자 텍스트
+    var formattedNumericText: ControlProperty<String> {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = ","
+        formatter.maximumFractionDigits = 0
+        
+        let source = base.rx.text.orEmpty
+            .map { [weak base] text -> String in
+                guard let base = base else { return "" }
+
+                let numbers = text.filter { $0.isNumber }
+
+                guard !numbers.isEmpty, let value = Int(numbers) else {
+                    if base.text != "" {
+                        base.text = ""
+                    }
+                    
+                    return ""
+                }
+
+                let formatted = formatter.string(from: NSNumber(value: value)) ?? numbers
+                
+                if base.text != formatted {
+                    base.text = formatted
+                }
+                
+                return numbers
+            }
+        
+        let observer = Binder<String>(base) { textField, text in
+            let numbers = text.filter { $0.isNumber }
+            guard !numbers.isEmpty, let value = Int(numbers) else {
+                if textField.text != "" {
+                    textField.text = ""
+                }
+                
+                return
+            }
+            
+            let formatted = formatter.string(from: NSNumber(value: value)) ?? numbers
+            if textField.text != formatted {
+                textField.text = formatted
+            }
+        }
+        
+        return ControlProperty(values: source, valueSink: observer)
     }
 }
