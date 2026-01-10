@@ -193,9 +193,12 @@ class SettleUp1stStepView: UIViewController {
     )
     
     // 단위 textField
-    private let itemCountTextField = RightViewTextField(
-        rightText: String(localized: "Count")
-    )
+    private let itemCountTextField = {
+        let tf = RightViewTextField(rightText: String(localized: "Count"))
+        tf.keyboardType = .numberPad
+        
+        return tf
+    }()
     
     // 금액 라벨
     private let amountLabel: UILabel = {
@@ -211,9 +214,12 @@ class SettleUp1stStepView: UIViewController {
     }()
     
     // 금액 textField
-    private let itemAmountTextField = RightViewTextField(
-        rightText: String(localized: "Won")
-    )
+    private let itemAmountTextField = {
+        let tf = RightViewTextField(rightText: String(localized: "Won"))
+        tf.keyboardType = .numberPad
+        
+        return tf
+    }()
     
     // 등록하기 버튼
     private let registerButton = Button(title: String(localized: "Register")
