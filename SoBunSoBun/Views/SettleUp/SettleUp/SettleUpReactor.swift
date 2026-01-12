@@ -23,8 +23,6 @@ class SettleUpReactor: Reactor {
     
     let initialState = State()
     
-    private let disposeBag = DisposeBag()
-    
     enum Action {
         case viewDidLoad
         case categorySelected(SettleUpCategory)
