@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 import OSLog
 import RxSwift
+import RxCocoa
 
 // window
 let scenes = UIApplication.shared.connectedScenes
@@ -254,7 +255,6 @@ extension Reactive where Base: UITextField {
 // 미리보기
 #if DEBUG
 import SwiftUI
-import RxCocoa
 
 struct UIViewControllerPreview: UIViewControllerRepresentable {
     let viewController: () -> UIViewController
