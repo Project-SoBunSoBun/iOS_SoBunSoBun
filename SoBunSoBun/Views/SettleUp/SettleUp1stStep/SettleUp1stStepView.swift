@@ -193,9 +193,12 @@ class SettleUp1stStepView: UIViewController {
     )
     
     // 단위 textField
-    private let itemCountTextField = RightViewTextField(
-        rightText: String(localized: "Count")
-    )
+    private let itemCountTextField = {
+        let tf = RightViewTextField(rightText: String(localized: "Count"))
+        tf.keyboardType = .numberPad
+        
+        return tf
+    }()
     
     // 금액 라벨
     private let amountLabel: UILabel = {
@@ -211,9 +214,12 @@ class SettleUp1stStepView: UIViewController {
     }()
     
     // 금액 textField
-    private let itemAmountTextField = RightViewTextField(
-        rightText: String(localized: "Won")
-    )
+    private let itemAmountTextField = {
+        let tf = RightViewTextField(rightText: String(localized: "Won"))
+        tf.keyboardType = .numberPad
+        
+        return tf
+    }()
     
     // 등록하기 버튼
     private let registerButton = Button(title: String(localized: "Register")
@@ -684,8 +690,8 @@ extension SettleUp1stStepView {
         // 등록하기 버튼 활성화 여부
         Observable.combineLatest(
             itemNameTextField.rx.text.orEmpty,
-            itemCountTextField.rx.text.orEmpty,
-            itemAmountTextField.rx.text.orEmpty
+            itemCountTextField.rx.formattedNumericText,
+            itemAmountTextField.rx.formattedNumericText
         )
         .map { !$0.0.isEmpty && !$0.1.isEmpty && !$0.2.isEmpty }
         .bind(to: registerButton.rx.isEnabled)
@@ -696,8 +702,8 @@ extension SettleUp1stStepView {
             .withLatestFrom(
                 Observable.combineLatest(
                     itemNameTextField.rx.text.orEmpty,
-                    itemCountTextField.rx.text.orEmpty,
-                    itemAmountTextField.rx.text.orEmpty
+                    itemCountTextField.rx.formattedNumericText,
+                    itemAmountTextField.rx.formattedNumericText
                 )
             )
             .map { name, count, amount in
@@ -835,6 +841,7 @@ extension SettleUp1stStepView {
         
         // unit text 업데이트
         itemCountTextField.updateRightViewText(isQuantity ? String(localized: "Count") : "g")
+        itemCountTextField.text = ""
     }
 }
 

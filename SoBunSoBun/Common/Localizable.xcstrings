@@ -731,7 +731,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%d개 %@원"
+            "value" : "%@개 %@원"
           }
         }
       }
