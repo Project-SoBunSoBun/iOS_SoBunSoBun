@@ -712,6 +712,11 @@ extension SettleUp1stStepView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        // 정산하기 버튼 탭
+        settleUpButton.rx.tap
+            .map { Reactor.Action.SettleUpButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: SettleUp1stStepReactor) {
@@ -816,6 +821,17 @@ extension SettleUp1stStepView {
                 let title = isEditing ? String(localized: "ListedProductEdit") : String(localized: "Register")
                 
                 self.registerButton.changeTitle(title: title)
+            })
+            .disposed(by: disposeBag)
+        
+        // 정산하기 버튼 클릭
+        reactor.pulse(\.$shouldNavigateToNextStep)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] products in
+                guard let self = self else { return }
+                
+                let nextVC = SettleUp2ndStepView(id: self.id, products: products)
+                self.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)
     }
