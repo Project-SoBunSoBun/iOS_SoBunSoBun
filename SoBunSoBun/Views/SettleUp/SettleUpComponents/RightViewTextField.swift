@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 final class RightViewTextField: PaddedTextField {
     init(rightText: String) {
@@ -39,7 +41,7 @@ final class RightViewTextField: PaddedTextField {
                 UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 16)
             )
         }
-
+        
         configurePadding(width: Int(14))
         rightView = container
         rightViewMode = .always
@@ -50,7 +52,7 @@ final class RightViewTextField: PaddedTextField {
         
         if let label = container.subviews.first as? UILabel {
             label.text = text
-
+            
             configurePadding(width: Int(14))
         }
     }

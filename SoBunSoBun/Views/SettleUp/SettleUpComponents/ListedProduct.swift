@@ -102,7 +102,7 @@ class ListedProduct: UIView {
     }()
     
     // 천단위 콤마 Formatter
-    private let priceFormatter: NumberFormatter = {
+    private let formatter: NumberFormatter = {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.groupingSeparator = ","
@@ -129,19 +129,20 @@ class ListedProduct: UIView {
         
         // 상품 수량 or 중량,  총 가격
         let won = String(localized: "Won")
-        let priceString = priceFormatter.string(from: NSNumber(value: itemPrice)) ?? "\(itemPrice)"
+        let countString = formatter.string(from: NSNumber(value: itemCount)) ?? "\(itemCount)"
+        let priceString = formatter.string(from: NSNumber(value: itemPrice)) ?? "\(itemPrice)"
         let totalText: String
         
         switch unitIndex {
         case 1:
             let format = String(localized: "ListedProductItemTotal")
-            totalText = String(format: format, itemCount, priceString)
+            totalText = String(format: format, countString, priceString)
         case 2:
-            totalText = "\(itemCount)g \(priceString)\(won)"
+            totalText = "\(countString)g \(priceString)\(won)"
         
         default:
             let format = String(localized: "ListedProductItemTotal")
-            totalText = String(format: format, itemCount, priceString)
+            totalText = String(format: format, countString, priceString)
         }
         
         itemTotalLabel.attributedText = NSAttributedString(
