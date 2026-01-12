@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 import OSLog
 import RxSwift
-import RxCocoa
 
 // window
 let scenes = UIApplication.shared.connectedScenes
@@ -200,7 +199,7 @@ extension Encodable {
     }
 }
 
-extension Reactive where Base: RightViewTextField {
+extension Reactive where Base: UITextField {
     /// 천 단위 콤마가 포함된 숫자 텍스트
     var formattedNumericText: ControlProperty<String> {
         let formatter = NumberFormatter()
