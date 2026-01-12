@@ -17,6 +17,9 @@ class RegisterPostView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
+    private static let memberMinValue: Int = 2
+    private static let memberMaxValue: Int = 10
+    
     // MARK: - 디자인 요소
     private static func titleLabel() -> UILabel {
         let lb = UILabel()
@@ -61,7 +64,7 @@ class RegisterPostView: UIViewController {
     }()
     
     private let groupTitleTextField: TextFieldUnderline = {
-        let tfu = TextFieldUnderline(maxLength: 120)
+        let tfu = TextFieldUnderline(maxLength: 40)
         tfu.placeholder = String(localized: "InsertTitle")
         
         return tfu
@@ -144,8 +147,12 @@ class RegisterPostView: UIViewController {
     }()
     
     private let minimumTextField: TextFieldMember = {
-        let tfm = TextFieldMember(minValue: 2, maxValue: 10)
-        tfm.placeholder = String(tfm.minValue)
+        let tfm = TextFieldMember(
+            minValue: memberMinValue,
+            maxValue: memberMaxValue,
+            maxLength: 2
+        )
+        tfm.placeholder = String(memberMinValue)
         
         return tfm
     }()
@@ -160,8 +167,12 @@ class RegisterPostView: UIViewController {
     }()
     
     private let maximumTextField: TextFieldMember = {
-        let tfm = TextFieldMember(minValue: 2, maxValue: 10)
-        tfm.placeholder = String(tfm.maxValue)
+        let tfm = TextFieldMember(
+            minValue: memberMinValue,
+            maxValue: memberMaxValue,
+            maxLength: 2
+        )
+        tfm.placeholder = String(memberMaxValue)
         
         return tfm
     }()
@@ -174,7 +185,7 @@ class RegisterPostView: UIViewController {
     }()
     
     private let locationTextField: TextFieldUnderline = {
-        let tfu = TextFieldUnderline(maxLength: 120)
+        let tfu = TextFieldUnderline(maxLength: 40)
         tfu.placeholder = String(localized: "InsertLocation")
         
         return tfu
@@ -234,7 +245,7 @@ class RegisterPostView: UIViewController {
     }()
     
     private let plannedItemsTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 100)
+        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 120)
         ahtv.placeholder = String(localized: "InsertContent")
         
         return ahtv

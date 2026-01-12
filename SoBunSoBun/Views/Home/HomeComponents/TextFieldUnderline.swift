@@ -6,9 +6,12 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class TextFieldUnderline: BaseTextField {
     private let maxLength: Int
+    private let disposeBag = DisposeBag()
     
     init(frame: CGRect = .zero, maxLength: Int) {
         self.maxLength = maxLength
@@ -16,6 +19,7 @@ class TextFieldUnderline: BaseTextField {
         super.init(frame: frame, fontStyle: body16)
         
         configureUI()
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -25,14 +29,38 @@ class TextFieldUnderline: BaseTextField {
     private let underlineLayer = CALayer()
     
     private func configureUI() {
-        self.delegate = self
-        
         self.borderStyle = .none
         self.textColor = .neutral900
         
         // underline
         underlineLayer.backgroundColor = UIColor.primary100.cgColor
         self.layer.addSublayer(underlineLayer)
+    }
+    
+    private func bind() {
+        self.rx.text.orEmpty
+            .distinctUntilChanged()
+            .map { [weak self] text in
+                guard let self = self else { return "" }
+                
+                return String(text.prefix(maxLength))
+            }
+            .subscribe(onNext: { [weak self] text in
+                guard let self = self else { return }
+                
+                if self.text != text {
+                    self.text = text
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        self.rx.controlEvent(.editingDidEnd)
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                self.sendActions(for: .editingChanged)
+            })
+            .disposed(by: disposeBag)
     }
     
     override func textRect(forBounds bounds: CGRect) -> CGRect {
@@ -57,17 +85,5 @@ class TextFieldUnderline: BaseTextField {
         
         let underlineHeight: CGFloat = 1
         underlineLayer.frame = CGRect(x: 0, y: bounds.height - underlineHeight, width: bounds.width, height: underlineHeight)
-    }
-}
-
-extension TextFieldUnderline: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        let currentText = textField.text ?? ""
-        
-        guard let stringRange = Range(range, in: currentText) else { return false }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        
-        // 글자 수 제한 체크
-        return updatedText.count <= maxLength
     }
 }
