@@ -38,7 +38,7 @@ class TextFieldMember: BaseTextField {
         let lb = UILabel()
         lb.text = String(localized: "PeopleCount")
         lb.font = body16.font
-        lb.textColor = .neutral300
+        lb.textColor = .neutral400
         lb.textAlignment = .center
         lb.sizeToFit()
         
