@@ -46,10 +46,10 @@ class UnitButton: UIButton {
             self.layer.borderWidth = 2
             self.layer.borderColor = UIColor.primary400.cgColor
         } else {
-            config.baseBackgroundColor = .primary50
+            config.baseBackgroundColor = .backgroundWhite
             config.baseForegroundColor = .primary300
-            self.layer.borderWidth = 0
-            self.layer.borderColor = nil
+            self.layer.borderWidth = 1
+            self.layer.borderColor = UIColor.primary100.cgColor
         }
         
         self.configuration = config

@@ -32,7 +32,7 @@ class BaseTextField: UITextField {
             }
             
             var attributes: [NSAttributedString.Key: Any] = fontStyle.attributes()
-            attributes[.foregroundColor] = UIColor.neutral300
+            attributes[.foregroundColor] = UIColor.neutral400
             
             self.attributedPlaceholder = NSAttributedString(string: text, attributes: attributes)
         }

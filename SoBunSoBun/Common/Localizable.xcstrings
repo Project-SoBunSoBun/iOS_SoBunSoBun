@@ -657,13 +657,13 @@
         }
       }
     },
-    "InsertMarket" : {
+    "InsertLocation" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "지점을 입력해주세요"
+            "value" : "장소을 입력해주세요"
           }
         }
       }
@@ -813,17 +813,6 @@
         }
       }
     },
-    "MarketLocation" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지점 위치"
-          }
-        }
-      }
-    },
     "Maximum" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -842,6 +831,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "최대인원"
+          }
+        }
+      }
+    },
+    "MeetingLocation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임 장소"
           }
         }
       }

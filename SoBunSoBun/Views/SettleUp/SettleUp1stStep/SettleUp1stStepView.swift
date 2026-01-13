@@ -97,7 +97,7 @@ class SettleUp1stStepView: UIViewController {
     // 등록된 상품 수량 라벨 배경 뷰
     private let subtitleBackground: UIView = {
         let view = UIView()
-        view.backgroundColor = .neutral50
+        view.backgroundColor = .primary50
         view.layer.cornerRadius = 14
         view.clipsToBounds = true
         
@@ -114,7 +114,7 @@ class SettleUp1stStepView: UIViewController {
         )
         
         lb.attributedText = attributedText
-        lb.textColor = .neutral500
+        lb.textColor = .neutral800
         lb.numberOfLines = 0
         
         return lb
@@ -123,7 +123,7 @@ class SettleUp1stStepView: UIViewController {
     // 상품 등록 배경 뷰
     private let registerItemBackground: UIView = {
         let view = UIView()
-        view.backgroundColor = .neutral50
+        view.backgroundColor = .primary50
         view.layer.cornerRadius = 14
         view.clipsToBounds = true
         
@@ -291,7 +291,7 @@ class SettleUp1stStepView: UIViewController {
     // totalLabelStackView의 배경
     private let totalBackgroundView: UIView = {
         let view = UIView()
-        view.backgroundColor = .neutral50
+        view.backgroundColor = .primary50
         view.layer.cornerRadius = 12
         view.clipsToBounds = true
         
@@ -407,7 +407,7 @@ class SettleUp1stStepView: UIViewController {
         
         subtitleBackground.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(titleLabel.snp.bottom).offset(8)
+            make.top.equalTo(titleLabel.snp.bottom).offset(16)
             make.height.equalTo(74)
         }
         
@@ -841,19 +841,19 @@ extension SettleUp1stStepView {
         
         // quantityButton 설정
         var quantityConfig = quantityButton.configuration
-        quantityConfig?.baseBackgroundColor = isQuantity ? .primary100 : .primary50
+        quantityConfig?.baseBackgroundColor = isQuantity ? .primary100 : .backgroundWhite
         quantityConfig?.baseForegroundColor = isQuantity ? .primary400 : .primary300
         quantityButton.configuration = quantityConfig
-        quantityButton.layer.borderWidth = isQuantity ? 2 : 0
-        quantityButton.layer.borderColor = isQuantity ? UIColor.primary400.cgColor : nil
+        quantityButton.layer.borderWidth = isQuantity ? 2 : 1
+        quantityButton.layer.borderColor = isQuantity ? UIColor.primary400.cgColor : UIColor.primary100.cgColor
         
         // weightButton 설정
         var weightConfig = weightButton.configuration
-        weightConfig?.baseBackgroundColor = isQuantity ? .primary50 : .primary100
+        weightConfig?.baseBackgroundColor = isQuantity ? .backgroundWhite : .primary100
         weightConfig?.baseForegroundColor = isQuantity ? .primary300 : .primary400
         weightButton.configuration = weightConfig
-        weightButton.layer.borderWidth = isQuantity ? 0 : 2
-        weightButton.layer.borderColor = isQuantity ? nil : UIColor.primary400.cgColor
+        weightButton.layer.borderWidth = isQuantity ? 1 : 2
+        weightButton.layer.borderColor = isQuantity ? UIColor.primary100.cgColor : UIColor.primary400.cgColor
         
         // unit text 업데이트
         itemCountTextField.updateRightViewText(isQuantity ? String(localized: "Count") : "g")

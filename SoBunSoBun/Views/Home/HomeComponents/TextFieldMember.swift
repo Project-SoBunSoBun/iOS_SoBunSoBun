@@ -7,18 +7,25 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class TextFieldMember: BaseTextField {
-    let minValue: Int
-    let maxValue: Int
+    private let minValue: Int
+    private let maxValue: Int
+    private let maxLength: Int
     
-    init(frame: CGRect = .zero, minValue: Int, maxValue: Int) {
+    private let disposeBag = DisposeBag()
+    
+    init(frame: CGRect = .zero, minValue: Int, maxValue: Int, maxLength: Int) {
         self.minValue = minValue
         self.maxValue = maxValue
+        self.maxLength = maxLength
         
         super.init(frame: frame, fontStyle: body16)
         
         configureUI()
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -31,7 +38,7 @@ class TextFieldMember: BaseTextField {
         let lb = UILabel()
         lb.text = String(localized: "PeopleCount")
         lb.font = body16.font
-        lb.textColor = .neutral300
+        lb.textColor = .neutral400
         lb.textAlignment = .center
         lb.sizeToFit()
         
@@ -44,8 +51,6 @@ class TextFieldMember: BaseTextField {
     private lazy var rightContainer: UIView = UIView(frame: CGRect(x: 0, y: 0, width: edgesPadding + rightDecoView.frame.width, height: rightDecoView.frame.height))
     
     private func configureUI() {
-        self.delegate = self
-        
         self.backgroundColor = .backgroundWhite
         
         // 모서리
@@ -71,6 +76,36 @@ class TextFieldMember: BaseTextField {
         self.rightViewMode = .always
     }
     
+    private func bind() {
+        self.rx.text.orEmpty
+            .distinctUntilChanged()
+            .map { $0.filter { $0.isNumber } }
+            .map { [weak self] text in
+                guard let self = self else { return "" }
+                
+                return String(text.prefix(maxLength))
+            }
+            .subscribe(onNext: { [weak self] text in
+                guard let self = self else { return }
+                
+                if self.text != text {
+                    self.text = text
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        self.rx.controlEvent(.editingDidEnd)
+            .withLatestFrom(self.rx.text.orEmpty)
+            .compactMap { Int($0) }
+            .subscribe(onNext: { [weak self] value in
+                guard let self = self else { return }
+                
+                self.text = "\(min(max(value, minValue), maxValue))"
+                self.sendActions(for: .editingChanged)
+            })
+            .disposed(by: disposeBag)
+    }
+    
     override func textRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.inset(by: UIEdgeInsets(top: edgesPadding, left: edgesPadding, bottom: edgesPadding, right: rightPadding))
     }
@@ -81,47 +116,5 @@ class TextFieldMember: BaseTextField {
     
     override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
         return textRect(forBounds: bounds)
-    }
-}
-
-extension TextFieldMember: UITextFieldDelegate {
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        if !string.isEmpty {
-            let allowedCharacters = CharacterSet.decimalDigits
-            let characterSet = CharacterSet(charactersIn: string)
-            if !allowedCharacters.isSuperset(of: characterSet) {
-                return false
-            }
-        }
-        
-        // 현재 텍스트 계산
-        let currentText = textField.text ?? ""
-        guard let stringRange = Range(range, in: currentText) else { return false }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: string)
-        
-        // 빈 문자열 허용
-        if updatedText.isEmpty {
-            return true
-        }
-        
-        // Int 변환 체크
-        guard Int(updatedText) != nil else { return false }
-        
-        return true
-    }
-    
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        guard let text = textField.text,
-              !text.isEmpty,
-              let value = Int(text) else { return }
-        
-        // value의 범위가 벗어났을 때 강제 value 조정
-        if value < minValue {
-            textField.text = "\(minValue)"
-        } else if value > maxValue {
-            textField.text = "\(maxValue)"
-        }
-        
-        textField.sendActions(for: .editingChanged)
     }
 }

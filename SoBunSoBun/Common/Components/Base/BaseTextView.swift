@@ -35,7 +35,7 @@ class BaseTextView: UITextView {
             }
             
             var attributes = body16.attributes(alignment: .left)
-            attributes[.foregroundColor] = UIColor.neutral300
+            attributes[.foregroundColor] = UIColor.neutral400
             
             placeholderLabel.attributedText = NSAttributedString(string: placeholder, attributes: attributes)
             placeholderLabel.isHidden = placeholder.isEmpty
