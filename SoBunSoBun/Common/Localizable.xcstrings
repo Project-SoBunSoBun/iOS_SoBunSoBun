@@ -1254,6 +1254,18 @@
         }
       }
     },
+    "SettleUpParticipant" : {
+      "comment" : "SettleUp2ndStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여자별 정산을 완료해주세요."
+          }
+        }
+      }
+    },
     "SettleUpQuantity" : {
       "comment" : "SettleUp1stStepView.swift에서 사용",
       "extractionState" : "manual",
