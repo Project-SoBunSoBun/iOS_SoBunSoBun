@@ -14,11 +14,11 @@ import RxGesture
 class CalculationGuestLabel: UILabel {
     private let disposeBag = DisposeBag()
     
-    var tapped: Observable<Void> {
+    var tapped: Observable<String> {
         tapSubject.asObserver()
     }
     
-    private let tapSubject = PublishSubject<Void>()
+    private let tapSubject = PublishSubject<String>()
     private let sidePadding: CGFloat = 16
     
     override init(frame: CGRect) {
@@ -47,8 +47,11 @@ class CalculationGuestLabel: UILabel {
         self.rx
             .tapGesture()
             .when(.recognized)
-            .map { _ in () }
-            .bind(to: tapSubject)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self,
+                      let text = self.text else { return }
+                tapSubject.onNext(text)
+            })
             .disposed(by: disposeBag)
     }
     
