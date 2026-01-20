@@ -127,6 +127,24 @@ final class NetworkManager {
         .map { _ in () }
     }
     
+    // MARK: - 검색
+    // 추천 검색어
+    func getSuggestions() -> Single<SuggestionSearchKeywordsModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.getSuggestions)
+        )
+        .filterSuccessfulStatusCodes()
+        .map(SuggestionSearchKeywordsModel.self)
+    }
+    
+    func getSearchList(keyword: String, sortBy: String, page: Int, size: Int) -> Single<PostListResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.getSearchList(keyword: keyword, sortBy: sortBy, page: page, size: size))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(PostListResponseModel.self)
+    }
+    
     // MARK: - 정산
     // 서버에서 유저별 정산 목록을 받아오는 메서드
     func mySettleUps(activeOnly: Int, page: Int, size: Int) -> Single<SettleUpModel> {

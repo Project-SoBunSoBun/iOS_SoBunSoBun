@@ -459,6 +459,17 @@
         }
       }
     },
+    "ClearAll" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모두 지우기"
+          }
+        }
+      }
+    },
     "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -565,6 +576,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "중복확인"
+          }
+        }
+      }
+    },
+    "EmptySearchResult" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색 결과가 없습니다."
           }
         }
       }
@@ -1055,6 +1077,28 @@
         }
       }
     },
+    "SearchKeywordsHistory" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최근 검색어"
+          }
+        }
+      }
+    },
+    "SearchKeywordsSuggestion" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "추천 검색어"
+          }
+        }
+      }
+    },
     "SearchSomething" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1254,6 +1298,18 @@
         }
       }
     },
+    "SettleUpParticipant" : {
+      "comment" : "SettleUp2ndStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여자별 정산을 완료해주세요."
+          }
+        }
+      }
+    },
     "SettleUpQuantity" : {
       "comment" : "SettleUp1stStepView.swift에서 사용",
       "extractionState" : "manual",
@@ -1417,6 +1473,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "서비스 이용약관에 \n동의해 주세요"
+          }
+        }
+      }
+    },
+    "SortByDeadline" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마감임박순"
+          }
+        }
+      }
+    },
+    "SortByLatest" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최신순"
           }
         }
       }

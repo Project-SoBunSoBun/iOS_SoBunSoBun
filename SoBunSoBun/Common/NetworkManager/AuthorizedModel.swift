@@ -79,6 +79,17 @@ struct RegisterPostBodyModel: Encodable {
     let minMembers, maxMembers: Int
 }
 
+// MARK: - 검색
+struct SuggestionSearchKeywordsModel: Decodable {
+    let suggestions: [String]
+    let count: Int
+}
+
+struct SearchListRequestModel: Encodable {
+    let keyword, sortBy: String
+    let page, size: Int
+}
+
 // MARK: - 정산
 struct SettleUpModel: Decodable {
     let content: [SettleUpContentModel]
