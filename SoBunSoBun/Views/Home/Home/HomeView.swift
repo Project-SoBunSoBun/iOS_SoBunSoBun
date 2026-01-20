@@ -104,7 +104,19 @@ class HomeView: UIViewController {
         return lb
     }()
     
-    private let searchTextField: SearchTextField = SearchTextField()
+    private let searchTextField: SearchTextField = {
+        let tf = SearchTextField()
+        tf.isEnabled = false
+        
+        return tf
+    }()
+    
+    private let searchTextFieldCover: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        
+        return view
+    }()
     
     private let categoriesScrollView: UIScrollView = {
         let sv = UIScrollView()
@@ -221,7 +233,7 @@ class HomeView: UIViewController {
         view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
-        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, categoriesScrollView, tableView, registerPostButton].forEach {
+        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, searchTextFieldCover, categoriesScrollView, tableView, registerPostButton].forEach {
             view.addSubview($0)
         }
         
@@ -259,10 +271,15 @@ class HomeView: UIViewController {
         }
         
         // 검색창
-        searchTextField.isEnabled = false
         searchTextField.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(myProfileButton.snp.bottom).offset(8)
+        }
+        
+        searchTextFieldCover.snp.makeConstraints { make in
+            make.horizontalEdges.equalTo(searchTextField)
+            make.top.equalTo(searchTextField)
+            make.size.equalTo(searchTextField)
         }
         
         // 카테고리 목록
@@ -309,13 +326,6 @@ extension HomeView {
     }
     
     private func bindAction(reactor: HomeReactor) {
-        searchTextField.rx
-            .tapGesture()
-            .when(.recognized)
-            .map { _ in Reactor.Action.searchTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
         addCategoryButton.rx
             .tapGesture()
             .when(.recognized)
@@ -333,6 +343,13 @@ extension HomeView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        searchTextFieldCover.rx
+            .tapGesture()
+            .when(.recognized)
+            .map { _ in Reactor.Action.searchTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         registerPostButton.rx.tap
             .map { Reactor.Action.registerPostTapped }
             .bind(to: reactor.action)
@@ -346,12 +363,23 @@ extension HomeView {
         
         // 셀을 눌렀을 때
         tableView.rx.modelSelected(PostModel.self)
-            .subscribe(onNext: { [weak self] model in
-                guard let self = self else { return }
+            .map { Reactor.Action.postTapped($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 페이지네이션
+        tableView.rx.willDisplayCell
+            .filter { [weak self] cell, indexPath -> Bool in
+                guard let self = self else { return false }
                 
-                // TODO: 상세 뷰 이동 기능 추가
-                print(model)
-            })
+                let totalCount = self.tableView.numberOfRows(inSection: 0)
+                let triggerCount = 3
+                
+                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
+            }
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .map { _ in Reactor.Action.loadMorePosts }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
     
@@ -384,7 +412,7 @@ extension HomeView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                // TODO: 검색 뷰 이동 기능 추가
+                self.navigationController?.pushViewController(SearchView(), animated: false)
             })
             .disposed(by: disposeBag)
         
@@ -425,6 +453,16 @@ extension HomeView {
             })
             .disposed(by: disposeBag)
         
+        reactor.pulse(\.$shouldPushPostDetailView)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                // TODO: 게시글 상세 뷰 이동 기능 추가
+                
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.posts }
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(
@@ -435,21 +473,6 @@ extension HomeView {
                 
                 cell.configureUI(model: model, isLast: isLast)
             }
-            .disposed(by: disposeBag)
-        
-        // 페이지네이션
-        tableView.rx.willDisplayCell
-            .filter { [weak self] cell, indexPath -> Bool in
-                guard let self = self else { return false }
-                
-                let totalCount = self.tableView.numberOfRows(inSection: 0)
-                let triggerCount = 3
-                
-                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
-            }
-            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
-            .map { _ in Reactor.Action.loadMorePosts }
-            .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.isRefreshing }

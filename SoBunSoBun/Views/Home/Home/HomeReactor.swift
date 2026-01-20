@@ -19,7 +19,7 @@ class HomeReactor: Reactor {
     private let disposeBag = DisposeBag()
     
     let initialState: State = State()
-    let pageSize: Int = 20
+    private let pageSize: Int = 20
     
     enum Action {
         case viewWillAppear
@@ -29,6 +29,7 @@ class HomeReactor: Reactor {
         case addCategoryTapped
         case getSelectedCategories([String])
         case registerPostTapped
+        case postTapped(PostModel)
         case loadMorePosts
         case refresh
     }
@@ -46,6 +47,7 @@ class HomeReactor: Reactor {
         case setSelectedCategories([String])
         
         case setRegisterPostView
+        case setPostDetailView(PostModel)
         
         case setLoading(Bool)
         case setRefreshing(Bool)
@@ -69,6 +71,7 @@ class HomeReactor: Reactor {
         @Pulse var shouldShowLocationSettingAlert: Void?
         
         @Pulse var shouldPushRegisterPostView: Void?
+        @Pulse var shouldPushPostDetailView: PostModel?
         
         var page: Int = 0
         var posts: [PostModel] = []
@@ -109,6 +112,9 @@ class HomeReactor: Reactor {
             
         case .registerPostTapped:
             return Observable.just(.setRegisterPostView)
+            
+        case .postTapped(let model):
+            return Observable.just(.setPostDetailView(model))
             
         case .loadMorePosts:
             guard !currentState.isLoading && currentState.hasMore else {
@@ -161,6 +167,9 @@ class HomeReactor: Reactor {
             
         case .setRegisterPostView:
             newState.shouldPushRegisterPostView = ()
+            
+        case .setPostDetailView(let model):
+            newState.shouldPushPostDetailView = model
             
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
