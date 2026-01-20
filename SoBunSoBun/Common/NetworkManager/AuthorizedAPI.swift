@@ -18,6 +18,9 @@ enum AuthorizedAPI {
     case getHomeList(page: Int, size: Int)
     case getHomeListByCategories(category: [String], page: Int, size: Int)
     case registerPost(model: RegisterPostBodyModel)
+    // 검색
+    case getSuggestions
+    case getSearchList(keyword: String, sortBy: String, page: Int, size: Int)
     // 정산
     case mySettleUps(activeOnly: Int, page: Int, size: Int)
     case deleteSettleUp(id: Int)
@@ -45,13 +48,17 @@ extension AuthorizedAPI: TargetType {
             return "/me/location-verification"
         case .getHomeList:
             return "/api/posts"
-        case .getHomeListByCategories(category: let category, page: _, size: _):
+        case .getHomeListByCategories(let category, page: _, size: _):
             return "/api/posts/categories/\(category.joined(separator: ","))"
         case .registerPost:
             return "/api/posts"
+        case .getSuggestions:
+            return "/api/search/suggestions/default"
+        case .getSearchList:
+            return "/api/search"
         case .mySettleUps:
             return "/api/settleups/my"
-        case .deleteSettleUp(id: let id):
+        case .deleteSettleUp(let id):
             return "/api/settleups/\(id)"
         }
     }
@@ -72,6 +79,10 @@ extension AuthorizedAPI: TargetType {
             return .get
         case .registerPost:
             return .post
+        case .getSuggestions:
+            return .get
+        case .getSearchList:
+            return .get
         case .mySettleUps:
             return .get
         case .deleteSettleUp:
@@ -81,7 +92,7 @@ extension AuthorizedAPI: TargetType {
     
     var task: Moya.Task {
         switch self {
-        case .saveProfile(nickname: let nickname, profileImage: let profileImage):
+        case .saveProfile(let nickname, let profileImage):
             var formData: [MultipartFormData] = []
             
             // 사용자가 선택한 이미지가 있을 때 이미지 추가
@@ -113,25 +124,33 @@ extension AuthorizedAPI: TargetType {
         case .getLocationVerification:
             return .requestPlain
             
-        case .patchLocationVerification(address: let address):
+        case .patchLocationVerification(let address):
             let body = LocationVerificationBodyModel(address: address)
             
             return .requestJSONEncodable(body)
             
-        case .getHomeList(page: let page, size: let size):
+        case .getHomeList(let page, let size):
             let parameters = HomeListRequestModel(page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
-        case .getHomeListByCategories(category: _, page: let page, size: let size):
+        case .getHomeListByCategories(category: _, let page, let size):
             let parameters = HomeListRequestModel(page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
-        case .registerPost(model: let model):
+        case .registerPost(let model):
             return .requestJSONEncodable(model)
+            
+        case .getSuggestions:
+            return .requestPlain
+            
+        case .getSearchList(let keyword, let sortBy, let page, let size):
+            let parameters = SearchListRequestModel(keyword: keyword, sortBy: sortBy, page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
         
-        case .mySettleUps(activeOnly: let activeOnly, page: let page, size: let size):
+        case .mySettleUps(let activeOnly, let page, let size):
             let parameters = SettleUpMyRequestModel(activeOnly: activeOnly, page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
@@ -150,6 +169,8 @@ extension AuthorizedAPI: TargetType {
                 .getHomeList,
                 .getHomeListByCategories,
                 .registerPost,
+                .getSuggestions,
+                .getSearchList,
                 .mySettleUps,
                 .deleteSettleUp:
             return [:]
