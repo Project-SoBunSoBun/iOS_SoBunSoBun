@@ -5,7 +5,7 @@
 //  Created by 김태은 on 1/13/26.
 //
 
-import UIKit/Users/hugesilver/Desktop/TAEEUN/Project/SobunSobun/iOS_SoBunSoBun/SoBunSoBun/Common/Components/PaddingLabel.swift
+import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
