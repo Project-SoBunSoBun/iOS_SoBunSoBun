@@ -1,0 +1,178 @@
+//
+//  DropDownView.swift
+//  SoBunSoBun
+//
+//  Created by 김태은 on 1/17/26.
+//
+
+import UIKit
+import SnapKit
+import RxSwift
+import RxCocoa
+import RxGesture
+
+class DropDownView: UIStackView {
+    typealias Reactor = DropDownReactor
+    private let reactor: DropDownReactor
+    
+    private let disposeBag = DisposeBag()
+    
+    init(frame: CGRect = .zero, items: [String]) {
+        self.reactor = DropDownReactor(selectedCell: items[0])
+        
+        super.init(frame: frame)
+        
+        configureUI(items: items)
+        bind(reactor: reactor)
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    let itemTapped = PublishSubject<String>()
+    
+    private func configureUI(items: [String]) {
+        self.backgroundColor = .backgroundWhite
+        
+        // 그림자
+        self.layer.shadowOffset = .zero
+        self.layer.shadowColor = UIColor.primary400.withAlphaComponent(0.24).cgColor
+        self.layer.shadowOpacity = 1
+        self.layer.shadowRadius = 16
+        self.clipsToBounds = false
+        
+        // 모서리
+        self.layer.cornerRadius = 16
+        
+        // stackview 설정
+        self.axis = .vertical
+        self.spacing = 0
+        self.alignment = .leading
+        
+        self.backgroundColor = .backgroundWhite
+        
+        self.snp.makeConstraints { make in
+            make.width.equalTo(128)
+        }
+        
+        // cell 추가
+        items.enumerated().forEach { index, item in
+            let cell = DropDownCell(title: item)
+            if index == 0 {
+                cell.toggleSelect(isSelected: true)
+            }
+            
+            self.addArrangedSubview(cell)
+            
+            cell.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
+            }
+        }
+        
+        // 초기 설정
+        self.isHidden = true
+        self.alpha = 0
+    }
+    
+    private func animateToggle(isOpen: Bool) {
+        let scale: CGFloat = 0.3
+        let xOffset = (self.bounds.width * (1.0 - scale)) / 2
+        let yOffset = (self.bounds.height * (1.0 - scale)) / 2
+        
+        // 애니메이션 위치 선적용을 위한 transform
+        let transform = CGAffineTransform(translationX: xOffset, y: -yOffset)
+            .scaledBy(x: scale, y: scale)
+            .translatedBy(x: -xOffset, y: yOffset)
+        
+        if isOpen { // 열기
+            self.isHidden = false
+            self.transform = transform
+            self.alpha = 0
+            
+            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut]) {
+                self.transform = .identity
+                self.alpha = 1
+            }
+        } else { // 닫기
+            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn]) {
+                self.transform = transform
+                self.alpha = 0
+            } completion: { _ in
+                self.isHidden = true
+                self.transform = .identity
+            }
+        }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: 16).cgPath
+    }
+}
+
+extension DropDownView {
+    func setOpen(isOpen: Bool) {
+        reactor.action.onNext(.buttonTapped(isOpen))
+    }
+    
+    private func bind(reactor: Reactor) {
+        bindAction(reactor: reactor)
+        bindState(reactor: reactor)
+    }
+    
+    private func bindAction(reactor: Reactor) {
+        self.arrangedSubviews.forEach {
+            guard let cell = $0 as? DropDownCell else { return }
+            
+            cell.rx
+                .tapGesture()
+                .when(.recognized)
+                .map { _ in Reactor.Action.selectCell(cell.title) }
+                .bind(to: reactor.action)
+                .disposed(by: disposeBag)
+        }
+    }
+    
+    private func bindState(reactor: Reactor) {
+        reactor.state.map { $0.isOpen }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] isOpen in
+                guard let self = self else { return }
+                
+                animateToggle(isOpen: isOpen)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.selectedCell }
+            .distinctUntilChanged()
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] title in
+                guard let self = self else { return }
+                
+                var selectedCell: DropDownCell?
+                
+                self.arrangedSubviews.forEach {
+                    guard let cell = $0 as? DropDownCell else { return }
+                    
+                    let isSelected = title == cell.title
+                    
+                    cell.toggleSelect(isSelected: isSelected)
+                    
+                    if isSelected {
+                        selectedCell = cell
+                    }
+                }
+                
+                // 선택된 셀 최상단으로 위치
+                if let selectedCell = selectedCell,
+                   selectedCell != self.arrangedSubviews.first {
+                    self.removeArrangedSubview(selectedCell)
+                    self.insertArrangedSubview(selectedCell, at: 0)
+                }
+                
+                itemTapped.onNext(title)
+            })
+            .disposed(by: disposeBag)
+    }
+}
