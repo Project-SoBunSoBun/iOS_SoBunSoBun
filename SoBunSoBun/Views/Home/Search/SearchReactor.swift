@@ -22,64 +22,52 @@ class SearchReactor: Reactor {
     private let pageSize: Int = 20
     
     enum Action {
-        case viewWillAppear
-        case viewTapped
-        case backButtonTapped
-        case search(String)
-        case quickSearch(String)
-        case clearAllTapped
-        case clearOneSearchHistoryTapped(String)
-        case sortButtonTapped
-        case sortTapped(String)
-        case postTapped(PostModel)
-        case loadMorePosts
+        case viewWillAppear // viewWillAppear 생명주기 실행
+        case backButtonTapped // 뒤로가기 버튼 Tap
+        case search(String) // 검색 실행
+        case quickSearch(String) // 버튼을 눌렀을 때 바로 검색 실행
+        case clearAllTapped // 모두 지우기 tap
+        case clearOneSearchHistoryTapped(String) // 하나의 기록 지우기 tap
+        case sortButtonTapped // 정렬 목록 버튼 tap
+        case sortTapped(String) // 정렬 tap
+        case postTapped(PostModel) // 게시글 tap
+        case loadMorePosts // 페이지네이션
     }
     
     enum Mutation {
-        case setSuggestions([String])
-        case setGoBack
-        case setHistory([String])
-        case setKeyword(String)
-        case setPosts([PostModel])
-        case appendPosts([PostModel])
+        case setGoBack // 뒤로가기
+        case setHistory([String]) // 검색 기록 설정
+        case setKeyword(String) // 검색창 텍스트 설정
+        case setPosts([PostModel]) // 게시글 설정
+        case appendPosts([PostModel]) // 페이지네이션 게시글 추가
         case setLoading(Bool)
-        case setPage(Int)
-        case setHasMore(Bool)
-        case setIsSortButtonOpen(Bool)
-        case setSort(String)
-        case setPostDetailView(PostModel)
-        
-        case setErrorMessage(String)
+        case setPage(Int) // 페이지네이션 페이지 번호 설정
+        case setHasMore(Bool) // 페이지네이션 추가 가능 여부 설정
+        case setIsSortButtonOpen(Bool) // 정렬 목록 버튼 열림 여부
+        case setSort(String) // 정렬 설정
+        case setPostDetailView(PostModel) // 게시글 상세 뷰로 이동
+        case setErrorMessage(String) // 오류 메시지 알림 표시 설정
     }
     
     struct State {
-        @Pulse var shouldGoBack: Void?
-        
-        var suggestions: [String] = []
-        var history: [String] = []
-        var keyword: String = ""
-        var isSortButtonOpen: Bool = false
-        var sortBy: String = "SortByLatest"
-        var page: Int = 0
-        var posts: [PostModel]? = nil
-        @Pulse var shouldPushPostDetailView: PostModel?
+        @Pulse var shouldGoBack: Void? // 뒤로 가기
+        var history: [String] = [] // 검색 기록
+        var keyword: String = "" // 검색창 텍스트
+        var isSortButtonOpen: Bool = false // 정렬 목록 버튼 열림
+        var sortBy: String = "SortByLatest" // 정렬
+        var page: Int = 0 // 페이지네이션 페이지 번호
+        var posts: [PostModel]? = nil // 게시글
+        @Pulse var shouldPushPostDetailView: PostModel? // 게시글 상세 뷰로 이동
         var isLoading: Bool = false
-        var hasMore: Bool = true
-        
-        @Pulse var errorMessage: String?
+        var hasMore: Bool = true // 페이지네이션 추가 가능 여부
+        @Pulse var errorMessage: String? // 오류 메시지
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewWillAppear:
-            return Observable.concat([
-                getSearchHistory(),
-                getSuggestions()
-            ])
-            
-        case .viewTapped:
-            return Observable.just(.setIsSortButtonOpen(false))
-            
+            return getSearchHistory()
+        
         case .backButtonTapped:
             return Observable.just(.setGoBack)
             
@@ -112,6 +100,7 @@ class SearchReactor: Reactor {
                 Observable.just(.setKeyword(trimmedText)),
                 Observable.just(.setIsSortButtonOpen(false)),
                 addSearchHistory(text: trimmedText),
+                Observable.just(.setPage(0)),
                 loadPosts(keyword: trimmedText, sortBy: sortBy, page: 0, isFirst: true)
             ])
             
@@ -153,9 +142,6 @@ class SearchReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case .setSuggestions(let suggestions):
-            newState.suggestions = suggestions
-            
         case .setGoBack:
             newState.shouldGoBack = ()
             
@@ -194,21 +180,6 @@ class SearchReactor: Reactor {
         }
         
         return newState
-    }
-    
-    // 추천 검색어 불러오기
-    private func getSuggestions() -> Observable<Mutation> {
-        return NetworkManager.shared.getSuggestions()
-            .asObservable()
-            .flatMap { model -> Observable<Mutation> in
-                return Observable.just(.setSuggestions(model.suggestions))
-            }
-            .catch { [weak self] error in
-                guard let self = self else { return Observable.empty() }
-                
-                logger.critical("추천 검색어 API 호출 실패: \(error.localizedDescription)")
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage")))
-            }
     }
     
     private let userDefaultsKey: String = "SearchHistory"
@@ -278,10 +249,12 @@ class SearchReactor: Reactor {
                 }
                 .catch { error in
                     self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+                    
                     return Observable.concat([
                         isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
                         Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                        Observable.just(.setHasMore(false))
+                        Observable.just(.setHasMore(false)),
+                        Observable.just(.setPage(0))
                     ])
                 }
         ])

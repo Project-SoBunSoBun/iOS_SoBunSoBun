@@ -22,62 +22,52 @@ class HomeReactor: Reactor {
     private let pageSize: Int = 20
     
     enum Action {
-        case viewWillAppear
-        case searchTapped
-        case notificationsTapped
-        case myProfileTapped
-        case addCategoryTapped
-        case getSelectedCategories([String])
-        case registerPostTapped
-        case postTapped(PostModel)
-        case loadMorePosts
-        case refresh
+        case viewWillAppear // viewWillAppear 생명주기 실행
+        case searchTapped // 검색창 tap
+        case notificationsTapped // 알림 아이콘 tap
+        case myProfileTapped // 내 프로필 tap
+        case addCategoryTapped // 카테고리 추가 버튼 tap
+        case getSelectedCategories([String]) // 선택한 카테고리 bind
+        case registerPostTapped // 글 쓰기 버튼 tap
+        case postTapped(PostModel) // 게시글 tap
+        case loadMorePosts // 페이지네이션
+        case refresh // 새로고침
     }
     
     enum Mutation {
-        case setSearchView
-        
-        case verifyLocation(String)
-        case setShowLocationSettingAlert
-        
-        case setNotificationsView
-        case setMyProfileView
-        
-        case setAddCategoryTapped
-        case setSelectedCategories([String])
-        
-        case setRegisterPostView
-        case setPostDetailView(PostModel)
-        
+        case setSearchView // 검색 뷰로 이동
+        case verifyLocation(String) // 위치 인증
+        case setShowLocationSettingAlert // 위치 권환 알림 표시
+        case setNotificationsView // 알림 뷰로 이동
+        case setMyProfileView // 내 프로필로 이동
+        case setAddCategoryTapped // 카테고리 추가 뷰 표시
+        case setSelectedCategories([String]) // 선택한 카테고리 적용
+        case setRegisterPostView // 글 쓰기 뷰로 이동
+        case setPostDetailView(PostModel) // 게시글 상세 뷰로 이동
         case setLoading(Bool)
         case setRefreshing(Bool)
-        case setPosts([PostModel])
-        case appendPosts([PostModel])
-        case setPage(Int)
-        case setHasMore(Bool)
+        case setPosts([PostModel]) // 게시글 설정
+        case appendPosts([PostModel]) // 페이지네이션 게시글 추가
+        case setPage(Int) // 페이지네이션 페이지 번호 설정
+        case setHasMore(Bool) // 페이지네이션 추가 가능 여부 설정
     }
     
     struct State {
-        @Pulse var shouldPushSearchView: Void?
-        
-        var isLocationVerified: Bool = false
-        
-        @Pulse var shouldPushNotificationsView: Void?
-        @Pulse var shouldPushMyProfileView: Void?
-        
-        @Pulse var shouldShowBottomCategorySheet: Void?
-        var selectedCategories: [String] = []
-        var verifiedLocation: String = "\(String(localized: "Loading"))..."
-        @Pulse var shouldShowLocationSettingAlert: Void?
-        
-        @Pulse var shouldPushRegisterPostView: Void?
-        @Pulse var shouldPushPostDetailView: PostModel?
-        
-        var page: Int = 0
-        var posts: [PostModel] = []
+        @Pulse var shouldPushSearchView: Void? // 검색 뷰로 이동
+        var isLocationVerified: Bool = false // 위치 인증 여부
+        @Pulse var shouldPushNotificationsView: Void? // 알림 뷰로 이동
+        @Pulse var shouldPushMyProfileView: Void? // 내 프로필 뷰로 이동
+        @Pulse var shouldShowBottomCategorySheet: Void? // 카테고리 추가 뷰 표시
+        var selectedCategories: [String] = [] // 선택된 카테고리
+        var verifiedLocation: String = "\(String(localized: "Loading"))..." // 인증된 위치 정보
+        @Pulse var shouldShowLocationSettingAlert: Void? // 위치 권한 알림 표시
+        @Pulse var shouldPushRegisterPostView: Void? // 글 쓰기 뷰로 이동
+        @Pulse var shouldPushPostDetailView: PostModel? // 게시글 상세 뷰로 이동
+        var page: Int = 0 // 페이지네이션 페이지 번호
+        var posts: [PostModel] = [] // 게시글
         var isLoading: Bool = false
         var isRefreshing: Bool = false
-        var hasMore: Bool = true
+        var hasMore: Bool = true // 페이지네이션 추가 가능 여부
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -342,10 +332,12 @@ class HomeReactor: Reactor {
                 }
                 .catch { error in
                     self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+                    
                     return Observable.concat([
                         isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
                         Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                        Observable.just(.setHasMore(false))
+                        Observable.just(.setHasMore(false)),
+                        Observable.just(.setPage(0))
                     ])
                 }
         ])

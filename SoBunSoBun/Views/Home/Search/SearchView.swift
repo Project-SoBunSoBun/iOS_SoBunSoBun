@@ -48,23 +48,6 @@ class SearchView: UIViewController {
         return view
     }()
     
-    private let suggestionTitleLabel: UILabel = {
-        let lb = UILabel()
-        
-        var attributes: [NSAttributedString.Key: Any] = title16.attributes()
-        attributes[.foregroundColor] = UIColor.neutral900
-        
-        lb.attributedText = NSAttributedString(string: String(localized: "SearchKeywordsSuggestion"), attributes: attributes)
-        
-        return lb
-    }()
-    
-    private let suggestionKeywordsWrappingView = LabelsWrappingView(
-        customLabelType: SuggestionSearchKeyword.self,
-        spacingX: 8,
-        spacingY: 8
-    )
-    
     private let historyTitleLabel: UILabel = {
         let lb = UILabel()
         
@@ -245,23 +228,13 @@ class SearchView: UIViewController {
             make.width.equalToSuperview()
         }
         
-        [suggestionTitleLabel, suggestionKeywordsWrappingView, historyTitleLabel, clearAllHistoryButton, historyListView].forEach {
+        [historyTitleLabel, clearAllHistoryButton, historyListView].forEach {
             beforeSearchView.addSubview($0)
-        }
-        
-        suggestionTitleLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
-            make.top.equalToSuperview()
-        }
-        
-        suggestionKeywordsWrappingView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.top.equalTo(suggestionTitleLabel.snp.bottom).offset(8)
         }
         
         historyTitleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview()
-            make.top.equalTo(suggestionKeywordsWrappingView.snp.bottom).offset(24)
+            make.top.equalToSuperview()
         }
         
         clearAllHistoryButton.snp.makeConstraints { make in
@@ -339,11 +312,6 @@ extension SearchView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        suggestionKeywordsWrappingView.selectedCategory
-            .map { Reactor.Action.quickSearch($0) }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
         searchTextField.rx.controlEvent(.editingDidEndOnExit)
             .withLatestFrom(searchTextField.rx.text.orEmpty)
             .map { Reactor.Action.search($0) }
@@ -400,15 +368,7 @@ extension SearchView {
                 self.navigationController?.popViewController(animated: false)
             })
             .disposed(by: disposeBag)
-        
-        reactor.state.map { $0.suggestions }
-            .subscribe(onNext: { [weak self] suggestions in
-                guard let self = self else { return }
-                
-                suggestionKeywordsWrappingView.labels = suggestions
-            })
-            .disposed(by: disposeBag)
-        
+       
         reactor.state.map { $0.history.reversed() }
             .subscribe(onNext: { [weak self] history in
                 guard let self = self else { return }
