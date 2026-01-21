@@ -60,21 +60,45 @@ class HorizontalWrappingView: UIView {
     }
     
     // 뷰 사이즈 계산
-    private func getViewSize(view: UIView) -> CGSize? {
-        if view.intrinsicContentSize.width > 0 && view.intrinsicContentSize.height > 0  {
-            return view.intrinsicContentSize
-        } else if view.frame.width > 0 && view.frame.height > 0 {
-            return view.frame.size
-        } else {
-            return nil
+    private func getViewSize(view: UIView, availableWidth: CGFloat) -> CGSize? {
+        // intrinsicContentSize 유효성
+        let intrinsicContentSize = view.intrinsicContentSize
+        
+        if intrinsicContentSize.width > 0 && intrinsicContentSize.height > 0 {
+            return intrinsicContentSize
         }
+        
+        // AutoLayout constraints
+        let targetSize = view.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
+        let fittingSize = view.systemLayoutSizeFitting(targetSize,
+                                                       withHorizontalFittingPriority: .defaultHigh,
+                                                       verticalFittingPriority: .fittingSizeLevel
+        )
+        
+        if fittingSize.width > 0 && fittingSize.height > 0 {
+            return view.frame.size
+        }
+        
+        // sizeThatFits
+        let size = view.sizeThatFits(targetSize)
+        
+        if size.width > 0 && size.height > 0 {
+            return size
+        }
+        
+        // frame
+        if view.frame.width > 0 && view.frame.height > 0 {
+            return view.frame.size
+        }
+        
+        return nil
     }
     
     // 뷰 배치
     private func layoutArrangedSubviews() {
-        let fullWidth: CGFloat = bounds.width
+        let availableWidth: CGFloat = bounds.width
         
-        guard !arrangedSubviews.isEmpty, fullWidth > 0 else {
+        guard !arrangedSubviews.isEmpty, availableWidth > 0 else {
             return
         }
         
@@ -85,12 +109,12 @@ class HorizontalWrappingView: UIView {
         
         for view in arrangedSubviews {
             // isHidden과 뷰 크기 유효성 검사
-            guard !view.isHidden, let size = getViewSize(view: view) else {
+            guard !view.isHidden, let size = getViewSize(view: view, availableWidth: availableWidth) else {
                 continue
             }
             
             // 현재 줄이 포화 상태
-            if currentX + size.width > fullWidth {
+            if currentX + size.width > availableWidth {
                 layoutRowViews(y: currentY, maxHeight: maxHeightInCurrentRow, views: views)
                 
                 // 초기화
@@ -123,8 +147,10 @@ class HorizontalWrappingView: UIView {
     
     // 뷰 열 배치
     private func layoutRowViews(y: CGFloat, maxHeight: CGFloat, views: [HorizontalWrappingModel]) {
+        let availableWidth: CGFloat = bounds.width
+        
         guard let lastView = views.last,
-              let lastViewSize = getViewSize(view: lastView.view) else {
+              let lastViewSize = getViewSize(view: lastView.view, availableWidth: availableWidth) else {
             return
         }
         
@@ -135,7 +161,7 @@ class HorizontalWrappingView: UIView {
             let view = model.view
             
             // isHidden과 뷰 크기 유효성 검사
-            guard !view.isHidden, let size = getViewSize(view: view) else {
+            guard !view.isHidden, let size = getViewSize(view: view, availableWidth: availableWidth) else {
                 continue
             }
             
