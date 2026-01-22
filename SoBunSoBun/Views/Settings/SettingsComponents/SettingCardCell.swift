@@ -40,14 +40,12 @@ class SettingCardCell: UIStackView {
     let didTap = PublishRelay<Void>()
     
     // MARK: - 디자인 요소
-    // titleLabel
     private let titleLabel = UILabel()
     
-    // subTitleLabel
     private let subTitleLabel = UILabel()
     
     // 아이콘 이미지 뷰
-    private let nextButtonImage: UIImageView = { // imageView로 바꾸기
+    private let nextButtonImage: UIImageView = {
         let iv = UIImageView()
         iv.image = .blackChevronRight
         iv.contentMode = .scaleAspectFit
