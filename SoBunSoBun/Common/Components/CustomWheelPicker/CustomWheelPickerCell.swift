@@ -21,14 +21,7 @@ class WheelPickerCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let label: UILabel = {
-        let lb = UILabel()
-        lb.font = body18.font
-        lb.textColor = .neutral400
-        lb.textAlignment = .center
-        
-        return lb
-    }()
+    private let label: UILabel = UILabel()
     
     private func configureUI() {
         backgroundColor = .clear
@@ -42,14 +35,9 @@ class WheelPickerCell: UITableViewCell {
     }
     
     func configure(text: String, isSelected: Bool) {
-        label.text = text
+        var attributes: [NSAttributedString.Key: Any] = isSelected ? title20.attributes(alignment: .center) : body18.attributes(alignment: .center)
+        attributes[.foregroundColor] = isSelected ? UIColor.primary400 : UIColor.neutral400
         
-        if isSelected {
-            label.font = title20.font
-            label.textColor = .primary400
-        } else {
-            label.font = body18.font
-            label.textColor = .neutral400
-        }
+        label.attributedText = NSAttributedString(string: text, attributes: attributes)
     }
 }
