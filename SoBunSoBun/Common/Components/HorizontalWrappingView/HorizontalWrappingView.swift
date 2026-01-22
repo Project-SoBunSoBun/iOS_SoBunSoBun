@@ -26,7 +26,7 @@ class HorizontalWrappingView: UIView {
     
     private var arrangedSubviews: [UIView] = []
     
-    private var maxWidth: CGFloat = 0
+    private var cachedWidth: CGFloat = 0
     private var cachedHeight: CGFloat = 0
     
     // 뷰 추가
@@ -34,6 +34,10 @@ class HorizontalWrappingView: UIView {
         arrangedSubviews.append(view)
         addSubview(view)
         setNeedsLayout()
+    }
+    
+    func addArrangedSubviews(_ views: [UIView]) {
+        views.forEach { addArrangedSubview($0) }
     }
     
     // 뷰 삽입
@@ -76,7 +80,7 @@ class HorizontalWrappingView: UIView {
         )
         
         if fittingSize.width > 0 && fittingSize.height > 0 {
-            return view.frame.size
+            return fittingSize
         }
         
         // sizeThatFits
@@ -154,11 +158,12 @@ class HorizontalWrappingView: UIView {
             return
         }
         
-        // 해당 줄 너비 계산
-        maxWidth = max(maxWidth, lastView.x + lastViewSize.width)
+        // 해당 줄 최대 너비 계산
+        cachedWidth = max(cachedWidth, lastView.x + lastViewSize.width)
         
         for model in views {
             let view = model.view
+            let x = model.x
             
             // isHidden과 뷰 크기 유효성 검사
             guard !view.isHidden, let size = getViewSize(view: view, availableWidth: availableWidth) else {
@@ -167,7 +172,7 @@ class HorizontalWrappingView: UIView {
             
             // frame 설정
             view.frame = CGRect(
-                x: model.x,
+                x: x,
                 y: y,
                 width: size.width,
                 height: size.height
@@ -181,12 +186,6 @@ class HorizontalWrappingView: UIView {
     }
     
     override var intrinsicContentSize: CGSize {
-        return CGSize(width: maxWidth, height: cachedHeight)
-    }
-}
-
-extension HorizontalWrappingView {
-    func addArrangedSubviews(_ views: [UIView]) {
-        views.forEach { addArrangedSubview($0) }
+        return CGSize(width: cachedWidth, height: cachedHeight)
     }
 }
