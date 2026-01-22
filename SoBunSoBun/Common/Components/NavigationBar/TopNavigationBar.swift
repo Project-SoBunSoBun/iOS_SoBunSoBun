@@ -35,14 +35,7 @@ class TopNavigationBar: UIView {
         return btn
     }()
     
-    private let titleLabel: UILabel = {
-        let lb = UILabel()
-        lb.font = title16.font
-        lb.textColor = .neutral900
-        lb.textAlignment = .center
-        
-        return lb
-    }()
+    private let titleLabel: UILabel = UILabel()
     
     private let buttonStackView: UIStackView = {
         let sv = UIStackView()
@@ -96,7 +89,10 @@ class TopNavigationBar: UIView {
     }
     
     private func setTitle(_ title: String) {
-        titleLabel.text = title
+        var attributes: [NSAttributedString.Key: Any] = title16.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.neutral900
+        
+        titleLabel.attributedText = NSAttributedString(string: title, attributes: attributes)
     }
     
     private func setButtons(_ buttons: [UIButton]) {
