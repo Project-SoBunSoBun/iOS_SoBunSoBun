@@ -12,9 +12,6 @@ import RxCocoa
 import RxGesture
 
 class SettingCardCell: UIStackView {
-    private let title: String
-    private let subTitle: String?
-    
     private let disposeBag = DisposeBag()
     
     enum CellType {
@@ -23,10 +20,7 @@ class SettingCardCell: UIStackView {
         case empty
     }
     
-    init(frame: CGRect = .zero, title: String, subTitle: String? = nil, type: CellType) {
-        self.title = title
-        self.subTitle = subTitle
-        
+    init(frame: CGRect = .zero, title: String, subTitle: String? = nil, type: CellType) {        
         super.init(frame: frame)
         
         configure(type: type)

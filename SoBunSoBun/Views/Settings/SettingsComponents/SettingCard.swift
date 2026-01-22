@@ -26,7 +26,6 @@ class SettingCard: UIView {
         sv.axis = .vertical
         sv.spacing = 16
         sv.alignment = .center
-        sv.distribution = .fillEqually
         
         return sv
     }()
