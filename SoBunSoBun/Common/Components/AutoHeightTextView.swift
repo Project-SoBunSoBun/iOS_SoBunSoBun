@@ -43,9 +43,6 @@ class AutoHeightTextView: BaseTextView {
     
     private let charactersLabel: UILabel = {
         let lb = UILabel()
-        lb.font = body12.font
-        lb.textColor = .neutral600
-        lb.textAlignment = .right
         lb.isUserInteractionEnabled = false
         
         return lb
@@ -79,7 +76,10 @@ class AutoHeightTextView: BaseTextView {
         }
         
         // 글자 수
-        charactersLabel.text = "\(self.text.count)/\(maxLength)\(String(localized: "Characters"))"
+        var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
+        charactersAttributes[.foregroundColor] = UIColor.neutral600
+        
+        charactersLabel.attributedText = NSAttributedString(string: "\(self.text.count)/\(maxLength)\(String(localized: "Characters"))", attributes: charactersAttributes)
         addSubview(charactersLabel)
     }
     
@@ -88,7 +88,9 @@ class AutoHeightTextView: BaseTextView {
             .subscribe(onNext: { [weak self] text in
                 guard let self = self else { return }
                 
-                charactersLabel.text = "\(text.count)/\(maxLength)\(String(localized: "Characters"))"
+                var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
+                charactersAttributes[.foregroundColor] = UIColor.neutral600
+                charactersLabel.attributedText = NSAttributedString(string: "\(text.count)/\(maxLength)\(String(localized: "Characters"))", attributes: charactersAttributes)
                 
                 updateHeight()
                 applyLineHeight()

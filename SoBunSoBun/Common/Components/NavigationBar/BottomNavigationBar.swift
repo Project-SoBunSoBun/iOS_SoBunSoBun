@@ -237,18 +237,15 @@ class TabBarButton: UIButton {
         return iv
     }()
     
-    private let label: UILabel = {
-        let lb = UILabel()
-        lb.font = title12.font
-        lb.textAlignment = .center
-        lb.textColor = .neutral500
-        
-        return lb
-    }()
+    private let label: UILabel = UILabel()
     
     private func configureUI(title: String) {
         icon.image = icons[0]
-        label.text = title
+        
+        var attributes: [NSAttributedString.Key: Any] = title12.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.neutral500
+        
+        label.attributedText = NSAttributedString(string: title, attributes: attributes)
         
         self.addSubview(stackview)
         stackview.addArrangedSubview(icon)

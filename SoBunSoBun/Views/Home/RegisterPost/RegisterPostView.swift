@@ -21,12 +21,11 @@ class RegisterPostView: UIViewController {
     private static let memberMaxValue: Int = 10
     
     // MARK: - 디자인 요소
-    private static func titleLabel() -> UILabel {
-        let lb = UILabel()
-        lb.font = title16.font
-        lb.textColor = .neutral900
+    private func titleAttributes() -> [NSAttributedString.Key: Any] {
+        var attributes: [NSAttributedString.Key: Any] = title16.attributes()
+        attributes[.foregroundColor] = UIColor.neutral900
         
-        return lb
+        return attributes
     }
     
     private lazy var topNavigationBar: TopNavigationBar = {
@@ -56,9 +55,9 @@ class RegisterPostView: UIViewController {
         return lb
     }()
     
-    private let groupTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "GroupTitle")
+    private lazy var groupTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "GroupTitle"), attributes: titleAttributes())
         
         return lb
     }()
@@ -70,9 +69,9 @@ class RegisterPostView: UIViewController {
         return tfu
     }()
     
-    private let keywordTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "ItemKeywords")
+    private lazy var keywordTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "ItemKeywords"), attributes: titleAttributes())
         
         return lb
     }()
@@ -139,9 +138,9 @@ class RegisterPostView: UIViewController {
     
     private let minimumContainerView: UIStackView = fieldContainerView()
     
-    private let minimumTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "MinimumMembers")
+    private lazy var minimumTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "MinimumMembers"), attributes: titleAttributes())
         
         return lb
     }()
@@ -159,9 +158,9 @@ class RegisterPostView: UIViewController {
     
     private let maximumContainerView: UIStackView = fieldContainerView()
     
-    private let maximumTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "MaximumMembers")
+    private lazy var maximumTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "MaximumMembers"), attributes: titleAttributes())
         
         return lb
     }()
@@ -177,9 +176,9 @@ class RegisterPostView: UIViewController {
         return tfm
     }()
     
-    private let locationTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "MeetingLocation")
+    private lazy var locationTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "MeetingLocation"), attributes: titleAttributes())
         
         return lb
     }()
@@ -195,9 +194,9 @@ class RegisterPostView: UIViewController {
     
     private let dateContainerView: UIStackView = fieldContainerView()
     
-    private let dateTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "Date")
+    private lazy var dateTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "Date"), attributes: titleAttributes())
         
         return lb
     }()
@@ -211,9 +210,9 @@ class RegisterPostView: UIViewController {
     
     private let timeContainerView: UIStackView = fieldContainerView()
     
-    private let timeTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "Time")
+    private lazy var timeTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "Time"), attributes: titleAttributes())
         
         return lb
     }()
@@ -237,9 +236,9 @@ class RegisterPostView: UIViewController {
         return lb
     }()
     
-    private let plannedItemsTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "PlannedItems")
+    private lazy var plannedItemsTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "PlannedItems"), attributes: titleAttributes())
         
         return lb
     }()
@@ -251,9 +250,9 @@ class RegisterPostView: UIViewController {
         return ahtv
     }()
     
-    private let notesTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "Notes")
+    private lazy var notesTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "Notes"), attributes: titleAttributes())
         
         return lb
     }()
@@ -614,8 +613,7 @@ extension RegisterPostView {
         if !selectedCategories.isEmpty {
             selectedCategories.forEach {
                 let categoryString = NSLocalizedString("Category\($0)", comment: "Category \($0)")
-                let category = CategorySelected()
-                category.text = categoryString
+                let category = CategorySelected(title: categoryString)
                 
                 categoriesStackView.addArrangedSubview(category)
             }

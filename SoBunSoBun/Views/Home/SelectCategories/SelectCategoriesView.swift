@@ -64,7 +64,7 @@ class SelectCategoriesView: UIViewController {
         let wrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
         
         let categorySelectables = categories.map { category in
-            let view = CategorySelectable(title: category)
+            let view = CategorySelectable(number: category)
             
             // bind action
             view.didTap
@@ -198,7 +198,7 @@ extension SelectCategoriesView {
             .flatMap { $0.subviews }
             .compactMap { $0 as? CategorySelectable }
             .forEach {
-                $0.isChecked = setSelectedCategories.contains($0.title)
+                $0.isChecked = setSelectedCategories.contains($0.number)
             }
     }
 }
