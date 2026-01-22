@@ -9,8 +9,11 @@ import UIKit
 import SnapKit
 
 class CategorySelected: UILabel {
-    /// 선택된 카테고리 컴포넌트입니다.
-    override init(frame: CGRect) {
+    let title: String
+    
+    init(frame: CGRect = .zero, title: String) {
+        self.title = title
+        
         super.init(frame: frame)
         configure()
     }
@@ -22,8 +25,10 @@ class CategorySelected: UILabel {
     private let insets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
     
     private func configure() {
-        self.font = title14.font
-        self.textColor = .backgroundWhite
+        var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.backgroundWhite
+        self.attributedText = NSAttributedString(string: title, attributes: attributes)
+        
         self.backgroundColor = .primary300
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
