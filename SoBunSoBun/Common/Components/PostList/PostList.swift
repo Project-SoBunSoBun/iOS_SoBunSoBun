@@ -59,7 +59,7 @@ class PostList: UIView {
         return iv
     }
     
-    // 설명 attributes 컴포넌트
+    // 설명(장소 및 시간) attributes 컴포넌트
     private func descAttributes() -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = body14.attributes()
         attributes[.foregroundColor] = UIColor.neutral500
