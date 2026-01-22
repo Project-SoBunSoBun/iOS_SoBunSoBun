@@ -87,12 +87,6 @@ class LabelsWrappingView<T: UILabel>: UIView {
             
             label.text = str
             label.frame.size = label.intrinsicContentSize
-            
-            if let categorySelectable = label as? CategorySelectable {
-                categorySelectable.didTap
-                    .bind(to: selectedCategory)
-                    .disposed(by: disposeBag)
-            }
         }
     }
     
