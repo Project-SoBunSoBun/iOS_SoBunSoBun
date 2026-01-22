@@ -88,9 +88,8 @@ class SettingCardCell: UIStackView {
         var attributes = body16.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral900
         
-        let localizedString = NSLocalizedString(title, comment: "")
         let attributedText = NSAttributedString(
-            string: localizedString,
+            string: title,
             attributes: attributes
         )
         
@@ -103,9 +102,8 @@ class SettingCardCell: UIStackView {
         var titleAttributes = body16.attributes(alignment: .left)
         titleAttributes[.foregroundColor] = UIColor.neutral900
         
-        let localizedString = NSLocalizedString(title, comment: "")
         let titleAttributedText = NSAttributedString(
-            string: localizedString,
+            string: title,
             attributes: titleAttributes
         )
         
