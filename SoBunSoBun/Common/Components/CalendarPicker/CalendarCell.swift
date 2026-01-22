@@ -50,8 +50,6 @@ class CalendarCell: UICollectionViewCell {
         
         dayLabel.attributedText = NSAttributedString(string: String(model.day), attributes: dayAttributes)
         
-        contentView.alpha = 1.0
-        
         selectedCircle.isHidden = !model.isSelected
         
         if model.isSelected {
