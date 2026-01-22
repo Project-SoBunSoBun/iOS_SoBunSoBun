@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
-import RxGesture
 import OSLog
 
 class SelectCategoriesView: UIViewController {
@@ -64,15 +63,19 @@ class SelectCategoriesView: UIViewController {
     private func categoryWrappingView(categories: [String]) -> HorizontalWrappingView {
         let wrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
         
-        categories.forEach { category in
+        let categorySelectables = categories.map { category in
             let view = CategorySelectable(title: category)
-            wrappingView.addArrangedSubview(view)
             
+            // bind action
             view.didTap
                 .map { Reactor.Action.selectCategory($0) }
                 .bind(to: reactor.action)
                 .disposed(by: disposeBag)
+            
+            return view
         }
+        
+        wrappingView.addArrangedSubviews(categorySelectables)
         
         return wrappingView
     }
