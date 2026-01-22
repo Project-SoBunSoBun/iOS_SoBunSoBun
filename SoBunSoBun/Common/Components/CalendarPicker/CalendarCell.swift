@@ -19,14 +19,7 @@ class CalendarCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let dayLabel: UILabel = {
-        let lb = UILabel()
-        lb.font = body14.font
-        lb.textColor = .neutral900
-        lb.textAlignment = .center
-        
-        return lb
-    }()
+    private let dayLabel: UILabel = UILabel()
     
     private let selectedCircle: UIView = {
         let view = UIView()
@@ -52,16 +45,18 @@ class CalendarCell: UICollectionViewCell {
     }
     
     func configure(_ model: CalendarCellDataModel) {
-        dayLabel.text = "\(model.day)"
-        dayLabel.textColor = model.isDisabled ? .neutral500 : .neutral900
+        var dayAttributes: [NSAttributedString.Key: Any] = body14.attributes(alignment: .center)
+        dayAttributes[.foregroundColor] = model.isDisabled ? UIColor.neutral500 : UIColor.neutral900
+        
+        dayLabel.attributedText = NSAttributedString(string: String(model.day), attributes: dayAttributes)
         
         contentView.alpha = 1.0
         
+        selectedCircle.isHidden = !model.isSelected
+        
         if model.isSelected {
-            selectedCircle.isHidden = false
             dayLabel.textColor = .backgroundWhite
         } else {
-            selectedCircle.isHidden = true
             dayLabel.textColor = !model.isCurrentMonth || model.isDisabled ? .neutral500 : .neutral900
         }
     }

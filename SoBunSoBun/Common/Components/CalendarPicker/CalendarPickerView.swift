@@ -33,14 +33,6 @@ class CalendarPickerView: UIViewController {
     private let disposeBag = DisposeBag()
     
     // MARK: - 디자인 요소
-    private func weekDayLabel() -> UILabel {
-        let lb = UILabel()
-        lb.font = body12.font
-        lb.textAlignment = .center
-        
-        return lb
-    }
-    
     let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = .backgroundWhite
@@ -48,12 +40,7 @@ class CalendarPickerView: UIViewController {
         return view
     }()
     
-    private let yearLabel: UILabel = {
-        let lb = UILabel()
-        lb.textColor = .neutral500
-        
-        return lb
-    }()
+    private let yearLabel: UILabel = UILabel()
     
     private let headerView: UIView = {
         let view = UIView()
@@ -62,13 +49,7 @@ class CalendarPickerView: UIViewController {
         return view
     }()
     
-    private let monthLabel: UILabel = {
-        let lb = UILabel()
-        lb.font = title14.font
-        lb.textColor = .neutral900
-        
-        return lb
-    }()
+    private let monthLabel: UILabel = UILabel()
     
     private let prevButton: UIButton = {
         var config = UIButton.Configuration.plain()
@@ -191,14 +172,11 @@ class CalendarPickerView: UIViewController {
             let view = UIView()
             view.backgroundColor = .clear
             
-            let label = weekDayLabel()
-            label.text = day.uppercased()
+            let label = UILabel()
+            var attributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .center)
+            attributes[.foregroundColor] = index == 0 || index == 6 ? UIColor.primary300 : UIColor.neutral700
             
-            if index == 0 || index == 6 { // 토, 일
-                label.textColor = .primary300
-            } else {
-                label.textColor = .neutral700
-            }
+            label.attributedText = NSAttributedString(string: day.uppercased(), attributes: attributes)
             
             view.addSubview(label)
             
@@ -274,13 +252,18 @@ extension CalendarPickerView {
                 // 년
                 formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "yyyy", options: 0, locale: Locale.current)
                 let yearString = formatter.string(from: date)
-                let yearAttributedText = NSAttributedString(string: yearString, attributes: title14.attributes(alignment: .center))
-                yearLabel.attributedText = yearAttributedText
+                var yearAttributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .center)
+                yearAttributes[.foregroundColor] = UIColor.neutral500
+                
+                yearLabel.attributedText = NSAttributedString(string: yearString, attributes: yearAttributes)
                 
                 // 월
                 formatter.dateFormat = DateFormatter.dateFormat(fromTemplate: "MMMM", options: 0, locale: Locale.current)
                 let monthString = formatter.string(from: date)
-                monthLabel.text = monthString
+                var monthAttributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .center)
+                monthAttributes[.foregroundColor] = UIColor.neutral900
+                
+                monthLabel.attributedText = NSAttributedString(string: monthString, attributes: monthAttributes)
             })
             .disposed(by: disposeBag)
         
