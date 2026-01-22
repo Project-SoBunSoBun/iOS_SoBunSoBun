@@ -31,7 +31,6 @@ class PostList: UIView {
     
     private let titleLabel: UILabel = {
         let lb = UILabel()
-        lb.textColor = .neutral900
         lb.numberOfLines = 0
         
         return lb
@@ -60,35 +59,27 @@ class PostList: UIView {
         return iv
     }
     
-    // 설명 label 컴포넌트
-    private func descLabel() -> UILabel {
-        let lb = UILabel()
-        lb.font = body14.font
-        lb.textColor = .neutral500
-        lb.textAlignment = .left
+    // 설명 attributes 컴포넌트
+    private func descAttributes() -> [NSAttributedString.Key: Any] {
+        var attributes: [NSAttributedString.Key: Any] = body14.attributes()
+        attributes[.foregroundColor] = UIColor.neutral500
         
-        return lb
+        return attributes
     }
     
     private lazy var locationStackView: UIStackView = descStackView()
     
     private lazy var locationIcon: UIImageView = iconImage(image: .greyLocationS)
     
-    private lazy var locationLabel: UILabel = descLabel()
+    private lazy var locationLabel: UILabel = UILabel()
     
     private lazy var dateStackView: UIStackView = descStackView()
     
     private lazy var dateIcon: UIImageView = iconImage(image: .greyClockS)
     
-    private lazy var dateLabel: UILabel = descLabel()
+    private lazy var dateLabel: UILabel = UILabel()
     
-    private let joinedLabel: UILabel = {
-        let lb = UILabel()
-        lb.font = title12.font
-        lb.textAlignment = .right
-        
-        return lb
-    }()
+    private let joinedLabel: UILabel = UILabel()
     
     private let divider: UIView = {
         let view = UIView()
@@ -114,7 +105,10 @@ class PostList: UIView {
         }
         
         // 제목
-        titleLabel.attributedText = NSAttributedString(string: model.title, attributes: title18.attributes(alignment: .left))
+        var titleAttributes: [NSAttributedString.Key: Any] = title18.attributes(alignment: .left)
+        titleAttributes[.foregroundColor] = UIColor.neutral900
+        
+        titleLabel.attributedText = NSAttributedString(string: model.title, attributes: titleAttributes)
         
         addSubview(titleLabel)
         
@@ -126,7 +120,8 @@ class PostList: UIView {
         // 장소
         locationStackView.addArrangedSubview(locationIcon)
         locationStackView.addArrangedSubview(locationLabel)
-        locationLabel.text = model.locationName
+        
+        locationLabel.attributedText = NSAttributedString(string: model.locationName, attributes: descAttributes())
         locationLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         locationLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
@@ -140,12 +135,16 @@ class PostList: UIView {
         // 시간 및 인원 표시
         dateStackView.addArrangedSubview(dateIcon)
         dateStackView.addArrangedSubview(dateLabel)
-        dateLabel.text = ISO8601ToLocalizedDateTimeString(model.meetAt)
+        
+        dateLabel.attributedText = NSAttributedString(string: ISO8601ToLocalizedDateTimeString(model.meetAt), attributes: descAttributes())
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         dateLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         dateStackView.addArrangedSubview(joinedLabel)
-        joinedLabel.text = "\(model.joinedMembers)/\(model.maxMembers)"
-        joinedLabel.textColor = model.joinedMembers + 1 >= model.maxMembers ? .primary400 : .neutral300
+        
+        var joinedAttributes: [NSAttributedString.Key: Any] = title12.attributes(alignment: .right)
+        joinedAttributes[.foregroundColor] = model.joinedMembers + 1 >= model.maxMembers ? UIColor.primary400 : UIColor.neutral300
+        
+        joinedLabel.attributedText = NSAttributedString(string: "\(model.joinedMembers)/\(model.maxMembers)", attributes: joinedAttributes)
             
         addSubview(dateStackView)
         
