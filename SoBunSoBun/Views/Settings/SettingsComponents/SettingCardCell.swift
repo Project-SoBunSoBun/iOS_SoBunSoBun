@@ -30,6 +30,8 @@ class SettingCardCell: UIStackView {
         super.init(frame: frame)
         
         configure(type: type)
+        setLabelAndButton(title: title)
+        setLabelText(title: title, subTitle: subTitle ?? "")
         
         if type == .button {
             bind()
@@ -70,17 +72,12 @@ class SettingCardCell: UIStackView {
         self.spacing = 8
         self.alignment = .center
         
-        setLabelAndButton(title: title)
-        setLabelText(title: title, subTitle: subTitle ?? "")
+        self.addArrangedSubview(titleLabel)
         
         if type == .button {
-            [titleLabel, nextButtonImage].forEach {
-                self.addArrangedSubview($0)
-            }
+            self.addArrangedSubview(nextButtonImage)
         } else if type == .text {
-            [titleLabel, subTitleLabel].forEach {
-                self.addArrangedSubview($0)
-            }
+            self.addArrangedSubview(subTitleLabel)
         }
     }
     

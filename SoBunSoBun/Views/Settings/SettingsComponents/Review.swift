@@ -12,14 +12,13 @@ class Review: UIView {
     init(frame: CGRect = .zero, title: String) {
         super.init(frame: frame)
         
-        configure(title: title)
+        configure()
+        setEmojiAndColor(reviewNumber: title)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private let insets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     
     // MARK: - 디자인 요소
     // 이모지 뷰
@@ -61,7 +60,7 @@ class Review: UIView {
     }
     
     // MARK: - 레이아웃 설정
-    private func configure(title: String) {
+    private func configure() {
         self.backgroundColor = .backgroundWhite
         
         // 모서리
@@ -85,18 +84,12 @@ class Review: UIView {
         self.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(insets)
+            make.edges.equalToSuperview().inset(10)
         }
-        
-        setEmojiAndColor(reviewNumber: title)
     }
     
     private func setEmojiAndColor(reviewNumber: String) {
-        let attributedText = NSAttributedString(
-            string: reviewNumber,
-            attributes: body16.attributes(alignment: .center)
-        )
-        titleLabel.attributedText = attributedText
+        var attributes = body16.attributes(alignment: .center)
         
         let suffix = String(reviewNumber.suffix(3))
         guard let number = Int(suffix) else { return }
@@ -104,27 +97,35 @@ class Review: UIView {
         switch number {
         case 1:
             emojiView.image = .emojiEightOclock
-            titleLabel.textColor = UIColor.review1
+            attributes[.foregroundColor] = UIColor.review1
             
         case 2:
             emojiView.image = .emojiGreenHeart
-            titleLabel.textColor = UIColor.review2
+            attributes[.foregroundColor] = UIColor.review2
             
         case 3:
             emojiView.image = .emojiThumbsUp
-            titleLabel.textColor = UIColor.review3
+            attributes[.foregroundColor] = UIColor.review3
             
         case 4:
             emojiView.image = .emojiGlowingStar
-            titleLabel.textColor = UIColor.review4
+            attributes[.foregroundColor] = UIColor.review4
             
         case 5:
             emojiView.image = .emojiGrinningFace
-            titleLabel.textColor = UIColor.review5
+            attributes[.foregroundColor] = UIColor.review5
             
         default:
             emojiView.image = .logo
-            titleLabel.textColor = UIColor.neutral900
+            attributes[.foregroundColor] = UIColor.neutral900
         }
+        
+        let localizedString = NSLocalizedString(reviewNumber, comment: "")
+        let attributedText = NSAttributedString(
+            string: localizedString,
+            attributes: attributes
+        )
+        
+        titleLabel.attributedText = attributedText
     }
 }
