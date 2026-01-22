@@ -36,10 +36,10 @@ class TextFieldMember: BaseTextField {
     
     private let rightDecoView: UILabel = {
         let lb = UILabel()
-        lb.text = String(localized: "PeopleCount")
-        lb.font = body16.font
-        lb.textColor = .neutral400
-        lb.textAlignment = .center
+        var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.neutral400
+        
+        lb.attributedText = NSAttributedString(string: String(localized: "PeopleCount"), attributes: attributes)
         lb.sizeToFit()
         
         return lb
