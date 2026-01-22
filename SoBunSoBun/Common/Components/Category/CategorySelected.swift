@@ -9,13 +9,9 @@ import UIKit
 import SnapKit
 
 class CategorySelected: UILabel {
-    let title: String
-    
     init(frame: CGRect = .zero, title: String) {
-        self.title = title
-        
         super.init(frame: frame)
-        configure()
+        configure(title: title)
     }
     
     required init?(coder: NSCoder) {
@@ -24,7 +20,7 @@ class CategorySelected: UILabel {
     
     private let insets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
     
-    private func configure() {
+    private func configure(title: String) {
         var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.backgroundWhite
         self.attributedText = NSAttributedString(string: title, attributes: attributes)
