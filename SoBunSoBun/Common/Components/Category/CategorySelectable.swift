@@ -12,12 +12,13 @@ import RxCocoa
 import RxGesture
 
 class CategorySelectable: UILabel {
-    let title: String
+    // 4자리의 카테고리 번호
+    let number: String
     
     private let disposeBag = DisposeBag()
     
-    init(frame: CGRect = .zero, title: String) {
-        self.title = title
+    init(frame: CGRect = .zero, number: String) {
+        self.number = number
         
         super.init(frame: frame)
         configure()
@@ -42,7 +43,7 @@ class CategorySelectable: UILabel {
         var attributes = title14.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary300
         
-        self.attributedText = NSAttributedString(string: NSLocalizedString("Category\(title)", comment: ""), attributes: attributes)
+        self.attributedText = NSAttributedString(string: NSLocalizedString("Category\(number)", comment: ""), attributes: attributes)
         
         self.backgroundColor = .primary50
         self.layer.cornerRadius = 12
@@ -57,7 +58,7 @@ class CategorySelectable: UILabel {
         self.rx
             .tapGesture()
             .when(.recognized)
-            .map { _ in self.title}
+            .map { _ in self.number}
             .bind(to: didTap)
             .disposed(by: disposeBag)
     }
@@ -66,7 +67,7 @@ class CategorySelectable: UILabel {
         var attributes = title14.attributes(alignment: .center)
         attributes[.foregroundColor] = isChecked ? UIColor.primary400 : UIColor.primary300
         
-        self.attributedText = NSAttributedString(string: NSLocalizedString("Category\(title)", comment: ""), attributes: attributes)
+        self.attributedText = NSAttributedString(string: NSLocalizedString("Category\(number)", comment: ""), attributes: attributes)
         
         self.backgroundColor = isChecked ? .primary100 : .primary50
         self.layer.borderWidth = isChecked ? 2 : 0
