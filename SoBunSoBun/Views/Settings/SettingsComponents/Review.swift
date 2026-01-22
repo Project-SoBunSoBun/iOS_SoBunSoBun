@@ -92,9 +92,8 @@ class Review: UIView {
     }
     
     private func setEmojiAndColor(reviewNumber: String) {
-        let localizedString = NSLocalizedString(reviewNumber, comment: "")
         let attributedText = NSAttributedString(
-            string: localizedString,
+            string: reviewNumber,
             attributes: body16.attributes(alignment: .center)
         )
         titleLabel.attributedText = attributedText
