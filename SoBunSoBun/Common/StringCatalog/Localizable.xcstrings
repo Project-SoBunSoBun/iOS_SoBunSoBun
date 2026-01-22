@@ -1077,6 +1077,66 @@
         }
       }
     },
+    "Review001" : {
+      "comment" : "Review.Swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시간 약속을 잘 지켜요"
+          }
+        }
+      }
+    },
+    "Review002" : {
+      "comment" : "Review.Swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친절해요"
+          }
+        }
+      }
+    },
+    "Review003" : {
+      "comment" : "Review.Swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너가 좋아요"
+          }
+        }
+      }
+    },
+    "Review004" : {
+      "comment" : "Review.Swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "믿을 수 있어요"
+          }
+        }
+      }
+    },
+    "Review005" : {
+      "comment" : "Review.Swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "함께할 때 즐거웠어요"
+          }
+        }
+      }
+    },
     "SearchKeywordsHistory" : {
       "extractionState" : "manual",
       "localizations" : {
