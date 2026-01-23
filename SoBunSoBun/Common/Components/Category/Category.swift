@@ -22,6 +22,7 @@ class Category: UILabel {
         didSet {
             guard let text = text else {
                 self.attributedText = nil
+                
                 return
             }
             
