@@ -16,13 +16,12 @@ class TopNavigationBar: UIView {
         super.init(frame: frame)
         
         configureUI()
+        bind()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    weak var parentViewController: UIViewController?
     
     private let backButton: UIButton = {
         var config = UIButton.Configuration.plain()
@@ -31,20 +30,33 @@ class TopNavigationBar: UIView {
         config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         
         let btn = UIButton(configuration: config)
+        btn.isHidden = true
         
         return btn
     }()
     
-    private let titleLabel: UILabel = UILabel()
+    private let titleLabel: UILabel = {
+        let lb = UILabel()
+        lb.isHidden = true
+        
+        return lb
+    }()
     
     private let buttonStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 0
         sv.alignment = .center
+        sv.isHidden = true
         
         return sv
     }()
+    
+    weak var parentViewController: UIViewController? {
+        didSet {
+            setBackButton()
+        }
+    }
     
     var title: String = "" {
         didSet {
@@ -70,15 +82,6 @@ class TopNavigationBar: UIView {
             make.verticalEdges.equalToSuperview()
         }
         
-        backButton.rx.tap
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] in
-                guard let self = self else { return }
-                
-                parentViewController?.navigationController?.popViewController(animated: true)
-            })
-            .disposed(by: disposeBag)
-        
         titleLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
@@ -88,7 +91,12 @@ class TopNavigationBar: UIView {
         }
     }
     
+    private func setBackButton() {
+        backButton.isHidden = parentViewController == nil
+    }
+    
     private func setTitle(_ title: String) {
+        titleLabel.isHidden = title.isEmpty
         var attributes: [NSAttributedString.Key: Any] = title16.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.neutral900
         
@@ -96,12 +104,19 @@ class TopNavigationBar: UIView {
     }
     
     private func setButtons(_ buttons: [UIButton]) {
-        buttonStackView.arrangedSubviews.forEach {
-            $0.removeFromSuperview()
-        }
-        
-        buttons.forEach {
-            buttonStackView.addArrangedSubview($0)
-        }
+        buttonStackView.isHidden = buttons.isEmpty
+        buttonStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        buttons.forEach { buttonStackView.addArrangedSubview($0) }
+    }
+    
+    private func bind() {
+        backButton.rx.tap
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                parentViewController?.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }
