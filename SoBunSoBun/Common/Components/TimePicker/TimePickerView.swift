@@ -119,7 +119,7 @@ class TimePickerView: UIViewController {
     }()
     
     private let button = {
-        let btn = Button(title: String(localized: "Specify"))
+        let btn = Button(title: String(localized: "Specify", table: "Home"))
         btn.isEnabled = false
         
         return btn
@@ -229,7 +229,7 @@ struct TimePickerViewController_Preview: PreviewProvider {
     static var previews: some SwiftUI.View {
         UIViewControllerPreview {
             TimePickerView(
-                title: String(localized: "RegisterPostTimePickerTitle"),
+                title: String(localized: "RegisterPostTimePickerTitle", table: "Home"),
                 selectedHour: nil,
                 selectedMinute: nil,
                 selectedPeriod: nil

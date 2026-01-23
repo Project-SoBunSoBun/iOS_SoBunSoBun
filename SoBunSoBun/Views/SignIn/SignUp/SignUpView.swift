@@ -36,7 +36,7 @@ class SignUpView: UIViewController {
     private let titleLabel: UILabel = {
         let label = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SignUpTitle"),
+            string: String(localized: "SignUpTitle", table: "SignIn"),
             attributes: title24.attributes()
         )
         label.attributedText = attributedText
@@ -65,7 +65,7 @@ class SignUpView: UIViewController {
     private let locationTermsCheckBox = TermsCheckBoxView()
     
     private let nextButton: Button = {
-        let button = Button(title: String(localized: "Next"))
+        let button = Button(title: String(localized: "Next", table: "Common"))
         button.isEnabled = false
         
         return button
@@ -92,19 +92,19 @@ class SignUpView: UIViewController {
         }
         
         // 체크박스 설정
-        allAgreeCheckBox.configure(title: String(localized: "AllAgree"),
+        allAgreeCheckBox.configure(title: String(localized: "AllAgree", table: "SignIn"),
                                    hasDetail: false,
                                    font: title16.font,
                                    textColor: .neutral900)
-        serviceTermsCheckBox.configure(title: String(localized: "ServiceAgree"),
+        serviceTermsCheckBox.configure(title: String(localized: "ServiceAgree", table: "SignIn"),
                                        hasDetail: true,
                                        font: body16.font,
                                        textColor: .neutral600)
-        privacyTermsCheckBox.configure(title: String(localized: "PersonalInfomationAgree"),
+        privacyTermsCheckBox.configure(title: String(localized: "PersonalInfomationAgree", table: "SignIn"),
                                        hasDetail: true,
                                        font: body16.font,
                                        textColor: .neutral600)
-        locationTermsCheckBox.configure(title: String(localized: "LocationInfomationAgree"),
+        locationTermsCheckBox.configure(title: String(localized: "LocationInfomationAgree", table: "SignIn"),
                                         hasDetail: true,
                                         font: body16.font,
                                         textColor: .neutral600)
@@ -338,7 +338,7 @@ extension SignUpView {
     // 위치 권한 설정 알림창
     private func showLocationSettingAlert() {
         let alert = CustomAlertView(
-            title: String(localized: "LocationSettingTitle")
+            title: String(localized: "LocationSettingTitle", table: "Common")
         )
         
         alert.onPrimaryTapped = {

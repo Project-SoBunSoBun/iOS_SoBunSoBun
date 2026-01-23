@@ -58,7 +58,7 @@ class LoginView: UIViewController {
     private let appleText: UILabel = {
         let label = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "LoginApple"), // 다국어 지원 구문
+            string: String(localized: "LoginApple", table: "SignIn"),
             attributes: title16.attributes()
         )
         label.attributedText = attributedText
@@ -99,7 +99,7 @@ class LoginView: UIViewController {
     private let kakaoText: UILabel = {
         let label = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "LoginKakao"), // 다국어 지원 구문
+            string: String(localized: "LoginKakao", table: "SignIn"),
             attributes: title16.attributes()
         )
         label.attributedText = attributedText

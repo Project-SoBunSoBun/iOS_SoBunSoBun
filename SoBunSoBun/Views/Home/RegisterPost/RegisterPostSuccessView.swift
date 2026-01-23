@@ -62,7 +62,7 @@ class RegisterPostSuccessView: UIView {
         var attributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary400
         
-        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostSuccess"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostSuccess", table: "Home"), attributes: attributes)
         
         lb.snp.makeConstraints { make in make.width.equalTo(182) }
         

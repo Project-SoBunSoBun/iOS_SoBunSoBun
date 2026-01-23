@@ -100,7 +100,7 @@ class CalendarPickerView: UIViewController {
     private var calendarDates: [Date?] = []
     
     private let button = {
-        let btn = Button(title: String(localized: "Specify"))
+        let btn = Button(title: String(localized: "Specify", table: "Home"))
         btn.isEnabled = false
         
         return btn

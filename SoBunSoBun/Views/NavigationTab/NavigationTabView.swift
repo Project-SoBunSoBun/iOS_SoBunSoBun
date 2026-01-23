@@ -25,10 +25,10 @@ class NavigationTabView: UIViewController {
     private lazy var viewControllers: [UIViewController] = [homeView, chatListView, settleUpView, myPageView]
     
     private let buttons: [TabBarButton] = [
-        TabBarButton(icons: [.greyFilledHome, .blueFilledHome], title: String(localized: "Home")),
-        TabBarButton(icons: [.greyFilledMessage, .blueFilledMessage], title: String(localized: "Chat")),
-        TabBarButton(icons: [.greyFilledReceipt, .blueFilledReceipt], title: String(localized: "SettleUp")),
-        TabBarButton(icons: [.greyFilledUser, .blueFilledUser], title: String(localized: "Mypage"))
+        TabBarButton(icons: [.greyFilledHome, .blueFilledHome], title: String(localized: "Home", table: "Common")),
+        TabBarButton(icons: [.greyFilledMessage, .blueFilledMessage], title: String(localized: "Chat", table: "Common")),
+        TabBarButton(icons: [.greyFilledReceipt, .blueFilledReceipt], title: String(localized: "SettleUp", table: "Common")),
+        TabBarButton(icons: [.greyFilledUser, .blueFilledUser], title: String(localized: "Mypage", table: "Common"))
     ]
     
     private var currentVC: UIViewController? = nil

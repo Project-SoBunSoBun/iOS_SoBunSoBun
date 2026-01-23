@@ -31,7 +31,7 @@ class RegisterPostView: UIViewController {
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
         tnb.parentViewController = self
-        tnb.title = String(localized: "RegisterPostTitle")
+        tnb.title = String(localized: "RegisterPostTitle", table: "Home")
         
         return tnb
     }()
@@ -48,7 +48,7 @@ class RegisterPostView: UIViewController {
     private let infoLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
-        let attributedText = NSAttributedString(string: String(localized: "RegisterPostInfo"), attributes: body12.attributes())
+        let attributedText = NSAttributedString(string: String(localized: "RegisterPostInfo", table: "Home"), attributes: body12.attributes())
         lb.attributedText = attributedText
         lb.textColor = .neutral300
         
@@ -57,21 +57,21 @@ class RegisterPostView: UIViewController {
     
     private lazy var groupTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "GroupTitle"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "GroupTitle", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let groupTitleTextField: TextFieldUnderline = {
         let tfu = TextFieldUnderline(maxLength: 40)
-        tfu.placeholder = String(localized: "InsertTitle")
+        tfu.placeholder = String(localized: "InsertTitle", table: "Home")
         
         return tfu
     }()
     
     private lazy var keywordTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "ItemKeywords"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "ItemKeywords", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
@@ -140,7 +140,7 @@ class RegisterPostView: UIViewController {
     
     private lazy var minimumTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "MinimumMembers"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "MinimumMembers", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
@@ -160,7 +160,7 @@ class RegisterPostView: UIViewController {
     
     private lazy var maximumTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "MaximumMembers"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "MaximumMembers", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
@@ -178,14 +178,14 @@ class RegisterPostView: UIViewController {
     
     private lazy var locationTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "MeetingLocation"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "MeetingLocation", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let locationTextField: TextFieldUnderline = {
         let tfu = TextFieldUnderline(maxLength: 40)
-        tfu.placeholder = String(localized: "InsertLocation")
+        tfu.placeholder = String(localized: "InsertLocation", table: "Home")
         
         return tfu
     }()
@@ -196,14 +196,14 @@ class RegisterPostView: UIViewController {
     
     private lazy var dateTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "Date"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "Date", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let dateTextField: TextFieldPicker = {
         let tfp = TextFieldPicker(icon: .blackCalendar)
-        tfp.placeholder = String(localized: "DatePlaceholder")
+        tfp.placeholder = String(localized: "DatePlaceholder", table: "Home")
         
         return tfp
     }()
@@ -212,7 +212,7 @@ class RegisterPostView: UIViewController {
     
     private lazy var timeTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "Time"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "Time", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
@@ -231,40 +231,40 @@ class RegisterPostView: UIViewController {
         var attributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.primary400
         
-        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostDeadlineInfoMessage"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostDeadlineInfoMessage", table: "Home"), attributes: attributes)
         
         return lb
     }()
     
     private lazy var plannedItemsTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "PlannedItems"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "PlannedItems", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let plannedItemsTextView: AutoHeightTextView = {
         let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 120)
-        ahtv.placeholder = String(localized: "InsertContent")
+        ahtv.placeholder = String(localized: "InsertContent", table: "Common")
         
         return ahtv
     }()
     
     private lazy var notesTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "Notes"), attributes: titleAttributes())
+        lb.attributedText = NSAttributedString(string: String(localized: "Notes", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let notesTextView: AutoHeightTextView = {
         let ahtv = AutoHeightTextView(minHeight: 240, maxLength: 250)
-        ahtv.placeholder = String(localized: "InsertContent")
+        ahtv.placeholder = String(localized: "InsertContent", table: "Common")
         
         return ahtv
     }()
     
-    private let registerButton = Button(title: String(localized: "Register"))
+    private let registerButton = Button(title: String(localized: "Register", table: "Common"))
     
     private let loadingView: LoadingView = {
         let view = LoadingView()
@@ -579,9 +579,9 @@ extension RegisterPostView {
                 guard let self = self else { return }
                 
                 showAlert(
-                    title: String(localized: "Error"),
+                    title: String(localized: "Error", table: "Common"),
                     message: message,
-                    confirmTitle: String(localized: "Confirm"),
+                    confirmTitle: String(localized: "Confirm", table: "Common"),
                     confirmAction: {},
                     vc: self
                 )
@@ -612,7 +612,7 @@ extension RegisterPostView {
         
         if !selectedCategories.isEmpty {
             selectedCategories.forEach {
-                let categoryString = NSLocalizedString("Category\($0)", comment: "Category \($0)")
+                let categoryString = NSLocalizedString("Category\($0)", tableName: "Category", comment: "Category \($0)")
                 let category = CategorySelected(title: categoryString)
                 
                 categoriesStackView.addArrangedSubview(category)
@@ -674,7 +674,7 @@ extension RegisterPostView {
         let minuteString = separatedTimeString?[1]
         
         let sheetView = TimePickerView(
-            title: String(localized: "RegisterPostTimePickerTitle"),
+            title: String(localized: "RegisterPostTimePickerTitle", table: "Home"),
             selectedHour: hourString,
             selectedMinute: minuteString,
             selectedPeriod: periodString

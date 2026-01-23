@@ -203,14 +203,14 @@ class RegisterPostReactor: Reactor {
             self.logger.fault("RegisterPostBodyModel 생성 실패")
             return Observable.concat([
                 Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                Observable.just(.setErrorMessage(String(localized: "CheckYourInputs")))
+                Observable.just(.setErrorMessage(String(localized: "CheckYourInputs", table: "Common")))
             ])
         }
         
         guard maximumMembers >= minimumMembers else {
             return Observable.concat([
                 Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                Observable.just(.setErrorMessage(String(localized: "CheckYourMinimumMembers")))
+                Observable.just(.setErrorMessage(String(localized: "CheckYourMinimumMembers", table: "Home")))
             ])
         }
         
@@ -243,7 +243,7 @@ class RegisterPostReactor: Reactor {
                     
                     return Observable.concat([
                         Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                        Observable.just(.setErrorMessage(String(localized: "ErrorMessage")))
+                        Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
                     ])
                 }
         ])

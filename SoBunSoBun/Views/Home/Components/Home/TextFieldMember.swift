@@ -39,7 +39,7 @@ class TextFieldMember: BaseTextField {
         var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.neutral400
         
-        lb.attributedText = NSAttributedString(string: String(localized: "PeopleCount"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "PeopleCount", table: "Home"), attributes: attributes)
         lb.sizeToFit()
         
         return lb

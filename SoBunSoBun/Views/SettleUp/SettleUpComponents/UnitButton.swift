@@ -26,7 +26,7 @@ class UnitButton: UIButton {
     private func configureBase() {
         var config = UIButton.Configuration.filled()
         
-        var attributedString = AttributedString(String(localized: titleKey))
+        var attributedString = AttributedString(String(localized: titleKey, table: "SettleUp"))
         attributedString.font = title16.font
         
         config.attributedTitle = attributedString

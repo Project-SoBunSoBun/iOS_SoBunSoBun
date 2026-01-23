@@ -95,16 +95,16 @@ class NicknameReactor: Reactor {
         switch mutation {
         case .available:
             newState.nickNameAvailable = true
-            newState.infoMessage = String(localized: "AvailableNickname")
+            newState.infoMessage = String(localized: "AvailableNickname", table: "Common")
         case .unAvailable:
             newState.nickNameAvailable = false
-            newState.infoMessage = String(localized: "UnavailableNickname")
+            newState.infoMessage = String(localized: "UnavailableNickname", table: "Common")
         case .invalidInput:
             newState.nickNameAvailable = false
-            newState.infoMessage = String(localized: "DenyNicknameInput")
+            newState.infoMessage = String(localized: "DenyNicknameInput", table: "Common")
         case .error:
             newState.nickNameAvailable = false
-            newState.infoMessage = String(localized: "ErrorMessage")
+            newState.infoMessage = String(localized: "ErrorMessage", table: "Common")
         case .setButtonEnabled(let isEnabled):
             newState.isButtonEnabled = isEnabled
         case .resetValidation:

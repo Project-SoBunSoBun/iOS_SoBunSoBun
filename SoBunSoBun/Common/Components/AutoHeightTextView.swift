@@ -79,7 +79,7 @@ class AutoHeightTextView: BaseTextView {
         var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
         charactersAttributes[.foregroundColor] = UIColor.neutral600
         
-        charactersLabel.attributedText = NSAttributedString(string: "\(self.text.count)/\(maxLength)\(String(localized: "Characters"))", attributes: charactersAttributes)
+        charactersLabel.attributedText = NSAttributedString(string: "\(self.text.count)/\(maxLength)\(String(localized: "Characters", table: "Common"))", attributes: charactersAttributes)
         addSubview(charactersLabel)
     }
     
@@ -90,7 +90,7 @@ class AutoHeightTextView: BaseTextView {
                 
                 var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
                 charactersAttributes[.foregroundColor] = UIColor.neutral600
-                charactersLabel.attributedText = NSAttributedString(string: "\(text.count)/\(maxLength)\(String(localized: "Characters"))", attributes: charactersAttributes)
+                charactersLabel.attributedText = NSAttributedString(string: "\(text.count)/\(maxLength)\(String(localized: "Characters", table: "Common"))", attributes: charactersAttributes)
                 
                 updateHeight()
                 applyLineHeight()

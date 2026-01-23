@@ -54,7 +54,7 @@ class NicknameSettingView: UIViewController {
     
     private let nickname = Nickname()
     
-    private let nextButton = Button(title: String(localized: "Next"))
+    private let nextButton = Button(title: String(localized: "Next", table: "Common"))
     
     // MARK: - 생명주기
     override func viewDidLoad() {
@@ -144,7 +144,7 @@ class NicknameSettingView: UIViewController {
     // 권한 요청이 없을 때 실행 될 설정으로 이동시키는 알러트
     private func showPermissionAlert() {
         let alertView = CustomAlertView(
-            title: String(localized: "GalleryPermissionMessage")
+            title: String(localized: "GalleryPermissionMessage", table: "SignIn")
         )
         
         alertView.onPrimaryTapped = {
@@ -195,11 +195,11 @@ extension NicknameSettingView: UIImagePickerControllerDelegate, UINavigationCont
     
     private func showImageSizeAlert() {
         let alert = UIAlertController(
-            title: String(localized: "ImageSizeExceeded"),
-            message: String(localized: "SelectOnlyFilesUnder5MB"),
+            title: String(localized: "ImageSizeExceeded", table: "Common"),
+            message: String(localized: "SelectOnlyFilesUnder5MB", table: "Common"),
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: String(localized: "Confirm"), style: .default))
+        alert.addAction(UIAlertAction(title: String(localized: "Confirm", table: "Common"), style: .default))
         present(alert, animated: true)
     }
 }
@@ -282,8 +282,8 @@ extension NicknameSettingView {
                 guard let self = self else { return }
                 
                 self.logger.debug("에러 발생: \(message)")
-                let alert = UIAlertController(title: String(localized: "ErrorMessage"), message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: String(localized: "Confirm"), style: .default))
+                let alert = UIAlertController(title: String(localized: "ErrorMessage", table: "Common"), message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: String(localized: "Confirm", table: "Common"), style: .default))
                 self.present(alert, animated: true)
             })
             .disposed(by: disposeBag)

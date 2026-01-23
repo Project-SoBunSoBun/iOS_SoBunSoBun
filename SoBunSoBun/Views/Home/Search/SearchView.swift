@@ -54,7 +54,7 @@ class SearchView: UIViewController {
         var attributes: [NSAttributedString.Key: Any] = title16.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
         
-        lb.attributedText = NSAttributedString(string: String(localized: "SearchKeywordsHistory"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "SearchKeywordsHistory", table: "Home"), attributes: attributes)
         
         return lb
     }()
@@ -64,7 +64,7 @@ class SearchView: UIViewController {
         var attributes: [NSAttributedString.Key: Any] = body14.attributes()
         attributes[.foregroundColor] = UIColor.neutral400
         config.attributedTitle = AttributedString(
-            NSAttributedString(string: String(localized: "ClearAll"), attributes: attributes)
+            NSAttributedString(string: String(localized: "ClearAll", table: "Common"), attributes: attributes)
         )
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
@@ -108,7 +108,7 @@ class SearchView: UIViewController {
         attributes[.foregroundColor] = UIColor.neutral900
         
         lb.attributedText = NSAttributedString(
-            string: NSLocalizedString(sortLocalizableKeys[0], comment: ""),
+            string: NSLocalizedString(sortLocalizableKeys[0], tableName: "Home", comment: ""),
             attributes: attributes
         )
         
@@ -153,7 +153,7 @@ class SearchView: UIViewController {
         var attributes: [NSAttributedString.Key: Any] = body18.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary200
         
-        lb.attributedText = NSAttributedString(string: String(localized: "EmptySearchResult"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "EmptySearchResult", table: "Home"), attributes: attributes)
         lb.isHidden = true
         
         return lb
@@ -405,7 +405,7 @@ extension SearchView {
                 
                 var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .right)
                 attributes[.foregroundColor] = UIColor.neutral900
-                sortLabel.attributedText = NSAttributedString(string: NSLocalizedString(sortBy, comment: ""), attributes: attributes)
+                sortLabel.attributedText = NSAttributedString(string: NSLocalizedString(sortBy, tableName: "Home", comment: ""), attributes: attributes)
             })
             .disposed(by: disposeBag)
         
@@ -456,9 +456,9 @@ extension SearchView {
                 guard let self = self else { return }
                 
                 showAlert(
-                    title: String(localized: "Error"),
+                    title: String(localized: "Error", table: "Common"),
                     message: message,
-                    confirmTitle: String(localized: "Confirm"),
+                    confirmTitle: String(localized: "Confirm", table: "Common"),
                     confirmAction: {},
                     vc: self
                 )
