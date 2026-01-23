@@ -42,9 +42,9 @@ class AuthManager {
             
             if let currentVC = window?.rootViewController {
                 showAlert(
-                    title: String(localized: "Notice"),
-                    message: String(localized: "YouShouldSignInAgain"),
-                    confirmTitle: String(localized: "Confirm"),
+                    title: String(localized: "Notice", table: "Common"),
+                    message: String(localized: "YouShouldSignInAgain", table: "Common"),
+                    confirmTitle: String(localized: "Confirm", table: "Common"),
                     confirmAction: { self.switchToLoginView() },
                     vc: currentVC
                 )

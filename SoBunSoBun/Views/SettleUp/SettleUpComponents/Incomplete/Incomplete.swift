@@ -115,7 +115,7 @@ class Incomplete: UIView {
         let bt = UIButton()
         var config = UIButton.Configuration.filled()
         
-        var attributedString = AttributedString(String(localized: "SettleUpStart"))
+        var attributedString = AttributedString(String(localized: "SettleUpStart", table: "SettleUp"))
         attributedString.font = title14.font
         
         config.attributedTitle = attributedString
@@ -135,7 +135,7 @@ class Incomplete: UIView {
         let bt = UIButton()
         var config = UIButton.Configuration.filled()
         
-        var attributedString = AttributedString(String(localized: "SettleUpCheck"))
+        var attributedString = AttributedString(String(localized: "SettleUpCheck", table: "SettleUp"))
         attributedString.font = title14.font
         
         config.attributedTitle = attributedString
@@ -155,7 +155,7 @@ class Incomplete: UIView {
         let bt = UIButton()
         var config = UIButton.Configuration.filled()
         
-        var attributedString = AttributedString(String(localized: "Share"))
+        var attributedString = AttributedString(String(localized: "Share", table: "Common"))
         attributedString.font = title14.font
         
         config.attributedTitle = attributedString
@@ -219,7 +219,7 @@ class Incomplete: UIView {
             
             // 정산 여부 분기 처리
             if SettleUpStatus {
-                statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpComplete"), attributes: title12.attributes())
+                statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpComplete", table: "SettleUp"), attributes: title12.attributes())
                 statusLabel.textColor = .review2
                 settleUpButton.isHidden = true
                 
@@ -250,7 +250,7 @@ class Incomplete: UIView {
                     })
                     .disposed(by: disposeBag)
             } else {
-                statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpIncomplete"), attributes: title12.attributes())
+                statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpIncomplete", table: "SettleUp"), attributes: title12.attributes())
                 statusLabel.textColor = .errorRed
                 statementCheckButton.isHidden = true
                 shareButton.isHidden = true

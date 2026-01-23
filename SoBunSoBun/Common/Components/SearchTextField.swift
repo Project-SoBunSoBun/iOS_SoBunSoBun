@@ -59,7 +59,7 @@ class SearchTextField: BaseTextField {
         attributes[.foregroundColor] = UIColor.primary200
         
         self.attributedPlaceholder = NSAttributedString(
-            string: String(localized: "SearchSomething"),
+            string: String(localized: "SearchSomething", table: "Home"),
             attributes: attributes
         )
         

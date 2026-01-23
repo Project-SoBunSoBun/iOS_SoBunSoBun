@@ -54,8 +54,8 @@ func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String
         case "ko":
             return minutes == 0 ?
                     formattedString :
-                    formattedString.replacingOccurrences(of: ":", with: String(localized: "TimeHour") + " ")
-                    + String(localized: "TimeMinute")
+                    formattedString.replacingOccurrences(of: ":", with: String(localized: "TimeHour", table: "Home") + " ")
+                    + String(localized: "TimeMinute", table: "Home")
         default:
             return formattedString
         }
@@ -144,7 +144,7 @@ func dateToISO8601String(date: Date) -> String? {
 // 위치 권한 설정 알림창
 func showLocationSettingAlert(_ vc: UIViewController, cancelAction: (() -> Void)? = nil) {
     let alert = CustomAlertView(
-        title: String(localized: "LocationSettingTitle")
+        title: String(localized: "LocationSettingTitle", table: "Common")
     )
     
     alert.onPrimaryTapped = {

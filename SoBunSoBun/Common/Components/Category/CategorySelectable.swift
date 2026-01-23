@@ -43,7 +43,7 @@ class CategorySelectable: UILabel {
         var attributes = title14.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary300
         
-        self.attributedText = NSAttributedString(string: NSLocalizedString("Category\(number)", comment: ""), attributes: attributes)
+        self.attributedText = NSAttributedString(string: NSLocalizedString("Category\(number)", tableName: "Category", comment: ""), attributes: attributes)
         
         self.backgroundColor = .primary50
         self.layer.cornerRadius = 12
@@ -67,7 +67,7 @@ class CategorySelectable: UILabel {
         var attributes = title14.attributes(alignment: .center)
         attributes[.foregroundColor] = isChecked ? UIColor.primary400 : UIColor.primary300
         
-        self.attributedText = NSAttributedString(string: NSLocalizedString("Category\(number)", comment: ""), attributes: attributes)
+        self.attributedText = NSAttributedString(string: NSLocalizedString("Category\(number)", tableName: "Category", comment: ""), attributes: attributes)
         
         self.backgroundColor = isChecked ? .primary100 : .primary50
         self.layer.borderWidth = isChecked ? 2 : 0

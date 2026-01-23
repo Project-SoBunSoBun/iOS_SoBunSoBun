@@ -93,7 +93,7 @@ class PostList: UIView {
         // 키워드
         let tempList: [String] = model.categoryCode.components(separatedBy: ",")
         let categoryList: [String] = tempList.map {
-            NSLocalizedString("Category\($0)", comment: "Category \($0)") // 동적 문자열 대응
+            NSLocalizedString("Category\($0)", tableName: "Category", comment: "Category \($0)") // 동적 문자열 대응
         }
         categoriesWrappingView.labels = categoryList
         

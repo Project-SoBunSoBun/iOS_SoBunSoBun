@@ -113,7 +113,7 @@ class InformationCard: UIView {
             // 모집 인원
             participantsStackView.addArrangedSubview(participantsTitleLabel)
             participantsStackView.addArrangedSubview(participantsDescLabel)
-            participantsDescLabel.text = String(format: NSLocalizedString("ParticipantCount", comment: "participants minimum and maximum counts"), minCount, maxCount)
+            participantsDescLabel.text = String(format: NSLocalizedString("ParticipantCount", tableName: "Home", comment: "participants minimum and maximum counts"), minCount, maxCount)
             
             addSubview(participantsStackView)
             

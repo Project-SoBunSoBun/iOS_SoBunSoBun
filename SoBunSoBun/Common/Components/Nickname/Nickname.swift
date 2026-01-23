@@ -35,7 +35,7 @@ class Nickname: UIView {
     private let title: UILabel = {
         let title = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "Nickname"),
+            string: String(localized: "Nickname", table: "Common"),
             attributes: title16.attributes()
         )
         title.attributedText = attributedText
@@ -57,7 +57,7 @@ class Nickname: UIView {
         textField.rightViewMode = .always
         textField.font = body16.font
         textField.attributedPlaceholder = NSAttributedString(
-            string: String(localized: "InsertNickname"),
+            string: String(localized: "InsertNickname", table: "Common"),
             attributes: [
                 .foregroundColor: UIColor.neutral300
             ]
@@ -94,7 +94,7 @@ class Nickname: UIView {
             }
             
             updatedConfig?.attributedTitle = AttributedString(
-                String(localized: "DuplicationCheck"),
+                String(localized: "DuplicationCheck", table: "Common"),
                 attributes: titleAttributes
             )
             
@@ -262,7 +262,7 @@ extension Nickname {
                 }
                 
                 guard let isAvailable = state.nickNameAvailable,
-                      let infoMessage = state.infoMessage else { makeInfoMessage(isAvailable: nil, infoMessage: String(localized: "DenyNicknameInput"))
+                      let infoMessage = state.infoMessage else { makeInfoMessage(isAvailable: nil, infoMessage: String(localized: "DenyNicknameInput", table: "Common"))
                     textField.layer.borderColor = UIColor.primary100.cgColor
                     textField.layer.borderWidth = 1
                     return

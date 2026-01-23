@@ -120,7 +120,7 @@ class Review: UIView {
             attributes[.foregroundColor] = UIColor.neutral900
         }
         
-        let localizedString = NSLocalizedString(reviewNumber, comment: "")
+        let localizedString = NSLocalizedString(reviewNumber, tableName: "Review", comment: "")
         let attributedText = NSAttributedString(
             string: localizedString,
             attributes: attributes

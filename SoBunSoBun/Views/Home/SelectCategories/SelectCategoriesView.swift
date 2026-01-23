@@ -53,7 +53,7 @@ class SelectCategoriesView: UIViewController {
         var attributes = title18.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
         label.attributedText = NSAttributedString(
-            string: NSLocalizedString("CategoryGroup\(number)", comment: ""),
+            string: NSLocalizedString("CategoryGroup\(number)", tableName: "Category", comment: ""),
             attributes: attributes
         )
         

@@ -41,7 +41,7 @@ class SignUpCompletedView: UIViewController {
     private let titleLabel: UILabel = {
         let label = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "CongratulationsOnJoining"),
+            string: String(localized: "CongratulationsOnJoining", table: "SignIn"),
             attributes: title24.attributes(alignment: .center)
         )
         label.attributedText = attributedText
@@ -66,7 +66,7 @@ class SignUpCompletedView: UIViewController {
         return image
     }()
     
-    private let startButton = Button(title: String(localized: "Start"))
+    private let startButton = Button(title: String(localized: "Start", table: "SignIn"))
     
     // MARK: - 생명주기
     override func viewDidLoad() {
@@ -187,15 +187,15 @@ extension SignUpCompletedView {
                 guard let self = self else { return }
                 
                 self.logger.debug("에러 발생: \(message)")
-                let alert = UIAlertController(title: String(localized: "ErrorMessage"), message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: String(localized: "Confirm"), style: .default))
+                let alert = UIAlertController(title: String(localized: "ErrorMessage", table: "Common"), message: message, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: String(localized: "Confirm", table: "Common"), style: .default))
                 self.present(alert, animated: true)
             })
             .disposed(by: disposeBag)
     }
     
     private func updateSubLabel(with nickname: String) {
-        let message = String(format: String(localized: "SignUpCompletedMessage"), nickname)
+        let message = String(format: String(localized: "SignUpCompletedMessage", table: "SignIn"), nickname)
         
         let attributedText = NSMutableAttributedString(string: message)
         attributedText.setAttributes([

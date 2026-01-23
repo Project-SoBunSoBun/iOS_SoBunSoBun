@@ -29,8 +29,8 @@ class CustomAlertView: UIView {
     
     init(title: String,
          subTitle: String? = nil,
-         primaryTitleKey: String = String(localized: "GoToSetting"),
-         cancelTitleKey: String = String(localized: "Cancel"),
+         primaryTitleKey: String = String(localized: "GoToSetting", table: "Common"),
+         cancelTitleKey: String = String(localized: "Cancel", table: "Common"),
          frame: CGRect = .zero
     ){
         super.init(frame: frame)

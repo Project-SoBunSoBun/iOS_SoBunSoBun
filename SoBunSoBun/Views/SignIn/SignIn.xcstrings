@@ -1,0 +1,162 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "AllAgree" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "네, 모두 동의합니다"
+          }
+        }
+      }
+    },
+    "CongratulationsOnJoining" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가입을 축하드려요!"
+          }
+        }
+      }
+    },
+    "GalleryPermissionMessage" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진 이용에 대한 접근 권한이 없습니다."
+          }
+        }
+      }
+    },
+    "KakaoLoginFailed" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카카오 로그인 실패"
+          }
+        }
+      }
+    },
+    "LocationInfomationAgree" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[필수] 위치정보 수집 동의"
+          }
+        }
+      }
+    },
+    "LocationPermission" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 주변의 모임을 검색하거나\n동네 인증을 위해 현재 위치를 확인합니다."
+          }
+        }
+      }
+    },
+    "LoginApple" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple로 시작하기"
+          }
+        }
+      }
+    },
+    "LoginKakao" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카카오로 시작하기"
+          }
+        }
+      }
+    },
+    "PersonalInfomationAgree" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[필수] 개인정보 수집 및 이용 동의"
+          }
+        }
+      }
+    },
+    "ServiceAgree" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[필수] 서비스 이용약관 동의"
+          }
+        }
+      }
+    },
+    "SignUpCompletedMessage" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새로운 공동구매 모임이\n%@님을\n기다리고 있어요"
+          }
+        }
+      }
+    },
+    "SignUpTitle" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서비스 이용약관에 \n동의해 주세요"
+          }
+        }
+      }
+    },
+    "Start" : {
+      "comment" : "SignIn",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시작하기"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

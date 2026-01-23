@@ -91,7 +91,7 @@ class SearchReactor: Reactor {
             guard !trimmedText.isEmpty else {
                 return Observable.concat([
                     Observable.just(.setKeyword("")),
-                    Observable.just(.setErrorMessage(String(localized: "CheckYourInputs")))
+                    Observable.just(.setErrorMessage(String(localized: "CheckYourInputs", table: "Common")))
                 ])
             }
             
