@@ -483,7 +483,7 @@ extension HomeView {
     }
     
     private func addCategoryAll() {
-        let categoryAll = CategorySelected(title: String(localized: "CategoryAll", table: "Category"))
+        let categoryAll = CategorySelected(title: String(localized: "All", table: "Category"))
         categoriesStackView.addArrangedSubview(categoryAll)
     }
     
@@ -496,7 +496,7 @@ extension HomeView {
             addCategoryAll()
         } else {
             selectedCategories.forEach {
-                let categoryString = NSLocalizedString("Category\($0)", tableName: "Category", comment: "Category \($0)")
+                let categoryString = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
                 let category = CategorySelected(title: categoryString)
                 
                 categoriesStackView.addArrangedSubview(category)

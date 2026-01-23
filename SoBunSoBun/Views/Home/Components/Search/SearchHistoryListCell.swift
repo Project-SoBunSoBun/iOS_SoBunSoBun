@@ -51,7 +51,7 @@ class SearchHistoryListCell: UIStackView {
     private func configureUI(history: String) {
         self.axis = .horizontal
         self.spacing = 8
-        self.alignment = .center
+        self.alignment = .leading
         
         var attributes: [NSAttributedString.Key: Any] = body16.attributes()
         attributes[.foregroundColor] = UIColor.neutral700
@@ -67,7 +67,9 @@ class SearchHistoryListCell: UIStackView {
             make.size.equalTo(24)
         }
         
+        icon.setContentHuggingPriority(.required, for: .horizontal)
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        button.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     private func bind() {
