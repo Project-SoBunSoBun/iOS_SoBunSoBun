@@ -131,7 +131,7 @@ struct SettleUpMyRequestModel: Encodable {
 struct MyProfileModel: Decodable {
     let success: Bool
     let data: DataClass
-    let error: Error
+    let error: ErrorModel
 }
 
 struct DataClass: Decodable {
@@ -148,6 +148,6 @@ struct MannerTag: Decodable {
     let count: Int
 }
 
-struct Error: Decodable {
+struct ErrorModel: Decodable {
     let code, message: String
 }
