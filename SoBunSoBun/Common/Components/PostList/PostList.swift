@@ -27,7 +27,7 @@ class PostList: UIView {
     }
     
     // MARK: - 디자인 요소
-    private let categoriesWrappingView = LabelsWrappingView(customLabelType: CategoryMini.self, spacingX: 8, spacingY: 8)
+    private let categoriesWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
     
     private let titleLabel: UILabel = {
         let lb = UILabel()
@@ -90,12 +90,15 @@ class PostList: UIView {
     
     // MARK: - 레이아웃 설정
     private func configure(model: PostModel) {
-        // 키워드
-        let tempList: [String] = model.categoryCode.components(separatedBy: ",")
-        let categoryList: [String] = tempList.map {
-            NSLocalizedString("Category\($0)", tableName: "Category", comment: "Category \($0)") // 동적 문자열 대응
-        }
-        categoriesWrappingView.labels = categoryList
+        // 카테고리
+        let categoryViews = model.categoryCode.components(separatedBy: ",")
+            .map {
+                let category = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
+                
+                return CategoryMini(title: category)
+            }
+        
+        categoriesWrappingView.addArrangedSubviews(categoryViews)
         
         addSubview(categoriesWrappingView)
         
