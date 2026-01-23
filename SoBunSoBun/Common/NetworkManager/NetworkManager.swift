@@ -64,7 +64,7 @@ final class NetworkManager {
     // 서버에 유저 정보를 받아오는 메서드
     func myProfile() -> Single<UserInfoModel> {
         return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.myProfile)
+            MultiTarget(AuthorizedAPI.me)
         )
         .filterSuccessfulStatusCodes()
         .map(UserInfoModel.self)
@@ -162,6 +162,16 @@ final class NetworkManager {
         )
         .filterSuccessfulStatusCodes()
         .map { _ in () }
+    }
+    
+    // MARK: - 마이페이지
+    // 마이페이지 프로필 조회
+    func getMeProfile() -> Single<MyProfileModel> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.getMeProfile)
+        )
+        .filterSuccessfulStatusCodes()
+        .map(MyProfileModel.self)
     }
 }
 
