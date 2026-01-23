@@ -332,7 +332,7 @@ extension SearchView {
             .disposed(by: disposeBag)
         
         // 정렬을 눌렀을 때
-        dropDownView.itemTapped
+        dropDownView.didCellTap
             .map { Reactor.Action.sortTapped($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)

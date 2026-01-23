@@ -6,21 +6,29 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
+import RxGesture
 
 class DropDownCell: UIStackView {
-    let title: String
+    let localizableKey: String
     
-    init(frame: CGRect = .zero, title: String) {
-        self.title = title
+    private let disposeBag = DisposeBag()
+    
+    init(frame: CGRect = .zero, localizableKey: String) {
+        self.localizableKey = localizableKey
         
         super.init(frame: frame)
         
         configureUI()
+        bind()
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    let didTap = PublishRelay<String>()
     
     private let label = UILabel()
     
@@ -44,13 +52,14 @@ class DropDownCell: UIStackView {
         var attributes: [NSAttributedString.Key: Any] = title14.attributes()
         attributes[.foregroundColor] = UIColor.neutral600
         
-        label.attributedText = NSAttributedString(string: NSLocalizedString(title, comment: ""), attributes: attributes)
+        label.attributedText = NSAttributedString(string: NSLocalizedString(localizableKey, tableName: "Home", comment: ""), attributes: attributes)
         
         [label, icon].forEach {
             self.addArrangedSubview($0)
         }
         
         label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        icon.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     func toggleSelect(isSelected: Bool) {
@@ -59,6 +68,15 @@ class DropDownCell: UIStackView {
         var attributes: [NSAttributedString.Key: Any] = title14.attributes()
         attributes[.foregroundColor] = isSelected ? UIColor.neutral900 : UIColor.neutral600
         
-        label.attributedText = NSAttributedString(string: NSLocalizedString(title, comment: ""), attributes: attributes)
+        label.attributedText = NSAttributedString(string: NSLocalizedString(localizableKey, tableName: "Home", comment: ""), attributes: attributes)
+    }
+    
+    private func bind() {
+        self.rx
+            .tapGesture()
+            .when(.recognized)
+            .map { _ in self.localizableKey }
+            .bind(to: didTap)
+            .disposed(by: disposeBag)
     }
 }

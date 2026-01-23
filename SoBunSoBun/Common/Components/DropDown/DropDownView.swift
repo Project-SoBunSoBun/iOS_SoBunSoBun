@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
-import RxGesture
 
 class DropDownView: UIStackView {
     typealias Reactor = DropDownReactor
@@ -30,7 +29,7 @@ class DropDownView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    let itemTapped = PublishSubject<String>()
+    let didCellTap = PublishSubject<String>()
     
     private func configureUI(items: [String]) {
         self.backgroundColor = .backgroundWhite
@@ -58,7 +57,7 @@ class DropDownView: UIStackView {
         
         // cell 추가
         items.enumerated().forEach { index, item in
-            let cell = DropDownCell(title: item)
+            let cell = DropDownCell(localizableKey: item)
             if index == 0 {
                 cell.toggleSelect(isSelected: true)
             }
@@ -125,10 +124,8 @@ extension DropDownView {
         self.arrangedSubviews.forEach {
             guard let cell = $0 as? DropDownCell else { return }
             
-            cell.rx
-                .tapGesture()
-                .when(.recognized)
-                .map { _ in Reactor.Action.selectCell(cell.title) }
+            cell.didTap
+                .map { Reactor.Action.selectCell($0) }
                 .bind(to: reactor.action)
                 .disposed(by: disposeBag)
         }
@@ -147,7 +144,7 @@ extension DropDownView {
         reactor.state.map { $0.selectedCell }
             .distinctUntilChanged()
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] title in
+            .subscribe(onNext: { [weak self] localizableKey in
                 guard let self = self else { return }
                 
                 var selectedCell: DropDownCell?
@@ -155,7 +152,7 @@ extension DropDownView {
                 self.arrangedSubviews.forEach {
                     guard let cell = $0 as? DropDownCell else { return }
                     
-                    let isSelected = title == cell.title
+                    let isSelected = localizableKey == cell.localizableKey
                     
                     cell.toggleSelect(isSelected: isSelected)
                     
@@ -171,7 +168,7 @@ extension DropDownView {
                     self.insertArrangedSubview(selectedCell, at: 0)
                 }
                 
-                itemTapped.onNext(title)
+                didCellTap.onNext(localizableKey)
             })
             .disposed(by: disposeBag)
     }
