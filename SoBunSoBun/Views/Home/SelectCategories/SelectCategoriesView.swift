@@ -53,7 +53,7 @@ class SelectCategoriesView: UIViewController {
         var attributes = title18.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
         label.attributedText = NSAttributedString(
-            string: NSLocalizedString("CategoryGroup\(number)", tableName: "Category", comment: ""),
+            string: NSLocalizedString("Group\(number)", tableName: "Category", comment: ""),
             attributes: attributes
         )
         
@@ -149,10 +149,10 @@ extension SelectCategoriesView {
     private func setupCategories(categories: [String]) {
         var previousView: UIView? = nil
         
-        // dictionary 형태
+        // [그룹: [카테고리]] dictionary 형태
         let groupedCategories = Dictionary(grouping: categories, by: { String($0.prefix(2)) })
         
-        // key만 포함
+        // 그룹 key만 포함 예) ["00", "01"]
         let sortedGroups = groupedCategories.keys.sorted()
         
         for (index, groupNumber) in sortedGroups.enumerated() {
