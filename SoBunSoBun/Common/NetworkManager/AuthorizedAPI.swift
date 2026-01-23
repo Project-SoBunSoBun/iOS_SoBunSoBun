@@ -41,11 +41,11 @@ extension AuthorizedAPI: TargetType {
         case .saveProfile:
             return "/users/me/profile"
         case .myProfile:
-            return "/me"
+            return "/api/me"
         case .getLocationVerification:
-            return "/me/location-verification"
+            return "/api/me/location-verification"
         case .patchLocationVerification:
-            return "/me/location-verification"
+            return "/api/me/location-verification"
         case .getHomeList:
             return "/api/posts"
         case .getHomeListByCategories(let category, page: _, size: _):
