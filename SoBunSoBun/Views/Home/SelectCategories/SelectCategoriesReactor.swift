@@ -12,6 +12,8 @@ import RxCocoa
 import OSLog
 
 class SelectCategoriesReactor: Reactor {
+    let maxCount: Int = 5
+    
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "SelectCategories.Reactor"
@@ -31,8 +33,8 @@ class SelectCategoriesReactor: Reactor {
     }
     
     struct State {
-        var selectedCategories: [String] = []
         var categories: [String] = []
+        var selectedCategories: [String] = []
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -51,7 +53,11 @@ class SelectCategoriesReactor: Reactor {
             if selectedSet.contains(category) {
                 return Observable.just(.removeSelectedCategory(category))
             } else {
-                return Observable.just(.addSelectedCategory(category))
+                if selectedSet.count < maxCount { // maxCount개까지만
+                    return Observable.just(.addSelectedCategory(category))
+                } else {
+                    return Observable.empty()
+                }
             }
         }
     }
@@ -62,8 +68,10 @@ class SelectCategoriesReactor: Reactor {
         switch mutation {
         case .setCategories(let categories):
             newState.categories = categories
+            
         case .addSelectedCategory(let category):
             newState.selectedCategories.append(category)
+            
         case .removeSelectedCategory(let category):
             newState.selectedCategories.removeAll { $0 == category }
         }
@@ -73,7 +81,7 @@ class SelectCategoriesReactor: Reactor {
     
     private func getCategoriesFromLocalizableString() -> Observable<Mutation> {
         let bundle = Bundle.main
-        guard let path = bundle.path(forResource: "Localizable", ofType: "strings"),
+        guard let path = bundle.path(forResource: "Category", ofType: "strings"),
               let dict = NSDictionary(contentsOfFile: path) as? [String: String] else {
             logger.critical("Localizable.strings not found")
             return Observable.just(.setCategories([]))
@@ -81,10 +89,7 @@ class SelectCategoriesReactor: Reactor {
         
         let categories = dict.keys
             .filter { $0.hasPrefix("Category") }
-            .compactMap { key -> String? in
-                let id = String(key.suffix(4))
-                return Int(id) != nil ? id : nil
-            }
+            .compactMap { String($0.suffix(4)) }
             .sorted()
         
         return Observable.just(.setCategories(categories))

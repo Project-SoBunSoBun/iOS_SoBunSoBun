@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "All" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 카테고리"
+          }
+        }
+      }
+    },
     "Category0000" : {
       "comment" : "HomeList.swift에서 사용",
       "extractionState" : "manual",
@@ -349,19 +361,7 @@
         }
       }
     },
-    "CategoryAll" : {
-      "comment" : "HomeList.swift에서 사용",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "모든 카테고리"
-          }
-        }
-      }
-    },
-    "CategoryGroup00" : {
+    "Group00" : {
       "comment" : "HomeList.swift에서 사용",
       "extractionState" : "manual",
       "localizations" : {
@@ -373,7 +373,7 @@
         }
       }
     },
-    "CategoryGroup01" : {
+    "Group01" : {
       "comment" : "HomeList.swift에서 사용",
       "extractionState" : "manual",
       "localizations" : {
