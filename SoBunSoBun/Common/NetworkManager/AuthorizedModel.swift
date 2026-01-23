@@ -126,3 +126,27 @@ struct SettleUpSortModel: Decodable {
 struct SettleUpMyRequestModel: Encodable {
     let activeOnly, page, size: Int
 }
+
+// MARK: - 마이페이지
+struct MyProfileModel: Decodable {
+    let success: Bool
+    let data: DataClass
+    let error: Error
+}
+
+struct DataClass: Decodable {
+    let userID: Int
+    let nickname, profileImageUrl: String
+    let mannerScore, participationCount, hostCount: Int
+    let mannerTags: [MannerTag]
+}
+
+struct MannerTag: Decodable {
+    let tagID: Int
+    let tagName, tagEmoji: String
+    let count: Int
+}
+
+struct Error: Decodable {
+    let code, message: String
+}
