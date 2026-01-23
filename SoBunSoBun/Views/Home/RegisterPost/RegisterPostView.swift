@@ -612,10 +612,10 @@ extension RegisterPostView {
         
         if !selectedCategories.isEmpty {
             selectedCategories.forEach {
-                let categoryString = NSLocalizedString("Category\($0)", tableName: "Category", comment: "Category \($0)")
-                let category = CategorySelected(title: categoryString)
+                let view = CategorySelected()
+                view.text = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
                 
-                categoriesStackView.addArrangedSubview(category)
+                categoriesStackView.addArrangedSubview(view)
             }
         }
     }

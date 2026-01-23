@@ -93,9 +93,12 @@ class PostList: UIView {
         // 카테고리
         let categoryViews = model.categoryCode.components(separatedBy: ",")
             .map {
+                let view = CategoryMini()
                 let category = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
                 
-                return CategoryMini(title: category)
+                view.text = category
+                
+                return view
             }
         
         categoriesWrappingView.addArrangedSubviews(categoryViews)
