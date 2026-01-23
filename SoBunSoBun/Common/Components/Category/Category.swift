@@ -9,10 +9,9 @@ import UIKit
 import SnapKit
 
 class Category: UILabel {
-    /// 카테고리 컴포넌트입니다.
-    override init(frame: CGRect) {
+    init(frame: CGRect = .zero, title: String) {
         super.init(frame: frame)
-        configure()
+        configure(title: title)
     }
     
     required init?(coder: NSCoder) {
@@ -21,9 +20,11 @@ class Category: UILabel {
     
     private let insets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
     
-    private func configure() {
-        self.font = title14.font
-        self.textColor = .primary300
+    private func configure(title: String) {
+        var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.primary300
+        self.attributedText = NSAttributedString(string: title, attributes: attributes)
+        
         self.backgroundColor = .primary50
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
