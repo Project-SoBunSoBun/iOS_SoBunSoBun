@@ -11,7 +11,7 @@ import Moya
 enum AuthorizedAPI {
     // 로그인
     case saveProfile(nickname: String, profileImage: Data?)
-    case myProfile
+    case me
     // 홈
     case getLocationVerification
     case patchLocationVerification(address: String)
@@ -24,6 +24,8 @@ enum AuthorizedAPI {
     // 정산
     case mySettleUps(activeOnly: Int, page: Int, size: Int)
     case deleteSettleUp(id: Int)
+    // 마이페이지
+    case getMeProfile
 }
 
 extension AuthorizedAPI: TargetType {
@@ -40,7 +42,7 @@ extension AuthorizedAPI: TargetType {
         switch self {
         case .saveProfile:
             return "/users/me/profile"
-        case .myProfile:
+        case .me:
             return "/api/me"
         case .getLocationVerification:
             return "/api/me/location-verification"
@@ -60,6 +62,8 @@ extension AuthorizedAPI: TargetType {
             return "/api/settleups/my"
         case .deleteSettleUp(let id):
             return "/api/settleups/\(id)"
+        case .getMeProfile:
+            return "api/me/profile"
         }
     }
     
@@ -67,7 +71,7 @@ extension AuthorizedAPI: TargetType {
         switch self {
         case .saveProfile:
             return .patch
-        case .myProfile:
+        case .me:
             return .get
         case .getLocationVerification:
             return .get
@@ -87,6 +91,8 @@ extension AuthorizedAPI: TargetType {
             return .get
         case .deleteSettleUp:
             return .delete
+        case .getMeProfile:
+            return .get
         }
     }
     
@@ -118,7 +124,7 @@ extension AuthorizedAPI: TargetType {
             
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
             
-        case .myProfile:
+        case .me:
             return .requestPlain
             
         case .getLocationVerification:
@@ -156,6 +162,8 @@ extension AuthorizedAPI: TargetType {
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
         case .deleteSettleUp:
             return .requestPlain
+        case .getMeProfile:
+            return .requestPlain
         }
     }
     
@@ -163,7 +171,7 @@ extension AuthorizedAPI: TargetType {
         switch self {
         case .saveProfile:
             return ["Content-Type": "multipart/form-data"]
-        case .myProfile,
+        case .me,
                 .getLocationVerification,
                 .patchLocationVerification,
                 .getHomeList,
@@ -172,7 +180,8 @@ extension AuthorizedAPI: TargetType {
                 .getSuggestions,
                 .getSearchList,
                 .mySettleUps,
-                .deleteSettleUp:
+                .deleteSettleUp,
+                .getMeProfile:
             return [:]
         }
     }
