@@ -9,22 +9,31 @@ import UIKit
 import SnapKit
 
 class Category: UILabel {
-    init(frame: CGRect = .zero, title: String) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
-        configure(title: title)
+        configure()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override var text: String? {
+        didSet {
+            guard let text = text else {
+                self.attributedText = nil
+                return
+            }
+            
+            var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .center)
+            attributes[.foregroundColor] = UIColor.primary300
+            self.attributedText = NSAttributedString(string: text, attributes: attributes)
+        }
+    }
+    
     private let insets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
     
-    private func configure(title: String) {
-        var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .center)
-        attributes[.foregroundColor] = UIColor.primary300
-        self.attributedText = NSAttributedString(string: title, attributes: attributes)
-        
+    private func configure() {
         self.backgroundColor = .primary50
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
