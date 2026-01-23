@@ -78,7 +78,7 @@ class TopNavigationBar: UIView {
         }
         
         backButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
+            make.leading.equalToSuperview().offset(4)
             make.verticalEdges.equalToSuperview()
         }
         
@@ -87,7 +87,7 @@ class TopNavigationBar: UIView {
         }
         
         buttonStackView.snp.makeConstraints { make in
-            make.trailing.equalToSuperview()
+            make.trailing.equalToSuperview().inset(4)
         }
     }
     

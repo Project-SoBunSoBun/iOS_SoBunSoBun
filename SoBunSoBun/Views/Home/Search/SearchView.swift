@@ -196,7 +196,7 @@ class SearchView: UIViewController {
         }
         
         backButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview()
+            make.leading.equalToSuperview().offset(4)
             make.centerY.equalToSuperview()
             make.size.equalTo(48)
         }
