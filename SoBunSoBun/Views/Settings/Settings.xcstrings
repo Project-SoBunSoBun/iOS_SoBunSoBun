@@ -85,6 +85,17 @@
         }
       }
     },
+    "EditProfile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필 수정"
+          }
+        }
+      }
+    },
     "Email" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -321,6 +332,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "약관 및 정책"
+          }
+        }
+      }
+    },
+    "UnknownNickname" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알 수 없음"
           }
         }
       }
