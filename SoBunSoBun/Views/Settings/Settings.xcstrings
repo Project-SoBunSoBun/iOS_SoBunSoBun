@@ -49,6 +49,18 @@
         }
       }
     },
+    "CountFormat" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d번"
+          }
+        }
+      }
+    },
     "CurrentVersion" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -86,6 +98,7 @@
       }
     },
     "EditProfile" : {
+      "comment" : "Settings",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -132,6 +145,18 @@
         }
       }
     },
+    "HostCount" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "방장 횟수"
+          }
+        }
+      }
+    },
     "LogOut" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -152,6 +177,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "계정 정보 관리"
+          }
+        }
+      }
+    },
+    "MannerScore" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 점수"
           }
         }
       }
@@ -248,6 +285,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "알림 설정"
+          }
+        }
+      }
+    },
+    "ParticipationCount" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여 횟수"
           }
         }
       }
