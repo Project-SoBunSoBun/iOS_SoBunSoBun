@@ -23,19 +23,14 @@ class RuleCard: UIView {
     // MARK: - 디자인 요소
     private let titleLabel: UILabel = {
         let lb = UILabel()
-        lb.textColor = .neutral700
         lb.numberOfLines = 0
-        lb.textAlignment = .left
         
         return lb
     }()
     
     private let descLabel: UILabel = {
         let lb = UILabel()
-        lb.font = body14.font
-        lb.textColor = .neutral700
         lb.numberOfLines = 0
-        lb.textAlignment = .left
         
         return lb
     }()
@@ -49,6 +44,7 @@ class RuleCard: UIView {
         // 기존 폰트 구조
         let fontStruct = body14
         var attrs = fontStruct.attributes()
+        attrs[.foregroundColor] = UIColor.neutral700
         
         // 불렛 너비
         let bulletPointWidth = (bulletPoint as NSString).size(withAttributes: [.font: fontStruct.font]).width
@@ -82,6 +78,8 @@ class RuleCard: UIView {
         self.clipsToBounds = true
         
         // 제목
+        var titleAttributes: [NSAttributedString.Key: Any] = title14.attributes()
+        titleAttributes[.foregroundColor] = UIColor.neutral700
         titleLabel.attributedText = NSAttributedString(string: title, attributes: title14.attributes())
         
         addSubview(titleLabel)
