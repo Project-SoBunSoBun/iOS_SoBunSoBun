@@ -65,7 +65,7 @@ class MypageView: UIViewController {
     // 프로필 이미지 뷰
     private let profileImageView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFit
+        iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.layer.cornerRadius = 50
         iv.layer.borderWidth = 2
@@ -99,6 +99,31 @@ class MypageView: UIViewController {
         return bt
     }()
     
+    // 매너 점수, 참여 횟수, 방장 횟수 뷰
+    private let userInfoView = UserInfo()
+    
+    // 받은 매너 평가 라벨
+    private let receivedMannerLabel: UILabel = {
+        var attributes = title16.attributes(alignment: .left)
+        attributes[.foregroundColor] = UIColor.neutral900
+        
+        let attributedText = NSAttributedString(
+            string: String(localized: "ReceivedReview", table: "Settings"),
+            attributes: attributes
+        )
+        
+        let lb = UILabel()
+        lb.attributedText = attributedText
+        
+        return lb
+    }()
+    
+    // ReviewBox
+    private var mannerWrappingViews = HorizontalWrappingView(
+        horizontalSpacing: 8,
+        verticalSpacing: 8
+    )
+    
     // 그라데이션 뷰
     private let gradientView: UIView = {
         let view = UIView()
@@ -127,6 +152,10 @@ class MypageView: UIViewController {
 
         configure()
         bind(reactor: reactor)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        reactor.action.onNext(.viewDidLoad)
     }
     
     override func viewDidLayoutSubviews() {
@@ -173,7 +202,7 @@ class MypageView: UIViewController {
             make.width.equalToSuperview()
         }
         
-        [profileImageView, nicknameLabel, editProfileButton].forEach {
+        [profileImageView, nicknameLabel, editProfileButton, userInfoView, receivedMannerLabel, mannerWrappingViews].forEach {
             contentView.addSubview($0)
         }
         
@@ -193,6 +222,21 @@ class MypageView: UIViewController {
             make.centerX.equalToSuperview()
             make.top.equalTo(nicknameLabel.snp.bottom).offset(8)
         }
+        
+        userInfoView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(editProfileButton.snp.bottom).offset(24)
+        }
+        
+        receivedMannerLabel.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(userInfoView.snp.bottom).offset(24)
+        }
+        
+        mannerWrappingViews.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(receivedMannerLabel.snp.bottom).offset(16)
+        }
     }
 }
 
@@ -211,11 +255,11 @@ extension MypageView {
         // 프로필 정보 받아오기
         reactor.state.map { $0.profile }
             .compactMap { $0 }
-            .distinctUntilChanged { $0.data.userId == $1.data.userId }
+            .distinctUntilChanged { $0.data == $1.data }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] profile in
                 guard let self = self else { return }
-                print(profile)
+                
                 self.updateUI(profile)
             })
             .disposed(by: disposeBag)
@@ -224,17 +268,24 @@ extension MypageView {
     private func updateUI(_ profile: MyProfileModel) {
         let nickname = profile.data.nickname ?? String(localized: "UnknownNickname")
         let profileImageUrl = profile.data.profileImageUrl
+        let receivedManner = profile.data.mannerTags
         
         // 프로필 이미지 설정
         setProfileImage(profileImageUrl)
         
         // 닉네임 라벨 Text 설정
         setNickname(nickname)
+        
+        // 매너 점수, 참여 횟수, 방장 횟수 설정
+        userInfoView.updateUI(profile)
+        
+        // 받은 매너 평가 설정
+        setReviewBox(receivedManner)
     }
     
     private func setProfileImage(_ profileImageUrl: String?) {
         if let profileImageUrl = profileImageUrl {
-            let imageUrl = URL(string: profileImageUrl)
+            let imageUrl = URL(string: API_URL + profileImageUrl)
             
             profileImageView.kf.setImage(
                 with: imageUrl,
@@ -267,5 +318,23 @@ extension MypageView {
         )
         
         nicknameLabel.attributedText = nicknameAttributedText
+    }
+    
+    private func setReviewBox(_ receivedManner: [MannerTagModel]?) {
+        mannerWrappingViews.removeAllArrangedSubviews()
+        
+        guard let mannerTags = receivedManner, !mannerTags.isEmpty else { return }
+        
+        let sortedTags = mannerTags.sorted { $0.tagId < $1.tagId }
+        
+        let reviewViews = sortedTags.compactMap { tag -> UIView? in
+            // tagId에 따라 title 생성: "Review001", "Review003"...
+            let title = String(format: "Review%03d", tag.tagId)
+            let review = Review(title: title)
+            
+            return review
+        }
+        
+        mannerWrappingViews.addArrangedSubviews(reviewViews)
     }
 }
