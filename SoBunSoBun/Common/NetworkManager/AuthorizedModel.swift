@@ -148,6 +148,5 @@ struct MyProfileDataModel: Decodable {
 
 struct MannerTagModel: Decodable {
     let tagId: Int
-    let tagName, tagEmoji: String
     let count: Int
 }
