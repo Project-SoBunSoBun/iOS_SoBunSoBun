@@ -45,7 +45,7 @@ class AuthorInfoView: UIStackView {
     
     private let profileImageView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFit
+        iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
         iv.layer.cornerRadius = 24
         iv.layer.borderWidth = 1
