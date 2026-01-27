@@ -261,36 +261,43 @@ class MypageView: UIViewController {
             make.size.equalTo(100)
         }
         
+        // 닉네임 라벨
         nicknameLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(profileImageView.snp.bottom).offset(8)
         }
         
+        // 프로필 수정 버튼
         editProfileButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalTo(nicknameLabel.snp.bottom).offset(8)
         }
         
+        // 유저 정보 뷰 컴포넌트
         userInfoView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(editProfileButton.snp.bottom).offset(24)
         }
         
+        // 받은 매너 평가 라벨
         receivedMannerLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(userInfoView.snp.bottom).offset(24)
         }
         
+        // ReviewBox 컴포넌트
         mannerWrappingViews.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(receivedMannerLabel.snp.bottom).offset(16)
         }
         
+        // 나의 공동 구매 라벨
         myGroupBuyingLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(mannerWrappingViews.snp.bottom).offset(24)
         }
         
+        // 나의 공동 구매 세팅 카드
         myGroupBuyingSettingCard.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(myGroupBuyingLabel.snp.bottom).offset(16)
@@ -302,11 +309,13 @@ class MypageView: UIViewController {
             }
         }
         
+        // 설정 라벨
         settingLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(myGroupBuyingSettingCard.snp.bottom).offset(24)
         }
         
+        // 설정 세팅 카드
         appSettingCard.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(settingLabel.snp.bottom).offset(16)
@@ -484,7 +493,6 @@ extension MypageView {
         let sortedTags = mannerTags.sorted { $0.tagId < $1.tagId }
         
         let reviewViews = sortedTags.compactMap { tag -> UIView? in
-            // tagId에 따라 title 생성: "Review001", "Review003"...
             let title = String(format: "Review%03d", tag.tagId)
             let review = Review(title: title)
             
