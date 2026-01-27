@@ -55,12 +55,7 @@ class MypageView: UIViewController {
     }()
     
     // 스크롤 뷰가 들어갈 View
-    private let contentView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .backgroundWhite
-        
-        return view
-    }()
+    private let contentView = UIView()
     
     // 프로필 이미지 뷰
     private let profileImageView: UIImageView = {
@@ -123,6 +118,59 @@ class MypageView: UIViewController {
         horizontalSpacing: 8,
         verticalSpacing: 8
     )
+    
+    // 나의 공동 구매 라벨
+    private let myGroupBuyingLabel: UILabel = {
+        var attributes = title16.attributes(alignment: .left)
+        attributes[.foregroundColor] = UIColor.neutral900
+        
+        let attributedText = NSAttributedString(
+            string: String(localized: "MyGroupBuying", table: "Settings"),
+            attributes: attributes
+        )
+        
+        let lb = UILabel()
+        lb.attributedText = attributedText
+        
+        return lb
+    }()
+    
+    // 공동 구매 기록
+    private let groupBuyingRecord = SettingCardCell(title: String(localized: "GroupBuyingRecord", table: "Settings"), type: .button)
+    
+    // 내가 게시한 글
+    private let myPost = SettingCardCell(title: String(localized: "MyPost", table: "Settings"), type: .button)
+    
+    // 저장 목록
+    private let saveList = SettingCardCell(title: String(localized: "SaveList", table: "Settings"), type: .button)
+    
+    // 나의 공동 구매 세팅 카드
+    private lazy var myGroupBuyingSettingCard = SettingCard(cells: [groupBuyingRecord, myPost, saveList])
+    
+    // 설정 라벨
+    private let settingLabel: UILabel = {
+        var attributes = title16.attributes(alignment: .left)
+        attributes[.foregroundColor] = UIColor.neutral900
+        
+        let attributedText = NSAttributedString(
+            string: String(localized: "Setting", table: "Settings"),
+            attributes: attributes
+        )
+        
+        let lb = UILabel()
+        lb.attributedText = attributedText
+        
+        return lb
+    }()
+    
+    // 내 지역 설정
+    private let myLocationSetting = SettingCardCell(title: String(localized: "MyLocationSetting", table: "Settings"), type: .button)
+    
+    // 앱 설정
+    private let appSetting = SettingCardCell(title: String(localized: "AppSetting", table: "Settings"), type: .button)
+    
+    // 설정 세팅 카드
+    private lazy var appSettingCard = SettingCard(cells: [myLocationSetting, appSetting])
     
     // 그라데이션 뷰
     private let gradientView: UIView = {
@@ -193,7 +241,7 @@ class MypageView: UIViewController {
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(topNavigationBar.snp.bottom)
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(84)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
         // 스크롤 뷰 안에 들어가는 컨텐츠 뷰
@@ -202,14 +250,14 @@ class MypageView: UIViewController {
             make.width.equalToSuperview()
         }
         
-        [profileImageView, nicknameLabel, editProfileButton, userInfoView, receivedMannerLabel, mannerWrappingViews].forEach {
+        [profileImageView, nicknameLabel, editProfileButton, userInfoView, receivedMannerLabel, mannerWrappingViews, myGroupBuyingLabel, myGroupBuyingSettingCard, settingLabel, appSettingCard].forEach {
             contentView.addSubview($0)
         }
         
         // 프로필 이미지 뷰
         profileImageView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.top.equalTo(scrollView.snp.bottom).offset(16)
+            make.top.equalToSuperview().offset(16)
             make.size.equalTo(100)
         }
         
@@ -237,6 +285,39 @@ class MypageView: UIViewController {
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(receivedMannerLabel.snp.bottom).offset(16)
         }
+        
+        myGroupBuyingLabel.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(mannerWrappingViews.snp.bottom).offset(24)
+        }
+        
+        myGroupBuyingSettingCard.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(myGroupBuyingLabel.snp.bottom).offset(16)
+        }
+        
+        [groupBuyingRecord, myPost, saveList].forEach {
+            $0.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
+            }
+        }
+        
+        settingLabel.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(myGroupBuyingSettingCard.snp.bottom).offset(24)
+        }
+        
+        appSettingCard.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(settingLabel.snp.bottom).offset(16)
+            make.bottom.equalToSuperview().inset(8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 16)
+        }
+        
+        [myLocationSetting, appSetting].forEach {
+            $0.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
+            }
+        }
     }
 }
 
@@ -249,6 +330,48 @@ extension MypageView {
     private func bindAction(reactor: MyPageReactor) {
         // viewDidLoad 시 동작
         reactor.action.onNext(.viewDidLoad)
+        
+        // 앱 설정 아이콘 버튼 클릭
+        settingButton.rx.tap
+            .map { Reactor.Action.appSettingTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 프로필 수정 버튼 클릭
+        editProfileButton.rx.tap
+            .map { Reactor.Action.editProfileButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 공동 구매 기록 클릭
+        groupBuyingRecord.didTap
+            .map { Reactor.Action.groupBuyingRecordTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 내가 게시한 글 클릭
+        myPost.didTap
+            .map { Reactor.Action.myPostTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 저장 목록 클릭
+        saveList.didTap
+            .map { Reactor.Action.saveListTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 내 지역 설정 클릭
+        myLocationSetting.didTap
+            .map { Reactor.Action.myLocationSettingTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 앱 설정 클릭
+        appSetting.didTap
+            .map { Reactor.Action.appSettingTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: MyPageReactor) {
@@ -261,6 +384,39 @@ extension MypageView {
                 guard let self = self else { return }
                 
                 self.updateUI(profile)
+            })
+            .disposed(by: disposeBag)
+        
+        // 프로필 수정 버튼, 세팅 카드 클릭 시 화면 이동
+        reactor.pulse(\.$shouldNavigate)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] viewType in
+                guard let self = self else { return }
+                
+                let view: UIViewController
+                
+                switch viewType {
+                case .editProfile:
+                    view = EditProfileView()
+                    
+                case .groupBuyingRecord:
+                    view = MyGroupBuyingRecordView()
+                    
+                case .myPost:
+                    view = MyPostView()
+                    
+                case .saveList:
+                    view = SaveListView()
+                    
+                case .appSetting:
+                    view = AppSettingView()
+                    
+                case .myLocaionSetting:
+                    view = MyLocationSettingView()
+                }
+                
+                self.navigationController?.pushViewController(view, animated: true)
             })
             .disposed(by: disposeBag)
     }
