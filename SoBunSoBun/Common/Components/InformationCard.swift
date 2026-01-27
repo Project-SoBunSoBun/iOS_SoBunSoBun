@@ -9,15 +9,7 @@ import UIKit
 import SnapKit
 
 class InformationCard: UIView {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-        configure()
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private let UNKNOWN_STRING = String(localized: "Unknown", table: "Common")
     
     // MARK: - 디자인 요소
     // 행 stackview 컴포넌트
@@ -45,18 +37,6 @@ class InformationCard: UIView {
     }
     
     // 모집 인원
-    var minMembers: Int = 0 {
-        didSet {
-            setParticipants()
-        }
-    }
-    
-    var maxMembers: Int = 0 {
-        didSet {
-            setParticipants()
-        }
-    }
-    
     private lazy var participantsStackView: UIStackView = horizontalStackView()
     private lazy var participantsTitleLabel: UILabel = {
         let lb = UILabel()
@@ -66,21 +46,7 @@ class InformationCard: UIView {
     }()
     private lazy var participantsDescLabel: UILabel = UILabel()
     
-    private func setParticipants() {
-        guard minMembers > 0, maxMembers > 0 else { return }
-        
-        let string: String = String(format: NSLocalizedString("ParticipantCount", tableName: "Home", comment: "participants minimum and maximum counts"), minMembers, maxMembers)
-        
-        participantsDescLabel.attributedText = NSAttributedString(string: string, attributes: descAttributes())
-    }
-    
     // 지점 위치
-    var locationName: String? {
-        didSet {
-            setLocationName()
-        }
-    }
-    
     private lazy var locationStackView: UIStackView = horizontalStackView()
     private lazy var locationTitleLabel: UILabel = {
         let lb = UILabel()
@@ -90,19 +56,7 @@ class InformationCard: UIView {
     }()
     private lazy var locationDescLabel: UILabel = UILabel()
     
-    private func setLocationName() {
-        let string: String = locationName ?? String(localized: "Unknown", table: "Common")
-        
-        locationDescLabel.attributedText = NSAttributedString(string: string, attributes: descAttributes())
-    }
-    
     // 날짜 및 시간
-    var meetAt: String? {
-        didSet {
-            setMeetAt()
-        }
-    }
-    
     private lazy var dateTimeStackView: UIStackView = horizontalStackView()
     private lazy var dateTimeTitleLabel: UILabel = {
         let lb = UILabel()
@@ -112,21 +66,7 @@ class InformationCard: UIView {
     }()
     private lazy var dateTimeDescLabel: UILabel = UILabel()
     
-    private func setMeetAt() {
-        guard let meetAt else { return }
-        
-        let string: String = ISO8601ToLocalizedDateTimeString(meetAt)
-        
-        dateTimeDescLabel.attributedText = NSAttributedString(string: string, attributes: descAttributes())
-    }
-    
     // 마감일
-    var deadlineAt: String? {
-        didSet {
-            setDeadLine()
-        }
-    }
-    
     private lazy var deadlineStackView: UIStackView = horizontalStackView()
     private lazy var deadlineTitleLabel: UILabel = {
         let lb = UILabel()
@@ -136,61 +76,115 @@ class InformationCard: UIView {
     }()
     private lazy var deadlineDescLabel: UILabel = UILabel()
     
-    private func setDeadLine() {
-        guard let deadlineAt else { return }
-        
-        let string: String = ISO8601ToDDay(deadlineAt)
-        
-        deadlineDescLabel.attributedText = NSAttributedString(string: string, attributes: descAttributes())
-    }
-    
     // MARK: - UI 설정
-    private func configure() {
+    private func configureUI(
+        minMembers: Int?,
+        maxMembers: Int?,
+        locationName: String?,
+        meetAt: String?,
+        deadline: String?
+    ) {
         self.backgroundColor = .primary50
         self.layer.cornerRadius = 16
         self.clipsToBounds = true
         
         // 모집 인원
+        setParticipants(minMembers, maxMembers)
+        
+        // 지점 위치
+        setLocationName(locationName)
+        
+        // 날짜 및 시간
+        setMeetAt(meetAt)
+        
+        // 마감일
+        setDeadLine(deadline)
+    }
+    
+    private func setParticipants(_ minMembers: Int?, _ maxMembers: Int?) {
         participantsStackView.addArrangedSubview(participantsTitleLabel)
         participantsStackView.addArrangedSubview(participantsDescLabel)
         
         addSubview(participantsStackView)
         
+        participantsTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        participantsDescLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        
         participantsStackView.snp.makeConstraints { make in
             make.horizontalEdges.top.equalToSuperview().inset(16)
         }
         
-        // 지점 위치
+        let string: String = String(format: NSLocalizedString("ParticipantCount", tableName: "Home", comment: "participants minimum and maximum counts"), minMembers ?? 0, maxMembers ?? 0)
+        
+        participantsDescLabel.attributedText = NSAttributedString(string: string, attributes: descAttributes())
+    }
+    
+    private func setLocationName(_ locationName: String?) {
         locationStackView.addArrangedSubview(locationTitleLabel)
         locationStackView.addArrangedSubview(locationDescLabel)
         
         addSubview(locationStackView)
+        
+        locationTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        locationDescLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         locationStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(participantsStackView.snp.bottom).offset(8)
         }
         
-        // 날짜 및 시간
+        let string: String = locationName ?? UNKNOWN_STRING
+        
+        locationDescLabel.attributedText = NSAttributedString(string: string, attributes: descAttributes())
+    }
+    
+    private func setMeetAt(_ meetAt: String?) {
         dateTimeStackView.addArrangedSubview(dateTimeTitleLabel)
         dateTimeStackView.addArrangedSubview(dateTimeDescLabel)
         
         addSubview(dateTimeStackView)
+        
+        dateTimeTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        dateTimeDescLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         dateTimeStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(locationStackView.snp.bottom).offset(8)
         }
         
-        // 마감일
+        let string: String
+        
+        if let meetAt {
+            string = ISO8601ToLocalizedDateTimeString(meetAt)
+        } else {
+            string = UNKNOWN_STRING
+        }
+        
+        dateTimeDescLabel.attributedText = NSAttributedString(string: string, attributes: descAttributes())
+    }
+    
+    private func setDeadLine(_ deadlineAt: String?) {
         deadlineStackView.addArrangedSubview(deadlineTitleLabel)
         deadlineStackView.addArrangedSubview(deadlineDescLabel)
         
         addSubview(deadlineStackView)
         
+        deadlineTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        deadlineDescLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        
         deadlineStackView.snp.makeConstraints { make in
             make.horizontalEdges.bottom.equalToSuperview().inset(16)
             make.top.equalTo(dateTimeStackView.snp.bottom).offset(8)
         }
+        
+        let string: String
+        
+        if let deadlineAt {
+            string = ISO8601ToDDay(deadlineAt)
+        } else {
+            string = UNKNOWN_STRING
+        }
+        
+        deadlineDescLabel.attributedText = NSAttributedString(string: string, attributes: descAttributes())
     }
 }
