@@ -138,7 +138,7 @@ struct MyProfileModel: Decodable {
     let error: ErrorModel?
 }
 
-struct MyProfileDataModel: Decodable {
+struct MyProfileDataModel: Decodable, Equatable {
     let userId: Int
     let nickname, profileImageUrl: String?
     let mannerScore: Float16
@@ -146,7 +146,7 @@ struct MyProfileDataModel: Decodable {
     let mannerTags: [MannerTagModel]?
 }
 
-struct MannerTagModel: Decodable {
+struct MannerTagModel: Decodable, Equatable {
     let tagId: Int
     let count: Int
 }
