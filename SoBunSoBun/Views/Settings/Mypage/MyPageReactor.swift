@@ -19,20 +19,38 @@ class MyPageReactor: Reactor {
     
     private let disposeBag = DisposeBag()
     
+    enum ViewType {
+        case editProfile
+        case groupBuyingRecord
+        case myPost
+        case saveList
+        case appSetting
+        case myLocaionSetting
+    }
+    
     enum Action {
         case viewDidLoad
+        case settingButtonTapped
+        case editProfileButtonTapped
+        case groupBuyingRecordTapped
+        case myPostTapped
+        case saveListTapped
+        case appSettingTapped
+        case myLocationSettingTapped
     }
     
     enum Mutation {
         case setProfile(MyProfileModel)
         case setLoading(Bool)
         case setError(String)
+        case setNavigate(ViewType)
     }
     
     struct State {
         var profile: MyProfileModel?
         var isLoading: Bool = false
         var errorMessage: String?
+        @Pulse var shouldNavigate: ViewType? = nil
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -52,6 +70,27 @@ class MyPageReactor: Reactor {
                     },
                 Observable.just(.setLoading(false))
             ])
+            
+        case .settingButtonTapped:
+            return Observable.just(.setNavigate(.appSetting))
+            
+        case .editProfileButtonTapped:
+            return Observable.just(.setNavigate(.editProfile))
+            
+        case .groupBuyingRecordTapped:
+            return Observable.just(.setNavigate(.groupBuyingRecord))
+            
+        case .myPostTapped:
+            return Observable.just(.setNavigate(.myPost))
+            
+        case .saveListTapped:
+            return Observable.just(.setNavigate(.saveList))
+            
+        case .appSettingTapped:
+            return Observable.just(.setNavigate(.appSetting))
+        
+        case .myLocationSettingTapped:
+            return Observable.just(.setNavigate(.myLocaionSetting))
         }
     }
     
@@ -68,6 +107,9 @@ class MyPageReactor: Reactor {
             
         case .setError(let message):
             newState.errorMessage = message
+        
+        case .setNavigate(let viewType):
+            newState.shouldNavigate = viewType
         }
         
         return newState
