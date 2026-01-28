@@ -91,13 +91,12 @@ class MypageView: UIViewController {
     // 매너 점수, 참여 횟수, 방장 횟수 뷰
     private let userInfoView = UserInfo()
     
-    // 받은 매너 평가 라벨
-    private let receivedMannerLabel: UILabel = {
+    private func makeLabel(string: String) -> UILabel {
         var attributes = title16.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral900
         
         let attributedText = NSAttributedString(
-            string: String(localized: "ReceivedReview", table: "Settings"),
+            string: string,
             attributes: attributes
         )
         
@@ -105,7 +104,10 @@ class MypageView: UIViewController {
         lb.attributedText = attributedText
         
         return lb
-    }()
+    }
+    
+    // 받은 매너 평가 라벨
+    private lazy var receivedMannerLabel = makeLabel(string: String(localized: "ReceivedReview", table: "Settings"))
     
     // ReviewBox
     private var mannerWrappingViews = HorizontalWrappingView(
@@ -114,20 +116,7 @@ class MypageView: UIViewController {
     )
     
     // 나의 공동 구매 라벨
-    private let myGroupBuyingLabel: UILabel = {
-        var attributes = title16.attributes(alignment: .left)
-        attributes[.foregroundColor] = UIColor.neutral900
-        
-        let attributedText = NSAttributedString(
-            string: String(localized: "MyGroupBuying", table: "Settings"),
-            attributes: attributes
-        )
-        
-        let lb = UILabel()
-        lb.attributedText = attributedText
-        
-        return lb
-    }()
+    private lazy var myGroupBuyingLabel = makeLabel(string: String(localized: "MyGroupBuying", table: "Settings"))
     
     // 공동 구매 기록
     private let groupBuyingRecord = SettingCardCell(title: String(localized: "GroupBuyingRecord", table: "Settings"), type: .button)
@@ -142,20 +131,7 @@ class MypageView: UIViewController {
     private lazy var myGroupBuyingSettingCard = SettingCard(cells: [groupBuyingRecord, myPost, saveList])
     
     // 설정 라벨
-    private let settingLabel: UILabel = {
-        var attributes = title16.attributes(alignment: .left)
-        attributes[.foregroundColor] = UIColor.neutral900
-        
-        let attributedText = NSAttributedString(
-            string: String(localized: "Setting", table: "Settings"),
-            attributes: attributes
-        )
-        
-        let lb = UILabel()
-        lb.attributedText = attributedText
-        
-        return lb
-    }()
+    private lazy var settingLabel = makeLabel(string: String(localized: "Setting", table: "Settings"))
     
     // 내 지역 설정
     private let myLocationSetting = SettingCardCell(title: String(localized: "MyLocationSetting", table: "Settings"), type: .button)

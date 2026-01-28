@@ -54,8 +54,7 @@ class MyPageReactor: Reactor {
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
-        switch action {
-            
+        switch action {  
         case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setLoading(true)),
@@ -96,8 +95,8 @@ class MyPageReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
+        
         switch mutation {
-            
         case .setProfile(let profile):
             newState.profile = profile
             
