@@ -121,6 +121,18 @@
         }
       }
     },
+    "EmptyMannerTag" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "받은 매너 평가가 없습니다."
+          }
+        }
+      }
+    },
     "Etc" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -386,6 +398,7 @@
       }
     },
     "UnknownNickname" : {
+      "comment" : "Settings",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
