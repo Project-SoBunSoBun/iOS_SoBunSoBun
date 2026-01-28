@@ -67,7 +67,7 @@ class AuthorInfoView: UIStackView {
     }()
     
     // MARK: - UI 설정
-    private func configureUI(
+    func configureUI(
         profileImageUrl: String?,
         nickname: String?,
         createdAt: String?,
