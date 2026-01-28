@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class UserInfo: UIView {
     override init(frame: CGRect = .zero) {
@@ -24,11 +25,12 @@ class UserInfo: UIView {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 16
+        sv.distribution = .fillEqually
         
         return sv
     }()
     
-    private let mannerStackView: UIStackView = {
+    private func makeStackView() -> UIStackView {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.spacing = 12
@@ -37,9 +39,9 @@ class UserInfo: UIView {
         sv.isLayoutMarginsRelativeArrangement = true
         
         return sv
-    }()
+    }
     
-    private let mannerLabel: UILabel = {
+    private func makeLabel() -> UILabel {
         let lb = UILabel()
         
         var attributes = body14.attributes(alignment: .center)
@@ -52,92 +54,56 @@ class UserInfo: UIView {
         lb.attributedText = attributeText
         
         return lb
-    }()
+    }
+    
+    private func makeDivider() -> UIView {
+        let v = UIView()
+        v.backgroundColor = .primary100
+        
+        return v
+    }
+    
+    private lazy var mannerStackView = makeStackView()
+    
+    private lazy var mannerLabel = makeLabel()
     
     private let mannerCountLabel = UILabel()
     
-    private let firstDivider: UIView = {
-        let v = UIView()
-        v.backgroundColor = .primary100
-        
-        return v
-    }()
+    private lazy var firstDivider = makeDivider()
     
-    private let participationStackView: UIStackView = {
-        let sv = UIStackView()
-        sv.axis = .vertical
-        sv.spacing = 12
-        sv.alignment = .center
-        sv.layoutMargins = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        sv.isLayoutMarginsRelativeArrangement = true
-        
-        return sv
-    }()
+    private lazy var participationStackView = makeStackView()
     
-    private let participationLabel: UILabel = {
-        let lb = UILabel()
-        
-        var attributes = body14.attributes(alignment: .center)
-        attributes[.foregroundColor] = UIColor.neutral900
-        
-        let attributeText = NSAttributedString(
-            string: String(localized: "ParticipationCount", table: "Settings"),
-            attributes: attributes
-        )
-        lb.attributedText = attributeText
-        
-        return lb
-    }()
+    private lazy var participationLabel = makeLabel()
     
     private let participationCountLabel = UILabel()
     
-    private let secondDivider: UIView = {
-        let v = UIView()
-        v.backgroundColor = .primary100
-        
-        return v
-    }()
+    private lazy var secondDivider = makeDivider()
     
-    private let hostStackView: UIStackView = {
-        let sv = UIStackView()
-        sv.axis = .vertical
-        sv.spacing = 12
-        sv.alignment = .center
-        sv.layoutMargins = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
-        sv.isLayoutMarginsRelativeArrangement = true
-        
-        return sv
-    }()
+    private lazy var hostStackView = makeStackView()
     
-    private let hostLabel: UILabel = {
-        let lb = UILabel()
-        
-        var attributes = body14.attributes(alignment: .center)
-        attributes[.foregroundColor] = UIColor.neutral900
-        
-        let attributeText = NSAttributedString(
-            string: String(localized: "HostCount", table: "Settings"),
-            attributes: attributes
-        )
-        lb.attributedText = attributeText
-        
-        return lb
-    }()
+    private lazy var hostLabel = makeLabel()
     
     private let hostCountLabel = UILabel()
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        let totalDividerWidth: CGFloat = 2  // divider 2개
-        let totalSpacing: CGFloat = 8 * 4   // 5개 view → 4개 spacing
-        let availableWidth = bounds.width - 16 - totalDividerWidth - totalSpacing
-        let eachStackWidth = availableWidth / 3
+        [firstDivider, secondDivider].forEach {
+            allStackView.addSubview($0)
+        }
         
-        [mannerStackView, participationStackView, hostStackView].forEach { stackView in
-            stackView.snp.updateConstraints { make in
-                make.width.equalTo(eachStackWidth)
-            }
+        firstDivider.snp.updateConstraints { make in
+            make.leading.equalToSuperview().offset(((bounds.width / 3) * 1) - 8)
+            make.width.equalTo(1)
+            make.height.equalTo(20)
+            make.centerY.equalTo(allStackView)
+        }
+        
+        secondDivider.snp.updateConstraints { make in
+            make.leading.equalToSuperview().offset(((bounds.width / 3) * 2) - 8)
+            make.width.equalTo(1)
+            make.height.equalTo(20)
+            make.centerY.equalTo(allStackView)
         }
         
         layer.shadowPath = UIBezierPath(
@@ -170,10 +136,6 @@ class UserInfo: UIView {
             allStackView.addArrangedSubview($0)
         }
         
-        [firstDivider, secondDivider].forEach {
-            allStackView.addSubview($0)
-        }
-        
         [mannerLabel, mannerCountLabel].forEach {
             mannerStackView.addArrangedSubview($0)
         }
@@ -184,32 +146,6 @@ class UserInfo: UIView {
         
         [hostLabel, hostCountLabel].forEach {
             hostStackView.addArrangedSubview($0)
-        }
-        
-        firstDivider.snp.makeConstraints { make in
-            make.width.equalTo(1)
-            make.height.equalTo(20)
-            make.centerY.equalTo(allStackView)
-            make.left.equalTo(mannerStackView.snp.right).offset(7)
-        }
-        
-        secondDivider.snp.makeConstraints { make in
-            make.width.equalTo(1)
-            make.height.equalTo(20)
-            make.centerY.equalTo(allStackView)
-            make.left.equalTo(participationStackView.snp.right).offset(7)
-        }
-        
-        [mannerLabel, participationLabel, hostLabel].forEach { label in
-            label.snp.makeConstraints { make in
-                make.height.equalTo(21)
-            }
-        }
-        
-        [mannerCountLabel, participationCountLabel, hostCountLabel].forEach { label in
-            label.snp.makeConstraints { make in
-                make.height.equalTo(22)
-            }
         }
     }
     
