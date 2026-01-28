@@ -47,12 +47,7 @@ class MypageView: UIViewController {
     }()
     
     // 전체 스크롤 뷰
-    private let scrollView: UIScrollView = {
-        let sv = UIScrollView()
-        sv.showsVerticalScrollIndicator = false
-        
-        return sv
-    }()
+    private let scrollView = UIScrollView()
     
     // 스크롤 뷰가 들어갈 View
     private let contentView = UIView()
@@ -79,14 +74,13 @@ class MypageView: UIViewController {
         config.background.backgroundColor = .neutral50
         config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
         
-        var attributes = AttributeContainer()
-        attributes.font = body14.font
-        attributes.foregroundColor = UIColor.neutral400.withAlphaComponent(1.0)
+        var attributes = body14.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.neutral400
         
-        config.attributedTitle = AttributedString(
-            String(localized: "EditProfile", table: "Settings"),
+        config.attributedTitle = AttributedString(NSAttributedString(
+            string: String(localized: "EditProfile", table: "Settings"),
             attributes: attributes
-        )
+        ))
         
         let bt = UIButton()
         bt.configuration = config
@@ -203,7 +197,7 @@ class MypageView: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        reactor.action.onNext(.viewDidLoad)
+        reactor.action.onNext(.viewWillAppear)
     }
     
     override func viewDidLayoutSubviews() {
@@ -337,8 +331,8 @@ extension MypageView {
     }
     
     private func bindAction(reactor: MyPageReactor) {
-        // viewDidLoad 시 동작
-        reactor.action.onNext(.viewDidLoad)
+        // viewWillAppear 시 동작
+        reactor.action.onNext(.viewWillAppear)
         
         // 앱 설정 아이콘 버튼 클릭
         settingButton.rx.tap

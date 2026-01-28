@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class Review: UIView {
+class Review: UIStackView {
     init(frame: CGRect = .zero, title: String) {
         super.init(frame: frame)
         
@@ -16,7 +16,7 @@ class Review: UIView {
         setEmojiAndColor(reviewNumber: title)
     }
     
-    required init?(coder: NSCoder) {
+    required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -40,16 +40,6 @@ class Review: UIView {
         return lb
     }()
     
-    // 스택뷰
-    private let stackView: UIStackView = {
-        let sv = UIStackView()
-        sv.axis = .horizontal
-        sv.spacing = 8
-        sv.alignment = .center
-        
-        return sv
-    }()
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -62,6 +52,12 @@ class Review: UIView {
     // MARK: - 레이아웃 설정
     private func configure() {
         self.backgroundColor = .backgroundWhite
+        
+        self.axis = .horizontal
+        self.spacing = 8
+        self.alignment = .center
+        self.layoutMargins = .init(top: 10, left: 10, bottom: 10, right: 10)
+        self.isLayoutMarginsRelativeArrangement = true
         
         // 모서리
         self.layer.cornerRadius = 12
@@ -78,14 +74,11 @@ class Review: UIView {
         self.clipsToBounds = false
         
         [emojiView, titleLabel].forEach {
-            stackView.addArrangedSubview($0)
+            self.addArrangedSubview($0)
         }
-        
-        self.addSubview(stackView)
-        
-        stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(10)
-        }
+                
+        titleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        emojiView.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     private func setEmojiAndColor(reviewNumber: String) {

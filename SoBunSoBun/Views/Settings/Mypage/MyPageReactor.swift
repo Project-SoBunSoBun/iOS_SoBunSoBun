@@ -29,7 +29,7 @@ class MyPageReactor: Reactor {
     }
     
     enum Action {
-        case viewDidLoad
+        case viewWillAppear
         case settingButtonTapped
         case editProfileButtonTapped
         case groupBuyingRecordTapped
@@ -56,7 +56,7 @@ class MyPageReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
             
-        case .viewDidLoad:
+        case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setLoading(true)),
                 NetworkManager.shared.getMeProfile()
@@ -100,7 +100,6 @@ class MyPageReactor: Reactor {
             
         case .setProfile(let profile):
             newState.profile = profile
-            newState.errorMessage = nil
             
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
