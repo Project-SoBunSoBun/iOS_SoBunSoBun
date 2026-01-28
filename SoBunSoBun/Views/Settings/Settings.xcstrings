@@ -49,6 +49,18 @@
         }
       }
     },
+    "CountFormat" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d번"
+          }
+        }
+      }
+    },
     "CurrentVersion" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -81,6 +93,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "회원 탈퇴"
+          }
+        }
+      }
+    },
+    "EditProfile" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필 수정"
           }
         }
       }
@@ -121,6 +145,18 @@
         }
       }
     },
+    "HostCount" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "방장 횟수"
+          }
+        }
+      }
+    },
     "LogOut" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -141,6 +177,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "계정 정보 관리"
+          }
+        }
+      }
+    },
+    "MannerScore" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 점수"
           }
         }
       }
@@ -241,6 +289,18 @@
         }
       }
     },
+    "ParticipationCount" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여 횟수"
+          }
+        }
+      }
+    },
     "PersonalSetting" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -321,6 +381,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "약관 및 정책"
+          }
+        }
+      }
+    },
+    "UnknownNickname" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알 수 없음"
           }
         }
       }

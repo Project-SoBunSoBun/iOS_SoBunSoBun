@@ -30,6 +30,10 @@ struct PostPageInfo: Decodable {
     let last: Bool
 }
 
+struct ErrorModel: Decodable {
+    let code, message: String
+}
+
 // MARK: - 로그인
 struct AuthKakaoTokenModel: Encodable {
     let accessToken: String
@@ -125,4 +129,24 @@ struct SettleUpSortModel: Decodable {
 
 struct SettleUpMyRequestModel: Encodable {
     let activeOnly, page, size: Int
+}
+
+// MARK: - 마이페이지
+struct MyProfileModel: Decodable {
+    let success: Bool
+    let data: MyProfileDataModel
+    let error: ErrorModel?
+}
+
+struct MyProfileDataModel: Decodable, Equatable {
+    let userId: Int
+    let nickname, profileImageUrl: String?
+    let mannerScore: Float16
+    let participationCount, hostCount: Int
+    let mannerTags: [MannerTagModel]?
+}
+
+struct MannerTagModel: Decodable, Equatable {
+    let tagId: Int
+    let count: Int
 }
