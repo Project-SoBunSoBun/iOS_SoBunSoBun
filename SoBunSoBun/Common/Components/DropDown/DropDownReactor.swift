@@ -9,11 +9,7 @@ import Foundation
 import ReactorKit
 
 class DropDownReactor: Reactor {
-    let initialState: State
-    
-    init(selectedCell: String) {
-        self.initialState = State(selectedCell: selectedCell)
-    }
+    let initialState: State = State()
     
     enum Action {
         case buttonTapped(Bool)
@@ -27,7 +23,7 @@ class DropDownReactor: Reactor {
     
     struct State {
         var isOpen: Bool = false
-        var selectedCell: String
+        var selectedCell: String? = nil
     }
     
     func mutate(action: Action) -> Observable<Mutation> {

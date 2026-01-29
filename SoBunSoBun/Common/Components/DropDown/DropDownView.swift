@@ -11,18 +11,26 @@ import RxSwift
 import RxCocoa
 
 class DropDownView: UIStackView {
+    enum SelectionMode { case plain, check }
+    private let selectionMode: SelectionMode
+    
+    var items: [String] = [] {
+        didSet {
+            setCells()
+            bind(reactor: reactor)
+        }
+    }
+    
     typealias Reactor = DropDownReactor
-    private let reactor: DropDownReactor
+    private let reactor: DropDownReactor = DropDownReactor()
     
     private let disposeBag = DisposeBag()
     
-    init(frame: CGRect = .zero, items: [String]) {
-        self.reactor = DropDownReactor(selectedCell: items[0])
-        
+    init(frame: CGRect = .zero, selectionMode: SelectionMode) {
+        self.selectionMode = selectionMode
         super.init(frame: frame)
         
-        configureUI(items: items)
-        bind(reactor: reactor)
+        configureUI()
     }
     
     required init(coder: NSCoder) {
@@ -31,7 +39,7 @@ class DropDownView: UIStackView {
     
     let didCellTap = PublishSubject<String>()
     
-    private func configureUI(items: [String]) {
+    private func configureUI() {
         self.backgroundColor = .backgroundWhite
         
         // 그림자
@@ -47,7 +55,8 @@ class DropDownView: UIStackView {
         // stackview 설정
         self.axis = .vertical
         self.spacing = 0
-        self.alignment = .leading
+        self.alignment = .fill
+        self.distribution = .fill
         
         self.backgroundColor = .backgroundWhite
         
@@ -55,23 +64,33 @@ class DropDownView: UIStackView {
             make.width.equalTo(128)
         }
         
-        // cell 추가
+        // 초기 설정
+        self.isHidden = true
+        self.alpha = 0
+    }
+    
+    // 셀 추가
+    private func setCells() {
+        // 기존 셀 제거
+        let views = arrangedSubviews
+        views.forEach {
+            removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        
         items.enumerated().forEach { index, item in
             let cell = DropDownCell(localizableKey: item)
-            if index == 0 {
+            
+            if selectionMode == .check && index == 0 {
                 cell.toggleSelect(isSelected: true)
             }
             
             self.addArrangedSubview(cell)
-            
-            cell.snp.makeConstraints { make in
-                make.horizontalEdges.equalToSuperview()
-            }
+//            
+//            cell.snp.makeConstraints { make in
+//                make.horizontalEdges.equalToSuperview()
+//            }
         }
-        
-        // 초기 설정
-        self.isHidden = true
-        self.alpha = 0
     }
     
     private func animateToggle(isOpen: Bool) {
@@ -121,6 +140,11 @@ extension DropDownView {
     }
     
     private func bindAction(reactor: Reactor) {
+        // 처음에만 실행되도록
+        if selectionMode == .check {
+            reactor.action.onNext(.selectCell(items[0]))
+        }
+        
         self.arrangedSubviews.forEach {
             guard let cell = $0 as? DropDownCell else { return }
             
@@ -147,29 +171,35 @@ extension DropDownView {
             .subscribe(onNext: { [weak self] localizableKey in
                 guard let self = self else { return }
                 
-                var selectedCell: DropDownCell?
-                
-                self.arrangedSubviews.forEach {
-                    guard let cell = $0 as? DropDownCell else { return }
-                    
-                    let isSelected = localizableKey == cell.localizableKey
-                    
-                    cell.toggleSelect(isSelected: isSelected)
-                    
-                    if isSelected {
-                        selectedCell = cell
-                    }
-                }
-                
-                // 선택된 셀 최상단으로 위치
-                if let selectedCell = selectedCell,
-                   selectedCell != self.arrangedSubviews.first {
-                    self.removeArrangedSubview(selectedCell)
-                    self.insertArrangedSubview(selectedCell, at: 0)
+                if selectionMode == .check {
+                    cellCheckAndMoveToTop(localizableKey: localizableKey)
                 }
                 
                 didCellTap.onNext(localizableKey)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func cellCheckAndMoveToTop(localizableKey: String) {
+        var selectedCell: DropDownCell?
+        
+        self.arrangedSubviews.forEach {
+            guard let cell = $0 as? DropDownCell else { return }
+            
+            let isSelected = localizableKey == cell.localizableKey
+            
+            cell.toggleSelect(isSelected: isSelected)
+            
+            if isSelected {
+                selectedCell = cell
+            }
+        }
+        
+        // 선택된 셀 최상단으로 위치
+        if let selectedCell = selectedCell,
+           selectedCell != self.arrangedSubviews.first {
+            self.removeArrangedSubview(selectedCell)
+            self.insertArrangedSubview(selectedCell, at: 0)
+        }
     }
 }

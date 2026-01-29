@@ -145,7 +145,12 @@ class SearchView: UIViewController {
         return tv
     }()
     
-    private let dropDownView = DropDownView(items: sortLocalizableKeys)
+    private let dropDownView: DropDownView = {
+        let ddv = DropDownView(selectionMode: .check)
+        ddv.items = sortLocalizableKeys
+        
+        return ddv
+    }()
     
     // 검색 후 결과 없음
     private let emptySearchResultLabel: UILabel = {
