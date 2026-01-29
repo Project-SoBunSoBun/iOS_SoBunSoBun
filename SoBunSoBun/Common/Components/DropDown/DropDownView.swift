@@ -14,6 +14,8 @@ class DropDownView: UIStackView {
     enum SelectionMode { case plain, check }
     private let selectionMode: SelectionMode
     
+    private let tableName: String
+    
     var items: [String] = [] {
         didSet {
             if !items.isEmpty {
@@ -28,8 +30,9 @@ class DropDownView: UIStackView {
     
     private let disposeBag = DisposeBag()
     
-    init(frame: CGRect = .zero, selectionMode: SelectionMode) {
+    init(frame: CGRect = .zero, selectionMode: SelectionMode, tableName: String) {
         self.selectionMode = selectionMode
+        self.tableName = tableName
         super.init(frame: frame)
         
         configureUI()
@@ -81,17 +84,13 @@ class DropDownView: UIStackView {
         }
         
         items.enumerated().forEach { index, item in
-            let cell = DropDownCell(localizableKey: item)
+            let cell = DropDownCell(localizableKey: item, tableName: tableName)
             
             if selectionMode == .check && index == 0 {
                 cell.toggleSelect(isSelected: true)
             }
             
             self.addArrangedSubview(cell)
-//            
-//            cell.snp.makeConstraints { make in
-//                make.horizontalEdges.equalToSuperview()
-//            }
         }
     }
     
