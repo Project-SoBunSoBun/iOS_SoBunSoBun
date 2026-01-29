@@ -16,8 +16,10 @@ class DropDownView: UIStackView {
     
     var items: [String] = [] {
         didSet {
-            setCells()
-            bind(reactor: reactor)
+            if !items.isEmpty {
+                setCells()
+                bind(reactor: reactor)
+            }
         }
     }
     
