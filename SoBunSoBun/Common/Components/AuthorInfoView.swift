@@ -26,18 +26,20 @@ class AuthorInfoView: UIStackView {
     
     private let disposeBag = DisposeBag()
     
+    static let PROFILE_IMAGE_SIZE: CGFloat = 48
+    
     private let UNKNOWN_STRING = String(localized: "Unknown", table: "Common")
     // MARK: - 디자인 요소
     private let profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
-        iv.layer.cornerRadius = 24
+        iv.layer.cornerRadius = PROFILE_IMAGE_SIZE / 2
         iv.layer.borderWidth = 1
         iv.layer.borderColor = UIColor.primary50.cgColor
         
         iv.snp.makeConstraints { make in
-            make.size.equalTo(48)
+            make.size.equalTo(PROFILE_IMAGE_SIZE)
         }
         
         return iv
