@@ -50,12 +50,12 @@ class ManagingAccountInfoView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        configure()
+        configureUI()
         bind(reactor: reactor)
     }
 
-    // MARK: - 레이아웃 구성
-    private func configure() {
+    // MARK: - 레이아웃 설정
+    private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
         let getUserEmail = KeyChain.shared.get(key: "EMAIL") ?? "이메일을 가져오지 못했습니다."
