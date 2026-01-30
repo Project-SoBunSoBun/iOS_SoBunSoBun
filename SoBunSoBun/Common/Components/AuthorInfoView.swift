@@ -19,6 +19,15 @@ class AuthorInfoView: UIStackView {
         }
     }
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configureUI()
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "Author"
@@ -29,6 +38,7 @@ class AuthorInfoView: UIStackView {
     static let PROFILE_IMAGE_SIZE: CGFloat = 48
     
     private let UNKNOWN_STRING = String(localized: "Unknown", table: "Common")
+    
     // MARK: - 디자인 요소
     private let profileImageView: UIImageView = {
         let iv = UIImageView()
@@ -69,32 +79,32 @@ class AuthorInfoView: UIStackView {
     }()
     
     // MARK: - UI 설정
-    func configureUI(
-        profileImageUrl: String?,
-        nickname: String?,
-        createdAt: String?,
-        verifyLocation: String?
-    ) {
+    private func configureUI() {
         self.axis = .horizontal
         self.spacing = 8
         self.alignment = .center
         
         addArrangedSubview(profileImageView)
-        
-        setProfileImage(profileImageUrl)
-        
         addArrangedSubview(verticalStackView)
         
         [nicknameLabel, bottomInfoLabel].forEach {
             verticalStackView.addArrangedSubview($0)
         }
         
-        setNickname(nickname)
-        setBottomInfo(createdAt, verifyLocation: verifyLocation)
-        
         profileImageView.setContentHuggingPriority(.required, for: .horizontal)
         nicknameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         bottomInfoLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+    }
+    
+    func configureUI(
+        profileImageUrl: String?,
+        nickname: String?,
+        createdAt: String?,
+        verifyLocation: String?
+    ) {
+        setProfileImage(profileImageUrl)
+        setNickname(nickname)
+        setBottomInfo(createdAt, verifyLocation: verifyLocation)
     }
     
     private func setProfileImage(_ profileImageUrl: String?) {
@@ -159,9 +169,7 @@ extension AuthorInfoView {
                 .tapGesture()
                 .when(.recognized)
         ])
-        .subscribe(onNext: { [weak self] _ in
-            guard let self = self else { return }
-            
+        .subscribe(onNext: { _ in
             // TODO: 프로필 이동 구현
         })
         .disposed(by: disposeBag)
