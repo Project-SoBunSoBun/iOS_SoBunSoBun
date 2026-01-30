@@ -181,6 +181,17 @@
         }
       }
     },
+    "LogOutMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그아웃 하시겠습니까?"
+          }
+        }
+      }
+    },
     "ManagingAccountInfo" : {
       "comment" : "Settings",
       "extractionState" : "manual",

@@ -1,5 +1,5 @@
 //
-//  MyLocationSettingView.swift
+//  AnnouncementView.swift
 //  SoBunSoBun
 //
 //  Created by 허성필 on 1/28/26.
@@ -12,17 +12,17 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class MyLocationSettingView: UIViewController {
+class AnnouncementView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "MyLocationSetting.View"
+        category: "Announcement.View"
     )
-    
+
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
-        tnb.title = String(localized: "MyLocationSetting", table: "Settings")
+        tnb.title = String(localized: "Announcement", table: "Settings")
         tnb.parentViewController = self
         
         return tnb
@@ -49,5 +49,4 @@ class MyLocationSettingView: UIViewController {
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
     }
-
 }

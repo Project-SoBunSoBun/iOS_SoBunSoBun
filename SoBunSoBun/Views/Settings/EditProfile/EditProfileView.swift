@@ -6,24 +6,47 @@
 //
 
 import UIKit
+import SnapKit
+import RxSwift
+import RxCocoa
+import ReactorKit
+import OSLog
 
 class EditProfileView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "EditProfile.View"
+    )
 
+    // MARK: - 디자인 요소
+    // 상단 네비게이션 바
+    private lazy var topNavigationBar: TopNavigationBar = {
+        let tnb = TopNavigationBar()
+        tnb.title = String(localized: "EditProfile", table: "Settings")
+        tnb.parentViewController = self
+        
+        return tnb
+    }()
+    
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        configureUI()
     }
+
+    // MARK: - 레이아웃 설정
+    private func configureUI() {
+        view.backgroundColor = .backgroundWhite
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        [topNavigationBar].forEach {
+            view.addSubview($0)
+        }
+        
+        // 탑 네비게이션 바
+        topNavigationBar.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+        }
     }
-    */
-
 }
