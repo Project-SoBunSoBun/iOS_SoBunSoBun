@@ -11,21 +11,31 @@ import RxSwift
 
 class AutoHeightTextView: BaseTextView {
     private let minHeight: CGFloat
+    private let maxHeight: CGFloat
     private let maxLength: Int
     private var heightConstraint: Constraint?
+    
+    var showCharactersCount: Bool = true {
+        didSet {
+            setShowCharactersCount(showCharactersCount)
+        }
+    }
     
     private let disposeBag = DisposeBag()
     
     init(
         minHeight: CGFloat,
-        maxLength: Int
+        maxHeight: CGFloat = 240,
+        maxLength: Int,
+        showBorder: Bool = true
     ) {
         self.minHeight = minHeight
+        self.maxHeight = maxHeight
         self.maxLength = maxLength
         
         super.init(frame: .zero, textContainer: nil, fontStyle: body16)
         
-        configureUI()
+        configureUI(showBorder: showBorder)
         bind()
     }
     
@@ -33,6 +43,7 @@ class AutoHeightTextView: BaseTextView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - 디자인 요소
     private let charactersContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
@@ -48,26 +59,27 @@ class AutoHeightTextView: BaseTextView {
         return lb
     }()
     
-    private func configureUI() {
-        self.delegate = self
-        
+    // MARK: - UI 설정
+    private func configureUI(showBorder: Bool) {
         self.backgroundColor = .clear
         
         // 모서리
         self.layer.cornerRadius = 16
         
         // 테두리
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.primary100.cgColor
-        self.frame = CGRectInset(self.frame, -self.layer.borderWidth, -self.layer.borderWidth)
+        if showBorder {
+            self.layer.borderWidth = 1
+            self.layer.borderColor = UIColor.primary100.cgColor
+            self.frame = CGRectInset(self.frame, -self.layer.borderWidth, -self.layer.borderWidth)
+        }
         
         // 여백 설정
         self.textContainerInset = .init(top: 16, left: 16, bottom: 16 + body12.font.lineHeight + 8 + 8, right: 16)
         self.textContainer.lineFragmentPadding = 0
         
         // 스크롤 설정
-        self.isScrollEnabled = false
-        self.showsVerticalScrollIndicator = false
+        self.isScrollEnabled = true
+        self.showsVerticalScrollIndicator = true
         self.showsHorizontalScrollIndicator = false
         
         // 초기 높이 설정
@@ -83,21 +95,6 @@ class AutoHeightTextView: BaseTextView {
         addSubview(charactersLabel)
     }
     
-    private func bind() {
-        self.rx.text.orEmpty
-            .subscribe(onNext: { [weak self] text in
-                guard let self = self else { return }
-                
-                var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
-                charactersAttributes[.foregroundColor] = UIColor.neutral600
-                charactersLabel.attributedText = NSAttributedString(string: "\(text.count)/\(maxLength)\(String(localized: "Characters", table: "Common"))", attributes: charactersAttributes)
-                
-                updateHeight()
-                applyLineHeight()
-            })
-            .disposed(by: disposeBag)
-    }
-    
     private func updateHeight() {
         // 현재 텍스트에 필요한 높이 계산
         let size = CGSize(width: bounds.width, height: .infinity)
@@ -106,6 +103,7 @@ class AutoHeightTextView: BaseTextView {
         var newHeight = estimatedSize.height
         
         newHeight = max(newHeight, minHeight)
+        newHeight = min(newHeight, maxHeight)
         
         heightConstraint?.update(offset: newHeight)
         
@@ -128,6 +126,29 @@ class AutoHeightTextView: BaseTextView {
         self.attributedText = attributedString
     }
     
+    private func setShowCharactersCount(_ show: Bool) {
+        charactersLabel.isHidden = !show
+        
+        self.textContainerInset = .init(
+            top: 16,
+            left: 16,
+            bottom: 16 + (show ?
+                          body12.font.lineHeight + 8 + 8 :
+                            0),
+            right: 16
+        )
+    }
+    
+    private func updateCharactersLabel(count: Int) {
+        var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
+        charactersAttributes[.foregroundColor] = UIColor.neutral600
+        
+        charactersLabel.attributedText = NSAttributedString(
+            string: "\(count)/\(maxLength)\(String(localized: "Characters", table: "Common"))",
+            attributes: charactersAttributes
+        )
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -145,7 +166,29 @@ class AutoHeightTextView: BaseTextView {
 }
 
 extension AutoHeightTextView: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        return textView.text.count + (text.count - range.length) <= maxLength
+    private func bind() {
+        self.rx.text.orEmpty
+            .map { [weak self] text in
+                guard let self = self else { return "" }
+                
+                return String(text.prefix(maxLength))
+            }
+            .distinctUntilChanged()
+            .skip(1)
+            .subscribe(onNext: { [weak self] text in
+                guard let self = self else { return }
+                
+                // 글자 수 제한
+                if self.text != text {
+                    self.text = text
+                }
+                
+                // 글자 수 표시
+                updateCharactersLabel(count: text.count)
+                
+                updateHeight()
+                applyLineHeight()
+            })
+            .disposed(by: disposeBag)
     }
 }
