@@ -244,8 +244,15 @@ class RegisterPostView: UIViewController {
     }()
     
     private let plannedItemsTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 120)
+        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 120, fontStyle: body16)
         ahtv.placeholder = String(localized: "InsertContent", table: "Common")
+        ahtv.textContainerInset = .init(top: 16, left: 16, bottom: 16, right: 16)
+        ahtv.showCharactersCount = true
+        ahtv.layer.cornerRadius = 16
+        ahtv.layer.borderWidth = 1
+        ahtv.layer.borderColor = UIColor.primary100.cgColor
+        ahtv.frame = CGRectInset(ahtv.frame, -ahtv.layer.borderWidth, -ahtv.layer.borderWidth)
+        ahtv.isScrollEnabled = false
         
         return ahtv
     }()
@@ -258,8 +265,15 @@ class RegisterPostView: UIViewController {
     }()
     
     private let notesTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 240, maxLength: 250)
+        let ahtv = AutoHeightTextView(minHeight: 240, maxLength: 250, fontStyle: body16)
         ahtv.placeholder = String(localized: "InsertContent", table: "Common")
+        ahtv.textContainerInset = .init(top: 16, left: 16, bottom: 16, right: 16)
+        ahtv.showCharactersCount = true
+        ahtv.layer.cornerRadius = 16
+        ahtv.layer.borderWidth = 1
+        ahtv.layer.borderColor = UIColor.primary100.cgColor
+        ahtv.frame = CGRectInset(ahtv.frame, -ahtv.layer.borderWidth, -ahtv.layer.borderWidth)
+        ahtv.isScrollEnabled = false
         
         return ahtv
     }()

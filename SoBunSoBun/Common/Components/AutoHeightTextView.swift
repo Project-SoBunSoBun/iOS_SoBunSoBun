@@ -15,7 +15,7 @@ class AutoHeightTextView: BaseTextView {
     private let maxLength: Int
     private var heightConstraint: Constraint?
     
-    var showCharactersCount: Bool = true {
+    var showCharactersCount: Bool = false {
         didSet {
             setShowCharactersCount(showCharactersCount)
         }
@@ -27,15 +27,15 @@ class AutoHeightTextView: BaseTextView {
         minHeight: CGFloat,
         maxHeight: CGFloat = 240,
         maxLength: Int,
-        showBorder: Bool = true
+        fontStyle: FontStyle
     ) {
         self.minHeight = minHeight
         self.maxHeight = maxHeight
         self.maxLength = maxLength
         
-        super.init(frame: .zero, textContainer: nil, fontStyle: body16)
+        super.init(frame: .zero, textContainer: nil, fontStyle: fontStyle)
         
-        configureUI(showBorder: showBorder)
+        configureUI()
         bind()
     }
     
@@ -44,54 +44,31 @@ class AutoHeightTextView: BaseTextView {
     }
     
     // MARK: - 디자인 요소
-    private let charactersContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.isUserInteractionEnabled = false
-        
-        return view
-    }()
-    
     private let charactersLabel: UILabel = {
         let lb = UILabel()
         lb.isUserInteractionEnabled = false
+        lb.isHidden = true
         
         return lb
     }()
     
     // MARK: - UI 설정
-    private func configureUI(showBorder: Bool) {
+    private func configureUI() {
         self.backgroundColor = .clear
         
-        // 모서리
-        self.layer.cornerRadius = 16
-        
-        // 테두리
-        if showBorder {
-            self.layer.borderWidth = 1
-            self.layer.borderColor = UIColor.primary100.cgColor
-            self.frame = CGRectInset(self.frame, -self.layer.borderWidth, -self.layer.borderWidth)
-        }
-        
         // 여백 설정
-        self.textContainerInset = .init(top: 16, left: 16, bottom: 16 + body12.font.lineHeight + 8 + 8, right: 16)
         self.textContainer.lineFragmentPadding = 0
-        
-        // 스크롤 설정
-        self.isScrollEnabled = true
-        self.showsVerticalScrollIndicator = true
-        self.showsHorizontalScrollIndicator = false
         
         // 초기 높이 설정
         self.snp.makeConstraints { make in
             heightConstraint = make.height.greaterThanOrEqualTo(minHeight).constraint
         }
         
-        // 글자 수
+        // 초기 글자 수
         var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
         charactersAttributes[.foregroundColor] = UIColor.neutral600
-        
         charactersLabel.attributedText = NSAttributedString(string: "\(self.text.count)/\(maxLength)\(String(localized: "Characters", table: "Common"))", attributes: charactersAttributes)
+        
         addSubview(charactersLabel)
     }
     
@@ -121,7 +98,7 @@ class AutoHeightTextView: BaseTextView {
         let attributedString = NSMutableAttributedString(string: text)
         let range = NSRange(location: 0, length: attributedString.length)
         
-        attributedString.addAttributes(body16.attributes(), range: range)
+        attributedString.addAttributes(fontStyle.attributes(), range: range)
         
         self.attributedText = attributedString
     }
@@ -129,13 +106,13 @@ class AutoHeightTextView: BaseTextView {
     private func setShowCharactersCount(_ show: Bool) {
         charactersLabel.isHidden = !show
         
+        let charactersLabelHeight: CGFloat = body12.font.lineHeight + 8 + 8
+        
         self.textContainerInset = .init(
-            top: 16,
-            left: 16,
-            bottom: 16 + (show ?
-                          body12.font.lineHeight + 8 + 8 :
-                            0),
-            right: 16
+            top: self.textContainerInset.top,
+            left: self.textContainerInset.left,
+            bottom: self.textContainerInset.bottom + (show ? charactersLabelHeight : -charactersLabelHeight),
+            right: self.textContainerInset.right
         )
     }
     
