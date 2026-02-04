@@ -23,6 +23,7 @@ class MypageView: UIViewController {
     private let reactor = MyPageReactor()
     
     private let disposeBag = DisposeBag()
+    private var sendImgaeUrl: URL?
     
     // MARK: - 디자인 요소
     // 설정 버튼
@@ -411,7 +412,7 @@ extension MypageView {
                 
                 switch viewType {
                 case .editProfile:
-                    view = EditProfileView()
+                    view = EditProfileView(profileImageUrl: sendImgaeUrl)
                     
                 case .groupBuyingRecord:
                     view = MyGroupBuyingRecordView()
@@ -455,6 +456,7 @@ extension MypageView {
     private func setProfileImage(_ profileImageUrl: String?) {
         if let profileImageUrl = profileImageUrl {
             let imageUrl = URL(string: API_URL + profileImageUrl)
+            self.sendImgaeUrl = imageUrl
             
             profileImageView.kf.setImage(
                 with: imageUrl,
