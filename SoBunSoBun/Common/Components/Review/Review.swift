@@ -20,10 +20,6 @@ class Review: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override var intrinsicContentSize: CGSize {
-        CGSize(width: UIView.noIntrinsicMetric, height: 44)
-    }
-    
     // MARK: - 디자인 요소
     // 이모지 뷰
     private let emojiView: UIImageView = {
@@ -58,6 +54,7 @@ class Review: UIStackView {
         self.alignment = .center
         self.layoutMargins = .init(top: 10, left: 10, bottom: 10, right: 10)
         self.isLayoutMarginsRelativeArrangement = true
+        self.translatesAutoresizingMaskIntoConstraints = false
         
         // 모서리
         self.layer.cornerRadius = 12
@@ -80,8 +77,6 @@ class Review: UIStackView {
         emojiView.snp.makeConstraints { make in
             make.size.equalTo(16)
         }
-        
-        translatesAutoresizingMaskIntoConstraints = false
                 
         titleLabel.setContentHuggingPriority(.required, for: .horizontal)
         emojiView.setContentHuggingPriority(.required, for: .horizontal)
