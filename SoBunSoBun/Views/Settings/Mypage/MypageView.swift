@@ -29,7 +29,6 @@ class MypageView: UIViewController {
     // 설정 버튼
     private let settingButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
         config.image = .settings
         config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         
