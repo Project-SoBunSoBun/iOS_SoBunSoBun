@@ -73,7 +73,7 @@ class EditProfileView: UIViewController {
         return image
     }()
     
-    // 닉네임 중복 확인
+    // 닉네임 컴포넌트
     private let nickname = Nickname()
     
     // MARK: - 생명주기
@@ -107,18 +107,21 @@ class EditProfileView: UIViewController {
             make.size.equalTo(100)
         }
         
+        // 카메라 이미지 뷰
         cameraImage.snp.makeConstraints { make in
             make.trailing.equalTo(profileImageView.snp.trailing)
             make.bottom.equalTo(profileImageView.snp.bottom)
             make.size.equalTo(48)
         }
         
+        // 닉네임 컴포넌트
         nickname.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(profileImageView.snp.bottom).offset(24)
         }
     }
     
+    // 초기 프로필 이미지 설정
     private func setProfileImage(_ profileImageUrl: URL?) {
         if let imageUrl = profileImageUrl {
             profileImageView.kf.setImage(
@@ -142,6 +145,7 @@ class EditProfileView: UIViewController {
         }
     }
     
+    // 이미지 피커 설정
     private func setImagePicker() {
         profileImagePicker = ProfileImagePicker(presentingViewController: self)
     }
@@ -198,7 +202,7 @@ extension EditProfileView {
             .map { _ in Reactor.Action.isNicknameEmpty }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-            
+        
         // 완료 버튼 클릭
         completeButton.rx.tap
             .map { Reactor.Action.completeButtonTapped }
@@ -247,6 +251,7 @@ extension EditProfileView {
             .disposed(by: disposeBag)
     }
     
+    // 완료 버튼 활성화 / 비활성화
     private func updateCompleteButton(_ isEnabled: Bool) {
         var config = UIButton.Configuration.plain()
         config.contentInsets = .init(top: 13.5, leading: 12, bottom: 13.5, trailing: 12)
@@ -255,7 +260,7 @@ extension EditProfileView {
         
         var attributes = body14.attributes(alignment: .center)
         attributes[.foregroundColor] = isEnabled ? UIColor.neutral900 : UIColor.neutral400
-                config.attributedTitle = AttributedString(NSAttributedString(string: text, attributes: attributes))
+        config.attributedTitle = AttributedString(NSAttributedString(string: text, attributes: attributes))
         
         completeButton.configuration = config
     }

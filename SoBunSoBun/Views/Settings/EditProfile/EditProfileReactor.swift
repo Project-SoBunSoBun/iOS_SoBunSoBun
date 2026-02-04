@@ -48,7 +48,6 @@ class EditProfileReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-            
         case .cameraImageTapped:
             return Observable.just(.showImagePicker)
             
@@ -81,7 +80,6 @@ class EditProfileReactor: Reactor {
         var newState = state
         
         switch mutation{
-            
         case .showImagePicker:
             newState.shouldShowImagePicker = ()
             
@@ -100,6 +98,7 @@ class EditProfileReactor: Reactor {
         case .setProfileSaved:
             newState.profileSaved = ()
         }
+        
         return newState
     }
     
