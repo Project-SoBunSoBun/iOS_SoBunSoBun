@@ -12,6 +12,7 @@ import RxSwift
 import RxCocoa
 import Photos
 import OSLog
+import RxGesture
 
 class NicknameSettingView: UIViewController {
     private let logger = Logger(
@@ -21,6 +22,8 @@ class NicknameSettingView: UIViewController {
     
     typealias Reactor = NicknameSettingReactor
     private let reactor = NicknameSettingReactor()
+    
+    private var profileImagePicker: ProfileImagePicker?
     
     private let disposeBag = DisposeBag()
     
@@ -61,6 +64,7 @@ class NicknameSettingView: UIViewController {
         super.viewDidLoad()
         
         configureUI()
+        setImagePicker()
         bind(reactor: reactor)
     }
     
@@ -110,97 +114,8 @@ class NicknameSettingView: UIViewController {
             .disposed(by: disposeBag)
     }
     
-    // 사진 권한을 확인하는 함수
-    private func checkPhotoLibraryPermission() {
-        let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
-        
-        switch status {
-        case .authorized, .limited:
-            presentImagePicker()
-        case .notDetermined:
-            PHPhotoLibrary.requestAuthorization(for: .readWrite) { [weak self] newStatus in
-                DispatchQueue.main.async {
-                    if newStatus == .authorized || newStatus == .limited {
-                        self?.presentImagePicker()
-                    }
-                }
-            }
-        case .denied, .restricted:
-            showPermissionAlert()
-        default:
-            break
-        }
-    }
-    
-    // 사용자가 사진을 선택할 수 있도록 하는 함수
-    private func presentImagePicker() {
-        let picker = UIImagePickerController()
-        picker.sourceType = .photoLibrary // 이미지를 가져올 위치
-        picker.allowsEditing = true // 사용자가 사진을 선택한 후 편집 화면을 표시할지 여부
-        picker.delegate = self
-        present(picker, animated: true) // UIImagePickerController를 모달 방식으로 화면에 표시
-    }
-    
-    // 권한 요청이 없을 때 실행 될 설정으로 이동시키는 알러트
-    private func showPermissionAlert() {
-        let alertView = CustomAlertView(
-            title: String(localized: "GalleryPermissionMessage", table: "SignIn")
-        )
-        
-        alertView.onPrimaryTapped = {
-            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                UIApplication.shared.open(settingsURL)
-            }
-        }
-        
-        alertView.onCancelTapped = {
-            self.logger.debug("취소됨")
-        }
-        alertView.show(on: self)
-    }
-}
-
-extension NicknameSettingView: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true)
-        
-        var selectedImage: UIImage?
-        
-        if let editedImage = info[.editedImage] as? UIImage {
-            selectedImage = editedImage
-        } else if let originalImage = info[.originalImage] as? UIImage {
-            selectedImage = originalImage
-        }
-        
-        guard let image = selectedImage else { return }
-        
-        // 이미지 크기 체크 (5MB 제한)
-        if let imageData = image.jpegData(compressionQuality: 0.8) {
-            let imageSizeInMB = Double(imageData.count) / (1024.0 * 1024.0)
-            self.logger.debug("이미지 사이즈: \(imageSizeInMB)")
-            
-            if imageSizeInMB > 5.0 {
-                showImageSizeAlert()
-                return
-            }
-        }
-        
-        profileImage.image = image
-        reactor.action.onNext(.profileImageSelected(image))
-    }
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true)
-    }
-    
-    private func showImageSizeAlert() {
-        let alert = UIAlertController(
-            title: String(localized: "ImageSizeExceeded", table: "Common"),
-            message: String(localized: "SelectOnlyFilesUnder5MB", table: "Common"),
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: String(localized: "Confirm", table: "Common"), style: .default))
-        present(alert, animated: true)
+    private func setImagePicker() {
+        profileImagePicker = ProfileImagePicker(presentingViewController: self)
     }
 }
 
@@ -219,7 +134,7 @@ extension NicknameSettingView {
             .disposed(by: disposeBag)
         
         // 닉네임 텍스트 변경
-        nickname.nicknameText
+        nickname.textField.rx.text.orEmpty
             .map { Reactor.Action.nicknameChanged($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -235,6 +150,28 @@ extension NicknameSettingView {
             .when(.recognized)
             .map { _ in Reactor.Action.cameraImageTapped }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 이미지 선택 완료
+        profileImagePicker?.imageSelected
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] image in
+                guard let self = self else { return }
+                
+                self.profileImage.image = image
+                self.logger.debug("이미지 선택 완료")
+                reactor.action.onNext(.profileImageSelected(image))
+            })
+            .disposed(by: disposeBag)
+        
+        // 이미지 선택 취소
+        profileImagePicker?.cancelled
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.logger.debug("이미지 선택 취소됨")
+            })
             .disposed(by: disposeBag)
     }
     
@@ -295,7 +232,7 @@ extension NicknameSettingView {
             .subscribe(onNext: {[weak self] _ in
                 guard let self = self else { return }
                 
-                self.checkPhotoLibraryPermission()
+                self.profileImagePicker?.selectImage()
             })
             .disposed(by: disposeBag)
     }
