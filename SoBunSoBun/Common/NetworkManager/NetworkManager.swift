@@ -173,6 +173,26 @@ final class NetworkManager {
         .filterSuccessfulStatusCodes()
         .map(MyProfileModel.self)
     }
+    
+    // 프로필 이미지 변경
+    func patchProfileImage(profileImage: UIImage) -> Single<Void> {
+        let imageData = profileImage.jpegData(compressionQuality: 0.7) ?? Data()
+            
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.patchProfileImage(profileImage: imageData))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
+    
+    // 닉네임 변경
+    func patchNickname(nickname:String) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(AuthorizedAPI.patchNickname(nickname: nickname))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
 }
 
 /// Moya 로그 플러그인
