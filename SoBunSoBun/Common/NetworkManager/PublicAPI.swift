@@ -9,6 +9,7 @@ import Foundation
 import Alamofire
 import Moya
 
+// TODO: 파일 분할 필요
 enum PublicAPI {
     // 로그인
     case authLoginKakao(accessToken: String)

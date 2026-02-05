@@ -7,6 +7,8 @@
 
 import Foundation
 
+// TODO: 파일 분할 필요
+
 // MARK: - 공통
 struct PostListResponseModel: Decodable {
     let posts: [PostModel]

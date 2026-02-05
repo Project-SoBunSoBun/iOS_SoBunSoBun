@@ -8,6 +8,7 @@
 import Foundation
 import Moya
 
+// TODO: 파일 분할 필요
 enum AuthorizedAPI {
     // 로그인
     case saveProfile(nickname: String, profileImage: Data?)
