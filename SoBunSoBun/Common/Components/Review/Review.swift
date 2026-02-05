@@ -26,10 +26,6 @@ class Review: UIStackView {
         let v = UIImageView()
         v.contentMode = .scaleAspectFit
         
-        v.snp.makeConstraints { make in
-            make.size.equalTo(16)
-        }
-        
         return v
     }()
     
@@ -58,6 +54,7 @@ class Review: UIStackView {
         self.alignment = .center
         self.layoutMargins = .init(top: 10, left: 10, bottom: 10, right: 10)
         self.isLayoutMarginsRelativeArrangement = true
+        self.translatesAutoresizingMaskIntoConstraints = false
         
         // 모서리
         self.layer.cornerRadius = 12
@@ -75,6 +72,10 @@ class Review: UIStackView {
         
         [emojiView, titleLabel].forEach {
             self.addArrangedSubview($0)
+        }
+        
+        emojiView.snp.makeConstraints { make in
+            make.size.equalTo(16)
         }
                 
         titleLabel.setContentHuggingPriority(.required, for: .horizontal)

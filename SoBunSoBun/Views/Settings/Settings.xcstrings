@@ -37,6 +37,18 @@
         }
       }
     },
+    "Complete" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "완료"
+          }
+        }
+      }
+    },
     "Contact" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -182,6 +194,7 @@
       }
     },
     "LogOutMessage" : {
+      "comment" : "Settings",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
