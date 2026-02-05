@@ -57,7 +57,7 @@ class CommentTableViewCell: UITableViewCell {
         }
     }
 
-    func configureUI(model: CommentModel, commentedUsers: [String: CommentModel]) {
+    func configureUI(model: CommentModel, commentedUsers: [String: String]) {
         view.configureUI(model: model, commentedUsers: commentedUsers)
     }
 }
