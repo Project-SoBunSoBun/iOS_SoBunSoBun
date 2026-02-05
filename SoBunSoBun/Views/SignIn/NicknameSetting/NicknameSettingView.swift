@@ -232,7 +232,7 @@ extension NicknameSettingView {
             .subscribe(onNext: {[weak self] _ in
                 guard let self = self else { return }
                 
-                self.profileImagePicker?.selectImage()
+                self.profileImagePicker?.checkPhotoLibraryPermission()
             })
             .disposed(by: disposeBag)
     }

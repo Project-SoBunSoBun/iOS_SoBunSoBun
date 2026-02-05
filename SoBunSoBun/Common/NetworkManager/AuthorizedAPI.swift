@@ -177,7 +177,7 @@ extension AuthorizedAPI: TargetType {
         case .getMeProfile:
             return .requestPlain
             
-        case .patchProfileImage(profileImage: let profileImage):
+        case .patchProfileImage(let profileImage):
             let imageData = profileImage
             var formData: [MultipartFormData] = []
             

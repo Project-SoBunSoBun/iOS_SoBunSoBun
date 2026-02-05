@@ -20,28 +20,16 @@ class ProfileImagePicker: NSObject {
     
     weak var presentingViewController: UIViewController?
     
-    private let imageSelectedSubject = PublishSubject<UIImage>()
-    private let cancelledSubject = PublishSubject<Void>()
-    
-    var imageSelected: Observable<UIImage> {
-        return imageSelectedSubject.asObserver()
-    }
-    
-    var cancelled: Observable<Void> {
-        return cancelledSubject.asObserver()
-    }
+    let imageSelected = PublishSubject<UIImage>()
+    let cancelled = PublishSubject<Void>()
     
     init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
         super.init()
     }
     
-    func selectImage() {
-        checkPhotoLibraryPermission()
-    }
-    
     // 사진 권한을 확인하는 함수
-    private func checkPhotoLibraryPermission() {
+    func checkPhotoLibraryPermission() {
         let status = PHPhotoLibrary.authorizationStatus(for: .readWrite)
         
         switch status {
@@ -112,6 +100,7 @@ class ProfileImagePicker: NSObject {
             message: String(localized: "SelectOnlyFilesUnder5MB", table: "Common"),
             preferredStyle: .alert
         )
+        
         alert.addAction(UIAlertAction(
             title: String(localized: "Confirm", table: "Common"),
             style: .default

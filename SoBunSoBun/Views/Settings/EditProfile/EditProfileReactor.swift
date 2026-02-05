@@ -124,7 +124,9 @@ class EditProfileReactor: Reactor {
     
     // 프로필 이미지만 변경
     private func saveProfileImage() -> Observable<Mutation> {
-        guard let profileImage = currentState.profileImage else { return Observable.empty() }
+        guard let profileImage = currentState.profileImage else {
+            return Observable.empty()
+        }
         
         return NetworkManager.shared.patchProfileImage(profileImage: profileImage)
             .asObservable()
@@ -132,8 +134,7 @@ class EditProfileReactor: Reactor {
                 return Observable.just(.setProfileSaved)
             }
             .catch { error in
-                let errorMessage = self.handleError(error)
-                return Observable.just(.setError(errorMessage))
+                return Observable.just(.setError(error.localizedDescription))
             }
     }
     
@@ -147,8 +148,7 @@ class EditProfileReactor: Reactor {
                 return Observable.just(.setProfileSaved)
             }
             .catch { error in
-                let errorMessage = self.handleError(error)
-                return Observable.just(.setError(errorMessage))
+                return Observable.just(.setError(error.localizedDescription))
             }
     }
     
@@ -163,26 +163,8 @@ class EditProfileReactor: Reactor {
                 return Observable.just(.setProfileSaved)
             }
             .catch { error in
-                let errorMessage = self.handleError(error)
-                return Observable.just(.setError(errorMessage))
+                return Observable.just(.setError(error.localizedDescription))
             }
     }
     
-    private func handleError(_ error: Error) -> String {
-        if let moyaError = error as? MoyaError {
-            switch moyaError {
-            case .statusCode(let response):
-                if (400...499).contains(response.statusCode) {
-                    self.logger.fault("에러 코드 출력: \(response.statusCode)")
-                    return "잘못된 요청입니다. 입력 정보를 확인해주세요."
-                } else if response.statusCode >= 500 {
-                    self.logger.critical("에러 코드 출력: \(response.statusCode)")
-                    return "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-                }
-            default:
-                break
-            }
-        }
-        return "프로필 저장에 실패했습니다. 다시 시도해주세요."
-    }
 }

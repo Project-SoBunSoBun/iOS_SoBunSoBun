@@ -68,7 +68,6 @@ class EditProfileView: UIViewController {
         let image = UIImageView()
         image.image = .camera
         image.contentMode = .scaleAspectFit
-        image.isUserInteractionEnabled = true
         
         return image
     }()
@@ -234,7 +233,7 @@ extension EditProfileView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                self.profileImagePicker?.selectImage()
+                self.profileImagePicker?.checkPhotoLibraryPermission()
             })
             .disposed(by: disposeBag)
         
