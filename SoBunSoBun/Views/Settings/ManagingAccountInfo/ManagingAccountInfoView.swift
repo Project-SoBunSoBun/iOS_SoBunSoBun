@@ -119,7 +119,7 @@ extension ManagingAccountInfoView {
                     self.showLogOutAlert()
                     
                 case .deleteAccount:
-                    let view = AppSettingView()
+                    let view = WithdrawView()
                     
                     self.navigationController?.pushViewController(view, animated: true)
                 }
