@@ -205,6 +205,18 @@
         }
       }
     },
+    "LogOutSubMessage" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그아웃 이후에는 모임 관련 알림을 확인할 수 없습니다."
+          }
+        }
+      }
+    },
     "ManagingAccountInfo" : {
       "comment" : "Settings",
       "extractionState" : "manual",
