@@ -130,11 +130,12 @@ extension ManagingAccountInfoView {
     private func showLogOutAlert() {
         let alert = CustomAlertView(
             title: String(localized: "LogOutMessage", table: "Settings"),
+            subTitle: String(localized: "LogOutSubMessage", table: "Settings"),
             primaryTitleKey: String(localized: "LogOut", table: "Settings"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.isSubtitleEnabled = false
+        alert.isSubtitleEnabled = true
         
         alert.onPrimaryTapped = {
             AuthManager.shared.logout()
