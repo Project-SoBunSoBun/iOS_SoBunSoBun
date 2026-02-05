@@ -138,18 +138,18 @@ extension ProfileImagePicker: UIImagePickerControllerDelegate, UINavigationContr
             }
         }
         
-        imageSelectedSubject.onNext(image)
+        imageSelected.onNext(image)
     }
     
     // 취소 버튼 눌렀을 때
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true)
         
-        cancelledSubject.onNext(())
+        cancelled.onNext(())
     }
     
     // 사용자가 스와이프로 이미지 선택을 취소했을 때
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-        cancelledSubject.onNext(())
+        cancelled.onNext(())
     }
 }
