@@ -24,7 +24,7 @@ struct PostModel: Decodable {
 
 struct PostOwnerModel: Decodable {
     let id: Int
-    let nickname, profileImageUrl: String?
+    let nickname, profileImageUrl, address: String?
 }
 
 struct PostPageInfo: Decodable {
