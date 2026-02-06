@@ -18,7 +18,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최소인원은 최대인원보다 많을 수 없습니다"
+            "value" : "최소인원은 최대인원보다 많을 수 없습니다."
           }
         }
       }
@@ -168,6 +168,17 @@
         }
       }
     },
+    "InsertComment" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "댓글을 입력하세요."
+          }
+        }
+      }
+    },
     "InsertLocation" : {
       "comment" : "Home",
       "extractionState" : "manual",
@@ -175,7 +186,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "장소을 입력해주세요"
+            "value" : "장소를 입력해주세요."
           }
         }
       }
@@ -187,7 +198,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "제목을 입력해주세요"
+            "value" : "제목을 입력해주세요."
           }
         }
       }
@@ -504,7 +515,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "검색어를 입력하세요"
+            "value" : "검색어를 입력하세요."
           }
         }
       }
