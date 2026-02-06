@@ -200,10 +200,6 @@ class CommentView: UIView {
             isEdited: model.edited
         )
     }
-    
-    func toggleEditMode(_ isEdit: Bool) {
-        self.backgroundColor = isEdit ? .primary50 : .clear
-    }
 }
 
 extension CommentView {

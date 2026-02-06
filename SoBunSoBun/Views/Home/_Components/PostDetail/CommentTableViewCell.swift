@@ -20,7 +20,7 @@ class CommentTableViewCell: UITableViewCell {
     let editTap = PublishRelay<Void>()
     let deleteTap = PublishRelay<Void>()
     
-    private var disposeBag = DisposeBag()
+    var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -36,6 +36,11 @@ class CommentTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        disposeBag = DisposeBag()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -59,6 +64,10 @@ class CommentTableViewCell: UITableViewCell {
 
     func configureUI(model: CommentModel, commentedUsers: [String: String]) {
         view.configureUI(model: model, commentedUsers: commentedUsers)
+    }
+    
+    func toggleEditMode(_ isEdit: Bool) {
+        self.backgroundColor = isEdit ? .primary50 : .clear
     }
 }
 
