@@ -14,6 +14,7 @@ class WithdrawView: UIViewController {
     // 상단 네비게이션 바
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
+        tnb.title = String(localized: "Withdraw", table: "Settings")
         tnb.parentViewController = self
         
         return tnb
