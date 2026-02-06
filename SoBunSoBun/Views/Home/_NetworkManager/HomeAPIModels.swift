@@ -16,7 +16,7 @@ struct CommentCountModel: Decodable {
     let postId, commentCount: Int
 }
 
-struct CommentModel: Decodable {
+struct CommentModel: Decodable, Equatable {
     let id, postId, userId, parentCommentId: Int
     let userNickname, userProfileImageUrl, userAddress, content: String?
     let createdAt, updatedAt: String
