@@ -445,6 +445,18 @@
         }
       }
     },
+    "Withdraw" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴하기"
+          }
+        }
+      }
+    },
     "WithdrawMessage1" : {
       "comment" : "Settings",
       "extractionState" : "manual",
