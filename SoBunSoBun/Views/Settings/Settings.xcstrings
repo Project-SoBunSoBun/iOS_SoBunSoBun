@@ -444,6 +444,66 @@
           }
         }
       }
+    },
+    "WithdrawMessage1" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴 시 참여했던 모임 정보, 채팅 내역 등 모든 활동 기록이 즉시 삭제되며 다시 복구할 수  없습니다."
+          }
+        }
+      }
+    },
+    "WithdrawMessage2" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 처리 후 서비스 재이용을 원하실 경우  신규 회원가입이 필요하며, 기존 데이터는 연결되지 않습니다."
+          }
+        }
+      }
+    },
+    "WithdrawMessage3" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "현재 참여 중인 모임이나 미완료된 정산 내역이 있는지 확인해 주세요. 탈퇴 후에는 관련 정보 확인 및 분쟁 해결이 어려울 수 있습니다."
+          }
+        }
+      }
+    },
+    "WithdrawReason" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 사유"
+          }
+        }
+      }
+    },
+    "WithdrawTitle" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴 전, 아래 내용을 꼭 확인해 주세요."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
