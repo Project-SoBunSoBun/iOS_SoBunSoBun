@@ -92,6 +92,16 @@
         }
       }
     },
+    "DeleteCommentTitle" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 댓글을\r정말로 신고하시겠습니까?"
+          }
+        }
+      }
+    },
     "DeleteDoneTitle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -103,8 +113,7 @@
         }
       }
     },
-    "DeletePostConfirmTitle" : {
-      "extractionState" : "manual",
+    "DeletePostTitle" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
