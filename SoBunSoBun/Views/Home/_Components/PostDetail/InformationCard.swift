@@ -77,7 +77,7 @@ class InformationCard: UIView {
     private lazy var deadlineDescLabel: UILabel = UILabel()
     
     // MARK: - UI 설정
-    private func configureUI(
+    func configureUI(
         minMembers: Int?,
         maxMembers: Int?,
         locationName: String?,
