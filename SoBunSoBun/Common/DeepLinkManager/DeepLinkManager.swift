@@ -18,7 +18,7 @@ class DeepLinkManager {
             
             let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
             let path = url.path
-            let queryItems = components?.queryItems
+            // let queryItems = components?.queryItems
             
             // 게시글
             if path.hasPrefix("/post/") {
