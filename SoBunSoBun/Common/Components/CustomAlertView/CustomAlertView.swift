@@ -20,10 +20,18 @@ class CustomAlertView: UIView {
     
     var disposeBag = DisposeBag()
     
+    // SubTitle을 사용할 때는 alert.isSubTitleEnabled = true
     var isSubtitleEnabled: Bool = false {
         didSet {
             subtitleLabel.isHidden = !isSubtitleEnabled
             setTitleSpacing(isSubtitleEnabled: isSubtitleEnabled)
+        }
+    }
+    
+    // 취소 버튼을 사용하지 않을 때는 alert.isCancelEnabled = false
+    var isCancelEnabled: Bool = true {
+        didSet {
+            updateCancelButtonVisibility()
         }
     }
     
@@ -89,9 +97,6 @@ class CustomAlertView: UIView {
     
     private let primaryButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
-        attributes[.foregroundColor] = UIColor.primary400
-        
         config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
         
         let button = UIButton(configuration: config)
@@ -101,9 +106,6 @@ class CustomAlertView: UIView {
     
     private let cancelButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
-        attributes[.foregroundColor] = UIColor.neutral700
-        
         config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
         
         let button = UIButton(configuration: config)
@@ -210,6 +212,11 @@ class CustomAlertView: UIView {
     private func setTitleSpacing(isSubtitleEnabled: Bool) {
         containerView.setCustomSpacing(isSubtitleEnabled ? 10 : 16, after: titleLabel)
         containerView.setCustomSpacing(isSubtitleEnabled ? 16 : 0, after: subtitleLabel)
+    }
+    
+    private func updateCancelButtonVisibility() {
+        secondDivider.isHidden = !isCancelEnabled
+        cancelButton.isHidden = !isCancelEnabled
     }
     
     func show(on viewController: UIViewController) {
