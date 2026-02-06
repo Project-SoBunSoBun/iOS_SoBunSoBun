@@ -55,14 +55,12 @@ class AuthManager {
     }
     
     func switchToLoginView() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            
-            if let sceneDelegate = windowScene?.delegate as? SceneDelegate {
+        DispatchQueue.main.async {
+            if let window {
                 let vc = UINavigationController(rootViewController: LoginView())
                 vc.isNavigationBarHidden = true
                 
-                sceneDelegate.window?.rootViewController = vc
+                window.rootViewController = vc
             }
         }
         
