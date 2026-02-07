@@ -419,8 +419,7 @@ extension SearchView {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                // TODO: 게시글 상세 뷰 이동 기능 추가
-                
+                self.navigationController?.pushViewController(PostDetailView(postId: model.id), animated: true)
             })
             .disposed(by: disposeBag)
         
