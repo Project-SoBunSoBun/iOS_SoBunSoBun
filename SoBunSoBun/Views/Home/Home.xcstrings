@@ -156,6 +156,17 @@
         }
       }
     },
+    "ErrorAlreadyReportedOrNot" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미 신고 처리가 완료되었거나,\r잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
     "GroupTitle" : {
       "comment" : "Home",
       "extractionState" : "manual",
