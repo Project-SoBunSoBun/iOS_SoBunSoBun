@@ -23,7 +23,7 @@ class DropDownReactor: Reactor {
     
     struct State {
         var isOpen: Bool = false
-        var selectedCell: String? = nil
+        @Pulse var selectedCell: String?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {

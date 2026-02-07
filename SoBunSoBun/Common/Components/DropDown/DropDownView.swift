@@ -20,7 +20,7 @@ class DropDownView: UIStackView {
         didSet {
             if !items.isEmpty {
                 setCells()
-                bind(reactor: reactor)
+                bindAction(reactor: reactor)
             }
         }
     }
@@ -28,6 +28,7 @@ class DropDownView: UIStackView {
     typealias Reactor = DropDownReactor
     private let reactor: DropDownReactor = DropDownReactor()
     
+    private var cellDisposeBag = DisposeBag()
     private let disposeBag = DisposeBag()
     
     init(frame: CGRect = .zero, selectionMode: SelectionMode, tableName: String) {
@@ -36,6 +37,7 @@ class DropDownView: UIStackView {
         super.init(frame: frame)
         
         configureUI()
+        bindState(reactor: reactor)
     }
     
     required init(coder: NSCoder) {
@@ -141,6 +143,9 @@ extension DropDownView {
     }
     
     private func bindAction(reactor: Reactor) {
+        // 셀의 구독을 해지 및 재구독
+        cellDisposeBag = DisposeBag()
+        
         // 처음에만 실행되도록
         if selectionMode == .check {
             reactor.action.onNext(.selectCell(items[0]))
@@ -152,7 +157,7 @@ extension DropDownView {
             cell.didTap
                 .map { Reactor.Action.selectCell($0) }
                 .bind(to: reactor.action)
-                .disposed(by: disposeBag)
+                .disposed(by: cellDisposeBag)
         }
     }
     
@@ -166,18 +171,16 @@ extension DropDownView {
             })
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.selectedCell }
-            .distinctUntilChanged()
+        reactor.pulse(\.$selectedCell)
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] localizableKey in
+            .do(onNext: { [weak self] localizableKey in
                 guard let self = self else { return }
                 
                 if selectionMode == .check {
                     cellCheckAndMoveToTop(localizableKey: localizableKey)
                 }
-                
-                didCellTap.onNext(localizableKey)
             })
+            .bind(to: didCellTap)
             .disposed(by: disposeBag)
     }
     
