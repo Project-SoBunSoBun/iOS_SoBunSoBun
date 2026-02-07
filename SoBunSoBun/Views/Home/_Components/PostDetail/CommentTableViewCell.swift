@@ -13,12 +13,13 @@ import RxCocoa
 class CommentTableViewCell: UITableViewCell {
     static let identifier = "PostListTableViewCell"
     
-    private let view = CommentView()
+    let view = CommentView()
     
     let replyTap = PublishRelay<Void>()
     let reportTap = PublishRelay<Void>()
     let editTap = PublishRelay<Void>()
     let deleteTap = PublishRelay<Void>()
+    let menuTap = PublishRelay<Void>()
     
     var disposeBag = DisposeBag()
     
@@ -41,6 +42,7 @@ class CommentTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
+        bind()
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -57,8 +59,9 @@ class CommentTableViewCell: UITableViewCell {
         contentView.addSubview(view)
         
         view.snp.makeConstraints { make in
-            make.horizontalEdges.top.equalToSuperview()
-            make.bottom.equalToSuperview().priority(.high)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(24).priority(.high)
         }
     }
 
@@ -67,7 +70,7 @@ class CommentTableViewCell: UITableViewCell {
     }
     
     func toggleEditMode(_ isEdit: Bool) {
-        self.backgroundColor = isEdit ? .primary50 : .clear
+        view.backgroundColor = isEdit ? .primary50 : .clear
     }
 }
 
@@ -87,6 +90,10 @@ extension CommentTableViewCell {
         
         view.deleteTap
             .bind(to: deleteTap)
+            .disposed(by: disposeBag)
+        
+        view.menuTap
+            .bind(to: menuTap)
             .disposed(by: disposeBag)
     }
 }

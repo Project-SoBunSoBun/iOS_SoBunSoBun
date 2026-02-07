@@ -15,12 +15,13 @@ import OSLog
 class CommentView: UIView {
     private let disposeBag = DisposeBag()
     
-    private var isMenuOpen: Bool = false
+    var isMenuOpen: Bool = false
     
     let replyTap = PublishRelay<Void>()
     let reportTap = PublishRelay<Void>()
     let editTap = PublishRelay<Void>()
     let deleteTap = PublishRelay<Void>()
+    let menuTap = PublishRelay<Void>()
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
@@ -55,7 +56,7 @@ class CommentView: UIView {
         return btn
     }()
     
-    private let dropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home")
+    let dropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home")
     
     private let commentLabel: UILabel = {
         let lb = UILabel()
@@ -65,7 +66,7 @@ class CommentView: UIView {
     }()
     
     // MARK: - 댓글 AttributedText 변환
-    private func convertComment(comment: String, commentedUsers: [String: String], isEdited: Bool) -> NSAttributedString {
+    func convertComment(comment: String, commentedUsers: [String: String], isEdited: Bool) -> NSAttributedString {
         // 변환된 텍스트
         var convertedText = comment
         
@@ -84,7 +85,7 @@ class CommentView: UIView {
             // 뒤에서부터 처리 (인덱스 꼬임 방지)
             for match in matches.reversed() {
                 let userId = (comment as NSString).substring(with: match.range(at: 1))
-                            
+                
                 guard let nickname = commentedUsers[userId],
                       let matchRange = Range(match.range, in: convertedText) else {
                     continue
@@ -104,29 +105,42 @@ class CommentView: UIView {
             }
         }
         
+        // 멘션 존재 여부에 따라 스타일 변경
+        let baseStyle = mentionModels.isEmpty ? body16 : title16
+        let baseAttributes = baseStyle.attributes()
+        let commonParagraphStyle = baseAttributes[.paragraphStyle] as? NSParagraphStyle
+        let commonBaselineOffset = baseAttributes[.baselineOffset] as? CGFloat ?? 0
+        
         let attributedString = NSMutableAttributedString(string: convertedText)
         
-        // 기본 텍스트 색상
-        var defaultAttributes: [NSAttributedString.Key: Any] = body16.attributes()
-        defaultAttributes[.foregroundColor] = UIColor.neutral900
-        
-        attributedString.addAttributes(defaultAttributes, range: NSRange(location: 0, length: convertedText.count))
+        // 기본 텍스트
+        attributedString.addAttributes([
+            .font: body16.font,
+            .foregroundColor: UIColor.neutral900,
+            .paragraphStyle: commonParagraphStyle as Any,
+            .baselineOffset: commonBaselineOffset
+        ], range: NSRange(location: 0, length: convertedText.count))
         
         // 멘션 하이라이트 처리
         for model in mentionModels {
-            var mentionAttributes: [NSAttributedString.Key: Any] = title16.attributes()
-            mentionAttributes[.foregroundColor] = UIColor.primary400
-            mentionAttributes[.link] = "profile://\(model.userId)" // TODO: 프로필 뷰로 이동하는 하이퍼링크 수정
-            attributedString.addAttributes(mentionAttributes, range: model.range)
+            attributedString.addAttributes([
+                .font: title16.font,
+                .foregroundColor: UIColor.primary400,
+                .link: "sobunsobun://profile/\(model.userId)",
+                .paragraphStyle: commonParagraphStyle as Any,
+                .baselineOffset: commonBaselineOffset
+            ], range: model.range)
         }
         
         // 수정됨 처리
         if isEdited {
-            var editedAttributes: [NSAttributedString.Key: Any] = body16.attributes()
-            editedAttributes[.foregroundColor] = UIColor.neutral500
-            
-            let localizableString: String = String(localized: "Edited", table: "Home")
-            let editedText: NSAttributedString = NSAttributedString(string: " (\(localizableString))", attributes: editedAttributes)
+            let localizableString = String(localized: "Edited", table: "Home")
+            let editedText = NSAttributedString(string: " (\(localizableString))", attributes: [
+                .font: body16.font,
+                .foregroundColor: UIColor.neutral500,
+                .paragraphStyle: commonParagraphStyle as Any,
+                .baselineOffset: commonBaselineOffset
+            ])
             attributedString.append(editedText)
         }
         
@@ -141,7 +155,8 @@ class CommentView: UIView {
         addSubview(authorInfoView)
         
         authorInfoView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().offset(16)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview().inset(32)
             make.top.equalToSuperview()
         }
         
@@ -149,14 +164,8 @@ class CommentView: UIView {
         addSubview(menuButton)
         
         menuButton.snp.makeConstraints { make in
-            make.trailing.top.equalTo(authorInfoView)
-        }
-        
-        addSubview(dropDownView)
-        
-        dropDownView.snp.makeConstraints { make in
-            make.trailing.equalTo(menuButton)
-            make.top.equalTo(menuButton.snp.bottom)
+            make.trailing.equalToSuperview()
+            make.top.equalTo(authorInfoView)
         }
         
         // 댓글
@@ -167,6 +176,14 @@ class CommentView: UIView {
             make.trailing.equalToSuperview().inset(16)
             make.top.equalTo(authorInfoView.snp.bottom).offset(8)
             make.bottom.equalToSuperview()
+        }
+        
+        // 드롭다운
+        addSubview(dropDownView)
+        
+        dropDownView.snp.makeConstraints { make in
+            make.trailing.equalTo(menuButton)
+            make.top.equalTo(menuButton.snp.bottom)
         }
     }
     
@@ -185,7 +202,7 @@ class CommentView: UIView {
         
         if let myId, let myUserId = Int(myId) {
             menu = model.userId == myUserId ?
-            ["Reply", "Edit", "Delete"] :
+            ["Edit", "Delete"] :
             ["Reply", "Report"]
         } else {
             menu = []
@@ -205,16 +222,19 @@ class CommentView: UIView {
 extension CommentView {
     private func bind() {
         menuButton.rx.tap
-            .subscribe(onNext: { [weak self] _ in
+            .observe(on: MainScheduler.instance)
+            .do(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
                 isMenuOpen.toggle()
                 dropDownView.setOpen(isOpen: isMenuOpen)
             })
+            .bind(to: menuTap)
             .disposed(by: disposeBag)
         
         dropDownView.didCellTap
-            .do(onNext: { [weak self] _ in
+            .observe(on: MainScheduler.asyncInstance)
+            .do(onNext: { [weak self] text in
                 guard let self = self else { return }
                 
                 isMenuOpen = false
