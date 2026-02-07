@@ -252,7 +252,7 @@ extension Reactive where Base: UITextField {
 }
 
 extension UIImage {
-    // 이미지 리사이즈
+    /// 이미지 리사이즈
     func resize(_ newSize: CGSize) -> UIImage {
         let image = UIGraphicsImageRenderer(size: newSize).image { _ in
             draw(in: CGRect(origin: .zero, size: newSize))
@@ -263,7 +263,7 @@ extension UIImage {
 }
 
 extension String {
-    // 줄바꿈 개수 제한
+    /// 줄바꿈 개수 제한
     func limitNewLines(limit: Int = 2) -> String {
         let pattern = "\n{\(limit + 1),}"
         let replacement = String(repeating: "\n", count: limit)
