@@ -145,19 +145,14 @@ class AutoHeightTextView: BaseTextView {
 extension AutoHeightTextView: UITextViewDelegate {
     private func bind() {
         self.rx.text.orEmpty
-            .map { [weak self] text in
-                guard let self = self else { return "" }
-                
-                return String(text.prefix(maxLength))
-            }
-            .distinctUntilChanged()
             .skip(1)
-            .subscribe(onNext: { [weak self] text in
+            .subscribe(onNext: { [weak self] isEditable in
                 guard let self = self else { return }
                 
                 // 글자 수 제한
-                if self.text != text {
-                    self.text = text
+                if self.text.count > maxLength {
+                    let index = text.index(text.startIndex, offsetBy: maxLength)
+                    self.text = String(text[..<index])
                 }
                 
                 // 글자 수 표시

@@ -39,18 +39,15 @@ class TextFieldUnderline: BaseTextField {
     
     private func bind() {
         self.rx.text.orEmpty
-            .map { [weak self] text in
-                guard let self = self else { return "" }
-                
-                return String(text.prefix(maxLength))
-            }
             .distinctUntilChanged()
             .skip(1)
             .subscribe(onNext: { [weak self] text in
                 guard let self = self else { return }
                 
-                if self.text != text {
-                    self.text = text
+                // 글자 수 제한
+                if self.text?.count ?? 0 > maxLength {
+                    let index = text.index(text.startIndex, offsetBy: maxLength)
+                    self.text = String(text[..<index])
                 }
             })
             .disposed(by: disposeBag)
