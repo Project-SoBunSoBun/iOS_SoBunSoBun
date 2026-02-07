@@ -12,15 +12,14 @@ import Foundation
 // MARK: - 검색
 
 // MARK: - 게시글 상세
-struct CommentCountModel: Decodable {
+struct CommentCountModel: Decodable, Equatable {
     let postId, commentCount: Int
 }
 
 struct CommentModel: Decodable, Equatable {
-    let id, postId, userId, parentCommentId: Int
+    let id, postId, userId: Int
     let userNickname, userProfileImageUrl, userAddress, content: String?
     let createdAt, updatedAt: String
-    let childComments: [String]
     let deleted, edited: Bool
 }
 
