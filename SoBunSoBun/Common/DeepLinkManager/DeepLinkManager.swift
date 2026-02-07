@@ -6,18 +6,26 @@
 //
 
 import Foundation
+import OSLog
 
 class DeepLinkManager {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "DeepLinkManager"
+    )
+    
     static let shared = DeepLinkManager()
     
     private init() {}
     
     func handle(url: URL) {
+        logger.debug("딥링크 감지됨: \(url)")
+        
         DispatchQueue.main.async {
             guard let window else { return }
             
-            let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
             let path = url.path
+            // let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
             // let queryItems = components?.queryItems
             
             // 게시글
