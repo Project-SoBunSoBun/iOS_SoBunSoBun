@@ -258,7 +258,7 @@ extension EditProfileView {
         let text = String(localized: "Complete", table: "Settings")
         
         var attributes = body14.attributes(alignment: .center)
-        attributes[.foregroundColor] = isEnabled ? UIColor.neutral900 : UIColor.neutral400
+        attributes[.foregroundColor] = isEnabled ? UIColor.neutral900 : UIColor.neutral300
         config.attributedTitle = AttributedString(NSAttributedString(string: text, attributes: attributes))
         
         completeButton.configuration = config
