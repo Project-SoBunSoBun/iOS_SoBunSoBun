@@ -25,7 +25,7 @@ class PostDetailReactor: Reactor {
     private let disposeBag = DisposeBag()
     private let networkManager = HomeNetworkManager()
     
-    private let errorMessage: String = String(localized: "ErrorMessage")
+    private let errorMessage: String = String(localized: "ErrorMessage", table: "Common")
     
     let initialState: State = State()
     
@@ -47,7 +47,7 @@ class PostDetailReactor: Reactor {
         
         case setSelectedCommentId(Int)
         
-        case replyButtonTapped
+        case replyButtonTapped(String)
         
         case reportButtonTapped
         case reportComment
@@ -79,7 +79,7 @@ class PostDetailReactor: Reactor {
         
         case setSelectedCommentId(Int)
         
-        case setReply(String?)
+        case setTextViewText(String)
         
         case setShouldShowReportCommentAlert
         case setShouldShowReportCommentDoneAlert
@@ -90,6 +90,8 @@ class PostDetailReactor: Reactor {
         case setShouldShowDeleteCommentDoneAlert
         
         case setShouldNavigateToChat
+        
+        case setRefreshing(Bool)
         
         case setErrorMessage(String)
     }
@@ -108,7 +110,7 @@ class PostDetailReactor: Reactor {
         var selectedCommentId: Int?
         var isEditMode: Bool = false
         
-        var reply: String = ""
+        @Pulse var textViewText: String = ""
         
         @Pulse var shouldShowShare: Void?
         
@@ -126,6 +128,8 @@ class PostDetailReactor: Reactor {
         
         @Pulse var shouldNavigateToChat: Void?
         
+        var isRefreshing: Bool = false
+        
         @Pulse var errorMessage: String?
     }
     
@@ -141,9 +145,12 @@ class PostDetailReactor: Reactor {
             
         case .refresh:
             return Observable.concat([
+                Observable.just(.setRefreshing(true)),
+                Observable.just(.setIsEditMode(false)),
                 getPost(),
                 getPostCommentsCount(),
-                getComments()
+                getComments(),
+                Observable.just(.setRefreshing(false))
             ])
             
         case .shareButtonTapped:
@@ -178,16 +185,17 @@ class PostDetailReactor: Reactor {
         case .setSelectedCommentId(let id):
             return Observable.just(.setSelectedCommentId(id))
             
-        case .replyButtonTapped:
-            guard let commentId = currentState.selectedCommentId,
-                  let nickname = currentState.commentedUsersToNickname?[String(commentId)] else {
-                return Observable.empty()
-            }
+        case .replyButtonTapped(let string):
+            return Observable.concat([
+                Observable.just(.setIsEditMode(false)),
+                Observable.just(.setTextViewText(string))
+            ])
             
-            return Observable.just(.setReply("@\(nickname)"))
-
         case .reportButtonTapped:
-            return Observable.just(.setShouldShowReportCommentAlert)
+            return Observable.concat([
+                Observable.just(.setIsEditMode(false)),
+                Observable.just(.setShouldShowReportCommentAlert)
+            ])
             
         case .reportComment:
             if let commentId = currentState.selectedCommentId {
@@ -206,13 +214,19 @@ class PostDetailReactor: Reactor {
             return Observable.just(.setIsEditMode(false))
             
         case .deleteCommentButtonTapped:
-            return Observable.just(.setShouldShowDeleteCommentAlert)
+            return Observable.concat([
+                Observable.just(.setIsEditMode(false)),
+                Observable.just(.setShouldShowDeleteCommentAlert)
+            ])
             
         case .deleteComment:
             return deleteComment()
             
         case .chatButtonTapped:
-            return Observable.just(.setShouldNavigateToChat)
+            return Observable.concat([
+                Observable.just(.setIsEditMode(false)),
+                Observable.just(.setShouldNavigateToChat)
+            ])
         }
     }
     
@@ -262,8 +276,8 @@ class PostDetailReactor: Reactor {
         case .setIsEditMode(let isEnabled):
             newState.isEditMode = isEnabled
             
-        case .setReply(let string):
-            newState.reply = string ?? ""
+        case .setTextViewText(let string):
+            newState.textViewText = string
             
         case .setShouldShowReportCommentAlert:
             newState.shouldShowReportCommentAlert = ()
@@ -279,6 +293,9 @@ class PostDetailReactor: Reactor {
             
         case .setShouldNavigateToChat:
             newState.shouldNavigateToChat = ()
+            
+        case .setRefreshing(let isRefreshing):
+            newState.isRefreshing = isRefreshing
             
         case .setErrorMessage(let message):
             newState.errorMessage = message
@@ -343,15 +360,20 @@ class PostDetailReactor: Reactor {
         return networkManager.getPostComments(id: postId)
             .asObservable()
             .flatMap { models -> Observable<Mutation> in
-                let commentedUsersToNickname: [String: String] = Dictionary(uniqueKeysWithValues: models.compactMap {
-                    (String($0.userId), $0.userNickname ?? String(localized: "Unknown", table: "Common"))
-                })
+                let commentedUsersToNickname: [String: String] = Dictionary(
+                    models.compactMap {
+                        (String($0.userId), $0.userNickname ?? String(localized: "Unknown", table: "Common"))
+                    },
+                    uniquingKeysWith: { (first, second) in second }
+                )
                 
-                let commentedUsersToId: [String: Int] = Dictionary(uniqueKeysWithValues: models.compactMap {
-                    guard let nickname = $0.userNickname else { return nil }
-                    
-                    return (nickname, $0.userId)
-                })
+                let commentedUsersToId: [String: Int] = Dictionary(
+                    models.compactMap {
+                        guard let nickname = $0.userNickname else { return nil }
+                        return (nickname, $0.userId)
+                    },
+                    uniquingKeysWith: { (first, second) in second }
+                )
                 
                 return Observable.concat([
                     Observable.just(.setComments(models)),
@@ -364,7 +386,7 @@ class PostDetailReactor: Reactor {
                     return Observable.just(.setErrorMessage("Error!"))
                 }
                 
-                logger.critical("게시글 댓글 갯수 호출 실패: \(error.localizedDescription)")
+                logger.critical("게시글 댓글 호출 실패: \(error.localizedDescription)")
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -416,7 +438,7 @@ class PostDetailReactor: Reactor {
                 }
                 
                 logger.critical("게시글 신고 실패: \(error.localizedDescription)")
-                return Observable.just(.setErrorMessage(errorMessage))
+                return Observable.just(.setErrorMessage(String(localized: "ErrorAlreadyReportedOrNot", table: "Home")))
             }
     }
     
@@ -439,9 +461,15 @@ class PostDetailReactor: Reactor {
     
     // 댓글 생성
     private func createComment(content: String) -> Observable<Mutation> {
-        let content = convertComment(comment: content)
+        let cleanedContent = content.limitNewLines(limit: 2).trimmingCharacters(in: .whitespacesAndNewlines)
         
-        return networkManager.createPostComment(postId: postId, content: content)
+        guard !cleanedContent.isEmpty else {
+            return Observable.just(.setErrorMessage(String(localized: "CheckYourInputs", table: "Common")))
+        }
+        
+        let convertedComment = convertComment(comment: cleanedContent)
+        
+        return networkManager.createPostComment(postId: postId, content: convertedComment)
             .asObservable()
             .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
@@ -461,12 +489,18 @@ class PostDetailReactor: Reactor {
     // 댓글 수정
     private func patchComment(content: String) -> Observable<Mutation> {
         guard let commentId = currentState.selectedCommentId else {
-            return Observable.empty()
+            return Observable.just(.setErrorMessage(errorMessage))
         }
         
-        let content = convertComment(comment: content)
+        let cleanedContent = content.limitNewLines(limit: 2).trimmingCharacters(in: .whitespacesAndNewlines)
         
-        return networkManager.patchPostComment(id: commentId, content: content)
+        guard !cleanedContent.isEmpty else {
+            return Observable.just(.setErrorMessage(String(localized: "CheckYourInputs", table: "Common")))
+        }
+        
+        let convertedComment = convertComment(comment: cleanedContent)
+        
+        return networkManager.patchPostComment(id: commentId, content: convertedComment)
             .asObservable()
             .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
@@ -498,6 +532,7 @@ class PostDetailReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 return Observable.concat([
+                    getPostCommentsCount(),
                     getComments(),
                     Observable.just(.setShouldShowDeleteCommentDoneAlert)
                 ])
@@ -529,7 +564,7 @@ class PostDetailReactor: Reactor {
                 }
                 
                 logger.critical("댓글 신고 실패: \(error.localizedDescription)")
-                return Observable.just(.setErrorMessage(errorMessage))
+                return Observable.just(.setErrorMessage(String(localized: "ErrorAlreadyReportedOrNot", table: "Home")))
             }
     }
     

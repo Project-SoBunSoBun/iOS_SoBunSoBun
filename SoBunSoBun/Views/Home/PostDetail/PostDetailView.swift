@@ -51,7 +51,6 @@ class PostDetailView: UIViewController {
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
         tnb.parentViewController = self
-        tnb.buttons = [topShareButton, topBookMarkButton, topMoreButton]
         
         return tnb
     }()
@@ -67,6 +66,10 @@ class PostDetailView: UIViewController {
         tv.register(CommentTableViewCell.self, forCellReuseIdentifier: CommentTableViewCell.identifier)
         tv.backgroundColor = .clear
         tv.separatorStyle = .none
+        tv.estimatedRowHeight = 124
+        tv.rowHeight = UITableView.automaticDimension
+        tv.contentInset = .init(top: 0, left: 0, bottom: 24, right: 0)
+        tv.isHidden = true
         
         return tv
     }()
@@ -74,24 +77,26 @@ class PostDetailView: UIViewController {
     private let commentDividerView: UIView = {
         let view = UIView()
         view.backgroundColor = .primary100
+        view.isHidden = true
         
         return view
     }()
     
-    private let createCommentContaienrStackView: UIStackView = {
+    private let createCommentStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 8
         sv.alignment = .center
         sv.backgroundColor = .backgroundWhite
         sv.isLayoutMarginsRelativeArrangement = true
-        sv.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
+        sv.layoutMargins = .init(top: 16, left: 0, bottom: 16, right: 0)
+        sv.isHidden = true
         
         return sv
     }()
     
     private let chatButton: UIView = {
-       let view = UIView()
+        let view = UIView()
         view.backgroundColor = .primary400
         view.layer.cornerRadius = 34
         view.clipsToBounds = true
@@ -125,8 +130,6 @@ class PostDetailView: UIViewController {
             make.size.equalTo(68)
         }
         
-        view.isHidden = true
-        
         return view
     }()
     
@@ -136,17 +139,23 @@ class PostDetailView: UIViewController {
         sv.spacing = 8
         sv.alignment = .center
         sv.distribution = .fill
-        
         sv.backgroundColor = .neutral50
         sv.layer.cornerRadius = 16
         sv.isLayoutMarginsRelativeArrangement = true
-        sv.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 4)
+        sv.layoutMargins = .init(top: 4, left: 16, bottom: 4, right: 4)
         sv.clipsToBounds = true
         
         return sv
     }()
     
-    private let createCommmentTextView: AutoHeightTextView = AutoHeightTextView(minHeight: 56, maxHeight: 72, maxLength: 120, fontStyle: body16)
+    private let createCommmentTextView: AutoHeightTextView = {
+        let ahtv = AutoHeightTextView(minHeight: 24, maxHeight: 72, maxLength: 50, fontStyle: body16)
+        ahtv.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
+        ahtv.placeholder = String(localized: "InsertComment", table: "Home")
+        ahtv.showCharactersCount = false
+        
+        return ahtv
+    }()
     
     private let sendButton: UIButton = {
         var config = UIButton.Configuration.plain()
@@ -158,20 +167,30 @@ class PostDetailView: UIViewController {
         return btn
     }()
     
-    private let editCommentContainerStackView: UIStackView = {
+    private let editCommentStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 8
         sv.alignment = .center
         sv.backgroundColor = .backgroundWhite
         sv.isLayoutMarginsRelativeArrangement = true
-        sv.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
+        sv.layoutMargins = .init(top: 16, left: 0, bottom: 0, right: 16)
         sv.isHidden = true
         
         return sv
     }()
     
-    private let editCommentTextView: AutoHeightTextView = AutoHeightTextView(minHeight: 56, maxHeight: 72, maxLength: 120, fontStyle: body16)
+    private let editCommentTextView: AutoHeightTextView = {
+        let ahtv = AutoHeightTextView(minHeight: 32, maxHeight: 80, maxLength: 50, fontStyle: body16)
+        ahtv.textContainerInset = .init(top: 4, left: 16, bottom: 4, right: 16)
+        ahtv.placeholder = String(localized: "InsertComment", table: "Home")
+        ahtv.showCharactersCount = false
+        ahtv.backgroundColor = .neutral50
+        ahtv.layer.cornerRadius = 16
+        ahtv.clipsToBounds = true
+        
+        return ahtv
+    }()
     
     private let editCommentCancelButton: UIButton = {
         var config = UIButton.Configuration.filled()
@@ -179,9 +198,10 @@ class PostDetailView: UIViewController {
         config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         config.background.backgroundColor = .primary50
         
+        // 캡슐 형태(원형)
+        config.cornerStyle = .capsule
+        
         let btn = UIButton(configuration: config)
-        btn.layer.cornerRadius = 24
-        btn.clipsToBounds = true
         
         return btn
     }()
@@ -192,9 +212,10 @@ class PostDetailView: UIViewController {
         config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         config.background.backgroundColor = .primary50
         
+        // 캡슐 형태(원형)
+        config.cornerStyle = .capsule
+        
         let btn = UIButton(configuration: config)
-        btn.layer.cornerRadius = 24
-        btn.clipsToBounds = true
         
         return btn
     }()
@@ -281,6 +302,7 @@ class PostDetailView: UIViewController {
         super.viewDidLoad()
         
         configureUI()
+        bind(reactor: reactor)
         
         // 현재의 navigation 스택에서 RegisterPostView 삭제(뒤로가기 시 게시글 작성 뷰 이동 방지)
         if let navigationController = navigationController {
@@ -296,13 +318,47 @@ class PostDetailView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        [topNavigationBar, topMoreDropDownView, createCommentContainerStackView, editCommentContainerStackView, commentDividerView, tableView].forEach {
+        [topNavigationBar, createCommentStackView, commentDividerView, tableView, topMoreDropDownView].forEach {
             view.addSubview($0)
         }
         
         topNavigationBar.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
-            make.top.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+        }
+        
+        createCommentStackView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
+        }
+        
+        createCommentStackView.addArrangedSubview(createCommentContainerStackView)
+        
+        [createCommmentTextView, sendButton].forEach {
+            createCommentContainerStackView.addArrangedSubview($0)
+        }
+        
+        [editCommentTextView, editCommentCancelButton, editCommentConfirmButton].forEach {
+            editCommentStackView.addArrangedSubview($0)
+        }
+        
+        commentDividerView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(createCommentStackView.snp.top).inset(16)
+            make.height.equalTo(1)
+        }
+        
+        tableView.tableHeaderView = contentView
+        tableView.refreshControl = refreshControl
+        
+        tableView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(topNavigationBar.snp.bottom).offset(8)
+            make.bottom.equalTo(commentDividerView.snp.top)
+        }
+        
+        contentView.snp.makeConstraints { make in
+            make.width.equalTo(tableView)
         }
         
         topMoreDropDownView.snp.makeConstraints { make in
@@ -310,40 +366,7 @@ class PostDetailView: UIViewController {
             make.top.equalTo(topNavigationBar.snp.bottom)
         }
         
-        [chatButton, createCommmentTextView].forEach {
-            createCommentContainerStackView.addArrangedSubview($0)
-        }
-        
-        createCommentContainerStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
-        }
-        
-        [editCommentTextView, editCommentCancelButton, editCommentConfirmButton].forEach {
-            editCommentContainerStackView.addArrangedSubview($0)
-        }
-        
-        editCommentContainerStackView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
-        }
-        
-        commentDividerView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(createCommentContainerStackView.snp.top)
-            make.height.equalTo(1)
-        }
-        
-        tableView.tableHeaderView = contentView
-        tableView.refreshControl = refreshControl
-        
         configureContentView()
-        
-        tableView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.top.equalTo(topNavigationBar.snp.bottom).offset(8)
-            make.bottom.equalTo(commentDividerView.snp.top).inset(24)
-        }
     }
     
     private func configureContentView() {
@@ -439,15 +462,18 @@ extension PostDetailView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        topMoreDropDownView
-            .didCellTap
+        topMoreDropDownView.didCellTap
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { menu in
+                reactor.action.onNext(.menuButtonTapped)
+                
                 switch menu {
                 case "Report":
-                    reactor.action.onNext(.reportButtonTapped)
+                    reactor.action.onNext(.reportPostButtonTapped)
                     
                 case "Delete":
                     reactor.action.onNext(.deletePostButtonTapped)
+                    
                 default:
                     return
                 }
@@ -456,10 +482,12 @@ extension PostDetailView {
         
         sendButton.rx.tap
             .withLatestFrom(createCommmentTextView.rx.text.orEmpty)
-            .map { text in
-                Reactor.Action.createComment(text)
-            }
-            .bind(to: reactor.action)
+            .subscribe(onNext: { [weak self] text in
+                guard let self = self else { return }
+                
+                reactor.action.onNext(.createComment(text))
+                createCommmentTextView.text = ""
+            })
             .disposed(by: disposeBag)
         
         // 셀을 눌렀을 때
@@ -470,10 +498,12 @@ extension PostDetailView {
         
         editCommentConfirmButton.rx.tap
             .withLatestFrom(editCommentTextView.rx.text.orEmpty)
-            .map { text in
-                Reactor.Action.editCommentTapped(text)
-            }
-            .bind(to: reactor.action)
+            .subscribe(onNext: { [weak self] text in
+                guard let self = self else { return }
+                
+                reactor.action.onNext(.editCommentTapped(text))
+                editCommentTextView.text = ""
+            })
             .disposed(by: disposeBag)
         
         editCommentCancelButton.rx.tap
@@ -491,6 +521,8 @@ extension PostDetailView {
     
     private func bindState(reactor: PostDetailReactor) {
         reactor.state.map { ($0.postInfo, $0.postCommentsCount) }
+            .distinctUntilChanged{ $0.1 == $1.1 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (postInfo, postCommentsCount) in
                 guard let self = self else { return }
                 
@@ -501,19 +533,35 @@ extension PostDetailView {
                 }
             })
             .disposed(by: disposeBag)
-            
+        
         reactor.state.map { $0.comments }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(
                 cellIdentifier: CommentTableViewCell.identifier,
                 cellType: CommentTableViewCell.self
             )) { [weak self] index, model, cell in
                 guard let self = self else { return }
+                
+                // 모든 셀 메뉴 닫기
+                let visibleCells = tableView.visibleCells.compactMap { $0 as? CommentTableViewCell }
+                visibleCells.forEach { cell in
+                    cell.view.isMenuOpen = false
+                    cell.view.dropDownView.setOpen(isOpen: false)
+                }
+                
                 let commentedUsers = reactor.currentState.commentedUsersToNickname ?? [:]
                 
                 cell.configureUI(model: model, commentedUsers: commentedUsers)
                 
                 cell.replyTap
-                    .map { Reactor.Action.replyButtonTapped }
+                    .map {
+                        guard let nickname = model.userNickname else {
+                            return Reactor.Action.replyButtonTapped("")
+                        }
+                        
+                        return Reactor.Action.replyButtonTapped("@\(nickname) ")
+                    }
                     .bind(to: reactor.action)
                     .disposed(by: cell.disposeBag)
                 
@@ -523,20 +571,28 @@ extension PostDetailView {
                     .disposed(by: cell.disposeBag)
                 
                 cell.editTap
+                    .do(onNext: { [weak self] _ in
+                        guard let self = self else { return }
+                        
+                        editCommentTextView.text = cell.view.convertComment(
+                            comment: model.content ?? "",
+                            commentedUsers: reactor.currentState.commentedUsersToNickname ?? [:],
+                            isEdited: false
+                        )
+                        .string
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                    })
                     .map { Reactor.Action.editButtonTapped }
                     .bind(to: reactor.action)
                     .disposed(by: cell.disposeBag)
                 
-                cell.editTap
-                    .subscribe(onNext: { [weak self] _ in
-                        guard let self = self else { return }
-                        
-                        editCommentTextView.rx.text.onNext(model.content)
-                    })
-                    .disposed(by: disposeBag)
-                
                 cell.deleteTap
                     .map { Reactor.Action.deleteCommentButtonTapped }
+                    .bind(to: reactor.action)
+                    .disposed(by: cell.disposeBag)
+                
+                cell.menuTap
+                    .map { Reactor.Action.setSelectedCommentId(model.id) }
                     .bind(to: reactor.action)
                     .disposed(by: cell.disposeBag)
             }
@@ -564,26 +620,33 @@ extension PostDetailView {
         
         
         reactor.state.map { ($0.isEditMode, $0.selectedCommentId) }
-        .skip(1)
-        .subscribe(onNext: { [weak self] isEditMode, selectedCommentId in
-            guard let self = self else { return }
-            
-            let visibleCells = self.tableView.visibleCells.compactMap { $0 as? CommentTableViewCell }
-            
-            for cell in visibleCells {
-                guard let indexPath = self.tableView.indexPath(for: cell) else { continue }
-                let model = reactor.currentState.comments[indexPath.row]
-                let shouldBeInEditMode = isEditMode && selectedCommentId == model.id
+            .distinctUntilChanged { $0 == $1 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isEditMode, selectedCommentId in
+                guard let self = self else { return }
                 
-                cell.toggleEditMode(shouldBeInEditMode)
-            }
-            
-            updateEditUI(isEditMode: isEditMode)
-        })
-        .disposed(by: disposeBag)
+                let visibleCells = self.tableView.visibleCells.compactMap { $0 as? CommentTableViewCell }
+                
+                for cell in visibleCells {
+                    guard let indexPath = self.tableView.indexPath(for: cell) else { continue }
+                    
+                    let model = reactor.currentState.comments[indexPath.row]
+                    cell.toggleEditMode(isEditMode && selectedCommentId == model.id)
+                }
+                
+                updateEditUI(isEditMode: isEditMode)
+            })
+            .disposed(by: disposeBag)
         
         // 답장 기능
-        reactor.state.map { $0.reply }
+        reactor.pulse(\.$textViewText)
+            .observe(on: MainScheduler.instance)
+            .do(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                // 키보드 올리기
+                _ = createCommmentTextView.becomeFirstResponder()
+            })
             .bind(to: createCommmentTextView.rx.text)
             .disposed(by: disposeBag)
         
@@ -600,6 +663,7 @@ extension PostDetailView {
         // 게시글 신고 알림
         reactor.pulse(\.$shouldShowReportPostAlert)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -612,7 +676,7 @@ extension PostDetailView {
                 alert.isSubtitleEnabled = false
                 
                 alert.onPrimaryTapped = {
-                    self.reactor.action.onNext(.reportPost)
+                    reactor.action.onNext(.reportPost)
                 }
                 
                 alert.show(on: self)
@@ -622,16 +686,23 @@ extension PostDetailView {
         // 게시글 신고 완료 알림
         reactor.pulse(\.$shouldShowReportPostDoneAlert)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                showAlert(title: String(localized: "ReportDoneTitle", table: "Home"), vc: self)
+                showAlert(
+                    title: String(localized: "ReportDoneTitle", table: "Home"),
+                    confirmTitle: String(localized: "Confirm", table: "Common"),
+                    confirmAction: {},
+                    vc: self
+                )
             })
             .disposed(by: disposeBag)
         
         // 게시글 삭제 알림
         reactor.pulse(\.$shouldShowDeletePostAlert)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -644,7 +715,7 @@ extension PostDetailView {
                 alert.isSubtitleEnabled = false
                 
                 alert.onPrimaryTapped = {
-                    self.reactor.action.onNext(.deletePost)
+                    reactor.action.onNext(.deletePost)
                 }
                 
                 alert.show(on: self)
@@ -660,8 +731,11 @@ extension PostDetailView {
                 
                 showAlert(
                     title: String(localized: "DeleteDoneTitle", table: "Home"),
+                    confirmTitle: String(localized: "Confirm", table: "Common"),
                     confirmAction: {
-                        self.navigationController?.popViewController(animated: true)
+                        DispatchQueue.main.async {
+                            self.navigationController?.popViewController(animated: true)
+                        }
                     },
                     vc: self
                 )
@@ -671,6 +745,7 @@ extension PostDetailView {
         // 댓글 신고 알림
         reactor.pulse(\.$shouldShowReportCommentAlert)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -693,16 +768,23 @@ extension PostDetailView {
         // 댓글 신고 완료 알림
         reactor.pulse(\.$shouldShowReportCommentDoneAlert)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                showAlert(title: String(localized: "ReportDoneTitle", table: "Home"), vc: self)
+                showAlert(
+                    title: String(localized: "ReportDoneTitle", table: "Home"),
+                    confirmTitle: String(localized: "Confirm", table: "Common"),
+                    confirmAction: {},
+                    vc: self
+                )
             })
             .disposed(by: disposeBag)
         
         // 댓글 삭제 알림
         reactor.pulse(\.$shouldShowDeleteCommentAlert)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -725,16 +807,23 @@ extension PostDetailView {
         // 댓글 삭제 완료 알림
         reactor.pulse(\.$shouldShowDeleteCommentDoneAlert)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                showAlert(title: String(localized: "DeleteDoneTitle", table: "Home"), vc: self)
+                showAlert(
+                    title: String(localized: "DeleteDoneTitle", table: "Home"),
+                    confirmTitle: String(localized: "Confirm", table: "Common"),
+                    confirmAction: {},
+                    vc: self
+                )
             })
             .disposed(by: disposeBag)
         
         // TODO: 채팅 연결 기능 구현 필요
         reactor.pulse(\.$shouldNavigateToChat)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
@@ -742,27 +831,55 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.isRefreshing }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind(to: refreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
+        
         // 오류 메시지
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                showAlert(title: message, vc: self)
+                showAlert(
+                    title: message,
+                    confirmTitle: String(localized: "Confirm", table: "Common"),
+                    confirmAction: {},
+                    vc: self
+                )
             })
             .disposed(by: disposeBag)
     }
     
     // contentView 업데이트
     private func updateUI(postInfo: PostModel, postCommentsCount: CommentCountModel) {
+        guard let userIdString = KeyChain.shared.get(key: "USER_ID"),
+              let myId = Int(userIdString) else {
+            return
+        }
+        
+        let isOwner = (myId == postInfo.owner.id)
+        
+        topNavigationBar.buttons = isOwner
+        ? [topShareButton, topMoreButton]
+        : [topShareButton, topBookMarkButton, topMoreButton]
+        
+        topMoreDropDownView.items = isOwner ? ["Delete"] : ["Report"]
+        
         // 카테고리
         let categories = postInfo.categoryCode.split(separator: ",").map {
+            let category = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
             let view = CategoryMini()
-            view.text = String($0)
+            
+            view.text = category
             
             return view
         }
         
+        horizontalWrappingView.removeAllArrangedSubviews()
         horizontalWrappingView.addArrangedSubviews(categories)
         
         // 제목
@@ -803,26 +920,42 @@ extension PostDetailView {
         var commentsCountAttributes: [NSAttributedString.Key: Any] = body18.attributes()
         commentsCountAttributes[.foregroundColor] = UIColor.neutral700
         
-        commentsCountLabel.attributedText = NSAttributedString(string: "\(String(localized: "Comments", table: "Home")) \(postCommentsCount)", attributes: commentsCountAttributes)
-        
-        if let userId = KeyChain.shared.get(key: "USER_ID"),
-           let myId = Int(userId) {
-            chatButton.isHidden = myId == postInfo.owner.id
-        } else {
-            chatButton.isHidden = true
-        }
+        commentsCountLabel.attributedText = NSAttributedString(string: "\(String(localized: "Comments", table: "Home")) \(postCommentsCount.commentCount)", attributes: commentsCountAttributes)
         
         contentView.isHidden = false
+        tableView.isHidden = false
+        commentDividerView.isHidden = false
+        createCommentStackView.isHidden = false
+        editCommentStackView.isHidden = false
+        
+        if !isOwner {
+            createCommentStackView.insertArrangedSubview(chatButton, at: 0)
+        }
     }
     
     // 수정 모드 UI 업데이트
     private func updateEditUI(isEditMode: Bool) {
-        createCommentContainerStackView.isHidden = isEditMode
-        editCommentContainerStackView.isHidden = !isEditMode
+        if isEditMode {
+            createCommentStackView.removeFromSuperview()
+            view.addSubview(editCommentStackView)
+            
+            editCommentStackView.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16)
+                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
+            }
+        } else {
+            editCommentStackView.removeFromSuperview()
+            view.addSubview(createCommentStackView)
+            
+            createCommentStackView.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16)
+                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
+            }
+        }
         
         commentDividerView.snp.remakeConstraints { make in
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(isEditMode ? editCommentContainerStackView.snp.top : createCommentContainerStackView.snp.top)
+            make.bottom.equalTo(isEditMode ? editCommentStackView.snp.top : createCommentStackView.snp.top)
             make.height.equalTo(1)
         }
     }
