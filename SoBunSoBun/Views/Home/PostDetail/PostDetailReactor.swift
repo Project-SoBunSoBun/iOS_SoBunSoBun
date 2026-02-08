@@ -39,14 +39,14 @@ class PostDetailReactor: Reactor {
         // 상단 네비게이션 바
         case shareButtonTapped
         case saveButtonTapped
-        case menuButtonTapped(Bool?)
+        case menuButtonTapped(Bool)
         case reportPostButtonTapped
         case reportPost
         case deletePostButtonTapped
         case deletePost
         
         // 댓글
-        case commentMenuButtonTapped(Bool?)
+        case commentMenuButtonTapped(Bool)
         
         case createComment(String)
         
@@ -178,14 +178,10 @@ class PostDetailReactor: Reactor {
             return isSaved ? cancelSavePost() : savePost()
             
         case .menuButtonTapped(let isMenuOpen):
-            let isOpen = isMenuOpen ?? !currentState.isMenuOpen
-            
-            return Observable.just(.setIsMenuOpen(isOpen))
+            return Observable.just(.setIsMenuOpen(isMenuOpen))
             
         case .commentMenuButtonTapped(let isMenuOpen):
-            let isOpen = isMenuOpen ?? !currentState.isCommentMenuOpen
-            
-            return Observable.just(.setIsCommentMenuOpen(isOpen))
+            return Observable.just(.setIsCommentMenuOpen(isMenuOpen))
             
         case .reportPostButtonTapped:
             return Observable.just(.setShouldShowReportPostAlert)

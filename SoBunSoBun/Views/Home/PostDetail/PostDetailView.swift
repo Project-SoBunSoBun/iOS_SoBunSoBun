@@ -492,7 +492,7 @@ extension PostDetailView {
             .disposed(by: disposeBag)
         
         topMoreButton.rx.tap
-            .map { Reactor.Action.menuButtonTapped(nil) }
+            .map { Reactor.Action.menuButtonTapped(!reactor.currentState.isMenuOpen) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
