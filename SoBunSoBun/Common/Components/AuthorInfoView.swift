@@ -122,7 +122,7 @@ class AuthorInfoView: UIStackView {
                         self.logger.debug("프로필 이미지 비동기 로드 성공: \(urlString)")
                         
                     case .failure(let error):
-                        self.logger.error("\(error.localizedDescription)")
+                        self.logger.fault("\(error.localizedDescription)")
                         profileImageView.image = .defaultProfile
                     }
                 }

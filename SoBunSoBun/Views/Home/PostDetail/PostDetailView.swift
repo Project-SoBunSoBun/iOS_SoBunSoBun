@@ -587,7 +587,7 @@ extension PostDetailView {
                     reactor.action.onNext(.deleteCommentButtonTapped)
                     
                 default:
-                    logger.error("commentMenuDropDownView의 didCellTap의 case에서 등록되지 않은 메뉴가 있음: \(menu)")
+                    logger.fault("commentMenuDropDownView의 didCellTap의 case에서 등록되지 않은 메뉴가 있음: \(menu)")
                 }
             })
             .disposed(by: disposeBag)
