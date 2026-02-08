@@ -148,13 +148,13 @@ class PostDetailView: UIViewController {
         return sv
     }()
     
-    private let createCommmentTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 24, maxHeight: 72, maxLength: 50, fontStyle: body16)
-        ahtv.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
-        ahtv.placeholder = String(localized: "InsertComment", table: "Home")
-        ahtv.showCharactersCount = false
+    private let createCommmentTextView: MentionTextView = {
+        let mtv = MentionTextView(minHeight: 24, maxHeight: 72, maxLength: 50, fontStyle: body16)
+        mtv.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
+        mtv.placeholder = String(localized: "InsertComment", table: "Home")
+        mtv.showCharactersCount = false
         
-        return ahtv
+        return mtv
     }()
     
     private let sendButton: UIButton = {
@@ -180,16 +180,16 @@ class PostDetailView: UIViewController {
         return sv
     }()
     
-    private let editCommentTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 32, maxHeight: 80, maxLength: 50, fontStyle: body16)
-        ahtv.textContainerInset = .init(top: 4, left: 16, bottom: 4, right: 16)
-        ahtv.placeholder = String(localized: "InsertComment", table: "Home")
-        ahtv.showCharactersCount = false
-        ahtv.backgroundColor = .neutral50
-        ahtv.layer.cornerRadius = 16
-        ahtv.clipsToBounds = true
+    private let editCommentTextView: MentionTextView = {
+        let mtv = MentionTextView(minHeight: 32, maxHeight: 80, maxLength: 50, fontStyle: body16)
+        mtv.textContainerInset = .init(top: 4, left: 16, bottom: 4, right: 16)
+        mtv.placeholder = String(localized: "InsertComment", table: "Home")
+        mtv.showCharactersCount = false
+        mtv.backgroundColor = .neutral50
+        mtv.layer.cornerRadius = 16
+        mtv.clipsToBounds = true
         
-        return ahtv
+        return mtv
     }()
     
     private let editCommentCancelButton: UIButton = {
@@ -596,6 +596,16 @@ extension PostDetailView {
                     .bind(to: reactor.action)
                     .disposed(by: cell.disposeBag)
             }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.commentedUsersToId }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] users in
+                guard let self = self else { return }
+                
+                createCommmentTextView.commentedUsersToId.accept(users)
+                editCommentTextView.commentedUsersToId.accept(users)
+            })
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.isSaved }

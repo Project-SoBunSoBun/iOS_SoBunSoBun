@@ -72,7 +72,7 @@ class AutoHeightTextView: BaseTextView {
         addSubview(charactersLabel)
     }
     
-    private func updateHeight() {
+    func updateHeight() {
         // 현재 텍스트에 필요한 높이 계산
         let size = CGSize(width: bounds.width, height: .infinity)
         let estimatedSize = sizeThatFits(size)
@@ -92,7 +92,7 @@ class AutoHeightTextView: BaseTextView {
         }
     }
     
-    private func applyLineHeight() {
+    func applyLineHeight() {
         guard !text.isEmpty else { return }
         
         let attributedString = NSMutableAttributedString(string: text)
@@ -142,7 +142,7 @@ class AutoHeightTextView: BaseTextView {
     }
 }
 
-extension AutoHeightTextView: UITextViewDelegate {
+extension AutoHeightTextView {
     private func bind() {
         self.rx.text.orEmpty
             .skip(1)
