@@ -10,6 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 import RxGesture
+import OSLog
 
 class PostDetailView: UIViewController {
     private let postId: Int
@@ -19,6 +20,11 @@ class PostDetailView: UIViewController {
     private lazy var reactor = PostDetailReactor(postId: postId)
     
     private let disposeBag = DisposeBag()
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Home.PostDetail.View"
+    )
     
     init(postId: Int, isNew: Bool = false, nibName: String? = nil, bundle: Bundle? = nil) {
         self.postId = postId
@@ -72,6 +78,9 @@ class PostDetailView: UIViewController {
         tv.rowHeight = UITableView.automaticDimension
         tv.contentInset = .init(top: 0, left: 0, bottom: 24, right: 0)
         tv.isHidden = true
+        tv.minimumZoomScale = 1.0
+        tv.maximumZoomScale = 1.0
+        tv.pinchGestureRecognizer?.isEnabled = false
         
         return tv
     }()
@@ -299,6 +308,8 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
+    private let commentMenuDropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home", cellHeight: 40)
+    
     private let successView: RegisterPostSuccessView = {
         let view = RegisterPostSuccessView()
         view.isHidden = true
@@ -327,7 +338,7 @@ class PostDetailView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        [topNavigationBar, createCommentStackView, commentDividerView, tableView, topMoreDropDownView, successView].forEach {
+        [topNavigationBar, createCommentStackView, commentDividerView, tableView, topMoreDropDownView, commentMenuDropDownView, successView].forEach {
             view.addSubview($0)
         }
         
@@ -377,6 +388,10 @@ class PostDetailView: UIViewController {
         }
         
         configureContentView()
+        
+        commentMenuDropDownView.snp.makeConstraints { make in
+            make.width.equalTo(128)
+        }
         
         successView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
@@ -457,7 +472,8 @@ extension PostDetailView {
         reactor.action.onNext(.viewDidLoad)
         
         if isNew {
-            reactor.action.onNext(.showRegistSuccessView)
+            logger.debug("RegisterPostSuccessView 보이기")
+            reactor.action.onNext(.showRegisterSuccessView)
         }
         
         refreshControl.rx.controlEvent(.valueChanged)
@@ -476,14 +492,14 @@ extension PostDetailView {
             .disposed(by: disposeBag)
         
         topMoreButton.rx.tap
-            .map { Reactor.Action.menuButtonTapped }
+            .map { Reactor.Action.menuButtonTapped(nil) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         topMoreDropDownView.didCellTap
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { menu in
-                reactor.action.onNext(.menuButtonTapped)
+                reactor.action.onNext(.menuButtonTapped(false))
                 
                 switch menu {
                 case "Report":
@@ -510,7 +526,7 @@ extension PostDetailView {
         
         // 셀을 눌렀을 때
         tableView.rx.modelSelected(CommentModel.self)
-            .map { Reactor.Action.setSelectedCommentId($0.id) }
+            .map { Reactor.Action.setSelectedCommentModel($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -535,6 +551,59 @@ extension PostDetailView {
             .map { _ in Reactor.Action.chatButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        commentMenuDropDownView.didCellTap
+            .withLatestFrom(reactor.state) { (menu: $0, state: $1) }
+            .compactMap { menu, state -> (String, CommentModel)? in
+                guard let model = state.selectedCommentModel else { return nil }
+                return (menu, model)
+            }
+            .subscribe(onNext: { [weak self] menu, model in
+                guard let self = self else { return }
+                
+                switch menu {
+                case "Reply":
+                    guard let nickname = model.userNickname else {
+                        return
+                    }
+                    
+                    reactor.action.onNext(.replyButtonTapped("@\(nickname) "))
+                
+                case "Report":
+                    reactor.action.onNext(.reportCommentButtonTapped)
+                    
+                case "Edit":
+                    editCommentTextView.text = CommentView.convertComment(
+                        comment: model.content ?? "",
+                        commentedUsers: reactor.currentState.commentedUsersToNickname,
+                        isEdited: false
+                    )
+                    .string
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                    
+                    reactor.action.onNext(.editButtonTapped)
+                    
+                case "Delete":
+                    reactor.action.onNext(.deleteCommentButtonTapped)
+                    
+                default:
+                    logger.error("commentMenuDropDownView의 didCellTap의 case에서 등록되지 않은 메뉴가 있음: \(menu)")
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        Observable.merge([
+            view.rx.tapGesture().when(.recognized).map { _ in },
+            tableView.rx.didZoom.map { _ in },
+            tableView.rx.didScroll.map { _ in }
+        ])
+        .subscribe(onNext: { [weak self] _ in
+            guard let self = self else { return }
+            
+            reactor.action.onNext(.menuButtonTapped(false))
+            reactor.action.onNext(.commentMenuButtonTapped(false))
+        })
+        .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: PostDetailReactor) {
@@ -543,6 +612,8 @@ extension PostDetailView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] (postInfo, postCommentsCount) in
                 guard let self = self else { return }
+                
+                logger.debug("state의 postInfo 혹은 postCommentsCount 업데이트")
                 
                 if let postInfo, let postCommentsCount {
                     updateUI(postInfo: postInfo, postCommentsCount: postCommentsCount)
@@ -561,57 +632,43 @@ extension PostDetailView {
             )) { [weak self] index, model, cell in
                 guard let self = self else { return }
                 
-                // 모든 셀 메뉴 닫기
-                let visibleCells = tableView.visibleCells.compactMap { $0 as? CommentTableViewCell }
-                visibleCells.forEach { cell in
-                    cell.view.isMenuOpen = false
-                    cell.view.dropDownView.setOpen(isOpen: false)
-                }
+                logger.debug("state의 comments 업데이트")
                 
                 let commentedUsers = reactor.currentState.commentedUsersToNickname
                 
                 cell.configureUI(model: model, commentedUsers: commentedUsers)
                 
-                cell.replyTap
-                    .map {
-                        guard let nickname = model.userNickname else {
-                            return Reactor.Action.replyButtonTapped("")
-                        }
-                        
-                        return Reactor.Action.replyButtonTapped("@\(nickname) ")
-                    }
-                    .bind(to: reactor.action)
-                    .disposed(by: cell.disposeBag)
-                
-                cell.reportTap
-                    .map { Reactor.Action.reportButtonTapped }
-                    .bind(to: reactor.action)
-                    .disposed(by: cell.disposeBag)
-                
-                cell.editTap
-                    .do(onNext: { [weak self] _ in
+                cell.menuTap
+                    .subscribe(onNext: { [weak self] button in
                         guard let self = self else { return }
                         
-                        editCommentTextView.text = cell.view.convertComment(
-                            comment: model.content ?? "",
-                            commentedUsers: reactor.currentState.commentedUsersToNickname,
-                            isEdited: false
-                        )
-                        .string
-                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                        if let myIdString = KeyChain.shared.get(key: "USER_ID"),
+                           let myId = Int(myIdString) {
+                            if model.userId == myId {
+                                commentMenuDropDownView.items = ["Reply", "Edit", "Delete"]
+                            } else {
+                                commentMenuDropDownView.items = ["Reply", "Report"]
+                            }
+                        } else {
+                            commentMenuDropDownView.items = []
+                        }
+                        
+                        // 버튼 좌표 변환
+                        let buttonFrame = button.convert(button.bounds, to: view)
+                        
+                        commentMenuDropDownView.snp.remakeConstraints { make in
+                            make.top.equalToSuperview().offset(buttonFrame.maxY)
+                            make.trailing.equalTo(self.view.snp.leading).offset(buttonFrame.maxX)
+                            make.width.equalTo(120)
+                        }
+                        
+                        let currentState = reactor.currentState
+                        let isSameComment = currentState.selectedCommentModel?.id == model.id
+                        let shouldCommentMenuOpen = !(currentState.isCommentMenuOpen && isSameComment)
+
+                        reactor.action.onNext(.commentMenuButtonTapped(shouldCommentMenuOpen))
+                        reactor.action.onNext(.setSelectedCommentModel(model))
                     })
-                    .map { Reactor.Action.editButtonTapped }
-                    .bind(to: reactor.action)
-                    .disposed(by: cell.disposeBag)
-                
-                cell.deleteTap
-                    .map { Reactor.Action.deleteCommentButtonTapped }
-                    .bind(to: reactor.action)
-                    .disposed(by: cell.disposeBag)
-                
-                cell.menuTap
-                    .map { Reactor.Action.setSelectedCommentId(model.id) }
-                    .bind(to: reactor.action)
                     .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
@@ -627,8 +684,11 @@ extension PostDetailView {
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.isSaved }
+            .distinctUntilChanged()
             .subscribe(onNext: { [weak self] isSaved in
                 guard let self = self else { return }
+                
+                logger.debug("state의 isSaved 업데이트")
                 
                 let imageSize: CGSize = .init(width: 24, height: 24)
                 
@@ -646,20 +706,22 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
-        
-        reactor.state.map { ($0.isEditMode, $0.selectedCommentId) }
+        reactor.state.map { ($0.isEditMode, $0.selectedCommentModel) }
             .distinctUntilChanged { $0 == $1 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isEditMode, selectedCommentId in
+            .subscribe(onNext: { [weak self] isEditMode, selectedCommentModel in
                 guard let self = self else { return }
                 
-                let visibleCells = self.tableView.visibleCells.compactMap { $0 as? CommentTableViewCell }
+                logger.debug("state의 isEditMode 혹은 selectedCommentModel 업데이트")
+                
+                let visibleCells = tableView.visibleCells.compactMap { $0 as? CommentTableViewCell }
                 
                 for cell in visibleCells {
-                    guard let indexPath = self.tableView.indexPath(for: cell) else { continue }
+                    guard let indexPath = tableView.indexPath(for: cell),
+                          let selectedCommentModel else { continue }
                     
                     let model = reactor.currentState.comments[indexPath.row]
-                    cell.toggleEditMode(isEditMode && selectedCommentId == model.id)
+                    cell.toggleEditMode(isEditMode && selectedCommentModel.id == model.id)
                 }
                 
                 updateEditUI(isEditMode: isEditMode)
@@ -771,6 +833,17 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
+        // 댓글 메뉴
+        reactor.state.map { $0.isCommentMenuOpen }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isMenuOpen in
+                guard let self = self else { return }
+                
+                commentMenuDropDownView.setOpen(isOpen: isMenuOpen)
+            })
+            .disposed(by: disposeBag)
+        
         // 댓글 신고 알림
         reactor.pulse(\.$shouldShowReportCommentAlert)
             .compactMap { $0 }
@@ -868,7 +941,7 @@ extension PostDetailView {
             .disposed(by: disposeBag)
         
         // 작성 성공 알림 뷰
-        reactor.pulse(\.$shouldShowRegistSuccessView)
+        reactor.pulse(\.$shouldShowRegisterSuccessView)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in

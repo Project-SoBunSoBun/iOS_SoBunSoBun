@@ -17,11 +17,7 @@ class CommentView: UIView {
     
     var isMenuOpen: Bool = false
     
-    let replyTap = PublishRelay<Void>()
-    let reportTap = PublishRelay<Void>()
-    let editTap = PublishRelay<Void>()
-    let deleteTap = PublishRelay<Void>()
-    let menuTap = PublishRelay<Void>()
+    let menuTap = PublishRelay<UIButton>()
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
@@ -56,8 +52,6 @@ class CommentView: UIView {
         return btn
     }()
     
-    let dropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home", cellHeight: 40)
-    
     private let commentLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
@@ -66,7 +60,7 @@ class CommentView: UIView {
     }()
     
     // MARK: - 댓글 AttributedText 변환
-    func convertComment(comment: String, commentedUsers: [String: String], isEdited: Bool) -> NSAttributedString {
+    static func convertComment(comment: String, commentedUsers: [String: String], isEdited: Bool) -> NSAttributedString {
         // 변환된 텍스트
         var convertedText = comment
         
@@ -177,15 +171,6 @@ class CommentView: UIView {
             make.top.equalTo(authorInfoView.snp.bottom).offset(8)
             make.bottom.equalToSuperview()
         }
-        
-        // 드롭다운
-        addSubview(dropDownView)
-        
-        dropDownView.snp.makeConstraints { make in
-            make.trailing.equalTo(menuButton)
-            make.top.equalTo(menuButton.snp.bottom)
-            make.width.equalTo(128)
-        }
     }
     
     func configureUI(model: CommentModel, commentedUsers: [String: String]) {
@@ -197,22 +182,8 @@ class CommentView: UIView {
             verifyLocation: model.userAddress
         )
         
-        // 메뉴
-        let myId = KeyChain.shared.get(key: "USER_ID")
-        let menu: [String]
-        
-        if let myId, let myUserId = Int(myId) {
-            menu = model.userId == myUserId ?
-            ["Edit", "Delete"] :
-            ["Reply", "Report"]
-        } else {
-            menu = []
-        }
-        
-        dropDownView.items = menu
-        
         // 댓글
-        commentLabel.attributedText = convertComment(
+        commentLabel.attributedText = CommentView.convertComment(
             comment: model.content ?? "",
             commentedUsers: commentedUsers,
             isEdited: model.edited
@@ -224,39 +195,10 @@ extension CommentView {
     private func bind() {
         menuButton.rx.tap
             .observe(on: MainScheduler.instance)
-            .do(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                isMenuOpen.toggle()
-                dropDownView.setOpen(isOpen: isMenuOpen)
-            })
-            .bind(to: menuTap)
-            .disposed(by: disposeBag)
-        
-        dropDownView.didCellTap
-            .observe(on: MainScheduler.asyncInstance)
-            .subscribe(onNext: { [weak self] tap in
-                guard let self = self else { return }
-                
-                isMenuOpen = false
-                dropDownView.setOpen(isOpen: isMenuOpen)
-                
-                switch tap {
-                case "Reply":
-                    replyTap.accept(())
-                    
-                case "Report":
-                    reportTap.accept(())
-                    
-                case "Edit":
-                    editTap.accept(())
-                    
-                case "Delete":
-                    deleteTap.accept(())
-                    
-                default:
-                    logger.error("DropDownCell에서 didCellTap을 구독 받는 중 무언가 잘못 됨")
-                }
+                menuTap.accept(self.menuButton)
             })
             .disposed(by: disposeBag)
     }

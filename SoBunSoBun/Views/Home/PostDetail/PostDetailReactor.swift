@@ -34,25 +34,27 @@ class PostDetailReactor: Reactor {
         case refresh
         
         // 게시글 작성 후 성공화면
-        case showRegistSuccessView
+        case showRegisterSuccessView
         
         // 상단 네비게이션 바
         case shareButtonTapped
         case saveButtonTapped
-        case menuButtonTapped
+        case menuButtonTapped(Bool?)
         case reportPostButtonTapped
         case reportPost
         case deletePostButtonTapped
         case deletePost
         
         // 댓글
+        case commentMenuButtonTapped(Bool?)
+        
         case createComment(String)
         
-        case setSelectedCommentId(Int)
+        case setSelectedCommentModel(CommentModel)
         
         case replyButtonTapped(String)
         
-        case reportButtonTapped
+        case reportCommentButtonTapped
         case reportComment
         
         case editButtonTapped
@@ -80,7 +82,9 @@ class PostDetailReactor: Reactor {
         case setShouldShowDeletePostAlert
         case setShouldShowDeletePostDoneAlert
         
-        case setSelectedCommentId(Int)
+        case setIsCommentMenuOpen(Bool)
+        
+        case setSelectedCommentModel(CommentModel)
         
         case setTextViewText(String)
         
@@ -96,7 +100,7 @@ class PostDetailReactor: Reactor {
         
         case setRefreshing(Bool)
         
-        case setShowRegistSuccessView
+        case setShowRegisterSuccessView
         
         case setErrorMessage(String)
     }
@@ -112,7 +116,7 @@ class PostDetailReactor: Reactor {
         var isSaved: Bool = false
         var isMenuOpen: Bool = false
         
-        var selectedCommentId: Int?
+        var selectedCommentModel: CommentModel?
         var isEditMode: Bool = false
         
         @Pulse var textViewText: String = ""
@@ -125,6 +129,8 @@ class PostDetailReactor: Reactor {
         @Pulse var shouldShowDeletePostAlert: Void?
         @Pulse var shouldShowDeletePostDoneAlert: Void?
         
+        var isCommentMenuOpen: Bool = false
+        
         @Pulse var shouldShowReportCommentAlert: Void?
         @Pulse var shouldShowReportCommentDoneAlert: Void?
         
@@ -135,7 +141,7 @@ class PostDetailReactor: Reactor {
         
         var isRefreshing: Bool = false
         
-        @Pulse var shouldShowRegistSuccessView: Void?
+        @Pulse var shouldShowRegisterSuccessView: Void?
         
         @Pulse var errorMessage: String?
     }
@@ -160,8 +166,8 @@ class PostDetailReactor: Reactor {
                 Observable.just(.setRefreshing(false))
             ])
             
-        case .showRegistSuccessView:
-            return Observable.just(.setShowRegistSuccessView)
+        case .showRegisterSuccessView:
+            return Observable.just(.setShowRegisterSuccessView)
             
         case .shareButtonTapped:
             return Observable.just(.setShouldShowShare)
@@ -171,11 +177,15 @@ class PostDetailReactor: Reactor {
             
             return isSaved ? cancelSavePost() : savePost()
             
-        case .menuButtonTapped:
-            var isMenuOpen: Bool = currentState.isMenuOpen
-            isMenuOpen.toggle()
+        case .menuButtonTapped(let isMenuOpen):
+            let isOpen = isMenuOpen ?? !currentState.isMenuOpen
             
-            return Observable.just(.setIsMenuOpen(isMenuOpen))
+            return Observable.just(.setIsMenuOpen(isOpen))
+            
+        case .commentMenuButtonTapped(let isMenuOpen):
+            let isOpen = isMenuOpen ?? !currentState.isCommentMenuOpen
+            
+            return Observable.just(.setIsCommentMenuOpen(isOpen))
             
         case .reportPostButtonTapped:
             return Observable.just(.setShouldShowReportPostAlert)
@@ -192,8 +202,8 @@ class PostDetailReactor: Reactor {
         case .createComment(let content):
             return createComment(content: content)
             
-        case .setSelectedCommentId(let id):
-            return Observable.just(.setSelectedCommentId(id))
+        case .setSelectedCommentModel(let model):
+            return Observable.just(.setSelectedCommentModel(model))
             
         case .replyButtonTapped(let string):
             return Observable.concat([
@@ -201,15 +211,15 @@ class PostDetailReactor: Reactor {
                 Observable.just(.setTextViewText(string))
             ])
             
-        case .reportButtonTapped:
+        case .reportCommentButtonTapped:
             return Observable.concat([
                 Observable.just(.setIsEditMode(false)),
                 Observable.just(.setShouldShowReportCommentAlert)
             ])
             
         case .reportComment:
-            if let commentId = currentState.selectedCommentId {
-                return reportComment(commentId: commentId)
+            if let commentModel = currentState.selectedCommentModel {
+                return reportComment(commentId: commentModel.id)
             } else {
                 return Observable.empty()
             }
@@ -277,11 +287,14 @@ class PostDetailReactor: Reactor {
         case .setShouldShowDeletePostAlert:
             newState.shouldShowDeletePostAlert = ()
             
-        case . setShouldShowDeletePostDoneAlert:
+        case .setShouldShowDeletePostDoneAlert:
             newState.shouldShowDeletePostDoneAlert = ()
             
-        case .setSelectedCommentId(let id):
-            newState.selectedCommentId = id
+        case .setIsCommentMenuOpen(let isMenuOpen):
+            newState.isCommentMenuOpen = isMenuOpen
+            
+        case .setSelectedCommentModel(let model):
+            newState.selectedCommentModel = model
             
         case .setIsEditMode(let isEnabled):
             newState.isEditMode = isEnabled
@@ -307,8 +320,8 @@ class PostDetailReactor: Reactor {
         case .setRefreshing(let isRefreshing):
             newState.isRefreshing = isRefreshing
             
-        case .setShowRegistSuccessView:
-            newState.shouldShowRegistSuccessView = ()
+        case .setShowRegisterSuccessView:
+            newState.shouldShowRegisterSuccessView = ()
             
         case .setErrorMessage(let message):
             newState.errorMessage = message
@@ -501,7 +514,7 @@ class PostDetailReactor: Reactor {
     
     // 댓글 수정
     private func patchComment(content: String) -> Observable<Mutation> {
-        guard let commentId = currentState.selectedCommentId else {
+        guard let commentModel = currentState.selectedCommentModel else {
             return Observable.just(.setErrorMessage(errorMessage))
         }
         
@@ -513,7 +526,7 @@ class PostDetailReactor: Reactor {
         
         let convertedComment = convertComment(comment: cleanedContent)
         
-        return networkManager.patchPostComment(id: commentId, content: convertedComment)
+        return networkManager.patchPostComment(id: commentModel.id, content: convertedComment)
             .asObservable()
             .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
@@ -535,11 +548,11 @@ class PostDetailReactor: Reactor {
     
     // 댓글 삭제
     private func deleteComment() -> Observable<Mutation> {
-        guard let commentId = currentState.selectedCommentId else {
+        guard let commentModel = currentState.selectedCommentModel else {
             return Observable.empty()
         }
         
-        return networkManager.deletePostComment(id: commentId)
+        return networkManager.deletePostComment(id: commentModel.id)
             .asObservable()
             .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
@@ -562,11 +575,11 @@ class PostDetailReactor: Reactor {
     
     // 댓글 신고
     private func reportComment(commentId: Int) -> Observable<Mutation> {
-        guard let commentId = currentState.selectedCommentId else {
+        guard let commentModel = currentState.selectedCommentModel else {
             return Observable.empty()
         }
         
-        return networkManager.reportPostComment(id: commentId)
+        return networkManager.reportPostComment(id: commentModel.id)
             .asObservable()
             .flatMap { _ -> Observable<Mutation> in
                 return Observable.just(.setShouldShowReportCommentDoneAlert)

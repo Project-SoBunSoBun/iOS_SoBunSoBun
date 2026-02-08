@@ -6,19 +6,22 @@
 //
 
 import UIKit
+import SnapKit
 import RxSwift
 import RxCocoa
 import RxGesture
 
-class DropDownCell: UIStackView {
+class DropDownCell: UIView {
     let localizableKey: String
     let tableName: String
+    let selectionMode: DropDownView.SelectionMode
     
     private let disposeBag = DisposeBag()
     
-    init(frame: CGRect = .zero, localizableKey: String, tableName: String) {
+    init(frame: CGRect = .zero, localizableKey: String, tableName: String, selectionMode: DropDownView.SelectionMode) {
         self.localizableKey = localizableKey
         self.tableName = tableName
+        self.selectionMode = selectionMode
         
         super.init(frame: frame)
         
@@ -42,33 +45,52 @@ class DropDownCell: UIStackView {
     
     private let icon: UIImageView = {
         let iv = UIImageView()
-        iv.image = .greyCheck
+        iv.image = .greyCheck.resize(.init(width: 24, height: 24))
         iv.contentMode = .scaleAspectFit
-        iv.preferredSymbolConfiguration = .init(pointSize: 24)
         iv.isHidden = true
         iv.isUserInteractionEnabled = false
+        
+        iv.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
         
         return iv
     }()
     
     private func configureUI() {
-        self.axis = .horizontal
-        self.spacing = 8
-        self.alignment = .center
-        self.isLayoutMarginsRelativeArrangement = true
-        self.layoutMargins = .init(top: 0, left: 8, bottom: 0, right: 8)
-        
         var attributes: [NSAttributedString.Key: Any] = title14.attributes()
         attributes[.foregroundColor] = UIColor.neutral600
         
         label.attributedText = NSAttributedString(string: NSLocalizedString(localizableKey, tableName: tableName, comment: ""), attributes: attributes)
         
-        [label, icon].forEach {
-            self.addArrangedSubview($0)
+        switch selectionMode {
+        case .plain:
+            addSubview(label)
+            
+            label.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(8)
+                make.verticalEdges.equalToSuperview()
+                make.centerY.equalToSuperview()
+            }
+            
+        case .check:
+            [icon, label].forEach {
+                addSubview($0)
+            }
+            
+            icon.snp.makeConstraints { make in
+                make.trailing.equalToSuperview().inset(8)
+                make.verticalEdges.equalToSuperview()
+                make.centerY.equalToSuperview()
+            }
+            
+            label.snp.makeConstraints { make in
+                make.leading.equalToSuperview().offset(8)
+                make.trailing.equalTo(icon.snp.leading).inset(8)
+                make.verticalEdges.equalToSuperview()
+                make.centerY.equalToSuperview()
+            }
         }
-        
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        icon.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     func toggleSelect(isSelected: Bool) {

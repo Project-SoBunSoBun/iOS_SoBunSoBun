@@ -82,7 +82,7 @@ class DropDownView: UIStackView {
         }
         
         items.enumerated().forEach { index, item in
-            let cell = DropDownCell(localizableKey: item, tableName: tableName)
+            let cell = DropDownCell(localizableKey: item, tableName: tableName, selectionMode: selectionMode)
             
             if selectionMode == .check && index == 0 {
                 cell.toggleSelect(isSelected: true)
@@ -91,6 +91,7 @@ class DropDownView: UIStackView {
             self.addArrangedSubview(cell)
             
             cell.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
                 make.height.equalTo(cellHeight)
             }
         }

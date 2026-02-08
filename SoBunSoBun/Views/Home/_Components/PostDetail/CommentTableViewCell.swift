@@ -15,11 +15,7 @@ class CommentTableViewCell: UITableViewCell {
     
     let view = CommentView()
     
-    let replyTap = PublishRelay<Void>()
-    let reportTap = PublishRelay<Void>()
-    let editTap = PublishRelay<Void>()
-    let deleteTap = PublishRelay<Void>()
-    let menuTap = PublishRelay<Void>()
+    let menuTap = PublishRelay<UIButton>()
     
     var disposeBag = DisposeBag()
     
@@ -76,22 +72,6 @@ class CommentTableViewCell: UITableViewCell {
 
 extension CommentTableViewCell {
     private func bind() {
-        view.replyTap
-            .bind(to: replyTap)
-            .disposed(by: disposeBag)
-        
-        view.reportTap
-            .bind(to: reportTap)
-            .disposed(by: disposeBag)
-        
-        view.editTap
-            .bind(to: editTap)
-            .disposed(by: disposeBag)
-        
-        view.deleteTap
-            .bind(to: deleteTap)
-            .disposed(by: disposeBag)
-        
         view.menuTap
             .bind(to: menuTap)
             .disposed(by: disposeBag)
