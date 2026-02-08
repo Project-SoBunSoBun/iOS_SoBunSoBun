@@ -235,14 +235,13 @@ extension CommentView {
         
         dropDownView.didCellTap
             .observe(on: MainScheduler.asyncInstance)
-            .do(onNext: { [weak self] text in
+            .subscribe(onNext: { [weak self] tap in
                 guard let self = self else { return }
                 
                 isMenuOpen = false
                 dropDownView.setOpen(isOpen: isMenuOpen)
-            })
-            .subscribe(onNext: { [weak self] tap in
-                guard let self = self else { return }
+                
+                print(dropDownView.frame.size)
                 
                 switch tap {
                 case "Reply":
