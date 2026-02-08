@@ -28,7 +28,6 @@ class DropDownView: UIStackView {
     typealias Reactor = DropDownReactor
     private let reactor: DropDownReactor = DropDownReactor()
     
-    private var cellsDisposeBag = DisposeBag()
     private let disposeBag = DisposeBag()
     private var hasInitialized = false
     
@@ -140,9 +139,6 @@ extension DropDownView {
     }
     
     private func bindCells(reactor: Reactor) {
-        // 셀의 구독을 해지 및 재구독
-        cellsDisposeBag = DisposeBag()
-        
         // 처음에만 실행되도록
         if selectionMode == .check {
             reactor.action.onNext(.selectCell(items[0]))
@@ -154,7 +150,7 @@ extension DropDownView {
             cell.didTap
                 .map { Reactor.Action.selectCell($0) }
                 .bind(to: reactor.action)
-                .disposed(by: cellsDisposeBag)
+                .disposed(by: disposeBag)
         }
     }
     
