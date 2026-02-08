@@ -70,7 +70,7 @@ class PostList: UIView {
     
     private lazy var locationIcon: UIImageView = iconImage(image: .greyLocationS)
     
-    private lazy var locationLabel: UILabel = {
+    private let locationLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         
@@ -81,7 +81,7 @@ class PostList: UIView {
     
     private lazy var dateIcon: UIImageView = iconImage(image: .greyClockS)
     
-    private lazy var dateLabel: UILabel = {
+    private let dateLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         
