@@ -241,8 +241,6 @@ extension CommentView {
                 isMenuOpen = false
                 dropDownView.setOpen(isOpen: isMenuOpen)
                 
-                print(dropDownView.frame.size)
-                
                 switch tap {
                 case "Reply":
                     replyTap.accept(())
