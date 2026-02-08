@@ -29,7 +29,8 @@ class DropDownView: UIStackView {
     private let reactor: DropDownReactor = DropDownReactor()
     
     private let disposeBag = DisposeBag()
-    private var hasInitialized = false
+    
+    let didCellTap = PublishSubject<String>()
     
     init(frame: CGRect = .zero, selectionMode: SelectionMode, tableName: String, cellHeight: CGFloat) {
         self.selectionMode = selectionMode
@@ -44,8 +45,6 @@ class DropDownView: UIStackView {
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    let didCellTap = PublishSubject<String>()
     
     private func configureUI() {
         self.backgroundColor = .backgroundWhite
@@ -89,11 +88,11 @@ class DropDownView: UIStackView {
                 cell.toggleSelect(isSelected: true)
             }
             
+            self.addArrangedSubview(cell)
+            
             cell.snp.remakeConstraints { make in
                 make.height.equalTo(cellHeight)
             }
-            
-            self.addArrangedSubview(cell)
         }
     }
     

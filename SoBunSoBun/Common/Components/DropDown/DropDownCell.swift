@@ -32,7 +32,13 @@ class DropDownCell: UIStackView {
     
     let didTap = PublishRelay<String>()
     
-    private let label = UILabel()
+    private let label: UILabel = {
+        let lb = UILabel()
+        lb.numberOfLines = 0
+        lb.isUserInteractionEnabled = false
+        
+        return lb
+    }()
     
     private let icon: UIImageView = {
         let iv = UIImageView()
@@ -40,6 +46,7 @@ class DropDownCell: UIStackView {
         iv.contentMode = .scaleAspectFit
         iv.preferredSymbolConfiguration = .init(pointSize: 24)
         iv.isHidden = true
+        iv.isUserInteractionEnabled = false
         
         return iv
     }()
