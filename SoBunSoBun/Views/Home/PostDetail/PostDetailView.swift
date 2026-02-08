@@ -13,14 +13,16 @@ import RxGesture
 
 class PostDetailView: UIViewController {
     private let postId: Int
+    private let isNew: Bool
     
     typealias Reactor = PostDetailReactor
     private lazy var reactor = PostDetailReactor(postId: postId)
     
     private let disposeBag = DisposeBag()
     
-    init(postId: Int, nibName: String? = nil, bundle: Bundle? = nil) {
+    init(postId: Int, isNew: Bool = false, nibName: String? = nil, bundle: Bundle? = nil) {
         self.postId = postId
+        self.isNew = isNew
         super.init(nibName: nibName, bundle: bundle)
     }
     
@@ -297,6 +299,13 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
+    private let successView: RegisterPostSuccessView = {
+        let view = RegisterPostSuccessView()
+        view.isHidden = true
+        
+        return view
+    }()
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -318,7 +327,7 @@ class PostDetailView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        [topNavigationBar, createCommentStackView, commentDividerView, tableView, topMoreDropDownView].forEach {
+        [topNavigationBar, createCommentStackView, commentDividerView, tableView, topMoreDropDownView, successView].forEach {
             view.addSubview($0)
         }
         
@@ -367,6 +376,10 @@ class PostDetailView: UIViewController {
         }
         
         configureContentView()
+        
+        successView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
     private func configureContentView() {
@@ -441,6 +454,10 @@ extension PostDetailView {
     
     private func bindAction(reactor: PostDetailReactor) {
         reactor.action.onNext(.viewDidLoad)
+        
+        if isNew {
+            reactor.action.onNext(.showRegistSuccessView)
+        }
         
         refreshControl.rx.controlEvent(.valueChanged)
             .map { Reactor.Action.refresh }
@@ -842,10 +859,27 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
+        // 새로고침
         reactor.state.map { $0.isRefreshing }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .bind(to: refreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
+        
+        // 작성 성공 알림 뷰
+        reactor.pulse(\.$shouldShowRegistSuccessView)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                view.bringSubviewToFront(successView)
+                successView.isHidden = false
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                    self.successView.isHidden = true
+                }
+            })
             .disposed(by: disposeBag)
         
         // 오류 메시지

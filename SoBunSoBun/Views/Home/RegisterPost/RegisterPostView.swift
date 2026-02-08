@@ -287,13 +287,6 @@ class RegisterPostView: UIViewController {
         return view
     }()
     
-    private let successView: RegisterPostSuccessView = {
-        let view = RegisterPostSuccessView()
-        view.isHidden = true
-        
-        return view
-    }()
-    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -324,12 +317,6 @@ class RegisterPostView: UIViewController {
         view.addSubview(loadingView)
         
         loadingView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        view.addSubview(successView)
-        
-        successView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
@@ -604,13 +591,16 @@ extension RegisterPostView {
         
         reactor.pulse(\.$isSuccess)
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
+            .withLatestFrom(reactor.state.map {$0.postId})
+            .subscribe(onNext: { [weak self] postId in
                 guard let self = self else { return }
                 
-                successView.isHidden = false
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    self.navigationController?.popViewController(animated: true)
+                DispatchQueue.main.async {
+                    if let postId {
+                        self.navigationController?.pushViewController(PostDetailView(postId: postId, isNew: true), animated: true)
+                    } else {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)

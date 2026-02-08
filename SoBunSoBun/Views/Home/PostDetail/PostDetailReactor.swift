@@ -33,6 +33,9 @@ class PostDetailReactor: Reactor {
         case viewDidLoad
         case refresh
         
+        // 게시글 작성 후 성공화면
+        case showRegistSuccessView
+        
         // 상단 네비게이션 바
         case shareButtonTapped
         case saveButtonTapped
@@ -93,6 +96,8 @@ class PostDetailReactor: Reactor {
         
         case setRefreshing(Bool)
         
+        case setShowRegistSuccessView
+        
         case setErrorMessage(String)
     }
     
@@ -130,6 +135,8 @@ class PostDetailReactor: Reactor {
         
         var isRefreshing: Bool = false
         
+        @Pulse var shouldShowRegistSuccessView: Void?
+        
         @Pulse var errorMessage: String?
     }
     
@@ -152,6 +159,9 @@ class PostDetailReactor: Reactor {
                 getComments(),
                 Observable.just(.setRefreshing(false))
             ])
+            
+        case .showRegistSuccessView:
+            return Observable.just(.setShowRegistSuccessView)
             
         case .shareButtonTapped:
             return Observable.just(.setShouldShowShare)
@@ -296,6 +306,9 @@ class PostDetailReactor: Reactor {
             
         case .setRefreshing(let isRefreshing):
             newState.isRefreshing = isRefreshing
+            
+        case .setShowRegistSuccessView:
+            newState.shouldShowRegistSuccessView = ()
             
         case .setErrorMessage(let message):
             newState.errorMessage = message

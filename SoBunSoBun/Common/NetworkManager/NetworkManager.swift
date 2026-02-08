@@ -120,12 +120,12 @@ final class NetworkManager {
     }
     
     // 글 등록
-    func registerPost(model: RegisterPostBodyModel) -> Single<Void> {
+    func registerPost(model: RegisterPostBodyModel) -> Single<PostModel> {
         return authProvider.rx.request(
             MultiTarget(AuthorizedAPI.registerPost(model: model))
         )
         .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .map(PostModel.self)
     }
     
     // MARK: - 검색
