@@ -568,7 +568,7 @@ extension PostDetailView {
                     cell.view.dropDownView.setOpen(isOpen: false)
                 }
                 
-                let commentedUsers = reactor.currentState.commentedUsersToNickname ?? [:]
+                let commentedUsers = reactor.currentState.commentedUsersToNickname
                 
                 cell.configureUI(model: model, commentedUsers: commentedUsers)
                 
@@ -594,7 +594,7 @@ extension PostDetailView {
                         
                         editCommentTextView.text = cell.view.convertComment(
                             comment: model.content ?? "",
-                            commentedUsers: reactor.currentState.commentedUsersToNickname ?? [:],
+                            commentedUsers: reactor.currentState.commentedUsersToNickname,
                             isEdited: false
                         )
                         .string
