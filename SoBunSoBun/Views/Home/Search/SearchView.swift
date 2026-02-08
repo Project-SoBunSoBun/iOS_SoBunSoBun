@@ -146,7 +146,7 @@ class SearchView: UIViewController {
     }()
     
     private let dropDownView: DropDownView = {
-        let ddv = DropDownView(selectionMode: .check, tableName: "Home")
+        let ddv = DropDownView(selectionMode: .check, tableName: "Home", cellHeight: 40)
         ddv.items = sortLocalizableKeys
         
         return ddv
@@ -292,6 +292,7 @@ class SearchView: UIViewController {
         dropDownView.snp.makeConstraints { make in
             make.trailing.equalTo(sortSelectView)
             make.top.equalTo(sortSelectView.snp.bottom)
+            make.width.equalTo(128)
         }
     }
     

@@ -56,7 +56,7 @@ class CommentView: UIView {
         return btn
     }()
     
-    let dropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home")
+    let dropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home", cellHeight: 40)
     
     private let commentLabel: UILabel = {
         let lb = UILabel()
@@ -184,6 +184,7 @@ class CommentView: UIView {
         dropDownView.snp.makeConstraints { make in
             make.trailing.equalTo(menuButton)
             make.top.equalTo(menuButton.snp.bottom)
+            make.width.equalTo(128)
         }
     }
     

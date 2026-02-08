@@ -49,7 +49,7 @@ class DropDownCell: UIStackView {
         self.spacing = 8
         self.alignment = .center
         self.isLayoutMarginsRelativeArrangement = true
-        self.layoutMargins = .init(top: 8, left: 8, bottom: 8, right: 8)
+        self.layoutMargins = .init(top: 0, left: 8, bottom: 0, right: 8)
         
         var attributes: [NSAttributedString.Key: Any] = title14.attributes()
         attributes[.foregroundColor] = UIColor.neutral600

@@ -48,7 +48,7 @@ class PostDetailView: UIViewController {
     
     private lazy var topMoreButton: UIButton = topNavigationButton(image: .blackHorizontalDot)
     
-    private let topMoreDropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home")
+    private let topMoreDropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home", cellHeight: 40)
     
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
@@ -373,6 +373,7 @@ class PostDetailView: UIViewController {
         topMoreDropDownView.snp.makeConstraints { make in
             make.trailing.equalTo(topNavigationBar).inset(4)
             make.top.equalTo(topNavigationBar.snp.bottom)
+            make.width.equalTo(128)
         }
         
         configureContentView()

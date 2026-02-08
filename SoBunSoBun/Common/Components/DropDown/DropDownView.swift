@@ -13,8 +13,8 @@ import RxCocoa
 class DropDownView: UIStackView {
     enum SelectionMode { case plain, check }
     private let selectionMode: SelectionMode
-    
     private let tableName: String
+    private let cellHeight: CGFloat
     
     var items: [String] = [] {
         didSet {
@@ -32,9 +32,10 @@ class DropDownView: UIStackView {
     private let disposeBag = DisposeBag()
     private var hasInitialized = false
     
-    init(frame: CGRect = .zero, selectionMode: SelectionMode, tableName: String) {
+    init(frame: CGRect = .zero, selectionMode: SelectionMode, tableName: String, cellHeight: CGFloat) {
         self.selectionMode = selectionMode
         self.tableName = tableName
+        self.cellHeight = cellHeight
         super.init(frame: frame)
         
         configureUI()
@@ -68,10 +69,6 @@ class DropDownView: UIStackView {
         
         self.backgroundColor = .backgroundWhite
         
-        self.snp.makeConstraints { make in
-            make.width.equalTo(128)
-        }
-        
         // 초기 설정
         self.isHidden = true
         self.alpha = 0
@@ -91,6 +88,10 @@ class DropDownView: UIStackView {
             
             if selectionMode == .check && index == 0 {
                 cell.toggleSelect(isSelected: true)
+            }
+            
+            cell.snp.remakeConstraints { make in
+                make.height.equalTo(cellHeight)
             }
             
             self.addArrangedSubview(cell)
