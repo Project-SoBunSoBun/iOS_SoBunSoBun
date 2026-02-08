@@ -101,8 +101,8 @@ class PostDetailReactor: Reactor {
         var postCommentsCount: CommentCountModel?
         var comments: [CommentModel] = []
         
-        var commentedUsersToNickname: [String: String]?
-        var commentedUsersToId: [String: Int]?
+        var commentedUsersToNickname: [String: String] = [:]
+        var commentedUsersToId: [String: Int] = [:]
         
         var isSaved: Bool = false
         var isMenuOpen: Bool = false
@@ -572,10 +572,19 @@ class PostDetailReactor: Reactor {
     private func convertComment(comment: String) -> String {
         var convertedText = comment
         
-        let pattern = "@([가-힣a-zA-Z0-9_]+)"
+        let commentedUsersToId = currentState.commentedUsersToId
         
-        guard let commentedUsersToId = currentState.commentedUsersToId,
-              let regex = try? NSRegularExpression(pattern: pattern) else {
+        guard !commentedUsersToId.isEmpty else {
+            return comment
+        }
+        
+        // 긴 닉네임 우선
+        let sortedNicknames = commentedUsersToId.keys.sorted { $0.count > $1.count }
+        // 텍스트 중 닉네임들을 or 연산자 |로 join하여 찾음
+        let nicknamePattern = sortedNicknames.map { NSRegularExpression.escapedPattern(for: $0) }.joined(separator: "|")
+        let pattern = "@(\(nicknamePattern))"
+        
+        guard let regex = try? NSRegularExpression(pattern: pattern) else {
             return comment
         }
         
@@ -593,7 +602,7 @@ class PostDetailReactor: Reactor {
                 convertedText.replaceSubrange(matchRange, with: "<mention:id-\(userId)>")
             }
         }
-                
+        
         return convertedText
     }
 }
