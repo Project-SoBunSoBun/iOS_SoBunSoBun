@@ -88,7 +88,9 @@ class AutoHeightTextView: BaseTextView {
         layoutIfNeeded()
         
         DispatchQueue.main.async { [weak self] in
-            self?.updateCursorLayer()
+            guard let self = self else { return }
+            
+            updateCursorLayer()
         }
     }
     
