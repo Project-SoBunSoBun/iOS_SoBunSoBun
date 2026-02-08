@@ -25,17 +25,17 @@ class BaseTextField: UITextField {
     
     override var placeholder: String? {
         didSet {
-            setplaceholder()
+            setPlaceholder()
         }
     }
     
     var placeholderColor: UIColor = .neutral400 {
         didSet {
-            setplaceholder()
+            setPlaceholder()
         }
     }
     
-    private func setplaceholder() {
+    private func setPlaceholder() {
         guard let text = placeholder else {
             super.placeholder = nil
             super.attributedPlaceholder = nil
