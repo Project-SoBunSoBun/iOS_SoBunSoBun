@@ -174,7 +174,7 @@ class PostDetailView: UIViewController {
         sv.alignment = .center
         sv.backgroundColor = .backgroundWhite
         sv.isLayoutMarginsRelativeArrangement = true
-        sv.layoutMargins = .init(top: 16, left: 0, bottom: 0, right: 16)
+        sv.layoutMargins = .init(top: 16, left: 0, bottom: 16, right: 0)
         sv.isHidden = true
         
         return sv
@@ -640,6 +640,7 @@ extension PostDetailView {
         
         // 답장 기능
         reactor.pulse(\.$textViewText)
+            .filter { !$0.isEmpty }
             .observe(on: MainScheduler.instance)
             .do(onNext: { [weak self] _ in
                 guard let self = self else { return }
