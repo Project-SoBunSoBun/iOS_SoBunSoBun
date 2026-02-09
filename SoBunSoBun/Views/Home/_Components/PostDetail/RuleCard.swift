@@ -80,7 +80,7 @@ class RuleCard: UIView {
         // 제목
         var titleAttributes: [NSAttributedString.Key: Any] = title14.attributes()
         titleAttributes[.foregroundColor] = UIColor.neutral700
-        titleLabel.attributedText = NSAttributedString(string: title, attributes: title14.attributes())
+        titleLabel.attributedText = NSAttributedString(string: title, attributes: titleAttributes)
         
         addSubview(titleLabel)
         

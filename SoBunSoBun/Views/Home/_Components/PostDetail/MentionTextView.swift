@@ -89,7 +89,6 @@ class MentionTextView: AutoHeightTextView {
     }
 }
 
-
 // Atomic Deletion을 위한 Delegate
 extension MentionTextView: UITextViewDelegate {
     private func bind() {
