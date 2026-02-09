@@ -56,6 +56,7 @@ class PostDetailView: UIViewController {
     
     private let topMoreDropDownView: DropDownView = {
         let ddv = DropDownView(selectionMode: .plain, tableName: "Home")
+        ddv.textAlignment = .center
         
         return ddv
     }()
@@ -314,6 +315,7 @@ class PostDetailView: UIViewController {
     
     private let commentMenuDropDownView: DropDownView = {
         let ddv = DropDownView(selectionMode: .plain, tableName: "Home")
+        ddv.textAlignment = .center
         
         return ddv
     }()
@@ -392,7 +394,7 @@ class PostDetailView: UIViewController {
         topMoreDropDownView.snp.makeConstraints { make in
             make.trailing.equalTo(topNavigationBar).inset(4)
             make.top.equalTo(topNavigationBar.snp.bottom)
-            make.width.equalTo(128)
+            make.width.equalTo(70)
         }
         
         configureContentView()
