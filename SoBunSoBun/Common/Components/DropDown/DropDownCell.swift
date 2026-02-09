@@ -35,7 +35,7 @@ class DropDownCell: UIView {
     
     let didTap = PublishRelay<String>()
     
-    private let label: UILabel = {
+    let label: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         lb.isUserInteractionEnabled = false
@@ -68,7 +68,7 @@ class DropDownCell: UIView {
             addSubview(label)
             
             label.snp.makeConstraints { make in
-                make.horizontalEdges.equalToSuperview().inset(8)
+                make.horizontalEdges.equalToSuperview()
                 make.verticalEdges.equalToSuperview()
                 make.centerY.equalToSuperview()
             }
@@ -79,14 +79,14 @@ class DropDownCell: UIView {
             }
             
             icon.snp.makeConstraints { make in
-                make.trailing.equalToSuperview().inset(8)
+                make.trailing.equalToSuperview()
                 make.verticalEdges.equalToSuperview()
                 make.centerY.equalToSuperview()
             }
             
             label.snp.makeConstraints { make in
-                make.leading.equalToSuperview().offset(8)
-                make.trailing.equalTo(icon.snp.leading).inset(8)
+                make.leading.equalToSuperview()
+                make.trailing.equalTo(icon.snp.leading)
                 make.verticalEdges.equalToSuperview()
                 make.centerY.equalToSuperview()
             }

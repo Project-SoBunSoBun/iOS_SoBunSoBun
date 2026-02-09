@@ -12,18 +12,40 @@ import RxCocoa
 
 class DropDownView: UIStackView {
     enum SelectionMode { case plain, check }
+    enum AnimationAnchor { case topLeft, topCenter, topRight, left, center, right, bottomLeft, bottomCenter, bottomRight }
+    
     private let selectionMode: SelectionMode
     private let tableName: String
-    private let cellHeight: CGFloat
     
     var items: [String] = [] {
         didSet {
+            setCells()
+            
             if !items.isEmpty {
-                setCells()
                 bindCells(reactor: reactor)
             }
         }
     }
+    
+    var cellHeight: CGFloat = 40 {
+        didSet {
+            setCells()
+        }
+    }
+    
+    var textAlignment: NSTextAlignment = .left {
+        didSet {
+            setCells()
+        }
+    }
+    
+    var horizontalInset: CGFloat = 8 {
+        didSet {
+            setCells()
+        }
+    }
+    
+    var animationAnchor: AnimationAnchor = .topRight
     
     typealias Reactor = DropDownReactor
     private let reactor: DropDownReactor = DropDownReactor()
@@ -32,10 +54,9 @@ class DropDownView: UIStackView {
     
     let didCellTap = PublishSubject<String>()
     
-    init(frame: CGRect = .zero, selectionMode: SelectionMode, tableName: String, cellHeight: CGFloat) {
+    init(frame: CGRect = .zero, selectionMode: SelectionMode, tableName: String) {
         self.selectionMode = selectionMode
         self.tableName = tableName
-        self.cellHeight = cellHeight
         super.init(frame: frame)
         
         configureUI()
@@ -75,14 +96,19 @@ class DropDownView: UIStackView {
     // 셀 추가
     private func setCells() {
         // 기존 셀 제거
-        let views = arrangedSubviews
-        views.forEach {
+        arrangedSubviews.forEach {
             removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
         
+        guard !items.isEmpty else {
+            return
+        }
+        
         items.enumerated().forEach { index, item in
             let cell = DropDownCell(localizableKey: item, tableName: tableName, selectionMode: selectionMode)
+            
+            cell.label.textAlignment = textAlignment
             
             if selectionMode == .check && index == 0 {
                 cell.toggleSelect(isSelected: true)
@@ -91,21 +117,51 @@ class DropDownView: UIStackView {
             self.addArrangedSubview(cell)
             
             cell.snp.remakeConstraints { make in
-                make.horizontalEdges.equalToSuperview()
+                make.horizontalEdges.equalToSuperview().inset(horizontalInset)
                 make.height.equalTo(cellHeight)
             }
         }
     }
     
     private func animateToggle(isOpen: Bool) {
+        let anchor: CGPoint
         let scale: CGFloat = 0.3
-        let xOffset = (self.bounds.width * (1.0 - scale)) / 2
-        let yOffset = (self.bounds.height * (1.0 - scale)) / 2
+        
+        switch animationAnchor {
+        case .topLeft:
+            anchor = CGPoint(x: 0, y: 0)
+            
+        case .topCenter:
+            anchor = CGPoint(x: 0.5, y: 0)
+            
+        case .topRight:
+            anchor = CGPoint(x: 1, y: 0)
+            
+        case .left:
+            anchor = CGPoint(x: 0, y: 0.5)
+            
+        case .center:
+            anchor = CGPoint(x: 0.5, y: 0.5)
+            
+        case .right:
+            anchor = CGPoint(x: 1, y: 0.5)
+            
+        case .bottomLeft:
+            anchor = CGPoint(x: 0, y: 1)
+            
+        case .bottomCenter:
+            anchor = CGPoint(x: 0.5, y: 1)
+            
+        case .bottomRight:
+            anchor = CGPoint(x: 1, y: 1)
+        }
+        
+        let xOffset = self.bounds.width * (anchor.x - 0.5) * (1.0 - scale)
+        let yOffset = self.bounds.height * (anchor.y - 0.5) * (1.0 - scale)
         
         // 애니메이션 위치 선적용을 위한 transform
-        let transform = CGAffineTransform(translationX: xOffset, y: -yOffset)
+        let transform = CGAffineTransform(translationX: xOffset, y: yOffset)
             .scaledBy(x: scale, y: scale)
-            .translatedBy(x: -xOffset, y: yOffset)
         
         if isOpen { // 열기
             self.isHidden = false

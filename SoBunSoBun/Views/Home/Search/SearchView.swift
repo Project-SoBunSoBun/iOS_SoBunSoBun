@@ -146,7 +146,7 @@ class SearchView: UIViewController {
     }()
     
     private let dropDownView: DropDownView = {
-        let ddv = DropDownView(selectionMode: .check, tableName: "Home", cellHeight: 40)
+        let ddv = DropDownView(selectionMode: .check, tableName: "Home")
         ddv.items = sortLocalizableKeys
         
         return ddv
