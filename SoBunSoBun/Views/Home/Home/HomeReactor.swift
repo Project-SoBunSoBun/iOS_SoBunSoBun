@@ -74,9 +74,9 @@ class HomeReactor: Reactor {
         switch action {
         case .viewWillAppear:
             return Observable.concat([
-                currentState.isLocationVerified ? Observable.empty() : verifyLocation(),
                 Observable.just(.setPage(0)),
-                loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories)
+                loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories),
+                currentState.isLocationVerified ? Observable.empty() : verifyLocation(),
             ])
             
         case .searchTapped:
@@ -217,7 +217,7 @@ class HomeReactor: Reactor {
                     status != .notDetermined
                 }
                 .take(1) // 한 번만
-                .timeout(.seconds(30), scheduler: MainScheduler.instance) // 30초 타임아웃
+                .timeout(.seconds(10), scheduler: MainScheduler.instance) // 10초 타임아웃
                 .flatMap { status -> Observable<Mutation> in
                     switch status {
                     case .authorizedWhenInUse, .authorizedAlways: // 권한 허용
