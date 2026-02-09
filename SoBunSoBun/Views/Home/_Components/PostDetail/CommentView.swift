@@ -78,6 +78,9 @@ class CommentView: UIView {
             
             // 뒤에서부터 처리 (인덱스 꼬임 방지)
             for match in matches.reversed() {
+                // 정규표현식 패턴 안에 괄호를 사용하면 매칭된 전체 텍스트 중에서 그 괄호 안에 해당하는 부분만 따로 번호를 매겨서 저장
+                // at: 0은 전체 일치하는 텍스트
+                // at: 1은 첫번째로 등장하는 괄호 안의 내용
                 let userId = (comment as NSString).substring(with: match.range(at: 1))
                 
                 guard let nickname = commentedUsers[userId],
