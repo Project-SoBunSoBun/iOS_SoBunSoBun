@@ -15,13 +15,21 @@ class DropDownCell: UIView {
     let localizableKey: String
     let tableName: String
     let selectionMode: DropDownView.SelectionMode
+    let textAlignment: NSTextAlignment
     
     private let disposeBag = DisposeBag()
     
-    init(frame: CGRect = .zero, localizableKey: String, tableName: String, selectionMode: DropDownView.SelectionMode) {
+    init(
+        frame: CGRect = .zero,
+        localizableKey: String,
+        tableName: String,
+        selectionMode: DropDownView.SelectionMode,
+        textAlignment: NSTextAlignment
+    ) {
         self.localizableKey = localizableKey
         self.tableName = tableName
         self.selectionMode = selectionMode
+        self.textAlignment = textAlignment
         
         super.init(frame: frame)
         
@@ -35,7 +43,7 @@ class DropDownCell: UIView {
     
     let didTap = PublishRelay<String>()
     
-    let label: UILabel = {
+    private let label: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         lb.isUserInteractionEnabled = false
@@ -50,15 +58,11 @@ class DropDownCell: UIView {
         iv.isHidden = true
         iv.isUserInteractionEnabled = false
         
-        iv.snp.makeConstraints { make in
-            make.size.equalTo(24)
-        }
-        
         return iv
     }()
     
     private func configureUI() {
-        var attributes: [NSAttributedString.Key: Any] = title14.attributes()
+        var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: textAlignment)
         attributes[.foregroundColor] = UIColor.neutral600
         
         label.attributedText = NSAttributedString(string: NSLocalizedString(localizableKey, tableName: tableName, comment: ""), attributes: attributes)
@@ -69,7 +73,6 @@ class DropDownCell: UIView {
             
             label.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview()
-                make.verticalEdges.equalToSuperview()
                 make.centerY.equalToSuperview()
             }
             
@@ -80,14 +83,12 @@ class DropDownCell: UIView {
             
             icon.snp.makeConstraints { make in
                 make.trailing.equalToSuperview()
-                make.verticalEdges.equalToSuperview()
                 make.centerY.equalToSuperview()
             }
             
             label.snp.makeConstraints { make in
                 make.leading.equalToSuperview()
                 make.trailing.equalTo(icon.snp.leading)
-                make.verticalEdges.equalToSuperview()
                 make.centerY.equalToSuperview()
             }
         }

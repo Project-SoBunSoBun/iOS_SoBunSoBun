@@ -54,7 +54,11 @@ class PostDetailView: UIViewController {
     
     private lazy var topMoreButton: UIButton = topNavigationButton(image: .blackHorizontalDot)
     
-    private let topMoreDropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home")
+    private let topMoreDropDownView: DropDownView = {
+        let ddv = DropDownView(selectionMode: .plain, tableName: "Home")
+        
+        return ddv
+    }()
     
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
@@ -308,7 +312,11 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
-    private let commentMenuDropDownView: DropDownView = DropDownView(selectionMode: .plain, tableName: "Home")
+    private let commentMenuDropDownView: DropDownView = {
+        let ddv = DropDownView(selectionMode: .plain, tableName: "Home")
+        
+        return ddv
+    }()
     
     private let successView: RegisterPostSuccessView = {
         let view = RegisterPostSuccessView()
@@ -388,10 +396,6 @@ class PostDetailView: UIViewController {
         }
         
         configureContentView()
-        
-        commentMenuDropDownView.snp.makeConstraints { make in
-            make.width.equalTo(128)
-        }
         
         successView.snp.makeConstraints { make in
             make.edges.equalToSuperview()

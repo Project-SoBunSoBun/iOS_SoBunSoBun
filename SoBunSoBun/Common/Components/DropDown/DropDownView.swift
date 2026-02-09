@@ -10,12 +10,13 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class DropDownView: UIStackView {
+class DropDownView: UIScrollView {
     enum SelectionMode { case plain, check }
     enum AnimationAnchor { case topLeft, topCenter, topRight, left, center, right, bottomLeft, bottomCenter, bottomRight }
     
     private let selectionMode: SelectionMode
     private let tableName: String
+    private let isHeightLimited: Bool
     
     var items: [String] = [] {
         didSet {
@@ -26,6 +27,47 @@ class DropDownView: UIStackView {
             }
         }
     }
+    
+    typealias Reactor = DropDownReactor
+    private let reactor: DropDownReactor = DropDownReactor()
+    
+    private let disposeBag = DisposeBag()
+    
+    let didCellTap = PublishSubject<String>()
+    
+    init(
+        frame: CGRect = .zero,
+        selectionMode: SelectionMode,
+        tableName: String,
+        isHeightLimited: Bool = false // 높이 제한 유무
+    ) {
+        self.selectionMode = selectionMode
+        self.tableName = tableName
+        self.isHeightLimited = isHeightLimited
+        
+        super.init(frame: frame)
+        
+        configureUI()
+        bindState(reactor: reactor)
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - 디자인 요소
+    private let stackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 0
+        sv.alignment = .fill
+        sv.distribution = .fill
+        sv.backgroundColor = .backgroundWhite
+        sv.layer.cornerRadius = 16
+        sv.clipsToBounds = true
+        
+        return sv
+    }()
     
     var cellHeight: CGFloat = 40 {
         didSet {
@@ -41,34 +83,18 @@ class DropDownView: UIStackView {
     
     var horizontalInset: CGFloat = 8 {
         didSet {
-            setCells()
+            stackView.layoutMargins = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
         }
     }
     
     var animationAnchor: AnimationAnchor = .topRight
     
-    typealias Reactor = DropDownReactor
-    private let reactor: DropDownReactor = DropDownReactor()
-    
-    private let disposeBag = DisposeBag()
-    
-    let didCellTap = PublishSubject<String>()
-    
-    init(frame: CGRect = .zero, selectionMode: SelectionMode, tableName: String) {
-        self.selectionMode = selectionMode
-        self.tableName = tableName
-        super.init(frame: frame)
-        
-        configureUI()
-        bindState(reactor: reactor)
-    }
-    
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         self.backgroundColor = .backgroundWhite
+        
+        self.showsHorizontalScrollIndicator = false
+        self.showsVerticalScrollIndicator = false
         
         // 그림자
         self.layer.shadowOffset = .zero
@@ -80,24 +106,26 @@ class DropDownView: UIStackView {
         // 모서리
         self.layer.cornerRadius = 16
         
-        // stackview 설정
-        self.axis = .vertical
-        self.spacing = 0
-        self.alignment = .fill
-        self.distribution = .fill
-        
-        self.backgroundColor = .backgroundWhite
-        
         // 초기 설정
         self.isHidden = true
         self.alpha = 0
+        
+        addSubview(stackView)
+        
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
+        
+        stackView.snp.makeConstraints { make in
+            make.horizontalEdges.top.equalToSuperview()
+            make.width.equalToSuperview()
+        }
     }
     
     // 셀 추가
     private func setCells() {
         // 기존 셀 제거
-        arrangedSubviews.forEach {
-            removeArrangedSubview($0)
+        stackView.arrangedSubviews.forEach {
+            stackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
         
@@ -106,20 +134,104 @@ class DropDownView: UIStackView {
         }
         
         items.enumerated().forEach { index, item in
-            let cell = DropDownCell(localizableKey: item, tableName: tableName, selectionMode: selectionMode)
-            
-            cell.label.textAlignment = textAlignment
+            let cell = DropDownCell(
+                localizableKey: item,
+                tableName: tableName,
+                selectionMode: selectionMode,
+                textAlignment: textAlignment
+            )
             
             if selectionMode == .check && index == 0 {
                 cell.toggleSelect(isSelected: true)
             }
             
-            self.addArrangedSubview(cell)
+            stackView.addArrangedSubview(cell)
             
             cell.snp.remakeConstraints { make in
-                make.horizontalEdges.equalToSuperview().inset(horizontalInset)
                 make.height.equalTo(cellHeight)
             }
+        }
+        
+        if !isHeightLimited {
+            self.invalidateIntrinsicContentSize()
+        }
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: 16).cgPath
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        let height = CGFloat(items.count) * cellHeight
+        return CGSize(width: UIView.noIntrinsicMetric, height: height)
+    }
+}
+
+extension DropDownView {
+    func setOpen(isOpen: Bool) {
+        reactor.action.onNext(.buttonTapped(isOpen))
+    }
+    
+    private func bindCells(reactor: Reactor) {
+        // 처음에만 실행되도록
+        if selectionMode == .check {
+            reactor.action.onNext(.selectCell(items[0]))
+        }
+        
+        stackView.arrangedSubviews.forEach {
+            guard let cell = $0 as? DropDownCell else { return }
+            
+            cell.didTap
+                .map { Reactor.Action.selectCell($0) }
+                .bind(to: reactor.action)
+                .disposed(by: disposeBag)
+        }
+    }
+    
+    private func bindState(reactor: Reactor) {
+        reactor.state.map { $0.isOpen }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] isOpen in
+                guard let self = self else { return }
+                
+                animateToggle(isOpen: isOpen)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$selectedCell)
+            .compactMap { $0 }
+            .do(onNext: { [weak self] localizableKey in
+                guard let self = self else { return }
+                
+                if selectionMode == .check {
+                    cellCheckAndMoveToTop(localizableKey: localizableKey)
+                }
+            })
+            .bind(to: didCellTap)
+            .disposed(by: disposeBag)
+    }
+    
+    private func cellCheckAndMoveToTop(localizableKey: String) {
+        var selectedCell: DropDownCell?
+        
+        stackView.arrangedSubviews.forEach {
+            guard let cell = $0 as? DropDownCell else { return }
+            
+            let isSelected = localizableKey == cell.localizableKey
+            
+            cell.toggleSelect(isSelected: isSelected)
+            
+            if isSelected {
+                selectedCell = cell
+            }
+        }
+        
+        // 선택된 셀 최상단으로 위치
+        if let selectedCell = selectedCell,
+           selectedCell != stackView.arrangedSubviews.first {
+            stackView.removeArrangedSubview(selectedCell)
+            stackView.insertArrangedSubview(selectedCell, at: 0)
         }
     }
     
@@ -180,79 +292,6 @@ class DropDownView: UIStackView {
                 self.isHidden = true
                 self.transform = .identity
             }
-        }
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: 16).cgPath
-    }
-}
-
-extension DropDownView {
-    func setOpen(isOpen: Bool) {
-        reactor.action.onNext(.buttonTapped(isOpen))
-    }
-    
-    private func bindCells(reactor: Reactor) {
-        // 처음에만 실행되도록
-        if selectionMode == .check {
-            reactor.action.onNext(.selectCell(items[0]))
-        }
-        
-        self.arrangedSubviews.forEach {
-            guard let cell = $0 as? DropDownCell else { return }
-            
-            cell.didTap
-                .map { Reactor.Action.selectCell($0) }
-                .bind(to: reactor.action)
-                .disposed(by: disposeBag)
-        }
-    }
-    
-    private func bindState(reactor: Reactor) {
-        reactor.state.map { $0.isOpen }
-            .distinctUntilChanged()
-            .subscribe(onNext: { [weak self] isOpen in
-                guard let self = self else { return }
-                
-                animateToggle(isOpen: isOpen)
-            })
-            .disposed(by: disposeBag)
-        
-        reactor.pulse(\.$selectedCell)
-            .compactMap { $0 }
-            .do(onNext: { [weak self] localizableKey in
-                guard let self = self else { return }
-                
-                if selectionMode == .check {
-                    cellCheckAndMoveToTop(localizableKey: localizableKey)
-                }
-            })
-            .bind(to: didCellTap)
-            .disposed(by: disposeBag)
-    }
-    
-    private func cellCheckAndMoveToTop(localizableKey: String) {
-        var selectedCell: DropDownCell?
-        
-        self.arrangedSubviews.forEach {
-            guard let cell = $0 as? DropDownCell else { return }
-            
-            let isSelected = localizableKey == cell.localizableKey
-            
-            cell.toggleSelect(isSelected: isSelected)
-            
-            if isSelected {
-                selectedCell = cell
-            }
-        }
-        
-        // 선택된 셀 최상단으로 위치
-        if let selectedCell = selectedCell,
-           selectedCell != self.arrangedSubviews.first {
-            self.removeArrangedSubview(selectedCell)
-            self.insertArrangedSubview(selectedCell, at: 0)
         }
     }
 }
