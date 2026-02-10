@@ -449,8 +449,6 @@ extension SearchView {
                 cellIdentifier: PostListTableViewCell.identifier,
                 cellType: PostListTableViewCell.self
             )) { index, model, cell in
-                // let isLast = index == (reactor.currentState.posts?.count ?? 0) - 1
-                
                 cell.configureUI(model: model)
             }
             .disposed(by: disposeBag)

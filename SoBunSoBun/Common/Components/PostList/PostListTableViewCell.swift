@@ -12,7 +12,7 @@ import SnapKit
 class PostListTableViewCell: UITableViewCell {
     static let identifier = "PostListTableViewCell"
     
-    private let view = PostList()
+    private let view = PostListCellView()
     private var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

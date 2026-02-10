@@ -1,5 +1,5 @@
 //
-//  PostList.swift
+//  PostListCellView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 10/22/25.
@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class PostList: UIView {
+class PostListCellView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureUI()

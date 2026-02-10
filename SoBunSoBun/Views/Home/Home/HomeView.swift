@@ -468,8 +468,6 @@ extension HomeView {
                 cellIdentifier: PostListTableViewCell.identifier,
                 cellType: PostListTableViewCell.self
             )) { index, model, cell in
-                // let isLast = index == reactor.currentState.posts.count - 1
-                
                 cell.configureUI(model: model)
             }
             .disposed(by: disposeBag)
