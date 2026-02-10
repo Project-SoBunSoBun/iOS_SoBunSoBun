@@ -7,6 +7,8 @@
 
 import Foundation
 
+// TODO: 파일 분할 필요
+
 // MARK: - 로그인
 struct KakaoAuthResponse: Decodable {
     let email: String

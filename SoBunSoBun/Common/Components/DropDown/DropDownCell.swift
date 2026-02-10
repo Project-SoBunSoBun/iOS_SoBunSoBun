@@ -6,17 +6,30 @@
 //
 
 import UIKit
+import SnapKit
 import RxSwift
 import RxCocoa
 import RxGesture
 
-class DropDownCell: UIStackView {
+class DropDownCell: UIView {
     let localizableKey: String
+    let tableName: String
+    let selectionMode: DropDownView.SelectionMode
+    let textAlignment: NSTextAlignment
     
     private let disposeBag = DisposeBag()
     
-    init(frame: CGRect = .zero, localizableKey: String) {
+    init(
+        frame: CGRect = .zero,
+        localizableKey: String,
+        tableName: String,
+        selectionMode: DropDownView.SelectionMode,
+        textAlignment: NSTextAlignment
+    ) {
         self.localizableKey = localizableKey
+        self.tableName = tableName
+        self.selectionMode = selectionMode
+        self.textAlignment = textAlignment
         
         super.init(frame: frame)
         
@@ -30,36 +43,55 @@ class DropDownCell: UIStackView {
     
     let didTap = PublishRelay<String>()
     
-    private let label = UILabel()
+    private let label: UILabel = {
+        let lb = UILabel()
+        lb.numberOfLines = 0
+        lb.isUserInteractionEnabled = false
+        
+        return lb
+    }()
     
     private let icon: UIImageView = {
         let iv = UIImageView()
-        iv.image = .greyCheck
+        iv.image = .greyCheck.resize(.init(width: 24, height: 24))
         iv.contentMode = .scaleAspectFit
-        iv.preferredSymbolConfiguration = .init(pointSize: 24)
         iv.isHidden = true
+        iv.isUserInteractionEnabled = false
         
         return iv
     }()
     
     private func configureUI() {
-        self.axis = .horizontal
-        self.spacing = 8
-        self.alignment = .center
-        self.isLayoutMarginsRelativeArrangement = true
-        self.directionalLayoutMargins = .init(top: 8, leading: 8, bottom: 8, trailing: 8)
-        
-        var attributes: [NSAttributedString.Key: Any] = title14.attributes()
+        var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: textAlignment)
         attributes[.foregroundColor] = UIColor.neutral600
         
-        label.attributedText = NSAttributedString(string: NSLocalizedString(localizableKey, tableName: "Home", comment: ""), attributes: attributes)
+        label.attributedText = NSAttributedString(string: NSLocalizedString(localizableKey, tableName: tableName, comment: ""), attributes: attributes)
         
-        [label, icon].forEach {
-            self.addArrangedSubview($0)
+        switch selectionMode {
+        case .plain:
+            addSubview(label)
+            
+            label.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
+                make.centerY.equalToSuperview()
+            }
+            
+        case .check:
+            [icon, label].forEach {
+                addSubview($0)
+            }
+            
+            icon.snp.makeConstraints { make in
+                make.trailing.equalToSuperview()
+                make.centerY.equalToSuperview()
+            }
+            
+            label.snp.makeConstraints { make in
+                make.leading.equalToSuperview()
+                make.trailing.equalTo(icon.snp.leading)
+                make.centerY.equalToSuperview()
+            }
         }
-        
-        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        icon.setContentHuggingPriority(.required, for: .horizontal)
     }
     
     func toggleSelect(isSelected: Bool) {
@@ -68,7 +100,7 @@ class DropDownCell: UIStackView {
         var attributes: [NSAttributedString.Key: Any] = title14.attributes()
         attributes[.foregroundColor] = isSelected ? UIColor.neutral900 : UIColor.neutral600
         
-        label.attributedText = NSAttributedString(string: NSLocalizedString(localizableKey, tableName: "Home", comment: ""), attributes: attributes)
+        label.attributedText = NSAttributedString(string: NSLocalizedString(localizableKey, tableName: tableName, comment: ""), attributes: attributes)
     }
     
     private func bind() {

@@ -8,7 +8,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사용 가능한 닉네임입니다"
+            "value" : "사용 가능한 닉네임입니다."
           }
         }
       }
@@ -104,7 +104,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "2-8자로 한글, 영문 또는 숫자만 입력 가능합니다"
+            "value" : "2-8자로 한글, 영문 또는 숫자만 입력 가능합니다."
           }
         }
       }
@@ -152,7 +152,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오류가 발생했습니다."
+            "value" : "오류가 발생했습니다.\r잠시 후 다시 시도해 주세요."
           }
         }
       }
@@ -200,7 +200,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "내용을 입력해주세요"
+            "value" : "내용을 입력해주세요."
           }
         }
       }
@@ -212,7 +212,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "닉네임을 입력해주세요"
+            "value" : "닉네임을 입력해주세요."
           }
         }
       }
@@ -354,7 +354,18 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이미 사용 중인 닉네임입니다"
+            "value" : "이미 사용 중인 닉네임입니다."
+          }
+        }
+      }
+    },
+    "Unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알 수 없음"
           }
         }
       }

@@ -244,8 +244,15 @@ class RegisterPostView: UIViewController {
     }()
     
     private let plannedItemsTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 120)
+        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 120, fontStyle: body16)
         ahtv.placeholder = String(localized: "InsertContent", table: "Common")
+        ahtv.textContainerInset = .init(top: 16, left: 16, bottom: 16, right: 16)
+        ahtv.showCharactersCount = true
+        ahtv.layer.cornerRadius = 16
+        ahtv.layer.borderWidth = 1
+        ahtv.layer.borderColor = UIColor.primary100.cgColor
+        ahtv.frame = CGRectInset(ahtv.frame, -ahtv.layer.borderWidth, -ahtv.layer.borderWidth)
+        ahtv.isScrollEnabled = false
         
         return ahtv
     }()
@@ -258,8 +265,15 @@ class RegisterPostView: UIViewController {
     }()
     
     private let notesTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 240, maxLength: 250)
+        let ahtv = AutoHeightTextView(minHeight: 240, maxLength: 250, fontStyle: body16)
         ahtv.placeholder = String(localized: "InsertContent", table: "Common")
+        ahtv.textContainerInset = .init(top: 16, left: 16, bottom: 16, right: 16)
+        ahtv.showCharactersCount = true
+        ahtv.layer.cornerRadius = 16
+        ahtv.layer.borderWidth = 1
+        ahtv.layer.borderColor = UIColor.primary100.cgColor
+        ahtv.frame = CGRectInset(ahtv.frame, -ahtv.layer.borderWidth, -ahtv.layer.borderWidth)
+        ahtv.isScrollEnabled = false
         
         return ahtv
     }()
@@ -268,13 +282,6 @@ class RegisterPostView: UIViewController {
     
     private let loadingView: LoadingView = {
         let view = LoadingView()
-        view.isHidden = true
-        
-        return view
-    }()
-    
-    private let successView: RegisterPostSuccessView = {
-        let view = RegisterPostSuccessView()
         view.isHidden = true
         
         return view
@@ -310,12 +317,6 @@ class RegisterPostView: UIViewController {
         view.addSubview(loadingView)
         
         loadingView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        view.addSubview(successView)
-        
-        successView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
@@ -590,13 +591,16 @@ extension RegisterPostView {
         
         reactor.pulse(\.$isSuccess)
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
+            .withLatestFrom(reactor.state.map {$0.postId})
+            .subscribe(onNext: { [weak self] postId in
                 guard let self = self else { return }
                 
-                successView.isHidden = false
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    self.navigationController?.popViewController(animated: true)
+                DispatchQueue.main.async {
+                    if let postId {
+                        self.navigationController?.pushViewController(PostDetailView(postId: postId, isNew: true), animated: true)
+                    } else {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)

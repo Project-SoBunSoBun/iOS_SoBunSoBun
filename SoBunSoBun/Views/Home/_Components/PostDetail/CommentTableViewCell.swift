@@ -1,23 +1,29 @@
 //
-//  PostListTableViewCell.swift
+//  CommentTableViewCell.swift
 //  SoBunSoBun
 //
-//  Created by 김태은 on 11/30/25.
+//  Created by 김태은 on 2/5/26.
 //
 
 import UIKit
-import RxSwift
 import SnapKit
+import RxSwift
+import RxCocoa
 
-class PostListTableViewCell: UITableViewCell {
+class CommentTableViewCell: UITableViewCell {
     static let identifier = "PostListTableViewCell"
     
-    private let view = PostListCellView()
-    private var disposeBag = DisposeBag()
+    let view = CommentView()
+    
+    let menuTap = PublishRelay<UIButton>()
+    
+    var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         configureUI()
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -32,11 +38,12 @@ class PostListTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
+        bind()
     }
-    
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-        
+
         // Configure the view for the selected state
     }
     
@@ -48,13 +55,25 @@ class PostListTableViewCell: UITableViewCell {
         contentView.addSubview(view)
         
         view.snp.makeConstraints { make in
-            make.horizontalEdges.top.equalToSuperview()
-            make.bottom.equalToSuperview().priority(.high)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(24).priority(.high)
         }
     }
+
+    func configureUI(model: CommentModel, commentedUsers: [String: String]) {
+        view.configureUI(model: model, commentedUsers: commentedUsers)
+    }
     
-    func configureUI(model: PostModel) {
-        view.configureUI(model: model)
-        view.layoutIfNeeded()
+    func toggleEditMode(_ isEdit: Bool) {
+        view.backgroundColor = isEdit ? .primary50 : .clear
+    }
+}
+
+extension CommentTableViewCell {
+    private func bind() {
+        view.menuTap
+            .bind(to: menuTap)
+            .disposed(by: disposeBag)
     }
 }

@@ -11,19 +11,29 @@ import RxSwift
 
 class AutoHeightTextView: BaseTextView {
     private let minHeight: CGFloat
+    private let maxHeight: CGFloat
     private let maxLength: Int
     private var heightConstraint: Constraint?
+    
+    var showCharactersCount: Bool = false {
+        didSet {
+            setShowCharactersCount(showCharactersCount)
+        }
+    }
     
     private let disposeBag = DisposeBag()
     
     init(
         minHeight: CGFloat,
-        maxLength: Int
+        maxHeight: CGFloat = 240,
+        maxLength: Int,
+        fontStyle: FontStyle
     ) {
         self.minHeight = minHeight
+        self.maxHeight = maxHeight
         self.maxLength = maxLength
         
-        super.init(frame: .zero, textContainer: nil, fontStyle: body16)
+        super.init(frame: .zero, textContainer: nil, fontStyle: fontStyle)
         
         configureUI()
         bind()
@@ -33,72 +43,36 @@ class AutoHeightTextView: BaseTextView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let charactersContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .clear
-        view.isUserInteractionEnabled = false
-        
-        return view
-    }()
-    
+    // MARK: - 디자인 요소
     private let charactersLabel: UILabel = {
         let lb = UILabel()
         lb.isUserInteractionEnabled = false
+        lb.isHidden = true
         
         return lb
     }()
     
+    // MARK: - UI 설정
     private func configureUI() {
-        self.delegate = self
-        
         self.backgroundColor = .clear
         
-        // 모서리
-        self.layer.cornerRadius = 16
-        
-        // 테두리
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.primary100.cgColor
-        self.frame = CGRectInset(self.frame, -self.layer.borderWidth, -self.layer.borderWidth)
-        
         // 여백 설정
-        self.textContainerInset = .init(top: 16, left: 16, bottom: 16 + body12.font.lineHeight + 8 + 8, right: 16)
         self.textContainer.lineFragmentPadding = 0
-        
-        // 스크롤 설정
-        self.isScrollEnabled = false
-        self.showsVerticalScrollIndicator = false
-        self.showsHorizontalScrollIndicator = false
         
         // 초기 높이 설정
         self.snp.makeConstraints { make in
             heightConstraint = make.height.greaterThanOrEqualTo(minHeight).constraint
         }
         
-        // 글자 수
+        // 초기 글자 수
         var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
         charactersAttributes[.foregroundColor] = UIColor.neutral600
-        
         charactersLabel.attributedText = NSAttributedString(string: "\(self.text.count)/\(maxLength)\(String(localized: "Characters", table: "Common"))", attributes: charactersAttributes)
+        
         addSubview(charactersLabel)
     }
     
-    private func bind() {
-        self.rx.text.orEmpty
-            .subscribe(onNext: { [weak self] text in
-                guard let self = self else { return }
-                
-                var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
-                charactersAttributes[.foregroundColor] = UIColor.neutral600
-                charactersLabel.attributedText = NSAttributedString(string: "\(text.count)/\(maxLength)\(String(localized: "Characters", table: "Common"))", attributes: charactersAttributes)
-                
-                updateHeight()
-                applyLineHeight()
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    private func updateHeight() {
+    func updateHeight() {
         // 현재 텍스트에 필요한 높이 계산
         let size = CGSize(width: bounds.width, height: .infinity)
         let estimatedSize = sizeThatFits(size)
@@ -106,6 +80,7 @@ class AutoHeightTextView: BaseTextView {
         var newHeight = estimatedSize.height
         
         newHeight = max(newHeight, minHeight)
+        newHeight = min(newHeight, maxHeight)
         
         heightConstraint?.update(offset: newHeight)
         
@@ -113,19 +88,44 @@ class AutoHeightTextView: BaseTextView {
         layoutIfNeeded()
         
         DispatchQueue.main.async { [weak self] in
-            self?.updateCursorLayer()
+            guard let self = self else { return }
+            
+            updateCursorLayer()
         }
     }
     
-    private func applyLineHeight() {
+    func applyLineHeight() {
         guard !text.isEmpty else { return }
         
         let attributedString = NSMutableAttributedString(string: text)
         let range = NSRange(location: 0, length: attributedString.length)
         
-        attributedString.addAttributes(body16.attributes(), range: range)
+        attributedString.addAttributes(fontStyle.attributes(), range: range)
         
         self.attributedText = attributedString
+    }
+    
+    private func setShowCharactersCount(_ show: Bool) {
+        charactersLabel.isHidden = !show
+        
+        let charactersLabelHeight: CGFloat = body12.font.lineHeight + 8 + 8
+        
+        self.textContainerInset = .init(
+            top: self.textContainerInset.top,
+            left: self.textContainerInset.left,
+            bottom: self.textContainerInset.bottom + (show ? charactersLabelHeight : -charactersLabelHeight),
+            right: self.textContainerInset.right
+        )
+    }
+    
+    private func updateCharactersLabel(count: Int) {
+        var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
+        charactersAttributes[.foregroundColor] = UIColor.neutral600
+        
+        charactersLabel.attributedText = NSAttributedString(
+            string: "\(count)/\(maxLength)\(String(localized: "Characters", table: "Common"))",
+            attributes: charactersAttributes
+        )
     }
     
     override func layoutSubviews() {
@@ -144,8 +144,25 @@ class AutoHeightTextView: BaseTextView {
     }
 }
 
-extension AutoHeightTextView: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        return textView.text.count + (text.count - range.length) <= maxLength
+extension AutoHeightTextView {
+    private func bind() {
+        self.rx.text.orEmpty
+            .skip(1)
+            .subscribe(onNext: { [weak self] isEditable in
+                guard let self = self else { return }
+                
+                // 글자 수 제한
+                if self.text.count > maxLength {
+                    let index = text.index(text.startIndex, offsetBy: maxLength)
+                    self.text = String(text[..<index])
+                }
+                
+                // 글자 수 표시
+                updateCharactersLabel(count: text.count)
+                
+                updateHeight()
+                applyLineHeight()
+            })
+            .disposed(by: disposeBag)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  PostList.swift
+//  PostListCellView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 10/22/25.
@@ -8,11 +8,10 @@
 import UIKit
 import SnapKit
 
-class PostList: UIView {
-    init(frame: CGRect = .zero, model: PostModel) {
+class PostListCellView: UIView {
+    override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        configure(model: model)
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
@@ -41,7 +40,7 @@ class PostList: UIView {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 4
-        sv.alignment = .center
+        sv.alignment = .top
         
         return sv
     }
@@ -71,13 +70,23 @@ class PostList: UIView {
     
     private lazy var locationIcon: UIImageView = iconImage(image: .greyLocationS)
     
-    private lazy var locationLabel: UILabel = UILabel()
+    private let locationLabel: UILabel = {
+        let lb = UILabel()
+        lb.numberOfLines = 0
+        
+        return lb
+    }()
     
     private lazy var dateStackView: UIStackView = descStackView()
     
     private lazy var dateIcon: UIImageView = iconImage(image: .greyClockS)
     
-    private lazy var dateLabel: UILabel = UILabel()
+    private let dateLabel: UILabel = {
+        let lb = UILabel()
+        lb.numberOfLines = 0
+        
+        return lb
+    }()
     
     private let joinedLabel: UILabel = UILabel()
     
@@ -88,21 +97,9 @@ class PostList: UIView {
         return view
     }()
     
-    // MARK: - 레이아웃 설정
-    private func configure(model: PostModel) {
+    // MARK: - UI 설정
+    private func configureUI() {
         // 카테고리
-        let categoryViews = model.categoryCode.components(separatedBy: ",")
-            .map {
-                let view = CategoryMini()
-                let category = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
-                
-                view.text = category
-                
-                return view
-            }
-        
-        categoriesWrappingView.addArrangedSubviews(categoryViews)
-        
         addSubview(categoriesWrappingView)
         
         categoriesWrappingView.snp.makeConstraints { make in
@@ -111,11 +108,6 @@ class PostList: UIView {
         }
         
         // 제목
-        var titleAttributes: [NSAttributedString.Key: Any] = title18.attributes(alignment: .left)
-        titleAttributes[.foregroundColor] = UIColor.neutral900
-        
-        titleLabel.attributedText = NSAttributedString(string: model.title, attributes: titleAttributes)
-        
         addSubview(titleLabel)
         
         titleLabel.snp.makeConstraints { make in
@@ -127,9 +119,7 @@ class PostList: UIView {
         locationStackView.addArrangedSubview(locationIcon)
         locationStackView.addArrangedSubview(locationLabel)
         
-        locationLabel.attributedText = NSAttributedString(string: model.locationName, attributes: descAttributes())
-        locationLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        locationLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        locationIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         addSubview(locationStackView)
         
@@ -142,15 +132,8 @@ class PostList: UIView {
         dateStackView.addArrangedSubview(dateIcon)
         dateStackView.addArrangedSubview(dateLabel)
         
-        dateLabel.attributedText = NSAttributedString(string: ISO8601ToLocalizedDateTimeString(model.meetAt), attributes: descAttributes())
-        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        dateLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        dateIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         dateStackView.addArrangedSubview(joinedLabel)
-        
-        var joinedAttributes: [NSAttributedString.Key: Any] = title12.attributes(alignment: .right)
-        joinedAttributes[.foregroundColor] = model.joinedMembers + 1 >= model.maxMembers ? UIColor.primary400 : UIColor.neutral300
-        
-        joinedLabel.attributedText = NSAttributedString(string: "\(model.joinedMembers)/\(model.maxMembers)", attributes: joinedAttributes)
             
         addSubview(dateStackView)
         
@@ -167,6 +150,39 @@ class PostList: UIView {
             make.top.equalTo(dateStackView.snp.bottom).offset(16)
             make.height.equalTo(1)
         }
+    }
+    
+    func configureUI(model: PostModel) {
+        // 카테고리
+        let categoryViews = model.categoryCode.components(separatedBy: ",")
+            .map {
+                let view = CategoryMini()
+                let category = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
+                
+                view.text = category
+                
+                return view
+            }
+        
+        categoriesWrappingView.removeAllArrangedSubviews()
+        categoriesWrappingView.addArrangedSubviews(categoryViews)
+        
+        // 제목
+        var titleAttributes: [NSAttributedString.Key: Any] = title18.attributes(alignment: .left)
+        titleAttributes[.foregroundColor] = UIColor.neutral900
+        
+        titleLabel.attributedText = NSAttributedString(string: model.title, attributes: titleAttributes)
+        
+        // 장소
+        locationLabel.attributedText = NSAttributedString(string: model.locationName, attributes: descAttributes())
+        
+        // 시간 및 인원 표시
+        dateLabel.attributedText = NSAttributedString(string: ISO8601ToLocalizedDateTimeString(model.meetAt), attributes: descAttributes())
+        
+        var joinedAttributes: [NSAttributedString.Key: Any] = title12.attributes(alignment: .right)
+        joinedAttributes[.foregroundColor] = model.joinedMembers + 1 >= model.maxMembers ? UIColor.primary400 : UIColor.neutral300
+        
+        joinedLabel.attributedText = NSAttributedString(string: "\(model.joinedMembers)/\(model.maxMembers)", attributes: joinedAttributes)
     }
     
     // 구분선 표시 변경 함수
