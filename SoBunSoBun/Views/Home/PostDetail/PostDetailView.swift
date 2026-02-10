@@ -592,18 +592,18 @@ extension PostDetailView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        commentMenuDropDownView.didCellTap
-            .withLatestFrom(reactor.state) { (menu: $0, state: $1) }
-            .compactMap { menu, state -> (String, CommentModel)? in
-                guard let model = state.selectedCommentModel else { return nil }
-                return (menu, model)
-            }
-            .subscribe(onNext: { [weak self] menu, model in
+        commentMenuDropDownView
+            .didCellTap
+            .subscribe(onNext: { [weak self] menu in
                 guard let self = self else { return }
+                
+                let currentState = reactor.currentState
+                let selectedCommentModel = currentState.selectedCommentModel
+                let commentedUsersToNickname = currentState.commentedUsersToNickname
                 
                 switch menu {
                 case "Reply":
-                    guard let nickname = model.userNickname else {
+                    guard let nickname = selectedCommentModel?.userNickname else {
                         return
                     }
                     
@@ -614,8 +614,8 @@ extension PostDetailView {
                     
                 case "Edit":
                     editCommentTextView.text = CommentView.convertComment(
-                        comment: model.content ?? "",
-                        commentedUsers: reactor.currentState.commentedUsersToNickname,
+                        comment: selectedCommentModel?.content ?? "",
+                        commentedUsers: commentedUsersToNickname,
                         isEdited: false
                     )
                     .string
@@ -647,6 +647,7 @@ extension PostDetailView {
     }
     
     private func bindState(reactor: PostDetailReactor) {
+        // 게시글 정보, 댓글 개수
         reactor.state.map { ($0.postInfo, $0.postCommentsCount) }
             .distinctUntilChanged{ $0.1 == $1.1 }
             .observe(on: MainScheduler.instance)
@@ -663,6 +664,7 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
+        // 댓글 목록
         reactor.state.map { $0.comments }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
@@ -699,7 +701,7 @@ extension PostDetailView {
                         commentMenuDropDownView.snp.remakeConstraints { make in
                             make.top.equalToSuperview().offset(buttonFrame.maxY)
                             make.trailing.equalTo(self.view.snp.leading).offset(buttonFrame.maxX)
-                            make.width.equalTo(120)
+                            make.width.equalTo(70)
                         }
                         
                         let currentState = reactor.currentState
@@ -713,6 +715,7 @@ extension PostDetailView {
             }
             .disposed(by: disposeBag)
         
+        // MentionTextView의 멘션 기능을 위한 닉네임으로 유저의 id 찾는 용도
         reactor.state.map { $0.commentedUsersToId }
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] users in
@@ -723,6 +726,7 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
+        // 저장 유무
         reactor.state.map { $0.isSaved }
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] isSaved in
@@ -738,6 +742,7 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
+        // 상단 네비게이션의 dropDown 개폐
         reactor.state.map { $0.isMenuOpen }
             .subscribe(onNext: { [weak self] isOpen in
                 guard let self = self else { return }
@@ -746,6 +751,7 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
+        // 수정 모드와 선택한 댓글 API 모델
         reactor.state.map { ($0.isEditMode, $0.selectedCommentModel) }
             .distinctUntilChanged { $0 == $1 }
             .observe(on: MainScheduler.instance)
