@@ -37,6 +37,18 @@
         }
       }
     },
+    "Complete" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "완료"
+          }
+        }
+      }
+    },
     "Contact" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -121,6 +133,18 @@
         }
       }
     },
+    "EmptyMannerTag" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "받은 매너 평가가 없습니다."
+          }
+        }
+      }
+    },
     "Etc" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -165,6 +189,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "로그아웃"
+          }
+        }
+      }
+    },
+    "LogOutMessage" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그아웃 하시겠습니까?"
           }
         }
       }
@@ -386,6 +422,7 @@
       }
     },
     "UnknownNickname" : {
+      "comment" : "Settings",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {

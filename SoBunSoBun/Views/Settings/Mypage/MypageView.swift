@@ -23,12 +23,12 @@ class MypageView: UIViewController {
     private let reactor = MyPageReactor()
     
     private let disposeBag = DisposeBag()
+    private var sendImgaeUrl: URL?
     
     // MARK: - 디자인 요소
     // 설정 버튼
     private let settingButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
         config.image = .settings
         config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         
@@ -115,6 +115,31 @@ class MypageView: UIViewController {
         verticalSpacing: 8
     )
     
+    // 받은 매너 평가가 없을 때
+    private let emptyMannerView: UIView = {
+        let v = UIView()
+        v.backgroundColor = .clear
+        v.isUserInteractionEnabled = false
+        
+        return v
+    }()
+    
+    // 받은 매너 평가가 없습니다
+    private let emptyMannerLabel: UILabel = {
+        var attributes = body18.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.primary200
+        
+        let attributedText = NSAttributedString(
+            string: String(localized: "EmptyMannerTag", table: "Settings"),
+            attributes: attributes
+        )
+        
+        let lb = UILabel()
+        lb.attributedText = attributedText
+        
+        return lb
+    }()
+    
     // 나의 공동 구매 라벨
     private lazy var myGroupBuyingLabel = makeLabel(string: String(localized: "MyGroupBuying", table: "Settings"))
     
@@ -168,7 +193,7 @@ class MypageView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        configure()
+        configureUI()
         bind(reactor: reactor)
     }
     
@@ -182,8 +207,8 @@ class MypageView: UIViewController {
         gradientLayer.frame = gradientView.bounds
     }
     
-    // MARK: - 레이아웃 구성
-    private func configure() {
+    // MARK: - 레이아웃 설정
+    private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
         [topNavigationBar, gradientView, scrollView].forEach {
@@ -220,7 +245,7 @@ class MypageView: UIViewController {
             make.width.equalToSuperview()
         }
         
-        [profileImageView, nicknameLabel, editProfileButton, userInfoView, receivedMannerLabel, mannerWrappingViews, myGroupBuyingLabel, myGroupBuyingSettingCard, settingLabel, appSettingCard].forEach {
+        [profileImageView, nicknameLabel, editProfileButton, userInfoView, receivedMannerLabel, emptyMannerView, myGroupBuyingLabel, myGroupBuyingSettingCard, settingLabel, appSettingCard].forEach {
             contentView.addSubview($0)
         }
         
@@ -255,16 +280,25 @@ class MypageView: UIViewController {
             make.top.equalTo(userInfoView.snp.bottom).offset(24)
         }
         
-        // ReviewBox 컴포넌트
-        mannerWrappingViews.snp.makeConstraints { make in
+        emptyMannerView.addSubview(emptyMannerLabel)
+        
+        // 받은 매너 평가가 없을 때 표시하는 뷰
+        emptyMannerView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(receivedMannerLabel.snp.bottom).offset(16)
+            make.height.equalTo(148)
+        }
+        
+        // 받은 매너 평가가 없습니다
+        emptyMannerLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
         }
         
         // 나의 공동 구매 라벨
         myGroupBuyingLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(mannerWrappingViews.snp.bottom).offset(24)
+            make.top.equalTo(emptyMannerView.snp.bottom).offset(24)
         }
         
         // 나의 공동 구매 세팅 카드
@@ -377,7 +411,7 @@ extension MypageView {
                 
                 switch viewType {
                 case .editProfile:
-                    view = EditProfileView()
+                    view = EditProfileView(profileImageUrl: sendImgaeUrl)
                     
                 case .groupBuyingRecord:
                     view = MyGroupBuyingRecordView()
@@ -421,6 +455,7 @@ extension MypageView {
     private func setProfileImage(_ profileImageUrl: String?) {
         if let profileImageUrl = profileImageUrl {
             let imageUrl = URL(string: API_URL + profileImageUrl)
+            self.sendImgaeUrl = imageUrl
             
             profileImageView.kf.setImage(
                 with: imageUrl,
@@ -456,10 +491,26 @@ extension MypageView {
     }
     
     private func setReviewBox(_ receivedManner: [MannerTagModel]?) {
-        mannerWrappingViews.removeAllArrangedSubviews()
-        
         guard let mannerTags = receivedManner, !mannerTags.isEmpty else { return }
         
+        emptyMannerView.removeFromSuperview()
+        
+        contentView.addSubview(mannerWrappingViews)
+        
+        // ReviewBox 컴포넌트
+        mannerWrappingViews.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(receivedMannerLabel.snp.bottom).offset(16)
+        }
+        
+        // 나의 공동 구매 라벨
+        myGroupBuyingLabel.snp.remakeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(mannerWrappingViews.snp.bottom).offset(24)
+        }
+        
+        mannerWrappingViews.removeAllArrangedSubviews()
+
         let sortedTags = mannerTags.sorted { $0.tagId < $1.tagId }
         
         let reviewViews = sortedTags.compactMap { tag -> UIView? in

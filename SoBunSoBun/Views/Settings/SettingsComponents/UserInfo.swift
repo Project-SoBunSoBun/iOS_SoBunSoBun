@@ -41,14 +41,14 @@ class UserInfo: UIView {
         return sv
     }
     
-    private func makeLabel() -> UILabel {
+    private func makeLabel(string: String) -> UILabel {
         let lb = UILabel()
         
         var attributes = body14.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.neutral900
         
         let attributeText = NSAttributedString(
-            string: String(localized: "MannerScore", table: "Settings"),
+            string: string,
             attributes: attributes
         )
         lb.attributedText = attributeText
@@ -65,7 +65,7 @@ class UserInfo: UIView {
     
     private lazy var mannerStackView = makeStackView()
     
-    private lazy var mannerLabel = makeLabel()
+    private lazy var mannerLabel = makeLabel(string: String(localized: "MannerScore", table: "Settings"))
     
     private let mannerCountLabel = UILabel()
     
@@ -73,7 +73,7 @@ class UserInfo: UIView {
     
     private lazy var participationStackView = makeStackView()
     
-    private lazy var participationLabel = makeLabel()
+    private lazy var participationLabel = makeLabel(string: String(localized: "ParticipationCount", table: "Settings"))
     
     private let participationCountLabel = UILabel()
     
@@ -81,7 +81,7 @@ class UserInfo: UIView {
     
     private lazy var hostStackView = makeStackView()
     
-    private lazy var hostLabel = makeLabel()
+    private lazy var hostLabel = makeLabel(string: String(localized: "HostCount", table: "Settings"))
     
     private let hostCountLabel = UILabel()
     
