@@ -29,6 +29,7 @@ class PostDetailView: UIViewController {
     init(postId: Int, isNew: Bool = false, nibName: String? = nil, bundle: Bundle? = nil) {
         self.postId = postId
         self.isNew = isNew
+        
         super.init(nibName: nibName, bundle: bundle)
     }
     
