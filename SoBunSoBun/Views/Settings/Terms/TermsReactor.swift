@@ -11,7 +11,7 @@ import OSLog
 class TermsReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Terms.Reactor"
+        category: "Mypage.Terms.Reactor"
     )
     
     let initialState = State()

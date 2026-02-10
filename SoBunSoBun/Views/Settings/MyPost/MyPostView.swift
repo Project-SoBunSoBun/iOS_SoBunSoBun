@@ -15,7 +15,7 @@ import OSLog
 class MyPostView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "MyPost.View"
+        category: "Mypage.MyPost.View"
     )
     
     // MARK: - 디자인 요소

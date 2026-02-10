@@ -15,7 +15,7 @@ import OSLog
 class MyGroupBuyingRecordView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "MyGroupBuyingRecord.View"
+        category: "Mypage.MyGroupBuyingRecord.View"
     )
     
     // MARK: - 디자인 요소

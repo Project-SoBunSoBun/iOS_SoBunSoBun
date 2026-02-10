@@ -15,7 +15,7 @@ import OSLog
 class AnnouncementView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Announcement.View"
+        category: "Mypage.Announcement.View"
     )
 
     // MARK: - 디자인 요소

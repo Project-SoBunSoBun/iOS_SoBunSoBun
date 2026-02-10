@@ -14,7 +14,7 @@ import OSLog
 class EditProfileReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunSoBun", 
-        category: "EditProfile.Reactor"
+        category: "Mypage.EditProfile.Reactor"
     )
     
     let initialState = State()

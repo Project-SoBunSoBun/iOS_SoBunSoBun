@@ -16,7 +16,7 @@ import Kingfisher
 class MypageView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Mypage.View"
+        category: "Mypage.Mypage.View"
     )
     
     typealias Reactor = MyPageReactor

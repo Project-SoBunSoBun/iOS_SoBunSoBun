@@ -16,7 +16,7 @@ import RxGesture
 class EditProfileView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "EditProfile.View"
+        category: "Mypage.EditProfile.View"
     )
     
     typealias Reactor = EditProfileReactor

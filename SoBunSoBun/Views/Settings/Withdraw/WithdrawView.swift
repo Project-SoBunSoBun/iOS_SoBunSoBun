@@ -7,8 +7,13 @@
 
 import UIKit
 import SnapKit
+import OSLog
 
 class WithdrawView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Mypage.Withdraw.View"
+    )
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바

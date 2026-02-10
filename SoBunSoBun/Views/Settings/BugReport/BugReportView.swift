@@ -15,7 +15,7 @@ import OSLog
 class BugReportView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "BugReport.View"
+        category: "Mypage.BugReport.View"
     )
     
     //    typealias Reactor = BugReportReactor
