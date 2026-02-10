@@ -42,6 +42,16 @@ class BaseTextView: UITextView {
         }
     }
     
+    override var textContainerInset: UIEdgeInsets {
+        didSet {
+            placeholderLabel.snp.remakeConstraints { make in
+                make.leading.equalToSuperview().offset(self.textContainerInset.left)
+                make.trailing.equalToSuperview().inset(self.textContainerInset.right)
+                make.top.equalToSuperview().offset(self.textContainerInset.top)
+            }
+        }
+    }
+    
     private let placeholderLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
@@ -67,8 +77,9 @@ class BaseTextView: UITextView {
         addSubview(placeholderLabel)
         
         placeholderLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalToSuperview().offset(16)
+            make.leading.equalToSuperview().offset(self.textContainerInset.left)
+            make.trailing.equalToSuperview().inset(self.textContainerInset.right)
+            make.top.equalToSuperview().offset(self.textContainerInset.top)
         }
     }
     

@@ -78,13 +78,14 @@ class TextFieldMember: BaseTextField {
     
     private func bind() {
         self.rx.text.orEmpty
-            .distinctUntilChanged()
             .map { $0.filter { $0.isNumber } }
             .map { [weak self] text in
                 guard let self = self else { return "" }
                 
                 return String(text.prefix(maxLength))
             }
+            .distinctUntilChanged()
+            .skip(1)
             .subscribe(onNext: { [weak self] text in
                 guard let self = self else { return }
                 

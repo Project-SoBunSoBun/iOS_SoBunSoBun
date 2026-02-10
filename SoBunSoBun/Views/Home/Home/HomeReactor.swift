@@ -74,9 +74,9 @@ class HomeReactor: Reactor {
         switch action {
         case .viewWillAppear:
             return Observable.concat([
-                currentState.isLocationVerified ? Observable.empty() : verifyLocation(),
                 Observable.just(.setPage(0)),
-                loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories)
+                loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories),
+                currentState.isLocationVerified ? Observable.empty() : verifyLocation(),
             ])
             
         case .searchTapped:
@@ -217,23 +217,23 @@ class HomeReactor: Reactor {
                     status != .notDetermined
                 }
                 .take(1) // 한 번만
-                .timeout(.seconds(30), scheduler: MainScheduler.instance) // 30초 타임아웃
+                .timeout(.seconds(10), scheduler: MainScheduler.instance) // 10초 타임아웃
                 .flatMap { status -> Observable<Mutation> in
                     switch status {
                     case .authorizedWhenInUse, .authorizedAlways: // 권한 허용
                         return self.requestLocationAndProcess()
                         
                     case .denied, .restricted: // 권한 거부됨
-                        self.logger.error("위치 권한 요청 후 거부됨")
+                        self.logger.fault("위치 권한 요청 후 거부됨")
                         return Observable.just(.setShowLocationSettingAlert)
                         
                     default: // 뭔가 잘못 됨
-                        self.logger.error("위치 권한 요청 후 무언가 잘못 됨: \(status.rawValue)")
+                        self.logger.fault("위치 권한 요청 후 무언가 잘못 됨: \(status.rawValue)")
                         return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
                     }
                 }
                 .catch { error in
-                    self.logger.error("위치 권한 요청 오류: \(error.localizedDescription)")
+                    self.logger.fault("위치 권한 요청 오류: \(error.localizedDescription)")
                     return Observable.just(.setShowLocationSettingAlert)
                 }
             
@@ -241,11 +241,11 @@ class HomeReactor: Reactor {
             return requestLocationAndProcess()
             
         case .denied, .restricted: // 권한 거부
-            logger.error("위치 권한 거부됨")
+            logger.fault("위치 권한 거부됨")
             return Observable.just(.setShowLocationSettingAlert)
             
         default:
-            logger.error("위치 권한이 무언가 잘못 됨: \(authStatus.rawValue)")
+            logger.fault("위치 권한이 무언가 잘못 됨: \(authStatus.rawValue)")
             return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
         }
     }
@@ -264,7 +264,7 @@ class HomeReactor: Reactor {
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                logger.error("위치 가져오기 실패: \(error.localizedDescription)")
+                logger.fault("위치 가져오기 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
             }
     }
@@ -297,7 +297,7 @@ class HomeReactor: Reactor {
                 if let address = model.address {
                     return .verifyLocation(address)
                 } else {
-                    self.logger.error("patch 후에도 address 적용 안 됨")
+                    self.logger.critical("patch 후에도 address 적용 안 됨")
                     return .verifyLocation(String(localized: "ErrorMessage", table: "Common"))
                 }
             }
@@ -331,7 +331,7 @@ class HomeReactor: Reactor {
                     ])
                 }
                 .catch { error in
-                    self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+                    self.logger.critical("게시글 목록 불러오기 실패: \(error.localizedDescription)")
                     
                     return Observable.concat([
                         isFirst ? Observable.just(.setPosts([])) : Observable.empty(),

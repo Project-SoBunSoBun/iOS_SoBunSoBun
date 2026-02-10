@@ -111,6 +111,8 @@ extension NavigationTabView {
     }
     
     private func bindAction(reactor: NavigationTabReactor) {
+        reactor.action.onNext(.viewDidLoad)
+        
         bottomNavigationBar.didChangeIndex
             .map { Reactor.Action.selectIndex($0) }
             .bind(to: reactor.action)
@@ -128,6 +130,15 @@ extension NavigationTabView {
                 
                 // BottomNavigationBar 컴포넌트 상태 업데이트
                 bottomNavigationBar.updateSelectedIndex(index: index)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.errorMessage }
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] message in
+                guard let self = self else { return }
+                
+                showAlert(title: message, vc: self)
             })
             .disposed(by: disposeBag)
     }

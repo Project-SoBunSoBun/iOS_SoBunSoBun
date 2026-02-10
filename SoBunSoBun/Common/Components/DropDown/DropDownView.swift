@@ -10,29 +10,91 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class DropDownView: UIStackView {
+class DropDownView: UIScrollView {
+    enum SelectionMode { case plain, check }
+    enum AnimationAnchor { case topLeft, topCenter, topRight, left, center, right, bottomLeft, bottomCenter, bottomRight }
+    
+    private let selectionMode: SelectionMode
+    private let tableName: String
+    private let isHeightLimited: Bool
+    
+    var items: [String] = [] {
+        didSet {
+            setCells()
+            
+            if !items.isEmpty {
+                bindCells(reactor: reactor)
+            }
+        }
+    }
+    
     typealias Reactor = DropDownReactor
-    private let reactor: DropDownReactor
+    private let reactor: DropDownReactor = DropDownReactor()
     
     private let disposeBag = DisposeBag()
     
-    init(frame: CGRect = .zero, items: [String]) {
-        self.reactor = DropDownReactor(selectedCell: items[0])
+    let didCellTap = PublishSubject<String>()
+    
+    init(
+        frame: CGRect = .zero,
+        selectionMode: SelectionMode,
+        tableName: String,
+        isHeightLimited: Bool = false // 높이 제한 유무
+    ) {
+        self.selectionMode = selectionMode
+        self.tableName = tableName
+        self.isHeightLimited = isHeightLimited
         
         super.init(frame: frame)
         
-        configureUI(items: items)
-        bind(reactor: reactor)
+        configureUI()
+        bindState(reactor: reactor)
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    let didCellTap = PublishSubject<String>()
+    // MARK: - 디자인 요소
+    private let stackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 0
+        sv.alignment = .fill
+        sv.distribution = .fill
+        sv.backgroundColor = .backgroundWhite
+        sv.layer.cornerRadius = 16
+        sv.clipsToBounds = true
+        
+        return sv
+    }()
     
-    private func configureUI(items: [String]) {
+    var cellHeight: CGFloat = 40 {
+        didSet {
+            setCells()
+        }
+    }
+    
+    var textAlignment: NSTextAlignment = .left {
+        didSet {
+            setCells()
+        }
+    }
+    
+    var horizontalInset: CGFloat = 8 {
+        didSet {
+            stackView.layoutMargins = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
+        }
+    }
+    
+    var animationAnchor: AnimationAnchor = .topRight
+    
+    // MARK: - 레이아웃 설정
+    private func configureUI() {
         self.backgroundColor = .backgroundWhite
+        
+        self.showsHorizontalScrollIndicator = false
+        self.showsVerticalScrollIndicator = false
         
         // 그림자
         self.layer.shadowOffset = .zero
@@ -44,69 +106,65 @@ class DropDownView: UIStackView {
         // 모서리
         self.layer.cornerRadius = 16
         
-        // stackview 설정
-        self.axis = .vertical
-        self.spacing = 0
-        self.alignment = .leading
-        
-        self.backgroundColor = .backgroundWhite
-        
-        self.snp.makeConstraints { make in
-            make.width.equalTo(128)
-        }
-        
-        // cell 추가
-        items.enumerated().forEach { index, item in
-            let cell = DropDownCell(localizableKey: item)
-            if index == 0 {
-                cell.toggleSelect(isSelected: true)
-            }
-            
-            self.addArrangedSubview(cell)
-            
-            cell.snp.makeConstraints { make in
-                make.horizontalEdges.equalToSuperview()
-            }
-        }
-        
         // 초기 설정
         self.isHidden = true
         self.alpha = 0
+        
+        addSubview(stackView)
+        
+        stackView.isLayoutMarginsRelativeArrangement = true
+        stackView.layoutMargins = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: horizontalInset)
+        
+        stackView.snp.makeConstraints { make in
+            make.horizontalEdges.top.equalToSuperview()
+            make.width.equalToSuperview()
+        }
     }
     
-    private func animateToggle(isOpen: Bool) {
-        let scale: CGFloat = 0.3
-        let xOffset = (self.bounds.width * (1.0 - scale)) / 2
-        let yOffset = (self.bounds.height * (1.0 - scale)) / 2
+    // 셀 추가
+    private func setCells() {
+        // 기존 셀 제거
+        stackView.arrangedSubviews.forEach {
+            stackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
         
-        // 애니메이션 위치 선적용을 위한 transform
-        let transform = CGAffineTransform(translationX: xOffset, y: -yOffset)
-            .scaledBy(x: scale, y: scale)
-            .translatedBy(x: -xOffset, y: yOffset)
+        guard !items.isEmpty else {
+            return
+        }
         
-        if isOpen { // 열기
-            self.isHidden = false
-            self.transform = transform
-            self.alpha = 0
+        items.enumerated().forEach { index, item in
+            let cell = DropDownCell(
+                localizableKey: item,
+                tableName: tableName,
+                selectionMode: selectionMode,
+                textAlignment: textAlignment
+            )
             
-            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut]) {
-                self.transform = .identity
-                self.alpha = 1
+            if selectionMode == .check && index == 0 {
+                cell.toggleSelect(isSelected: true)
             }
-        } else { // 닫기
-            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn]) {
-                self.transform = transform
-                self.alpha = 0
-            } completion: { _ in
-                self.isHidden = true
-                self.transform = .identity
+            
+            stackView.addArrangedSubview(cell)
+            
+            cell.snp.remakeConstraints { make in
+                make.height.equalTo(cellHeight)
             }
+        }
+        
+        if !isHeightLimited {
+            self.invalidateIntrinsicContentSize()
         }
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         self.layer.shadowPath = UIBezierPath(roundedRect: self.bounds, cornerRadius: 16).cgPath
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        let height = CGFloat(items.count) * cellHeight
+        return CGSize(width: UIView.noIntrinsicMetric, height: height)
     }
 }
 
@@ -115,13 +173,13 @@ extension DropDownView {
         reactor.action.onNext(.buttonTapped(isOpen))
     }
     
-    private func bind(reactor: Reactor) {
-        bindAction(reactor: reactor)
-        bindState(reactor: reactor)
-    }
-    
-    private func bindAction(reactor: Reactor) {
-        self.arrangedSubviews.forEach {
+    private func bindCells(reactor: Reactor) {
+        // 처음에만 실행되도록
+        if selectionMode == .check {
+            reactor.action.onNext(.selectCell(items[0]))
+        }
+        
+        stackView.arrangedSubviews.forEach {
             guard let cell = $0 as? DropDownCell else { return }
             
             cell.didTap
@@ -141,35 +199,99 @@ extension DropDownView {
             })
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.selectedCell }
-            .distinctUntilChanged()
+        reactor.pulse(\.$selectedCell)
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] localizableKey in
+            .do(onNext: { [weak self] localizableKey in
                 guard let self = self else { return }
                 
-                var selectedCell: DropDownCell?
-                
-                self.arrangedSubviews.forEach {
-                    guard let cell = $0 as? DropDownCell else { return }
-                    
-                    let isSelected = localizableKey == cell.localizableKey
-                    
-                    cell.toggleSelect(isSelected: isSelected)
-                    
-                    if isSelected {
-                        selectedCell = cell
-                    }
+                if selectionMode == .check {
+                    cellCheckAndMoveToTop(localizableKey: localizableKey)
                 }
-                
-                // 선택된 셀 최상단으로 위치
-                if let selectedCell = selectedCell,
-                   selectedCell != self.arrangedSubviews.first {
-                    self.removeArrangedSubview(selectedCell)
-                    self.insertArrangedSubview(selectedCell, at: 0)
-                }
-                
-                didCellTap.onNext(localizableKey)
             })
+            .bind(to: didCellTap)
             .disposed(by: disposeBag)
+    }
+    
+    private func cellCheckAndMoveToTop(localizableKey: String) {
+        var selectedCell: DropDownCell?
+        
+        stackView.arrangedSubviews.forEach {
+            guard let cell = $0 as? DropDownCell else { return }
+            
+            let isSelected = localizableKey == cell.localizableKey
+            
+            cell.toggleSelect(isSelected: isSelected)
+            
+            if isSelected {
+                selectedCell = cell
+            }
+        }
+        
+        // 선택된 셀 최상단으로 위치
+        if let selectedCell = selectedCell,
+           selectedCell != stackView.arrangedSubviews.first {
+            stackView.removeArrangedSubview(selectedCell)
+            stackView.insertArrangedSubview(selectedCell, at: 0)
+        }
+    }
+    
+    private func animateToggle(isOpen: Bool) {
+        let anchor: CGPoint
+        let scale: CGFloat = 0.3
+        
+        switch animationAnchor {
+        case .topLeft:
+            anchor = CGPoint(x: 0, y: 0)
+            
+        case .topCenter:
+            anchor = CGPoint(x: 0.5, y: 0)
+            
+        case .topRight:
+            anchor = CGPoint(x: 1, y: 0)
+            
+        case .left:
+            anchor = CGPoint(x: 0, y: 0.5)
+            
+        case .center:
+            anchor = CGPoint(x: 0.5, y: 0.5)
+            
+        case .right:
+            anchor = CGPoint(x: 1, y: 0.5)
+            
+        case .bottomLeft:
+            anchor = CGPoint(x: 0, y: 1)
+            
+        case .bottomCenter:
+            anchor = CGPoint(x: 0.5, y: 1)
+            
+        case .bottomRight:
+            anchor = CGPoint(x: 1, y: 1)
+        }
+        
+        let xOffset = self.bounds.width * (anchor.x - 0.5) * (1.0 - scale)
+        let yOffset = self.bounds.height * (anchor.y - 0.5) * (1.0 - scale)
+        
+        // 애니메이션 위치 선적용을 위한 transform
+        let transform = CGAffineTransform(translationX: xOffset, y: yOffset)
+            .scaledBy(x: scale, y: scale)
+        
+        if isOpen { // 열기
+            self.isHidden = false
+            self.transform = transform
+            self.alpha = 0
+            
+            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseOut]) {
+                self.transform = .identity
+                self.alpha = 1
+            }
+        } else { // 닫기
+            UIView.animate(withDuration: 0.3, delay: 0, options: [.curveEaseIn]) {
+                self.transform = transform
+                self.alpha = 0
+            } completion: { _ in
+                self.isHidden = true
+                self.transform = .identity
+            }
+        }
     }
 }

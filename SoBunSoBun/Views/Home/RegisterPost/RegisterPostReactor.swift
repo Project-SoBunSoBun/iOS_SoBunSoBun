@@ -52,6 +52,7 @@ class RegisterPostReactor: Reactor {
         
         case setLoading(Bool)
         case success
+        case setPostId(Int)
         case setErrorMessage(String)
     }
     
@@ -84,6 +85,7 @@ class RegisterPostReactor: Reactor {
         
         var isLoading: Bool = false
         @Pulse var isSuccess: Void?
+        var postId: Int?
         var errorMessage: String?
     }
     
@@ -176,6 +178,9 @@ class RegisterPostReactor: Reactor {
         case .success:
             newState.isSuccess = ()
             
+        case .setPostId(let postId):
+            newState.postId = postId
+            
         case .setErrorMessage(let message):
             newState.errorMessage = message
         }
@@ -230,11 +235,12 @@ class RegisterPostReactor: Reactor {
             Observable.just(.setLoading(true)),
             NetworkManager.shared.registerPost(model: model)
                 .asObservable()
-                .flatMap { _ -> Observable<Mutation> in
+                .flatMap { model -> Observable<Mutation> in
                     self.logger.debug("\(title) 게시글 등록 성공")
                     
                     return Observable.concat([
                         Observable.just(.setLoading(false)),
+                        Observable.just(.setPostId(model.id)),
                         Observable.just(.success)
                     ])
                 }

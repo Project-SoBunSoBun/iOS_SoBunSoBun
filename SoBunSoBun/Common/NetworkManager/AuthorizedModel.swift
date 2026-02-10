@@ -7,6 +7,8 @@
 
 import Foundation
 
+// TODO: 파일 분할 필요
+
 // MARK: - 공통
 struct PostListResponseModel: Decodable {
     let posts: [PostModel]
@@ -22,7 +24,7 @@ struct PostModel: Decodable {
 
 struct PostOwnerModel: Decodable {
     let id: Int
-    let nickname, profileImageUrl: String?
+    let nickname, profileImageUrl, address: String?
 }
 
 struct PostPageInfo: Decodable {

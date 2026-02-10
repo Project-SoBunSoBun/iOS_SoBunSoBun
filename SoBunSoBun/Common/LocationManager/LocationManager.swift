@@ -59,7 +59,7 @@ class LocationManager: NSObject {
     // 위치 가져오기
     func requestCurrentLocation() {
         guard isLocationAuthorized() else {
-            logger.debug("위치 권한 없음")
+            logger.fault("위치 권한 없음")
             requestLocationPermission()
             return
         }
@@ -94,16 +94,16 @@ extension LocationManager: CLLocationManagerDelegate {
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        logger.error("위치 가져오기 실패: \(error.localizedDescription)")
+        logger.fault("위치 가져오기 실패: \(error.localizedDescription)")
         
         if let clError = error as? CLError {
             switch clError.code {
             case .denied:
-                logger.error("위치 권한 거부됨")
+                logger.fault("위치 권한 거부됨")
             case .locationUnknown:
-                logger.error("위치를 확인할 수 없음")
+                logger.fault("위치를 확인할 수 없음")
             default:
-                logger.error("기타 위치 오류: \("\(clError.code)")")
+                logger.fault("기타 위치 오류: \("\(clError.code)")")
             }
         }
     }

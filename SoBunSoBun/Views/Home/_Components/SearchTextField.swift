@@ -35,7 +35,7 @@ class SearchTextField: BaseTextField {
     private lazy var leftContainer: UIView = UIView(frame: CGRect(x: edgesPadding, y: 0, width: leftPadding, height: searchIconImageView.frame.height))
     private lazy var rightContainer: UIView = UIView(frame: CGRect(x: 0, y: 0, width: edgesPadding, height: searchIconImageView.frame.height))
     
-    // MARK: - 레이아웃 설정
+    // MARK: - UI 설정
     private func configureUI() {
         self.backgroundColor = .backgroundWhite
         
@@ -55,13 +55,8 @@ class SearchTextField: BaseTextField {
         self.frame = CGRectInset(self.frame, -self.layer.borderWidth, -self.layer.borderWidth)
         
         // Placeholder
-        var attributes: [NSAttributedString.Key: Any] = body16.attributes()
-        attributes[.foregroundColor] = UIColor.primary200
-        
-        self.attributedPlaceholder = NSAttributedString(
-            string: String(localized: "SearchSomething", table: "Home"),
-            attributes: attributes
-        )
+        self.placeholder = String(localized: "SearchSomething", table: "Home")
+        self.placeholderColor = .primary200
         
         // 아이콘 설정
         leftContainer.addSubview(searchIconImageView)

@@ -145,7 +145,12 @@ class SearchView: UIViewController {
         return tv
     }()
     
-    private let dropDownView = DropDownView(items: sortLocalizableKeys)
+    private let dropDownView: DropDownView = {
+        let ddv = DropDownView(selectionMode: .check, tableName: "Home")
+        ddv.items = sortLocalizableKeys
+        
+        return ddv
+    }()
     
     // 검색 후 결과 없음
     private let emptySearchResultLabel: UILabel = {
@@ -287,6 +292,7 @@ class SearchView: UIViewController {
         dropDownView.snp.makeConstraints { make in
             make.trailing.equalTo(sortSelectView)
             make.top.equalTo(sortSelectView.snp.bottom)
+            make.width.equalTo(128)
         }
     }
     
@@ -414,8 +420,7 @@ extension SearchView {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                // TODO: 게시글 상세 뷰 이동 기능 추가
-                
+                self.navigationController?.pushViewController(PostDetailView(postId: model.id), animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -444,9 +449,7 @@ extension SearchView {
                 cellIdentifier: PostListTableViewCell.identifier,
                 cellType: PostListTableViewCell.self
             )) { index, model, cell in
-                let isLast = index == (reactor.currentState.posts?.count ?? 0) - 1
-                
-                cell.configureUI(model: model, isLast: isLast)
+                cell.configureUI(model: model)
             }
             .disposed(by: disposeBag)
         
