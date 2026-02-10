@@ -37,7 +37,7 @@ class PostDetailView: UIViewController {
     }
     
     // MARK: - 디자인 요소
-    // 산단 네비게이션 바
+    // 상단 네비게이션 바
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
         tnb.parentViewController = self
