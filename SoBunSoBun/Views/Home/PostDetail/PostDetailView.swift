@@ -406,7 +406,7 @@ class PostDetailView: UIViewController {
         
         commentDividerView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(createCommentStackView.snp.top).inset(16)
+            make.bottom.equalTo(createCommentStackView.snp.top)
             make.height.equalTo(1)
         }
         
