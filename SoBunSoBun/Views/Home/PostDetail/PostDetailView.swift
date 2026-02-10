@@ -37,6 +37,15 @@ class PostDetailView: UIViewController {
     }
     
     // MARK: - 디자인 요소
+    // 산단 네비게이션 바
+    private lazy var topNavigationBar: TopNavigationBar = {
+        let tnb = TopNavigationBar()
+        tnb.parentViewController = self
+        
+        return tnb
+    }()
+    
+    // 상단 네비게이션 바 버튼 컴포넌트
     private func topNavigationButton(image: UIImage) -> UIButton {
         var config = UIButton.Configuration.plain()
         config.image = image.resize(.init(width: 24, height: 24))
@@ -48,12 +57,16 @@ class PostDetailView: UIViewController {
         return btn
     }
     
+    // (상단 네비게이션)공유 버튼
     private lazy var topShareButton: UIButton = topNavigationButton(image: .blackShare)
     
+    // (상단 네비게이션)저장 버튼
     private lazy var topBookMarkButton: UIButton = topNavigationButton(image: .blackBookmark)
     
+    // (상단 네비게이션)메뉴 버튼
     private lazy var topMoreButton: UIButton = topNavigationButton(image: .blackHorizontalDot)
     
+    // (상단 네비게이션)메뉴 dropdown
     private let topMoreDropDownView: DropDownView = {
         let ddv = DropDownView(selectionMode: .plain, tableName: "Home")
         ddv.textAlignment = .center
@@ -61,19 +74,14 @@ class PostDetailView: UIViewController {
         return ddv
     }()
     
-    private lazy var topNavigationBar: TopNavigationBar = {
-        let tnb = TopNavigationBar()
-        tnb.parentViewController = self
-        
-        return tnb
-    }()
-    
+    // tableView refresh
     private let refreshControl: BlueMeatballsRefreshController = {
         let rc = BlueMeatballsRefreshController()
         
         return rc
     }()
     
+    // tableView
     private let tableView: UITableView = {
         let tv = UITableView()
         tv.register(CommentTableViewCell.self, forCellReuseIdentifier: CommentTableViewCell.identifier)
@@ -90,6 +98,7 @@ class PostDetailView: UIViewController {
         return tv
     }()
     
+    // 댓글 입력칸 위 구분선
     private let commentDividerView: UIView = {
         let view = UIView()
         view.backgroundColor = .primary100
@@ -98,6 +107,7 @@ class PostDetailView: UIViewController {
         return view
     }()
     
+    // 댓글 생성 컨테이너
     private let createCommentStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -111,6 +121,7 @@ class PostDetailView: UIViewController {
         return sv
     }()
     
+    // 채팅하기 버튼(타인 기준)
     private let chatButton: UIView = {
         let view = UIView()
         view.backgroundColor = .primary400
@@ -149,6 +160,7 @@ class PostDetailView: UIViewController {
         return view
     }()
     
+    // 댓글 생성 입력칸
     private let createCommentContainerStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -164,6 +176,7 @@ class PostDetailView: UIViewController {
         return sv
     }()
     
+    // 댓글 생성 textView
     private let createCommmentTextView: MentionTextView = {
         let mtv = MentionTextView(minHeight: 24, maxHeight: 72, maxLength: 50, fontStyle: body16)
         mtv.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
@@ -173,6 +186,7 @@ class PostDetailView: UIViewController {
         return mtv
     }()
     
+    // 댓글 생성 버튼
     private let sendButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.image = .greySend.resize(.init(width: 24, height: 24))
@@ -183,6 +197,7 @@ class PostDetailView: UIViewController {
         return btn
     }()
     
+    // 댓글 수정 컨테이너
     private let editCommentStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -196,6 +211,7 @@ class PostDetailView: UIViewController {
         return sv
     }()
     
+    // 댓글 수정 textView
     private let editCommentTextView: MentionTextView = {
         let mtv = MentionTextView(minHeight: 32, maxHeight: 80, maxLength: 50, fontStyle: body16)
         mtv.textContainerInset = .init(top: 4, left: 16, bottom: 4, right: 16)
@@ -208,6 +224,7 @@ class PostDetailView: UIViewController {
         return mtv
     }()
     
+    // 댓글 수정 취소
     private let editCommentCancelButton: UIButton = {
         var config = UIButton.Configuration.filled()
         config.image = .redFail.resize(.init(width: 24, height: 24))
@@ -222,6 +239,7 @@ class PostDetailView: UIViewController {
         return btn
     }()
     
+    // 댓글 수정 확인
     private let editCommentConfirmButton: UIButton = {
         var config = UIButton.Configuration.filled()
         config.image = .blueCheck.resize(.init(width: 24, height: 24))
@@ -236,6 +254,7 @@ class PostDetailView: UIViewController {
         return btn
     }()
     
+    // tableView 상단 컨텐츠 뷰
     private let contentView: UIView = {
         let view = UIView()
         view.backgroundColor = .clear
@@ -244,8 +263,10 @@ class PostDetailView: UIViewController {
         return view
     }()
     
+    // 카테고리
     private let horizontalWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
     
+    // 제목
     private let titleLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
@@ -253,10 +274,13 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
+    // 작성자 정보
     private let authorInfoView = AuthorInfoView()
     
+    // 소분소분 만남 정보
     private let informationCard = InformationCard()
     
+    // 구매 예정 상품 제목
     private let plannedProductsTitleLabel: UILabel = {
         var attributes: [NSAttributedString.Key: Any] = title18.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
@@ -268,6 +292,7 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
+    // 구매 예정 상품
     private let plannedProductsLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
@@ -275,6 +300,7 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
+    // 전달 사항 제목
     private let notesTitleLabel: UILabel = {
         var attributes: [NSAttributedString.Key: Any] = title18.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
@@ -286,6 +312,7 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
+    // 전달 사항
     private let notesLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
@@ -293,8 +320,10 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
+    // 이용 규칙 카드
     private let ruleCard = RuleCard(title: String(localized: "SobunSobunRuleTitle", table: "Home"), desc: "\(String(localized: "SobunSobunRule01", table: "Home"))|\(String(localized: "SobunSobunRule02", table: "Home"))")
     
+    // 컨텐트 뷰 구분선
     private let contentDividerView: UIView = {
         let view = UIView()
         view.backgroundColor = .primary100
@@ -302,6 +331,7 @@ class PostDetailView: UIViewController {
         return view
     }()
     
+    // 댓글 갯수 라벨
     private let commentsCountLabel: UILabel = {
         var attributes: [NSAttributedString.Key: Any] = body16.attributes()
         attributes[.foregroundColor] = UIColor.neutral700
@@ -313,6 +343,7 @@ class PostDetailView: UIViewController {
         return lb
     }()
     
+    // 댓글 메뉴 dropDown
     private let commentMenuDropDownView: DropDownView = {
         let ddv = DropDownView(selectionMode: .plain, tableName: "Home")
         ddv.textAlignment = .center
@@ -320,6 +351,7 @@ class PostDetailView: UIViewController {
         return ddv
     }()
     
+    // 게시글 작성 성공 뷰
     private let successView: RegisterPostSuccessView = {
         let view = RegisterPostSuccessView()
         view.isHidden = true
@@ -378,6 +410,7 @@ class PostDetailView: UIViewController {
             make.height.equalTo(1)
         }
         
+        // tableView 상단에 contentView 추가
         tableView.tableHeaderView = contentView
         tableView.refreshControl = refreshControl
         
@@ -404,6 +437,7 @@ class PostDetailView: UIViewController {
         }
     }
     
+    // contentView configure
     private func configureContentView() {
         [horizontalWrappingView, titleLabel, authorInfoView, informationCard, plannedProductsTitleLabel, plannedProductsLabel, notesTitleLabel, notesLabel, ruleCard, contentDividerView, commentsCountLabel].forEach {
             contentView.addSubview($0)
