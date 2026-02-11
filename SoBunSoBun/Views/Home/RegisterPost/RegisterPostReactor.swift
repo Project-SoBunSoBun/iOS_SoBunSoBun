@@ -17,6 +17,7 @@ class RegisterPostReactor: Reactor {
     )
     
     private let disposeBag = DisposeBag()
+    private let networkManager = HomeNetworkManager()
     
     let initialState: State = State()
     
@@ -233,7 +234,7 @@ class RegisterPostReactor: Reactor {
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
-            NetworkManager.shared.registerPost(model: model)
+            networkManager.registerPost(model: model)
                 .asObservable()
                 .flatMap { model -> Observable<Mutation> in
                     self.logger.debug("\(title) 게시글 등록 성공")

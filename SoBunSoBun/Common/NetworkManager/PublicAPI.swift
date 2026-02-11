@@ -16,8 +16,6 @@ enum PublicAPI {
     case authCompleteSignUp(loginToken: String, serviceTermsAgreed: Bool, privacyPolicyAgreed: Bool, marketingOptionalAgreed: Bool)
     case health
     case checkNickname(nickname: String) // 닉네임 중복 검사 API
-    // 홈
-    case getAddress(point: String) // 좌표를 통해 주소 가져오기
 }
 
 extension PublicAPI: TargetType {
@@ -25,8 +23,6 @@ extension PublicAPI: TargetType {
         switch self {
         case .authLoginKakao, .authCompleteSignUp, .health, .checkNickname:
             return URL(string: API_URL)!
-        case .getAddress:
-            return URL(string: "https://api.vworld.kr")!
         }
     }
     
@@ -40,8 +36,6 @@ extension PublicAPI: TargetType {
             return "/health"
         case .checkNickname:
             return "/users/check-nickname"
-        case .getAddress:
-            return "/req/address"
         }
     }
     
@@ -54,8 +48,6 @@ extension PublicAPI: TargetType {
         case .health:
             return .get
         case .checkNickname:
-            return .get
-        case .getAddress:
             return .get
         }
     }
@@ -78,11 +70,6 @@ extension PublicAPI: TargetType {
             return .requestPlain
         case .checkNickname(nickname: let nickname):
             return .requestParameters(parameters: ["nickname": nickname], encoding: URLEncoding.queryString)
-        case .getAddress(point: let point):
-            let key = Bundle.main.object(forInfoDictionaryKey: "VWORLD_CERT_KEY") as! String
-            let model = GeocoderRequestModel(point: point, key: key)
-            
-            return .requestParameters(parameters: model.toDictionary()!, encoding: URLEncoding(destination: .queryString, arrayEncoding: .brackets, boolEncoding: .literal))
         }
     }
     

@@ -10,8 +10,16 @@ import Moya
 
 enum HomeAPIs {
     // 피드
+    case getLocationVerification
+    case patchLocationVerification(address: String)
+    case getHomeList(page: Int, size: Int)
+    case getHomeListByCategories(category: [String], page: Int, size: Int)
+    case getAddress(point: String) // 좌표를 통해 주소 가져오기
+    case registerPost(model: RegisterPostBodyModel)
     
     // 검색
+    case getSuggestions
+    case getSearchList(keyword: String, sortBy: String, page: Int, size: Int)
     
     // 게시글 상세
     case getPost(id: Int)
@@ -35,15 +43,45 @@ extension HomeAPIs: TargetType {
     }
     
     var baseURL: URL {
-        return URL(string: API_URL)!
+        switch self {
+        case .getAddress:
+            return URL(string: "https://api.vworld.kr")!
+            
+        default:
+            return URL(string: API_URL)!
+        }
     }
     
     var path: String {
         switch self {
+        case .getLocationVerification:
+            return "/api/me/location-verification"
+            
+        case .patchLocationVerification:
+            return "/api/me/location-verification"
+            
+        case .getHomeList:
+            return "/api/posts"
+            
+        case .getHomeListByCategories(let category, page: _, size: _):
+            return "/api/posts/categories/\(category.joined(separator: ","))"
+            
+        case .getAddress:
+            return "/req/address"
+            
+        case .registerPost:
+            return "/api/posts"
+            
+        case .getSuggestions:
+            return "/api/search/suggestions/default"
+            
+        case .getSearchList:
+            return "/api/search"
+            
         case .getPost(let id), .deletePost(let id):
             return "/api/posts/\(id)"
             
-        case .checkPostSaved(let id):
+        case .checkPostSaved:
             return "/api/v1/posts/saved/check"
             
         case .getPostCommentsCount(let id):
@@ -72,6 +110,12 @@ extension HomeAPIs: TargetType {
     var method: Moya.Method {
         switch self {
         case // GET
+                .getLocationVerification,
+                .getHomeList,
+                .getHomeListByCategories,
+                .getAddress,
+                .getSuggestions,
+                .getSearchList,
                 .getPost,
                 .checkPostSaved,
                 .getPostCommentsCount,
@@ -79,6 +123,7 @@ extension HomeAPIs: TargetType {
             return .get
             
         case // POST
+                .registerPost,
                 .savePost,
                 .reportPost,
                 .createPostComment,
@@ -86,6 +131,7 @@ extension HomeAPIs: TargetType {
             return .post
             
         case // PATCH
+                .patchLocationVerification,
                 .patchPostComment:
             return .patch
             
@@ -99,6 +145,41 @@ extension HomeAPIs: TargetType {
     
     var task: Moya.Task {
         switch self {
+        case .getLocationVerification:
+            return .requestPlain
+            
+        case .patchLocationVerification(let address):
+            let body = LocationVerificationBodyModel(address: address)
+            
+            return .requestJSONEncodable(body)
+            
+        case .getHomeList(let page, let size):
+            let parameters = HomeListRequestModel(page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            
+        case .getHomeListByCategories(category: _, let page, let size):
+            let parameters = HomeListRequestModel(page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            
+        case .getAddress(point: let point):
+            let key = Bundle.main.object(forInfoDictionaryKey: "VWORLD_CERT_KEY") as! String
+            let model = GeocoderRequestModel(point: point, key: key)
+            
+            return .requestParameters(parameters: model.toDictionary()!, encoding: URLEncoding(destination: .queryString, arrayEncoding: .brackets, boolEncoding: .literal))
+            
+        case .registerPost(let model):
+            return .requestJSONEncodable(model)
+            
+        case .getSuggestions:
+            return .requestPlain
+            
+        case .getSearchList(let keyword, let sortBy, let page, let size):
+            let parameters = SearchListRequestModel(keyword: keyword, sortBy: sortBy, page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            
         case .getPost:
             return .requestPlain
             
@@ -147,21 +228,6 @@ extension HomeAPIs: TargetType {
     }
     
     var headers: [String : String]? {
-        switch self {
-        case // None
-                .getPost,
-                .checkPostSaved,
-                .getPostCommentsCount,
-                .getPostComments,
-                .savePost,
-                .cancelSavePost,
-                .reportPost,
-                .deletePost,
-                .createPostComment,
-                .patchPostComment,
-                .deletePostComment,
-                .reportPostComment:
-            return [:]
-        }
+        return [:]
     }
 }
