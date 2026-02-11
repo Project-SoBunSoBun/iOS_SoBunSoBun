@@ -48,10 +48,6 @@ class AuthorInfoView: UIStackView {
         iv.layer.borderWidth = 1
         iv.layer.borderColor = UIColor.primary50.cgColor
         
-        iv.snp.makeConstraints { make in
-            make.size.equalTo(PROFILE_IMAGE_SIZE)
-        }
-        
         return iv
     }()
     
@@ -85,6 +81,11 @@ class AuthorInfoView: UIStackView {
         self.alignment = .center
         
         addArrangedSubview(profileImageView)
+        
+        profileImageView.snp.makeConstraints { make in
+            make.size.equalTo(AuthorInfoView.PROFILE_IMAGE_SIZE)
+        }
+        
         addArrangedSubview(verticalStackView)
         
         [nicknameLabel, bottomInfoLabel].forEach {
