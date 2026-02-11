@@ -329,7 +329,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최소 %1$(min)lld명 / 최대 %2$(max)lld명"
+            "value" : "최소 %1$d명 / 최대 %2$d명"
           }
         }
       }

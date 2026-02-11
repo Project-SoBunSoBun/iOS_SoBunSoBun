@@ -379,8 +379,31 @@ class PostDetailView: UIViewController {
         }
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        // tableHeaderView의 높이를 내부 컨텐츠에 맞게 설정
+        if let headerView = tableView.tableHeaderView {
+            let originSize = tableView.bounds.size
+            
+            // autoLayout constraints를 바탕으로 최적의 크기를 계산
+            let newSize = headerView.systemLayoutSizeFitting(
+                originSize,
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
+            
+            if headerView.frame.size.height != newSize.height {
+                headerView.frame.size.height = newSize.height
+                tableView.tableHeaderView = headerView
+            }
+        }
+    }
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
+        view.backgroundColor = .backgroundWhite
+        
         [topNavigationBar, createCommentStackView, commentDividerView, tableView, topMoreDropDownView, commentMenuDropDownView, successView].forEach {
             view.addSubview($0)
         }
