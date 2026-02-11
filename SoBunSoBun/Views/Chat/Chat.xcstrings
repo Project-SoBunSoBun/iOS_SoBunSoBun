@@ -593,6 +593,28 @@
           }
         }
       }
+    },
+    "GroupChat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단체 채팅"
+          }
+        }
+      }
+    },
+    "PrivateChat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인 채팅"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
