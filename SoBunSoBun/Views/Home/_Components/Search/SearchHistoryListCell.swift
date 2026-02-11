@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 import RxSwift
 import RxCocoa
 import RxGesture
@@ -39,8 +40,7 @@ class SearchHistoryListCell: UIStackView {
     
     private let button: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .greyClose
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
+        config.image = .greyClose.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         let btn = UIButton(configuration: config)
@@ -56,14 +56,17 @@ class SearchHistoryListCell: UIStackView {
         var attributes: [NSAttributedString.Key: Any] = body16.attributes()
         attributes[.foregroundColor] = UIColor.neutral700
         
-        label.attributedText = NSAttributedString(
-            string: history, attributes: attributes)
+        label.attributedText = NSAttributedString(string: history, attributes: attributes)
         
         [icon, label, button].forEach {
             self.addArrangedSubview($0)
         }
         
         icon.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+        
+        button.snp.makeConstraints { make in
             make.size.equalTo(24)
         }
         

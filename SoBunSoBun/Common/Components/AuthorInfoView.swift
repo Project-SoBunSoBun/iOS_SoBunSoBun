@@ -48,10 +48,6 @@ class AuthorInfoView: UIStackView {
         iv.layer.borderWidth = 1
         iv.layer.borderColor = UIColor.primary50.cgColor
         
-        iv.snp.makeConstraints { make in
-            make.size.equalTo(PROFILE_IMAGE_SIZE)
-        }
-        
         return iv
     }()
     
@@ -78,13 +74,18 @@ class AuthorInfoView: UIStackView {
         return lb
     }()
     
-    // MARK: - UI 설정
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         self.axis = .horizontal
         self.spacing = 8
         self.alignment = .center
         
         addArrangedSubview(profileImageView)
+        
+        profileImageView.snp.makeConstraints { make in
+            make.size.equalTo(AuthorInfoView.PROFILE_IMAGE_SIZE)
+        }
+        
         addArrangedSubview(verticalStackView)
         
         [nicknameLabel, bottomInfoLabel].forEach {
