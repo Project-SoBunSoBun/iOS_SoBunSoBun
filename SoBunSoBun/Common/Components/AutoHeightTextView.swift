@@ -25,8 +25,11 @@ class AutoHeightTextView: UIView {
     private let disposeBag = DisposeBag()
     
     var text: String? {
-        didSet {
-            textView.text = text
+        get {
+            textView.text
+        }
+        set {
+            textView.text = newValue
         }
     }
     
