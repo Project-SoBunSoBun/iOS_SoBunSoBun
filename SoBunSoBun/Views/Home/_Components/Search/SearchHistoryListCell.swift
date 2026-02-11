@@ -40,7 +40,7 @@ class SearchHistoryListCell: UIStackView {
     
     private let button: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .greyClose
+        config.image = .greyClose.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         let btn = UIButton(configuration: config)

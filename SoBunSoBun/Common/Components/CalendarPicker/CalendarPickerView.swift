@@ -53,7 +53,7 @@ class CalendarPickerView: UIViewController {
     
     private let prevButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .blackChevronLeft
+        config.image = .blackChevronLeft.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         let btn = UIButton(configuration: config)
@@ -63,7 +63,7 @@ class CalendarPickerView: UIViewController {
     
     private let nextButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .blackChevronRight
+        config.image = .blackChevronRight.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         let btn = UIButton(configuration: config)
