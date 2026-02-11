@@ -96,7 +96,7 @@ class InformationCard: UIView {
         return lb
     }()
     
-    // MARK: - UI 설정
+    // MARK: - 레이아웃 설정
     func configureUI(
         minMembers: Int?,
         maxMembers: Int?,

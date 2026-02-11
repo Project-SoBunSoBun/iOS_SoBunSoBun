@@ -74,7 +74,7 @@ class AuthorInfoView: UIStackView {
         return lb
     }()
     
-    // MARK: - UI 설정
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         self.axis = .horizontal
         self.spacing = 8

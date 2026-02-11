@@ -93,7 +93,7 @@ class PostListCellView: UIView {
         return view
     }()
     
-    // MARK: - UI 설정
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         // 카테고리
         addSubview(categoriesWrappingView)
