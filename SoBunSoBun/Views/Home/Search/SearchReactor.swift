@@ -17,6 +17,7 @@ class SearchReactor: Reactor {
     )
     
     private let disposeBag = DisposeBag()
+    private let networkManager = HomeNetworkManager()
     
     let initialState: State = State()
     private let pageSize: Int = 20
@@ -231,7 +232,7 @@ class SearchReactor: Reactor {
         let sortBy = sortBy.replacingOccurrences(of: "SortBy", with: "").lowercased()
         
         // API 호출
-        let api: Single<PostListResponseModel> = NetworkManager.shared.getSearchList(keyword: keyword, sortBy: sortBy, page: page, size: pageSize)
+        let api: Single<PostListResponseModel> = networkManager.getSearchList(keyword: keyword, sortBy: sortBy, page: page, size: pageSize)
         
         return Observable.concat([
             Observable.just(.setLoading(true)),

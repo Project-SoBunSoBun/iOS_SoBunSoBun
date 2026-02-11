@@ -13,15 +13,7 @@ enum AuthorizedAPI {
     // 로그인
     case saveProfile(nickname: String, profileImage: Data?)
     case me
-    // 홈
-    case getLocationVerification
-    case patchLocationVerification(address: String)
-    case getHomeList(page: Int, size: Int)
-    case getHomeListByCategories(category: [String], page: Int, size: Int)
-    case registerPost(model: RegisterPostBodyModel)
-    // 검색
-    case getSuggestions
-    case getSearchList(keyword: String, sortBy: String, page: Int, size: Int)
+    
     // 정산
     case mySettleUps(activeOnly: Int, page: Int, size: Int)
     case deleteSettleUp(id: Int)
@@ -47,20 +39,6 @@ extension AuthorizedAPI: TargetType {
             return "/users/me/profile"
         case .me:
             return "/api/me"
-        case .getLocationVerification:
-            return "/api/me/location-verification"
-        case .patchLocationVerification:
-            return "/api/me/location-verification"
-        case .getHomeList:
-            return "/api/posts"
-        case .getHomeListByCategories(let category, page: _, size: _):
-            return "/api/posts/categories/\(category.joined(separator: ","))"
-        case .registerPost:
-            return "/api/posts"
-        case .getSuggestions:
-            return "/api/search/suggestions/default"
-        case .getSearchList:
-            return "/api/search"
         case .mySettleUps:
             return "/api/settleups/my"
         case .deleteSettleUp(let id):
@@ -79,20 +57,6 @@ extension AuthorizedAPI: TargetType {
         case .saveProfile:
             return .patch
         case .me:
-            return .get
-        case .getLocationVerification:
-            return .get
-        case .patchLocationVerification:
-            return .patch
-        case .getHomeList:
-            return .get
-        case .getHomeListByCategories:
-            return .get
-        case .registerPost:
-            return .post
-        case .getSuggestions:
-            return .get
-        case .getSearchList:
             return .get
         case .mySettleUps:
             return .get
@@ -137,35 +101,6 @@ extension AuthorizedAPI: TargetType {
             
         case .me:
             return .requestPlain
-            
-        case .getLocationVerification:
-            return .requestPlain
-            
-        case .patchLocationVerification(let address):
-            let body = LocationVerificationBodyModel(address: address)
-            
-            return .requestJSONEncodable(body)
-            
-        case .getHomeList(let page, let size):
-            let parameters = HomeListRequestModel(page: page, size: size)
-            
-            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
-            
-        case .getHomeListByCategories(category: _, let page, let size):
-            let parameters = HomeListRequestModel(page: page, size: size)
-            
-            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
-            
-        case .registerPost(let model):
-            return .requestJSONEncodable(model)
-            
-        case .getSuggestions:
-            return .requestPlain
-            
-        case .getSearchList(let keyword, let sortBy, let page, let size):
-            let parameters = SearchListRequestModel(keyword: keyword, sortBy: sortBy, page: page, size: size)
-            
-            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
         
         case .mySettleUps(let activeOnly, let page, let size):
             let parameters = SettleUpMyRequestModel(activeOnly: activeOnly, page: page, size: size)
@@ -204,13 +139,6 @@ extension AuthorizedAPI: TargetType {
             .patchProfileImage:
             return ["Content-Type": "multipart/form-data"]
         case .me,
-                .getLocationVerification,
-                .patchLocationVerification,
-                .getHomeList,
-                .getHomeListByCategories,
-                .registerPost,
-                .getSuggestions,
-                .getSearchList,
                 .mySettleUps,
                 .deleteSettleUp,
                 .getMeProfile,

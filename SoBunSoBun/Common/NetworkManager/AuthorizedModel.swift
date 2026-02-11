@@ -60,42 +60,6 @@ struct RefreshResponseModel: Decodable {
     let expiresIn: Int
 }
 
-// MARK: - 홈
-struct LocationVerificationModel: Decodable {
-    let address, locationVerifiedAt: String?
-    let remainingMinutes: Int?
-    let verified, expired: Bool
-}
-
-struct LocationVerificationBodyModel: Encodable {
-    let address: String
-}
-
-struct HomeListRequestModel: Encodable {
-    let page, size: Int
-}
-
-struct HomeListCategoryRequestModel: Encodable {
-    let categories: [String]
-    let page, size: Int
-}
-
-struct RegisterPostBodyModel: Encodable {
-    let title, categories, locationName, meetAt, deadlineAt, itemsText, notesText: String
-    let minMembers, maxMembers: Int
-}
-
-// MARK: - 검색
-struct SuggestionSearchKeywordsModel: Decodable {
-    let suggestions: [String]
-    let count: Int
-}
-
-struct SearchListRequestModel: Encodable {
-    let keyword, sortBy: String
-    let page, size: Int
-}
-
 // MARK: - 정산
 struct SettleUpModel: Decodable {
     let content: [SettleUpContentModel]

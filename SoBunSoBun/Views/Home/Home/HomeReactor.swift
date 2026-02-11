@@ -17,6 +17,7 @@ class HomeReactor: Reactor {
     )
     
     private let disposeBag = DisposeBag()
+    private let networkManager = HomeNetworkManager()
     
     let initialState: State = State()
     private let pageSize: Int = 20
@@ -185,7 +186,7 @@ class HomeReactor: Reactor {
     
     // 서버로부터 위치 인증 정보 불러오기
     private func verifyLocation() -> Observable<Mutation> {
-        return NetworkManager.shared.getLocationVefirication()
+        return networkManager.getLocationVefirication()
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 if let address = model.address, !model.expired {
@@ -271,7 +272,7 @@ class HomeReactor: Reactor {
     
     // 지오코더 API 호출
     private func getAddressFromGeocoder(longitude: Double, latitude: Double) -> Observable<Mutation> {
-        return NetworkManager.shared.getAddresFromGeocoder(longitude: longitude, latitude: latitude)
+        return networkManager.getAddresFromGeocoder(longitude: longitude, latitude: latitude)
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 let structure = model.response.result[0].structure
@@ -291,7 +292,7 @@ class HomeReactor: Reactor {
     
     // 서버에 위치 인증 갱신
     private func patchLocationVerification(address: String) -> Observable<Mutation> {
-        return NetworkManager.shared.patchLocationVerification(address: address)
+        return networkManager.patchLocationVerification(address: address)
             .asObservable()
             .map { model -> Mutation in
                 if let address = model.address {
@@ -313,8 +314,8 @@ class HomeReactor: Reactor {
     private func loadPosts(page: Int, isFirst: Bool, categories: [String] = []) -> Observable<Mutation> {
         // API 호출
         let api: Single<PostListResponseModel> = categories.isEmpty
-        ? NetworkManager.shared.getHomeList(page: page, size: pageSize)
-        : NetworkManager.shared.getHomeListByCategories(categories: categories, page: page, size: pageSize)
+        ? networkManager.getHomeList(page: page, size: pageSize)
+        : networkManager.getHomeListByCategories(categories: categories, page: page, size: pageSize)
         
         return Observable.concat([
             Observable.just(.setLoading(true)),

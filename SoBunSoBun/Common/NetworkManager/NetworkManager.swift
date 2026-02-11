@@ -14,6 +14,7 @@ import OSLog
 
 // TODO: 파일 분할 필요
 final class NetworkManager {
+    // 분리 작업 이후 더 이상 싱글톤 패턴으로 유지할 이유가 없어 보일 것 같습니다.
     static let shared = NetworkManager()
     
     private init() {}
@@ -69,81 +70,6 @@ final class NetworkManager {
         )
         .filterSuccessfulStatusCodes()
         .map(UserInfoModel.self)
-    }
-    
-    // MARK: - 홈
-    // 현재 사용자 위치 인증 상태 조회
-    func getLocationVefirication() -> Single<LocationVerificationModel> {
-        return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.getLocationVerification)
-        )
-        .filterSuccessfulStatusCodes()
-        .map(LocationVerificationModel.self)
-    }
-    
-    // 좌표를 통해 주소 변환
-    func getAddresFromGeocoder(longitude: Double, latitude: Double) -> Single<GeocoderResponseModel> {
-        let point: String = "\(longitude),\(latitude)"
-        
-        return provider.rx.request(
-            MultiTarget(PublicAPI.getAddress(point: point))
-        )
-        .filterSuccessfulStatusCodes()
-        .map(GeocoderResponseModel.self)
-    }
-    
-    // 사용자 위치 인증
-    func patchLocationVerification(address: String) -> Single<LocationVerificationModel> {
-        return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.patchLocationVerification(address: address))
-        )
-        .filterSuccessfulStatusCodes()
-        .map(LocationVerificationModel.self)
-    }
-    
-    // 홈 게시글 목록 불러오기
-    func getHomeList(page: Int, size: Int) -> Single<PostListResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.getHomeList(page: page, size: size))
-        )
-        .filterSuccessfulStatusCodes()
-        .map(PostListResponseModel.self)
-    }
-    
-    // 카테고리 선택 후 홈 게시글 목록 불러오기
-    func getHomeListByCategories(categories: [String], page: Int, size: Int) -> Single<PostListResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.getHomeListByCategories(category: categories, page: page, size: size))
-        )
-        .filterSuccessfulStatusCodes()
-        .map(PostListResponseModel.self)
-    }
-    
-    // 글 등록
-    func registerPost(model: RegisterPostBodyModel) -> Single<PostModel> {
-        return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.registerPost(model: model))
-        )
-        .filterSuccessfulStatusCodes()
-        .map(PostModel.self)
-    }
-    
-    // MARK: - 검색
-    // 추천 검색어
-    func getSuggestions() -> Single<SuggestionSearchKeywordsModel> {
-        return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.getSuggestions)
-        )
-        .filterSuccessfulStatusCodes()
-        .map(SuggestionSearchKeywordsModel.self)
-    }
-    
-    func getSearchList(keyword: String, sortBy: String, page: Int, size: Int) -> Single<PostListResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(AuthorizedAPI.getSearchList(keyword: keyword, sortBy: sortBy, page: page, size: size))
-        )
-        .filterSuccessfulStatusCodes()
-        .map(PostListResponseModel.self)
     }
     
     // MARK: - 정산
