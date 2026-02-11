@@ -44,14 +44,14 @@ class InformationCard: UIView {
         
         return lb
     }()
-    private lazy var participantsDescLabel: UILabel = {
+    private let participantsDescLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         
         return lb
     }()
     
-    // 지점 위치
+    // 모임 장소
     private lazy var locationStackView: UIStackView = horizontalStackView()
     private lazy var locationTitleLabel: UILabel = {
         let lb = UILabel()
@@ -59,7 +59,7 @@ class InformationCard: UIView {
         
         return lb
     }()
-    private lazy var locationDescLabel: UILabel = {
+    private let locationDescLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         
@@ -74,7 +74,7 @@ class InformationCard: UIView {
         
         return lb
     }()
-    private lazy var dateTimeDescLabel: UILabel = {
+    private let dateTimeDescLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         
@@ -89,7 +89,7 @@ class InformationCard: UIView {
         
         return lb
     }()
-    private lazy var deadlineDescLabel: UILabel = {
+    private let deadlineDescLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         
