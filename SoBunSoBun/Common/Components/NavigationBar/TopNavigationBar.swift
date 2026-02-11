@@ -25,8 +25,7 @@ class TopNavigationBar: UIView {
     
     private let backButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .blackLeft
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
+        config.image = .blackLeft.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         
         let btn = UIButton(configuration: config)
@@ -80,6 +79,7 @@ class TopNavigationBar: UIView {
         backButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(4)
             make.verticalEdges.equalToSuperview()
+            make.size.equalTo(48)
         }
         
         titleLabel.snp.makeConstraints { make in

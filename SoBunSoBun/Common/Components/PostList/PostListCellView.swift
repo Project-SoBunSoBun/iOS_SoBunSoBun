@@ -48,12 +48,8 @@ class PostListCellView: UIView {
     // 아이콘 컴포넌트
     private func iconImage(image: UIImage) -> UIImageView {
         let iv = UIImageView()
-        iv.image = image
+        iv.image = image.resize(.init(width: 20, height: 20))
         iv.contentMode = .scaleAspectFit
-        
-        iv.snp.makeConstraints { make in
-            make.size.equalTo(20)
-        }
         
         return iv
     }
@@ -97,7 +93,7 @@ class PostListCellView: UIView {
         return view
     }()
     
-    // MARK: - UI 설정
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         // 카테고리
         addSubview(categoriesWrappingView)

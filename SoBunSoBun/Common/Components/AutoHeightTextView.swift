@@ -9,10 +9,11 @@ import UIKit
 import SnapKit
 import RxSwift
 
-class AutoHeightTextView: BaseTextView {
+class AutoHeightTextView: UIView {
     private let minHeight: CGFloat
     private let maxHeight: CGFloat
     private let maxLength: Int
+    private let fontStyle: FontStyle
     private var heightConstraint: Constraint?
     
     var showCharactersCount: Bool = false {
@@ -23,7 +24,35 @@ class AutoHeightTextView: BaseTextView {
     
     private let disposeBag = DisposeBag()
     
+    var text: String? {
+        get {
+            textView.text
+        }
+        set {
+            textView.text = newValue
+        }
+    }
+    
+    var placeholder: String? {
+        didSet {
+            textView.placeholder = placeholder
+        }
+    }
+    
+    var textContainerInset: UIEdgeInsets = .zero {
+        didSet {
+            textView.textContainerInset = textContainerInset
+        }
+    }
+    
+    var isScrollEnabled: Bool = true {
+        didSet {
+            textView.isScrollEnabled = isScrollEnabled
+        }
+    }
+    
     init(
+        frame: CGRect = .zero,
         minHeight: CGFloat,
         maxHeight: CGFloat = 240,
         maxLength: Int,
@@ -32,8 +61,9 @@ class AutoHeightTextView: BaseTextView {
         self.minHeight = minHeight
         self.maxHeight = maxHeight
         self.maxLength = maxLength
+        self.fontStyle = fontStyle
         
-        super.init(frame: .zero, textContainer: nil, fontStyle: fontStyle)
+        super.init(frame: frame)
         
         configureUI()
         bind()
@@ -44,6 +74,13 @@ class AutoHeightTextView: BaseTextView {
     }
     
     // MARK: - 디자인 요소
+    lazy var textView: BaseTextView = {
+        let tv = BaseTextView(frame: .zero, textContainer: nil, fontStyle: fontStyle)
+        tv.backgroundColor = .clear
+        tv.textContainer.lineFragmentPadding = 0
+        return tv
+    }()
+    
     private let charactersLabel: UILabel = {
         let lb = UILabel()
         lb.isUserInteractionEnabled = false
@@ -52,30 +89,32 @@ class AutoHeightTextView: BaseTextView {
         return lb
     }()
     
-    // MARK: - UI 설정
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         self.backgroundColor = .clear
         
-        // 여백 설정
-        self.textContainer.lineFragmentPadding = 0
+        addSubview(textView)
         
-        // 초기 높이 설정
-        self.snp.makeConstraints { make in
+        textView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+            // 초기 높이 설정
             heightConstraint = make.height.greaterThanOrEqualTo(minHeight).constraint
         }
         
-        // 초기 글자 수
-        var charactersAttributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .right)
-        charactersAttributes[.foregroundColor] = UIColor.neutral600
-        charactersLabel.attributedText = NSAttributedString(string: "\(self.text.count)/\(maxLength)\(String(localized: "Characters", table: "Common"))", attributes: charactersAttributes)
-        
         addSubview(charactersLabel)
+        
+        // 초기 글자 수
+        updateCharactersLabel(count: 0)
+        
+        charactersLabel.snp.makeConstraints { make in
+            make.bottom.trailing.equalToSuperview().inset(16)
+        }
     }
     
     func updateHeight() {
         // 현재 텍스트에 필요한 높이 계산
         let size = CGSize(width: bounds.width, height: .infinity)
-        let estimatedSize = sizeThatFits(size)
+        let estimatedSize = textView.sizeThatFits(size)
         
         var newHeight = estimatedSize.height
         
@@ -84,25 +123,24 @@ class AutoHeightTextView: BaseTextView {
         
         heightConstraint?.update(offset: newHeight)
         
-        setNeedsLayout()
         layoutIfNeeded()
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            updateCursorLayer()
+            textView.updateCursorLayer()
         }
     }
     
     func applyLineHeight() {
-        guard !text.isEmpty else { return }
+        guard !textView.text.isEmpty else { return }
         
-        let attributedString = NSMutableAttributedString(string: text)
+        let attributedString = NSMutableAttributedString(string: textView.text)
         let range = NSRange(location: 0, length: attributedString.length)
         
         attributedString.addAttributes(fontStyle.attributes(), range: range)
         
-        self.attributedText = attributedString
+        textView.attributedText = attributedString
     }
     
     private func setShowCharactersCount(_ show: Bool) {
@@ -110,12 +148,12 @@ class AutoHeightTextView: BaseTextView {
         
         let charactersLabelHeight: CGFloat = body12.font.lineHeight + 8 + 8
         
-        self.textContainerInset = .init(
-            top: self.textContainerInset.top,
-            left: self.textContainerInset.left,
-            bottom: self.textContainerInset.bottom + (show ? charactersLabelHeight : -charactersLabelHeight),
-            right: self.textContainerInset.right
-        )
+        var inset = textView.textContainerInset
+        inset.bottom = show ? charactersLabelHeight : 0
+        
+        textView.textContainerInset = inset
+        
+        updateHeight()
     }
     
     private func updateCharactersLabel(count: Int) {
@@ -127,38 +165,27 @@ class AutoHeightTextView: BaseTextView {
             attributes: charactersAttributes
         )
     }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        // SnapKit으로 위치 지정이 되지 않아 frame으로 설정
-        let labelWidth = charactersLabel.intrinsicContentSize.width
-        let labelHeight = charactersLabel.font.lineHeight
-        
-        charactersLabel.frame = CGRect(
-            x: bounds.width - 16 - labelWidth,
-            y: bounds.height - 16 - labelHeight,
-            width: labelWidth,
-            height: labelHeight
-        )
-    }
 }
 
 extension AutoHeightTextView {
+    var rx: Reactive<BaseTextView> {
+        return textView.rx
+    }
+    
     private func bind() {
-        self.rx.text.orEmpty
+        textView.rx.text.orEmpty
             .skip(1)
             .subscribe(onNext: { [weak self] isEditable in
                 guard let self = self else { return }
                 
                 // 글자 수 제한
-                if self.text.count > maxLength {
-                    let index = text.index(text.startIndex, offsetBy: maxLength)
-                    self.text = String(text[..<index])
+                if textView.text.count > maxLength {
+                    let index = textView.text.index(textView.text.startIndex, offsetBy: maxLength)
+                    textView.text = String(textView.text[..<index])
                 }
                 
                 // 글자 수 표시
-                updateCharactersLabel(count: text.count)
+                updateCharactersLabel(count: textView.text.count)
                 
                 updateHeight()
                 applyLineHeight()

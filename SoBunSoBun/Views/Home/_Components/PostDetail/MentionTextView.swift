@@ -14,16 +14,16 @@ class MentionTextView: AutoHeightTextView {
     
     let commentedUsersToId = BehaviorRelay<[String: Int]>(value: [:])
     
-    override init(minHeight: CGFloat, maxHeight: CGFloat, maxLength: Int, fontStyle: FontStyle) {
+    init(minHeight: CGFloat, maxHeight: CGFloat, maxLength: Int, fontStyle: FontStyle) {
         super.init(minHeight: minHeight, maxHeight: maxHeight, maxLength: maxLength, fontStyle: fontStyle)
         
         // 멘션 스타일 재설정
-        self.linkTextAttributes = [:]
+        self.textView.linkTextAttributes = [:]
         
         bind()
         
         // rx.setDelegate는 불안정하여 delegate 패턴으로 진행
-        self.delegate = self
+        self.textView.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -74,18 +74,18 @@ class MentionTextView: AutoHeightTextView {
         }
         
         // 커서 위치 저장
-        let tempRange = self.selectedRange
+        let tempRange = self.textView.selectedRange
         
         // attributedText로 변환
-        self.attributedText = attributedString
+        self.textView.attributedText = attributedString
         
         // 커서 위치 재조정
-        self.selectedRange = tempRange
+        self.textView.selectedRange = tempRange
     }
     
     // 스타일 충돌 문제로 인한 applyLineHeight 덮어쓰기
     override func applyLineHeight() {
-        convertMentionAttributes(text: self.text)
+        convertMentionAttributes(text: self.textView.text)
     }
 }
 
@@ -98,7 +98,7 @@ extension MentionTextView: UITextViewDelegate {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                convertMentionAttributes(text: self.text)
+                convertMentionAttributes(text: self.textView.text)
             })
             .disposed(by: disposeBag)
     }

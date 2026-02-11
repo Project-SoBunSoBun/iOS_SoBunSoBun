@@ -144,7 +144,7 @@ class CommentView: UIView {
         return attributedString
     }
     
-    // MARK: - UI 설정
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         self.backgroundColor = .clear
         

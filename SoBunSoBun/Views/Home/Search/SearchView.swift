@@ -27,8 +27,7 @@ class SearchView: UIViewController {
     
     private let backButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .blackLeft
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
+        config.image = .blackLeft.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         
         let btn = UIButton(configuration: config)
@@ -91,7 +90,7 @@ class SearchView: UIViewController {
         return view
     }()
     
-    private static let sortLocalizableKeys: [String] = ["SortByLatest", "SortByDeadline"]
+    private let sortLocalizableKeys: [String] = ["SortByLatest", "SortByDeadline"]
     
     private let sortSelectView: UIStackView = {
         let sv = UIStackView()
@@ -102,7 +101,7 @@ class SearchView: UIViewController {
         return sv
     }()
     
-    private let sortLabel: UILabel = {
+    private lazy var sortLabel: UILabel = {
         let lb = UILabel()
         var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .right)
         attributes[.foregroundColor] = UIColor.neutral900
@@ -117,12 +116,8 @@ class SearchView: UIViewController {
     
     private let sortArrowIcon: UIImageView = {
         let iv = UIImageView()
-        iv.image = .blackDown
+        iv.image = .blackDown.resize(.init(width: 24, height: 24))
         iv.contentMode = .scaleAspectFit
-        
-        iv.snp.makeConstraints { make in
-            make.size.equalTo(24)
-        }
         
         return iv
     }()
@@ -145,7 +140,7 @@ class SearchView: UIViewController {
         return tv
     }()
     
-    private let dropDownView: DropDownView = {
+    private lazy var dropDownView: DropDownView = {
         let ddv = DropDownView(selectionMode: .check, tableName: "Home")
         ddv.items = sortLocalizableKeys
         
@@ -265,6 +260,10 @@ class SearchView: UIViewController {
         
         [sortLabel, sortArrowIcon].forEach {
             sortSelectView.addArrangedSubview($0)
+        }
+        
+        sortArrowIcon.snp.makeConstraints { make in
+            make.size.equalTo(24)
         }
         
         [sortSelectView, dividerView, tableView, dropDownView].forEach {

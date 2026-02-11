@@ -17,7 +17,7 @@ class InformationCard: UIView {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 8
-        sv.distribution = .fill
+        sv.alignment = .firstBaseline
         
         return sv
     }
@@ -44,9 +44,14 @@ class InformationCard: UIView {
         
         return lb
     }()
-    private lazy var participantsDescLabel: UILabel = UILabel()
+    private let participantsDescLabel: UILabel = {
+        let lb = UILabel()
+        lb.numberOfLines = 0
+        
+        return lb
+    }()
     
-    // 지점 위치
+    // 모임 장소
     private lazy var locationStackView: UIStackView = horizontalStackView()
     private lazy var locationTitleLabel: UILabel = {
         let lb = UILabel()
@@ -54,7 +59,12 @@ class InformationCard: UIView {
         
         return lb
     }()
-    private lazy var locationDescLabel: UILabel = UILabel()
+    private let locationDescLabel: UILabel = {
+        let lb = UILabel()
+        lb.numberOfLines = 0
+        
+        return lb
+    }()
     
     // 날짜 및 시간
     private lazy var dateTimeStackView: UIStackView = horizontalStackView()
@@ -64,7 +74,12 @@ class InformationCard: UIView {
         
         return lb
     }()
-    private lazy var dateTimeDescLabel: UILabel = UILabel()
+    private let dateTimeDescLabel: UILabel = {
+        let lb = UILabel()
+        lb.numberOfLines = 0
+        
+        return lb
+    }()
     
     // 마감일
     private lazy var deadlineStackView: UIStackView = horizontalStackView()
@@ -74,9 +89,14 @@ class InformationCard: UIView {
         
         return lb
     }()
-    private lazy var deadlineDescLabel: UILabel = UILabel()
+    private let deadlineDescLabel: UILabel = {
+        let lb = UILabel()
+        lb.numberOfLines = 0
+        
+        return lb
+    }()
     
-    // MARK: - UI 설정
+    // MARK: - 레이아웃 설정
     func configureUI(
         minMembers: Int?,
         maxMembers: Int?,
@@ -107,7 +127,7 @@ class InformationCard: UIView {
         
         addSubview(participantsStackView)
         
-        participantsTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        participantsTitleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         participantsDescLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         participantsStackView.snp.makeConstraints { make in
@@ -125,7 +145,7 @@ class InformationCard: UIView {
         
         addSubview(locationStackView)
         
-        locationTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        locationTitleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         locationDescLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         locationStackView.snp.makeConstraints { make in
@@ -144,7 +164,7 @@ class InformationCard: UIView {
         
         addSubview(dateTimeStackView)
         
-        dateTimeTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        dateTimeTitleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         dateTimeDescLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         dateTimeStackView.snp.makeConstraints { make in
@@ -169,7 +189,7 @@ class InformationCard: UIView {
         
         addSubview(deadlineStackView)
         
-        deadlineTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
+        deadlineTitleLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         deadlineDescLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         deadlineStackView.snp.makeConstraints { make in

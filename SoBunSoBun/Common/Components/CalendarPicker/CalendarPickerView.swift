@@ -53,8 +53,7 @@ class CalendarPickerView: UIViewController {
     
     private let prevButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
-        config.image = .blackChevronLeft
+        config.image = .blackChevronLeft.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         let btn = UIButton(configuration: config)
@@ -64,8 +63,7 @@ class CalendarPickerView: UIViewController {
     
     private let nextButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
-        config.image = .blackChevronRight
+        config.image = .blackChevronRight.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
         let btn = UIButton(configuration: config)
@@ -145,6 +143,7 @@ class CalendarPickerView: UIViewController {
         prevButton.snp.makeConstraints { make in
             make.leading.equalToSuperview()
             make.verticalEdges.equalToSuperview()
+            make.size.equalTo(24)
         }
         
         monthLabel.snp.makeConstraints { make in
@@ -154,6 +153,7 @@ class CalendarPickerView: UIViewController {
         nextButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview()
             make.verticalEdges.equalToSuperview()
+            make.size.equalTo(24)
         }
         
         weekdayStackView.snp.makeConstraints { make in
