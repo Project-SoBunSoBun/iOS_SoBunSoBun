@@ -91,7 +91,7 @@ class SearchView: UIViewController {
         return view
     }()
     
-    private static let sortLocalizableKeys: [String] = ["SortByLatest", "SortByDeadline"]
+    private let sortLocalizableKeys: [String] = ["SortByLatest", "SortByDeadline"]
     
     private let sortSelectView: UIStackView = {
         let sv = UIStackView()
@@ -102,7 +102,7 @@ class SearchView: UIViewController {
         return sv
     }()
     
-    private let sortLabel: UILabel = {
+    private lazy var sortLabel: UILabel = {
         let lb = UILabel()
         var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .right)
         attributes[.foregroundColor] = UIColor.neutral900
@@ -145,7 +145,7 @@ class SearchView: UIViewController {
         return tv
     }()
     
-    private let dropDownView: DropDownView = {
+    private lazy var dropDownView: DropDownView = {
         let ddv = DropDownView(selectionMode: .check, tableName: "Home")
         ddv.items = sortLocalizableKeys
         
