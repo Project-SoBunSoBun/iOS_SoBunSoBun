@@ -210,7 +210,7 @@ extension SettingDropDownView {
     
     private func animateToggle(isOpen: Bool) {
         let anchor: CGPoint
-        let scale: CGFloat = 1
+        let scale: CGFloat = 0.7
         
         switch animationAnchor {
         case .topLeft:
