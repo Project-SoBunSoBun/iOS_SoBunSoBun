@@ -1028,7 +1028,8 @@ extension PostDetailView {
                 guard let self = self else { return }
                 
                 let alert = CustomAlertView(
-                    title: message,
+                    title: String(localized: "Error", table: "Common"),
+                    subTitle: message,
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
