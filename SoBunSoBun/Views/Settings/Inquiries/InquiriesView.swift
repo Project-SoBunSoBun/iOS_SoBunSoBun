@@ -15,7 +15,7 @@ import OSLog
 class InquiriesView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Mypage.Inquiries.View"
+        category: "Settings.Inquiries.View"
     )
     
     //    typealias Reactor = InquiriesReactor

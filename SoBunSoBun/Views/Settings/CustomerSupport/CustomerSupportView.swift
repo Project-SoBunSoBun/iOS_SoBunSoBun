@@ -15,7 +15,7 @@ import OSLog
 class CustomerSupportView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Mypage.CustomerSupport.View"
+        category: "Settings.CustomerSupport.View"
     )
     
     typealias Reactor = CustomerSupportReactor

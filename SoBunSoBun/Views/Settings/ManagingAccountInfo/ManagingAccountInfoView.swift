@@ -15,7 +15,7 @@ import OSLog
 class ManagingAccountInfoView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Mypage.ManagingAccountInfo.View"
+        category: "Settings.ManagingAccountInfo.View"
     )
     
     typealias Reactor = ManagingAccountInfoReactor

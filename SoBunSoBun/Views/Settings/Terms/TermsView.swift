@@ -15,7 +15,7 @@ import OSLog
 class TermsView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Mypage.Terms.View"
+        category: "Settings.Terms.View"
     )
     
     typealias Reactor = TermsReactor

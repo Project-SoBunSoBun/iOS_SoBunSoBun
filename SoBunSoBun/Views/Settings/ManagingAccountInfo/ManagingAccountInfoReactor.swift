@@ -12,7 +12,7 @@ import OSLog
 class ManagingAccountInfoReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Mypage.ManagingAccountInfo.Reactor"
+        category: "Settings.ManagingAccountInfo.Reactor"
     )
     
     let initialState = State()
