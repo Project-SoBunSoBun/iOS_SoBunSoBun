@@ -52,12 +52,13 @@ extension SignInAPIs: TargetType {
                 .health,
                 .checkNickname:
             return .get
+            
         case // POST
                 .authLoginKakao,
                 .authCompleteSignUp:
             return .post
             
-            case // PATCH
+        case // PATCH
                 .saveProfile:
             return .patch
         }
