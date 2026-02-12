@@ -160,38 +160,6 @@ func showLocationSettingAlert(_ vc: UIViewController, cancelAction: (() -> Void)
     alert.show(on: vc)
 }
 
-// alert 표시
-func showAlert(
-    title: String,
-    message: String? = nil,
-    prefferredStyle: UIAlertController.Style = .alert,
-    confirmTitle: String? = nil,
-    confirmAction: (() -> Void)? = nil,
-    cancelTitle: String? = nil,
-    cancelAction: (() -> Void)? = nil,
-    vc: UIViewController
-) {
-    let alert = UIAlertController(title: title, message: message, preferredStyle: prefferredStyle)
-    
-    if let confirmTitle, let confirmAction {
-        let action = UIAlertAction(title: confirmTitle, style: .default) { _ in
-            confirmAction()
-        }
-        
-        alert.addAction(action)
-    }
-    
-    if let cancelTitle, let cancelAction {
-        let action = UIAlertAction(title: cancelTitle, style: .cancel) { _ in
-            cancelAction()
-        }
-        
-        alert.addAction(action)
-    }
-    
-    vc.present(alert, animated: true)
-}
-
 extension Encodable {
     func toDictionary() -> [String: Any]? {
         guard let data = try? JSONEncoder().encode(self) else { return nil }

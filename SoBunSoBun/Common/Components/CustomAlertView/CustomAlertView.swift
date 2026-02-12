@@ -88,6 +88,16 @@ class CustomAlertView: UIView {
         
         let button = UIButton(configuration: config)
         
+        button.configurationUpdateHandler = { button in
+            switch button.state {
+            case .highlighted:
+                button.configuration?.background.backgroundColor = .neutral100
+                
+            default:
+                button.configuration?.background.backgroundColor = .clear
+            }
+        }
+        
         return button
     }()
     
@@ -96,6 +106,16 @@ class CustomAlertView: UIView {
         config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
         
         let button = UIButton(configuration: config)
+        
+        button.configurationUpdateHandler = { button in
+            switch button.state {
+            case .highlighted:
+                button.configuration?.background.backgroundColor = .neutral100
+                
+            default:
+                button.configuration?.background.backgroundColor = .clear
+            }
+        }
         
         return button
     }()
