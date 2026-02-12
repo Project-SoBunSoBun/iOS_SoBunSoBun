@@ -27,12 +27,14 @@ class CustomAlertView: UIView {
          frame: CGRect = .zero
     ){
         super.init(frame: frame)
+        
         configureUI(
             title: title,
             subtitle: subTitle,
             primaryTitleKey: primaryTitleKey,
             cancelTitleKey: cancelTitleKey
         )
+        
         bind(reactor: reactor)
     }
     
@@ -138,10 +140,9 @@ class CustomAlertView: UIView {
                 string: subtitle,
                 attributes: body14.attributes(alignment: .center)
             )
-            setTitleSpacing(isSubtitleEnabled: true)
-        } else {
-            setTitleSpacing(isSubtitleEnabled: false)
         }
+        
+        setTitleSpacing(isSubtitleEnabled: subtitle != nil)
         
         // primary localized
         var primaryAttributes: [NSAttributedString.Key:Any] = title16.attributes(alignment: .center)
@@ -166,7 +167,8 @@ class CustomAlertView: UIView {
             
             cancelButton.configuration?.attributedTitle = AttributedString(cancelAttributedTitle)
         } else {
-            updateCancelButtonVisibility()
+            secondDivider.isHidden = true
+            cancelButton.isHidden = true
         }
         
         containerView.setCustomSpacing(16, after: titleLabel)
@@ -211,11 +213,6 @@ class CustomAlertView: UIView {
         if isSubtitleEnabled {
             containerView.setCustomSpacing(16, after: subtitleLabel)
         }
-    }
-    
-    private func updateCancelButtonVisibility() {
-        secondDivider.isHidden = true
-        cancelButton.isHidden = true
     }
     
     func show(on viewController: UIViewController) {

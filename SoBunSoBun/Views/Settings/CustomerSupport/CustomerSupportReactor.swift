@@ -37,7 +37,6 @@ class CustomerSupportReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-            
         case .supportBugTapped:
             return Observable.just(.setNavigate(.bugReport))
             

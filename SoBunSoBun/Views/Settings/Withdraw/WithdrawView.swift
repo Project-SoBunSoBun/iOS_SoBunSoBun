@@ -340,7 +340,7 @@ class WithdrawView: UIViewController {
         
         withDrawButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(agreeCheckBox.snp.bottom).offset(37)
+            make.top.equalTo(agreeCheckBox.snp.bottom).offset(36)
             make.bottom.equalToSuperview()
         }
     }
@@ -464,7 +464,7 @@ extension WithdrawView {
     
     private func withdrawAlert() {
         let alert = CustomAlertView(
-            title: String(localized: "withdrawCompleted", table: "Settings"),
+            title: String(localized: "WithdrawCompleted", table: "Settings"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         

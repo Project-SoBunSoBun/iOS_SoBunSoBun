@@ -28,7 +28,6 @@ extension SettingAPIs: TargetType {
         case .postWithdraw:
             return "users/me/withdraw"
         }
-        
     }
     
     var method: Moya.Method {
