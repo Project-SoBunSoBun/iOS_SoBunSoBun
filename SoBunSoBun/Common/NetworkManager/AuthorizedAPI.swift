@@ -17,10 +17,6 @@ enum AuthorizedAPI {
     // 정산
     case mySettleUps(activeOnly: Int, page: Int, size: Int)
     case deleteSettleUp(id: Int)
-    // 마이페이지
-    case getMeProfile
-    case patchProfileImage(profileImage: Data)
-    case patchNickname(nickname: String)
 }
 
 extension AuthorizedAPI: TargetType {
@@ -43,12 +39,6 @@ extension AuthorizedAPI: TargetType {
             return "/api/settleups/my"
         case .deleteSettleUp(let id):
             return "/api/settleups/\(id)"
-        case .getMeProfile:
-            return "api/me/profile"
-        case .patchProfileImage:
-            return "users/me/profile-image"
-        case .patchNickname:
-            return "users/me/nickname"
         }
     }
     
@@ -62,12 +52,6 @@ extension AuthorizedAPI: TargetType {
             return .get
         case .deleteSettleUp:
             return .delete
-        case .getMeProfile:
-            return .get
-        case .patchProfileImage:
-            return .patch
-        case .patchNickname:
-            return .patch
         }
     }
     
@@ -109,40 +93,16 @@ extension AuthorizedAPI: TargetType {
             
         case .deleteSettleUp:
             return .requestPlain
-            
-        case .getMeProfile:
-            return .requestPlain
-            
-        case .patchProfileImage(let profileImage):
-            let imageData = profileImage
-            var formData: [MultipartFormData] = []
-            
-            formData.append(MultipartFormData(
-                provider: .data(imageData),
-                name: "profileImage",
-                fileName: "profile.jpg",
-                mimeType: "image/jpeg"
-            ))
-            
-            return .uploadMultipart(formData)
-            
-        case .patchNickname(nickname: let nickname):
-            let body: [String: String] = ["nickname": nickname]
-            
-            return .requestJSONEncodable(body)
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .saveProfile,
-            .patchProfileImage:
+        case .saveProfile:
             return ["Content-Type": "multipart/form-data"]
         case .me,
                 .mySettleUps,
-                .deleteSettleUp,
-                .getMeProfile,
-                .patchNickname:
+                .deleteSettleUp:
             return [:]
         }
     }
