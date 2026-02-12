@@ -19,6 +19,8 @@ class MyPageReactor: Reactor {
     
     private let disposeBag = DisposeBag()
     
+    private let networkManager = SettingNetworkManager()
+    
     enum ViewType {
         case editProfile
         case groupBuyingRecord
@@ -58,7 +60,7 @@ class MyPageReactor: Reactor {
         case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setLoading(true)),
-                NetworkManager.shared.getMeProfile()
+                networkManager.getMeProfile()
                     .asObservable()
                     .flatMap { profile -> Observable<Mutation> in
                         return Observable.just(.setProfile(profile))

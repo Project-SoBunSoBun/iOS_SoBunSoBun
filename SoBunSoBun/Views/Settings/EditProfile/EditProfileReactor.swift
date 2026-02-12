@@ -20,6 +20,8 @@ class EditProfileReactor: Reactor {
     let initialState = State()
     private let disposeBag = DisposeBag()
     
+    private let networkManager = SettingNetworkManager()
+    
     enum Action {
         case cameraImageTapped
         case nicknameChanged(String)
@@ -128,7 +130,7 @@ class EditProfileReactor: Reactor {
             return Observable.empty()
         }
         
-        return NetworkManager.shared.patchProfileImage(profileImage: profileImage)
+        return networkManager.patchProfileImage(profileImage: profileImage)
             .asObservable()
             .flatMap { _ -> Observable<Mutation> in
                 return Observable.just(.setProfileSaved)
@@ -142,7 +144,7 @@ class EditProfileReactor: Reactor {
     private func saveNickname() -> Observable<Mutation> {
         guard let nickname = currentState.nickname else { return Observable.empty() }
         
-        return NetworkManager.shared.patchNickname(nickname: nickname)
+        return networkManager.patchNickname(nickname: nickname)
             .asObservable()
             .flatMap { _ -> Observable<Mutation> in
                 return Observable.just(.setProfileSaved)
