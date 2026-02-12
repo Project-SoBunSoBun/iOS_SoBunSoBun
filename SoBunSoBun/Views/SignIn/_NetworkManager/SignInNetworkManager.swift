@@ -11,8 +11,7 @@ import RxMoya
 import RxSwift
 import UIKit
 
-final class SignInNetworkManager {
-
+class SignInNetworkManager {
     private let provider = MoyaProvider<MultiTarget>(plugins: [MoyaLoggingPlugin()])
     private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared), plugins: [MoyaLoggingPlugin()])
     

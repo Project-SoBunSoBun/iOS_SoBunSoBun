@@ -12,7 +12,7 @@ import RxSwift
 import UIKit
 import OSLog
 
-final class CommonNetworkManager {
+class CommonNetworkManager {
     private let provider = MoyaProvider<MultiTarget>(plugins: [MoyaLoggingPlugin()])
     private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared), plugins: [MoyaLoggingPlugin()])
 
