@@ -32,6 +32,9 @@ class AuthManager {
         KeyChain.shared.remove(key: "REFRESH_TOKEN")
         KeyChain.shared.remove(key: "REFRESH_TOKEN_EXPIRE_AT_KST")
         KeyChain.shared.remove(key: "LOGIN_TOKEN")
+        KeyChain.shared.remove(key: "USER_ID")
+        KeyChain.shared.remove(key: "FCM_TOKEN")
+        KeyChain.shared.remove(key: "EMAIL")
         
         logger.debug("모든 keychain 내 토큰 제거")
     }
@@ -41,13 +44,20 @@ class AuthManager {
             guard let self = self else { return }
             
             if let currentVC = window?.rootViewController {
-                showAlert(
+                let alert = CustomAlertView(
                     title: String(localized: "Notice", table: "Common"),
-                    message: String(localized: "YouShouldSignInAgain", table: "Common"),
-                    confirmTitle: String(localized: "Confirm", table: "Common"),
-                    confirmAction: { self.switchToLoginView() },
-                    vc: currentVC
+                    subTitle: String(localized: "YouShouldSignInAgain", table: "Common"),
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.isSubtitleEnabled = true
+                alert.isCancelEnabled = false
+                
+                alert.onPrimaryTapped = {
+                    self.switchToLoginView()
+                }
+                
+                alert.show(on: currentVC)
             }
         }
         
