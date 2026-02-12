@@ -20,6 +20,8 @@ class NicknameSettingReactor: Reactor {
     let initialState = State()
     private let disposeBag = DisposeBag()
     
+    private let networkManager = SignInNetworkManager()
+    
     enum Action {
         case backButtonTapped // 뒤로가기 버튼 클릭
         case nicknameChanged(String)
@@ -107,7 +109,7 @@ class NicknameSettingReactor: Reactor {
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
-            NetworkManager.shared.saveProfile(nickname: nickname, profileImage: profileImage)
+            networkManager.saveProfile(nickname: nickname, profileImage: profileImage)
                 .asObservable()
                 .flatMap { _ -> Observable<Mutation> in
                     return Observable.just(.setProfileSaved)

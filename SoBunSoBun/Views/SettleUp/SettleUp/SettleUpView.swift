@@ -15,7 +15,7 @@ import OSLog
 class SettleUpView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "SettleUp.View"
+        category: "SettleUp.SettleUp.View"
     )
     
     typealias Reactor = SettleUpReactor
