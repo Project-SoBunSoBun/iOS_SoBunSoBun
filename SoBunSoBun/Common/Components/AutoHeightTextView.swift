@@ -98,7 +98,7 @@ class AutoHeightTextView: UIView {
         textView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
             // 초기 높이 설정
-            heightConstraint = make.height.greaterThanOrEqualTo(minHeight).constraint
+            heightConstraint = make.height.greaterThanOrEqualTo(minHeight).priority(.high).constraint
         }
         
         addSubview(charactersLabel)
