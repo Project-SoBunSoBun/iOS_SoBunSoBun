@@ -197,6 +197,7 @@ class WithdrawView: UIViewController {
         let ddv = SettingDropDownView(tableName: "Settings", isHeightLimited: false)
         ddv.textAlignment = .center
         ddv.items = ["WithdrawReason001", "WithdrawReason002", "WithdrawReason003", "WithdrawReason004"]
+        ddv.animationAnchor = .topCenter
         
         return ddv
     }()
