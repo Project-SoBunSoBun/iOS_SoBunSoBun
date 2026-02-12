@@ -13,12 +13,12 @@ import OSLog
 final class MoyaLoggingPlugin: PluginType {
     private let requestLogger = Logger(
         subsystem: "SoBunSoBun",
-        category: "NetworkManager.Request"
+        category: "MoyaLoggingPlugin.Request"
     )
     
     private let responseLogger = Logger(
         subsystem: "SoBunSoBun",
-        category: "NetworkManager.Response"
+        category: "MoyaLoggingPlugin.Response"
     )
     
     // Request를 보낼 때 호출
@@ -44,7 +44,7 @@ final class MoyaLoggingPlugin: PluginType {
         if let body = httpRequest.httpBody, let bodyString = String(bytes: body, encoding: .utf8) {
             if let json = try? JSONSerialization.jsonObject(with: body, options: .mutableContainers),
                let jsonData = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted) {
-                log.append("BODY:")
+                log.append("BODY: ")
                 log.append(String(decoding: jsonData, as: UTF8.self))
                 log.append("\n")
             } else {

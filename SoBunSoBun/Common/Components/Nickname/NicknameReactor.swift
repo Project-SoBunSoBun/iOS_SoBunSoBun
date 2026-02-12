@@ -22,6 +22,8 @@ class NicknameReactor: Reactor {
     
     private let disposeBag = DisposeBag()
     
+    private let networkManager = SignInNetworkManager()
+    
     enum Action {
         case isDuplicationCheckButtonTapped(input: String?) // 중복확인 버튼을 눌렀을 때
         case textFieldChanged(String?) // TextField가 변경 되었을 때
@@ -54,7 +56,7 @@ class NicknameReactor: Reactor {
                 let result = nickname.range(of: regex, options: .regularExpression) != nil
                 if result {
                     // 서버와 통신 닉네임 중복 검사
-                    return NetworkManager.shared.checkNickname(nickname: nickname)
+                    return networkManager.checkNickname(nickname: nickname)
                         .asObservable()
                         .flatMap { checkNickname in
                             // infoMessage 출력

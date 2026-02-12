@@ -11,6 +11,8 @@ import ReactorKit
 class SignUpCompletedReactor: Reactor {
     let initialState = State()
     
+    private let commonNetworkManager = CommonNetworkManager()
+    
     enum Action {
         case viewDidLoad
         case closeButtonTapped
@@ -35,6 +37,7 @@ class SignUpCompletedReactor: Reactor {
         switch action { 
         case .viewDidLoad:
             return fetchUserProfile()
+            
         case .closeButtonTapped, .startButtonTapped:
             return Observable.just(.setNavigateToHome)
         }
@@ -45,10 +48,13 @@ class SignUpCompletedReactor: Reactor {
         switch mutation {
         case .setNickname(let nickname):
             newState.nickname = nickname
+            
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
+            
         case .setError(let message):
             newState.errorMessage = message
+            
         case .setNavigateToHome:
             newState.shouldNavigateToHome = ()
         }
@@ -59,7 +65,7 @@ class SignUpCompletedReactor: Reactor {
         return Observable.concat([
             Observable.just(.setLoading(true)),
             
-            NetworkManager.shared.myProfile()
+            commonNetworkManager.myProfile()
                 .asObservable()
                 .flatMap { userInfo -> Observable<Mutation> in
                     Observable.just(.setNickname(userInfo.nickname ?? "Error"))

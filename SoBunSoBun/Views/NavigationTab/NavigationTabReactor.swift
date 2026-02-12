@@ -11,6 +11,8 @@ import RxSwift
 class NavigationTabReactor: Reactor {
     let initialState = State()
     
+    private let commonNetworkManaer = CommonNetworkManager()
+    
     enum Action {
         case viewDidLoad
         case selectIndex(Int)
@@ -58,7 +60,7 @@ class NavigationTabReactor: Reactor {
             return Observable.empty()
         }
             
-        return NetworkManager.shared.myProfile()
+        return commonNetworkManaer.myProfile()
             .asObservable()
             .flatMap { userInfo -> Observable<Mutation> in
                 KeyChain.shared.set(key: "USER_ID", value: String(userInfo.id))

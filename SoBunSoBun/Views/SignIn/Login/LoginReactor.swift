@@ -15,6 +15,8 @@ import KakaoSDKAuth
 class LoginReactor: Reactor {
     private let disposeBag = DisposeBag()
     
+    private let networkManager = SignInNetworkManager()
+    
     let initialState = State()
     
     enum Action {
@@ -43,7 +45,7 @@ class LoginReactor: Reactor {
             return kakaoLoginAction()
                 .flatMap { oauthToken in
                     let accessToken = oauthToken.accessToken
-                    return NetworkManager.shared.fetchAuthLoginKakao(accessToken: accessToken)
+                    return self.networkManager.fetchAuthLoginKakao(accessToken: accessToken)
                         .asObservable()
                         .map { kakaoAuthResponse in
                             // 임시 토큰 저장
@@ -101,7 +103,7 @@ extension LoginReactor {
             return Observable.just(.loginAndNavigateToHomeFailed("로그인 토큰이 없습니다"))
         }
         
-        return NetworkManager.shared.fetchAuthCompleteSignUp(
+        return networkManager.fetchAuthCompleteSignUp(
             loginToken: loginToken,
             serviceTermsAgreed: true,
             privacyPolicyAgreed: true,

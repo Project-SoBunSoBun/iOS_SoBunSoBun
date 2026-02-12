@@ -13,6 +13,8 @@ class SignUpReactor: Reactor {
     let initialState = State()
     private let disposeBag = DisposeBag()
     
+    private let networkManager = SignInNetworkManager()
+    
     enum Action {
         case backButtonTapped // 뒤로가기 버튼 클릭
         case allAgreeToggled // 모두 동의 체크
@@ -126,7 +128,7 @@ class SignUpReactor: Reactor {
         let serviceTermsAgreed = currentState.termsChecked["service"] ?? false
         let privacyPolicyAgreed = currentState.termsChecked["privacy"] ?? false
         
-        return NetworkManager.shared.fetchAuthCompleteSignUp(
+        return networkManager.fetchAuthCompleteSignUp(
             loginToken: loginToken,
             serviceTermsAgreed: serviceTermsAgreed,
             privacyPolicyAgreed: privacyPolicyAgreed,

@@ -25,6 +25,8 @@ class SettleUpReactor: Reactor {
     
     private let disposeBag = DisposeBag()
     
+    private let networkManager = SettleUpNetworkManager()
+    
     enum Action {
         case viewDidLoad
         case categorySelected(SettleUpCategory)
@@ -92,7 +94,7 @@ class SettleUpReactor: Reactor {
         return Observable.concat([
             Observable.just(.setLoading(true)),
             
-            NetworkManager.shared.mySettleUps(activeOnly: activeOnly, page: 0, size: 20)
+            networkManager.mySettleUps(activeOnly: activeOnly, page: 0, size: 20)
                 .asObservable()
                 .flatMap { SettleUpModel -> Observable<Mutation> in
                     let items: [SettleUpItemModel] = SettleUpModel.content.map { content in
@@ -124,7 +126,7 @@ class SettleUpReactor: Reactor {
         return Observable.concat([
             .just(.setLoading(true)),
             
-            NetworkManager.shared.deleteSettleUp(id: id)
+            networkManager.deleteSettleUp(id: id)
                 .asObservable()
                 .flatMap { [weak self] _ -> Observable<Mutation> in
                     guard let self = self else { return Observable.empty() }

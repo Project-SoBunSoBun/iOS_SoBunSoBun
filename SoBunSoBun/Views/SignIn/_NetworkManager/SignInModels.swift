@@ -1,13 +1,11 @@
 //
-//  PublicModel.swift
+//  SignInModels.swift
 //  SoBunSoBun
 //
-//  Created by 김태은 on 11/21/25.
+//  Created by 허성필 on 2/13/26.
 //
 
 import Foundation
-
-// TODO: 파일 분할 필요
 
 // MARK: - 로그인
 struct KakaoAuthResponse: Decodable {
@@ -26,15 +24,18 @@ struct UserModel: Decodable {
     let refreshTokenExpiresAtKst: String
 }
 
-struct UserInfoModel: Decodable {
-    let id: Int
-    let email: String
-    let nickname: String?
-    let profileImageUrl: String?
-    let role: String
-}
-
 struct CheckNicknameModel: Decodable {
     let nickname: String
     let available: Bool
+}
+
+struct AuthKakaoTokenModel: Encodable {
+    let accessToken: String
+}
+
+struct LoginTokenModel: Encodable {
+    let loginToken: String
+    let serviceTermsAgreed: Bool
+    let privacyPolicyAgreed: Bool
+    let marketingOptionalAgreed: Bool
 }
