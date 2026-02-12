@@ -92,6 +92,7 @@ class CustomAlertView: UIView {
             switch button.state {
             case .highlighted:
                 button.configuration?.background.backgroundColor = .neutral100
+                
             default:
                 button.configuration?.background.backgroundColor = .clear
             }
@@ -110,6 +111,7 @@ class CustomAlertView: UIView {
             switch button.state {
             case .highlighted:
                 button.configuration?.background.backgroundColor = .neutral100
+                
             default:
                 button.configuration?.background.backgroundColor = .clear
             }
