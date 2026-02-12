@@ -7,13 +7,6 @@
 
 import Foundation
 
-// MARK: - 탈퇴
-struct WithdrawRequestBodyModel: Encodable {
-    let reasonCode: String
-    let reasonDetail: String
-    let agreedToTerms: Bool
-}
-
 // MARK: - 마이페이지
 struct MyProfileModel: Decodable {
     let success: Bool
@@ -32,4 +25,11 @@ struct MyProfileDataModel: Decodable, Equatable {
 struct MannerTagModel: Decodable, Equatable {
     let tagId: Int
     let count: Int
+}
+
+// MARK: - 탈퇴
+struct WithdrawRequestBodyModel: Encodable {
+    let reasonCode: String
+    let reasonDetail: String
+    let agreedToTerms: Bool
 }

@@ -14,16 +14,6 @@ import UIKit
 class SettingNetworkManager {
     private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared), plugins: [MoyaLoggingPlugin()])
     
-    // MARK: - 회원 탈퇴
-    // 사용자 회원 탈퇴
-    func withdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool) -> Single<Void> {
-        return authProvider.rx.request(
-            MultiTarget(SettingAPIs.postWithdraw(reasonCode: reasonCode, reasonDetail: reasonDetail, agreedToTerms: agreedToTerms))
-        )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
-    }
-    
     // MARK: - 마이페이지
     // 마이페이지 프로필 조회
     func getMeProfile() -> Single<MyProfileModel> {
@@ -49,6 +39,16 @@ class SettingNetworkManager {
     func patchNickname(nickname:String) -> Single<Void> {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.patchNickname(nickname: nickname))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
+    
+    // MARK: - 회원 탈퇴
+    // 사용자 회원 탈퇴
+    func withdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.postWithdraw(reasonCode: reasonCode, reasonDetail: reasonDetail, agreedToTerms: agreedToTerms))
         )
         .filterSuccessfulStatusCodes()
         .map { _ in () }

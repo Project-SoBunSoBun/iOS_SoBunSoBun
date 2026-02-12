@@ -9,12 +9,12 @@ import Foundation
 import Moya
 
 enum SettingAPIs {
-    // 탈퇴
-    case postWithdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool)
     // 마이페이지
     case getMeProfile
     case patchProfileImage(profileImage: Data)
     case patchNickname(nickname: String)
+    // 탈퇴
+    case postWithdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool)
 }
 
 extension SettingAPIs: TargetType {
@@ -29,22 +29,19 @@ extension SettingAPIs: TargetType {
     
     var path: String {
         switch self {
-        case .postWithdraw:
-            return "users/me/withdraw"
         case .getMeProfile:
             return "api/me/profile"
         case .patchProfileImage:
             return "users/me/profile-image"
         case .patchNickname:
             return "users/me/nickname"
+        case .postWithdraw:
+            return "users/me/withdraw"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case // POST
-                .postWithdraw:
-            return .post
         case // GET
                 .getMeProfile:
             return .get
@@ -52,15 +49,14 @@ extension SettingAPIs: TargetType {
                 .patchProfileImage,
                 .patchNickname:
             return .patch
+        case // POST
+                .postWithdraw:
+            return .post
         }
     }
     
     var task: Moya.Task {
         switch self {
-        case .postWithdraw(let reasonCode, let reasonDetail, let agreedToTerms):
-            let model = WithdrawRequestBodyModel(reasonCode: reasonCode, reasonDetail: reasonDetail, agreedToTerms: agreedToTerms)
-            
-            return .requestJSONEncodable(model)
         case .getMeProfile:
             return .requestPlain
             
@@ -81,6 +77,11 @@ extension SettingAPIs: TargetType {
             let body: [String: String] = ["nickname": nickname]
             
             return .requestJSONEncodable(body)
+            
+        case .postWithdraw(let reasonCode, let reasonDetail, let agreedToTerms):
+            let model = WithdrawRequestBodyModel(reasonCode: reasonCode, reasonDetail: reasonDetail, agreedToTerms: agreedToTerms)
+            
+            return .requestJSONEncodable(model)
         }
     }
     
@@ -88,7 +89,8 @@ extension SettingAPIs: TargetType {
         switch self {
         case .patchProfileImage:
             return ["Content-Type": "multipart/form-data"]
-        default :
+            
+        default:
             return [:]
         }
     }
