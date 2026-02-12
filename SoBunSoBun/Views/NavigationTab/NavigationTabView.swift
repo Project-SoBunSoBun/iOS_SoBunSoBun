@@ -105,7 +105,7 @@ extension NavigationTabView {
         homeView.shouldShowLocationSettingAlert
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
-                showLocationSettingAlert(self)
+                self.showLocationSettingAlert()
             })
             .disposed(by: disposeBag)
     }
@@ -141,6 +141,22 @@ extension NavigationTabView {
                 showAlert(title: message, vc: self)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func showLocationSettingAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "LocationSettingTitle", table: "Common"),
+            primaryTitleKey: String(localized: "GoToSetting", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            // 설정 앱으로 이동
+            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(settingsUrl)
+            }
+        }
+        
+        alert.show(on: self)
     }
 }
 

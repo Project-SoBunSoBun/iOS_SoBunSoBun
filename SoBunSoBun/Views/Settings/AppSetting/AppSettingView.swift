@@ -15,7 +15,7 @@ import OSLog
 class AppSettingView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Mypage.View"
+        category: "Settings.AppSetting.View"
     )
     
     typealias Reactor = AppSettingReactor

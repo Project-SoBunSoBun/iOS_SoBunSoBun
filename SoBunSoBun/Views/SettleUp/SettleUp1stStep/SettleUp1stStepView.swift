@@ -626,8 +626,6 @@ class SettleUp1stStepView: UIViewController {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.isSubtitleEnabled = false
-        
         alert.onPrimaryTapped = {
             self.reactor.action.onNext(.productDeleted(index))
         }
@@ -646,8 +644,6 @@ class SettleUp1stStepView: UIViewController {
             primaryTitleKey: String(localized: "Edit", table: "Common"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
-        
-        alert.isSubtitleEnabled = false
         
         alert.onPrimaryTapped = {
             self.reactor.action.onNext(.productEdited(index))

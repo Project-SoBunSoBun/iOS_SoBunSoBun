@@ -834,8 +834,6 @@ extension PostDetailView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.isSubtitleEnabled = false
-                
                 alert.onPrimaryTapped = {
                     reactor.action.onNext(.reportPost)
                 }
@@ -872,8 +870,6 @@ extension PostDetailView {
                     primaryTitleKey: String(localized: "Delete", table: "Home"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
-                
-                alert.isSubtitleEnabled = false
                 
                 alert.onPrimaryTapped = {
                     reactor.action.onNext(.deletePost)
@@ -927,8 +923,6 @@ extension PostDetailView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.isSubtitleEnabled = false
-                
                 alert.onPrimaryTapped = {
                     self.reactor.action.onNext(.reportComment)
                 }
@@ -965,8 +959,6 @@ extension PostDetailView {
                     primaryTitleKey: String(localized: "Delete", table: "Home"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
-                
-                alert.isSubtitleEnabled = false
                 
                 alert.onPrimaryTapped = {
                     self.reactor.action.onNext(.deleteComment)

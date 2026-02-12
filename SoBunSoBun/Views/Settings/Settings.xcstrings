@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "AgreeWithdraw" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위 내용을 확인하고 탈퇴에 동의합니다."
+          }
+        }
+      }
+    },
     "Announcement" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -205,6 +217,18 @@
         }
       }
     },
+    "LogOutSubMessage" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로그아웃 이후에는 모임 관련 알림을 확인할 수 없습니다."
+          }
+        }
+      }
+    },
     "ManagingAccountInfo" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -385,6 +409,18 @@
         }
       }
     },
+    "SelectWithdrawReason" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 사유를 선택해 주세요."
+          }
+        }
+      }
+    },
     "ServiceTerm" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -429,6 +465,138 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "알 수 없음"
+          }
+        }
+      }
+    },
+    "Withdraw" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴하기"
+          }
+        }
+      }
+    },
+    "WithdrawCompleted" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴가 완료되었습니다."
+          }
+        }
+      }
+    },
+    "WithdrawMessage1" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴 시 참여했던 모임 정보, 채팅 내역 등 모든 활동 기록이 즉시 삭제되며 다시 복구할 수  없습니다."
+          }
+        }
+      }
+    },
+    "WithdrawMessage2" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 처리 후 서비스 재이용을 원하실 경우  신규 회원가입이 필요하며, 기존 데이터는 연결되지 않습니다."
+          }
+        }
+      }
+    },
+    "WithdrawMessage3" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "현재 참여 중인 모임이나 미완료된 정산 내역이 있는지 확인해 주세요. 탈퇴 후에는 관련 정보 확인 및 분쟁 해결이 어려울 수 있습니다."
+          }
+        }
+      }
+    },
+    "WithdrawReason" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 사유"
+          }
+        }
+      }
+    },
+    "WithdrawReason001" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 이상 이용하지 않음"
+          }
+        }
+      }
+    },
+    "WithdrawReason002" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 후 재가입 하려고"
+          }
+        }
+      }
+    },
+    "WithdrawReason003" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "원하는 정보가 없어서"
+          }
+        }
+      }
+    },
+    "WithdrawReason004" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용하기 불편해서"
+          }
+        }
+      }
+    },
+    "WithdrawTitle" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "회원 탈퇴 전, 아래 내용을 꼭 확인해 주세요."
           }
         }
       }

@@ -15,7 +15,7 @@ import OSLog
 class NotificationSettingView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "NotificationSetting.View"
+        category: "Settings.NotificationSetting.View"
     )
 
     // MARK: - 디자인 요소

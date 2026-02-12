@@ -311,8 +311,6 @@ extension SettleUpView {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.isSubtitleEnabled = true
-        
         alert.onPrimaryTapped = {
             self.reactor.action.onNext(.deleteSettleUpTapped(id: id))
         }

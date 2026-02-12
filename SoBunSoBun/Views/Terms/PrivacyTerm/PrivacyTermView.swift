@@ -7,83 +7,51 @@
 
 import UIKit
 import SnapKit
-import ReactorKit
 import RxSwift
 import RxCocoa
+import ReactorKit
+import OSLog
 
 class PrivacyTermView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "PrivacyPolicy.View"
+    )
+    
     typealias Reactor = PrivacyTermReactor
     private let reactor = PrivacyTermReactor()
     
     private let disposeBag = DisposeBag()
     
-    // 뒤로 가기 버튼
-    private let backButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "BlackLeft"), for: .normal)
+    // MARK: - 디자인 요소
+    // 상단 네비게이션 바
+    private lazy var topNavigationBar: TopNavigationBar = {
+        let tnb = TopNavigationBar()
+        tnb.title = String(localized: "PrivacyPolicy", table: "Settings")
+        tnb.parentViewController = self
         
-        return button
+        return tnb
     }()
     
-    // 임시 타이틀
-    private let titleLabel: UILabel = {
-        let title = UILabel()
-        title.text = "Privacy 약관 화면"
-        title.textColor = .neutral900
-        title.textAlignment = .center
-        
-        return title
-    }()
-
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         configureUI()
-        bind(reactor: reactor)
     }
     
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [backButton, titleLabel].forEach {
+        [topNavigationBar].forEach {
             view.addSubview($0)
         }
         
-        backButton.snp.makeConstraints { make in
-            make.size.equalTo(48)
-            make.leading.equalToSuperview().offset(4)
+        // 탑 네비게이션 바
+        topNavigationBar.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
-        
-        titleLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-    }
-
-}
-
-extension PrivacyTermView {
-    // reactor와 view 연결
-    private func bind(reactor: PrivacyTermReactor) {
-        bindAction(reactor: reactor)
-        bindState(reactor: reactor)
-    }
-    
-    private func bindAction(reactor: PrivacyTermReactor) {
-        // Back 버튼 탭
-        backButton.rx.tap
-            .map { Reactor.Action.backButtonTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-    }
-    
-    private func bindState(reactor: PrivacyTermReactor) {
-        // 뒤로 가기 버튼
-        reactor.pulse(\.$shouldPopViewController)
-            .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
-            })
-            .disposed(by: disposeBag)
     }
 }

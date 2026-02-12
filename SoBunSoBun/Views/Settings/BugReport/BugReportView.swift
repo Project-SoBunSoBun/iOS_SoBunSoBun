@@ -1,8 +1,8 @@
 //
-//  AnnouncementView.swift
+//  BugReportView.swift
 //  SoBunSoBun
 //
-//  Created by 허성필 on 1/28/26.
+//  Created by 허성필 on 2/7/26.
 //
 
 import UIKit
@@ -12,17 +12,22 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class AnnouncementView: UIViewController {
+class BugReportView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Settings.Announcement.View"
+        category: "Settings.BugReport.View"
     )
-
+    
+    //    typealias Reactor = BugReportReactor
+    //    private let reactor = BugReportReactor()
+    
+    private let disposeBag = DisposeBag()
+    
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
-        tnb.title = String(localized: "Announcement", table: "Settings")
+        tnb.title = String(localized: "BugReport", table: "Settings")
         tnb.parentViewController = self
         
         return tnb
@@ -34,11 +39,11 @@ class AnnouncementView: UIViewController {
         
         configureUI()
     }
-
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
-    
+        
         [topNavigationBar].forEach {
             view.addSubview($0)
         }

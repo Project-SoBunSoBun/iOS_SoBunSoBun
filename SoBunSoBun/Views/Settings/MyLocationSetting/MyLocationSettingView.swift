@@ -15,7 +15,7 @@ import OSLog
 class MyLocationSettingView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "MyLocationSetting.View"
+        category: "Settings.MyLocationSetting.View"
     )
     
     // MARK: - 디자인 요소

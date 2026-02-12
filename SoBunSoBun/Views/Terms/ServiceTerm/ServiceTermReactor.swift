@@ -7,28 +7,31 @@
 
 import UIKit
 import ReactorKit
+import OSLog
 
 class ServiceTermReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "ServiceTerm.Reactor"
+    )
+    
     let initialState = State()
-    private let disposeBag = DisposeBag()
     
     enum Action {
-        case backButtonTapped // 뒤로가기 버튼 클릭
+        
     }
     
     enum Mutation {
-        case setBackButtonTapped
+    
     }
     
     struct State {
-        @Pulse var shouldPopViewController: Void?
+        
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
             
-        case .backButtonTapped:
-            return Observable.just(.setBackButtonTapped)
         }
     }
     
@@ -36,8 +39,6 @@ class ServiceTermReactor: Reactor {
         var newState = state
         switch mutation {
             
-        case .setBackButtonTapped:
-            newState.shouldPopViewController = ()
         }
         return newState
     }

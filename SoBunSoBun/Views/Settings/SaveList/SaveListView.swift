@@ -15,7 +15,7 @@ import OSLog
 class SaveListView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "SaveList.View"
+        category: "Settings.SaveList.View"
     )
     
     // MARK: - 디자인 요소

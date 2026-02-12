@@ -15,7 +15,7 @@ import OSLog
 class ManagingAccountInfoView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "ManagingAccountInfo.View"
+        category: "Settings.ManagingAccountInfo.View"
     )
     
     typealias Reactor = ManagingAccountInfoReactor
@@ -119,7 +119,7 @@ extension ManagingAccountInfoView {
                     self.showLogOutAlert()
                     
                 case .deleteAccount:
-                    let view = AppSettingView()
+                    let view = WithdrawView()
                     
                     self.navigationController?.pushViewController(view, animated: true)
                 }
@@ -130,11 +130,10 @@ extension ManagingAccountInfoView {
     private func showLogOutAlert() {
         let alert = CustomAlertView(
             title: String(localized: "LogOutMessage", table: "Settings"),
+            subTitle: String(localized: "LogOutSubMessage", table: "Settings"),
             primaryTitleKey: String(localized: "LogOut", table: "Settings"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
-        
-        alert.isSubtitleEnabled = false
         
         alert.onPrimaryTapped = {
             AuthManager.shared.logout()

@@ -20,26 +20,21 @@ class CustomAlertView: UIView {
     
     var disposeBag = DisposeBag()
     
-    var isSubtitleEnabled: Bool = false {
-        didSet {
-            subtitleLabel.isHidden = !isSubtitleEnabled
-            setTitleSpacing(isSubtitleEnabled: isSubtitleEnabled)
-        }
-    }
-    
     init(title: String,
          subTitle: String? = nil,
-         primaryTitleKey: String = String(localized: "GoToSetting", table: "Common"),
-         cancelTitleKey: String = String(localized: "Cancel", table: "Common"),
+         primaryTitleKey: String,
+         cancelTitleKey: String? = nil,
          frame: CGRect = .zero
     ){
         super.init(frame: frame)
+        
         configureUI(
             title: title,
             subtitle: subTitle,
             primaryTitleKey: primaryTitleKey,
             cancelTitleKey: cancelTitleKey
         )
+        
         bind(reactor: reactor)
     }
     
@@ -89,9 +84,6 @@ class CustomAlertView: UIView {
     
     private let primaryButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
-        attributes[.foregroundColor] = UIColor.primary400
-        
         config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
         
         let button = UIButton(configuration: config)
@@ -101,9 +93,6 @@ class CustomAlertView: UIView {
     
     private let cancelButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .center)
-        attributes[.foregroundColor] = UIColor.neutral700
-        
         config.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0)
         
         let button = UIButton(configuration: config)
@@ -125,11 +114,18 @@ class CustomAlertView: UIView {
         return divider
     }()
     
-    private func configureUI(title: String,
-                             subtitle: String?,
-                             primaryTitleKey: String,
-                             cancelTitleKey: String) {
+    private func configureUI(
+        title: String,
+        subtitle: String?,
+        primaryTitleKey: String,
+        cancelTitleKey: String?
+    ) {
         self.backgroundColor = .alertBackgroundBlack
+        self.addSubview(containerView)
+        
+        [titleLabel, subtitleLabel, firstDivider, primaryButton, secondDivider, cancelButton].forEach {
+            containerView.addArrangedSubview($0)
+        }
         
         // title
         let titleAttributedText = NSAttributedString(
@@ -146,6 +142,8 @@ class CustomAlertView: UIView {
             )
         }
         
+        setTitleSpacing(isSubtitleEnabled: subtitle != nil)
+        
         // primary localized
         var primaryAttributes: [NSAttributedString.Key:Any] = title16.attributes(alignment: .center)
         primaryAttributes[.foregroundColor] = UIColor.primary400
@@ -154,22 +152,23 @@ class CustomAlertView: UIView {
             string: primaryTitleKey,
             attributes: primaryAttributes
         )
+        
         primaryButton.configuration?.attributedTitle = AttributedString(primaryAttributedTitle)
         
         // cancel localized
         var cancelAttributes: [NSAttributedString.Key:Any] = title16.attributes(alignment: .center)
         cancelAttributes[.foregroundColor] = UIColor.neutral700
         
-        let cancelAttributedTitle = NSAttributedString(
-            string: cancelTitleKey,
-            attributes: cancelAttributes
-        )
-        cancelButton.configuration?.attributedTitle = AttributedString(cancelAttributedTitle)
-        
-        self.addSubview(containerView)
-        
-        [titleLabel, subtitleLabel, firstDivider, primaryButton, secondDivider, cancelButton].forEach {
-            containerView.addArrangedSubview($0)
+        if let cancelTitleKey = cancelTitleKey {
+            let cancelAttributedTitle = NSAttributedString(
+                string: cancelTitleKey,
+                attributes: cancelAttributes
+            )
+            
+            cancelButton.configuration?.attributedTitle = AttributedString(cancelAttributedTitle)
+        } else {
+            secondDivider.isHidden = true
+            cancelButton.isHidden = true
         }
         
         containerView.setCustomSpacing(16, after: titleLabel)
@@ -185,7 +184,6 @@ class CustomAlertView: UIView {
         
         subtitleLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
         }
         
         firstDivider.snp.makeConstraints { make in
@@ -208,8 +206,13 @@ class CustomAlertView: UIView {
     }
     
     private func setTitleSpacing(isSubtitleEnabled: Bool) {
+        subtitleLabel.isHidden = !isSubtitleEnabled
+        
         containerView.setCustomSpacing(isSubtitleEnabled ? 10 : 16, after: titleLabel)
-        containerView.setCustomSpacing(isSubtitleEnabled ? 16 : 0, after: subtitleLabel)
+        
+        if isSubtitleEnabled {
+            containerView.setCustomSpacing(16, after: subtitleLabel)
+        }
     }
     
     func show(on viewController: UIViewController) {

@@ -1,32 +1,30 @@
 //
-//  ManagingAccountInfoReactor.swift
+//  CustomerSupportReactor.swift
 //  SoBunSoBun
 //
-//  Created by 허성필 on 1/29/26.
+//  Created by 허성필 on 2/6/26.
 //
 
 import ReactorKit
 import RxSwift
 import OSLog
 
-class ManagingAccountInfoReactor: Reactor {
+class CustomerSupportReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Settings.ManagingAccountInfo.Reactor"
+        category: "Settings.CustomerSupport.Reactor"
     )
     
     let initialState = State()
     
-    private let disposeBag = DisposeBag()
-    
     enum ViewType {
-        case logOut
-        case deleteAccount
+        case bugReport
+        case supportInquiries
     }
     
     enum Action {
-        case logOutTapped
-        case deleteAccountTapped
+        case supportBugTapped
+        case supportInquiriesTapped
     }
     
     enum Mutation {
@@ -39,18 +37,16 @@ class ManagingAccountInfoReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .supportBugTapped:
+            return Observable.just(.setNavigate(.bugReport))
             
-        case .logOutTapped:
-            return Observable.just(.setNavigate(.logOut))
-            
-        case .deleteAccountTapped:
-            return Observable.just(.setNavigate(.deleteAccount))
+        case .supportInquiriesTapped:
+            return Observable.just(.setNavigate(.supportInquiries))
         }
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-        
         switch mutation {
             
         case .setNavigate(let viewType):
