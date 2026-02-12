@@ -26,7 +26,7 @@ extension SettingAPIs: TargetType {
     var path: String {
         switch self {
             
-        case .postWithdraw(let reasonCode, let reasonDetail, let agreedToTerms):
+        case .postWithdraw:
             return "users/me/withdraw"
         }
         
