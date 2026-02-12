@@ -45,13 +45,15 @@ extension SettingAPIs: TargetType {
         case // GET
                 .getMeProfile:
             return .get
+            
+        case // POST
+                .postWithdraw:
+            return .post
+            
         case // PATCH
                 .patchProfileImage,
                 .patchNickname:
             return .patch
-        case // POST
-                .postWithdraw:
-            return .post
         }
     }
     
