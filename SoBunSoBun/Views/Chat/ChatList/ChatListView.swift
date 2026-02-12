@@ -65,7 +65,7 @@ class ChatListView: UIViewController {
         return btn
     }()
     
-    private let privateTableView: UITableView = {
+    private let privateChatTableView: UITableView = {
         let tv = UITableView()
         tv.register(ChatListCellTableViewCell.self, forCellReuseIdentifier: ChatListCellTableViewCell.identifier)
         tv.backgroundColor = .clear
@@ -86,7 +86,7 @@ class ChatListView: UIViewController {
         return tv
     }()
     
-    private let groupTableView: UITableView = {
+    private let groupChatTableView: UITableView = {
         let tv = UITableView()
         tv.register(ChatListCellTableViewCell.self, forCellReuseIdentifier: ChatListCellTableViewCell.identifier)
         tv.backgroundColor = .clear
@@ -121,7 +121,7 @@ class ChatListView: UIViewController {
         view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
-        [titleLabel, buttonScrollView, privateTableView, groupTableView].forEach {
+        [titleLabel, buttonScrollView, privateChatTableView, groupChatTableView].forEach {
             view.addSubview($0)
         }
         
@@ -146,14 +146,14 @@ class ChatListView: UIViewController {
             make.horizontalEdges.equalToSuperview()
         }
         
-        privateTableView.snp.makeConstraints { make in
+        privateChatTableView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(buttonScrollView.snp.bottom)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.width.equalToSuperview()
         }
         
-        groupTableView.snp.makeConstraints { make in
+        groupChatTableView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(buttonScrollView.snp.bottom)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
@@ -171,16 +171,29 @@ extension ChatListView {
     private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad)
         
-        
+        [privateChatButton, groupChatButton].enumerated().forEach { index, button in
+            button.rx.tap
+                .map { Reactor.Action.tabButtonTapped(index) }
+                .bind(to: reactor.action)
+                .disposed(by: disposeBag)
+        }
     }
     
     private func bindState(reactor: Reactor) {
-        
+        reactor.state.map { $0.tabIndex }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] index in
+                guard let self = self else { return }
+                
+                privateChatTableView.isHidden = index != 0
+                groupChatTableView.isHidden = index != 1
+            })
+            .disposed(by: disposeBag)
     }
     
     private func updateUI(index: Int) {
-        privateTableView.isHidden = index != 0
-        groupTableView.isHidden = index != 1
+        privateChatTableView.isHidden = index != 0
+        groupChatTableView.isHidden = index != 1
     }
 }
 

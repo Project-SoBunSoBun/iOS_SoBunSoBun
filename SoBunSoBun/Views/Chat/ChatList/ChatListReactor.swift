@@ -22,20 +22,24 @@ class ChatListReactor: Reactor {
     
     enum Action {
         case viewDidLoad
+        case tabButtonTapped(Int)
     }
     
     enum Mutation {
-        
+        case setTabIndex(Int)
     }
     
     struct State {
-        
+        var tabIndex: Int = 0
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewDidLoad:
             return Observable.empty()
+            
+        case .tabButtonTapped(let index):
+            return Observable.just(.setTabIndex(index))
         }
     }
     
@@ -43,7 +47,8 @@ class ChatListReactor: Reactor {
         var newState = state
         
         switch mutation {
-            
+        case .setTabIndex(let index):
+            newState.tabIndex = index
         }
         
         return newState
