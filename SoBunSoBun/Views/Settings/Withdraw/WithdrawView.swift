@@ -23,6 +23,12 @@ class WithdrawView: UIViewController {
     typealias Reactor = WithdrawReactor
     private let reactor = WithdrawReactor()
     
+    private let withdrawMessageKeys = [
+        "WithdrawMessage1",
+        "WithdrawMessage2",
+        "WithdrawMessage3"
+    ]
+    
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
     private lazy var topNavigationBar: TopNavigationBar = {
@@ -56,7 +62,7 @@ class WithdrawView: UIViewController {
         return lb
     }()
     
-    // 회원 탈퇴 안내 메세지를 만드는 함수
+    // 회원 탈퇴 안내 메세지 라벨을 만드는 함수
     private func makeWithdrawMessage(string: String) -> UILabel {
         var attributes = body16.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral700
@@ -72,15 +78,6 @@ class WithdrawView: UIViewController {
         
         return lb
     }
-    
-    // 회원 탈퇴 안내 메세지 1
-    private lazy var withdrawMessage1 = makeWithdrawMessage(string: String(localized: "WithdrawMessage1", table: "Settings"))
-    
-    // 회원 탈퇴 안내 메세지 2
-    private lazy var withdrawMessage2 = makeWithdrawMessage(string: String(localized: "WithdrawMessage2", table: "Settings"))
-    
-    // 회원 탈퇴 안내 메세지 3
-    private lazy var withdrawMessage3 = makeWithdrawMessage(string: String(localized: "WithdrawMessage3", table: "Settings"))
     
     // 1. 2. 3. 라벨을 만들어 주는 함수
     private func makeNumberLabel(string: String) -> UILabel {
@@ -101,20 +98,7 @@ class WithdrawView: UIViewController {
         return lb
     }
     
-    private lazy var firstLabel = makeNumberLabel(string: "1.")
-    
-    private lazy var secondLabel = makeNumberLabel(string: "2.")
-    
-    private lazy var thirdLabel = makeNumberLabel(string: "3.")
-    
-    private let verticalStackView: UIStackView = {
-        let vs = UIStackView()
-        vs.axis = .vertical
-        vs.spacing = 0
-        
-        return vs
-    }()
-    
+    // 라벨과 안내 문구가 들어갈 스택뷰를 만드는 함수
     private func makeHorizontalStackView() -> UIStackView {
         let hs = UIStackView()
         hs.spacing = 8
@@ -124,11 +108,35 @@ class WithdrawView: UIViewController {
         return hs
     }
     
-    private lazy var firstStackView = makeHorizontalStackView()
-    
-    private lazy var secondStackView = makeHorizontalStackView()
-    
-    private lazy var thirdStackView = makeHorizontalStackView()
+    // 탈퇴 안내 문구를 만드는 함수
+    private func setupWithdrawMessages() {
+        withdrawMessageKeys.enumerated().forEach { index, key in
+            // 1. 가로 스택뷰 생성
+            let hs = makeHorizontalStackView()
+            
+            // 2. 숫자 라벨 생성 (1., 2., 3.)
+            let numberLabel = makeNumberLabel(string: "\(index + 1).")
+            
+            // 3. 메시지 라벨 생성
+            let messageLabel = makeWithdrawMessage(string: String(localized: String.LocalizationValue(key), table: "Settings"))
+            
+            // 4. 가로 스택뷰에 순서대로 추가
+            [numberLabel, messageLabel].forEach {
+                hs.addArrangedSubview($0)
+            }
+            
+            // 5. 메인 세로 스택뷰에 추가
+            verticalStackView.addArrangedSubview(hs)
+        }
+    }
+
+    private let verticalStackView: UIStackView = {
+        let vs = UIStackView()
+        vs.axis = .vertical
+        vs.spacing = 0
+        
+        return vs
+    }()
     
     // 탈퇴 사유 라벨
     private let reasonLabel: UILabel = {
@@ -161,7 +169,7 @@ class WithdrawView: UIViewController {
     }()
     
     // 선택된 탈퇴 사유 라벨
-    private lazy var selectedReasonLabel: UILabel = {
+    private let selectedReasonLabel: UILabel = {
         var attributes = body16.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral400
         
@@ -281,21 +289,7 @@ class WithdrawView: UIViewController {
             make.top.equalToSuperview().offset(16)
         }
         
-        [firstStackView, secondStackView, thirdStackView].forEach {
-            verticalStackView.addArrangedSubview($0)
-        }
-        
-        [firstLabel, withdrawMessage1].forEach {
-            firstStackView.addArrangedSubview($0)
-        }
-        
-        [secondLabel, withdrawMessage2].forEach {
-            secondStackView.addArrangedSubview($0)
-        }
-        
-        [thirdLabel, withdrawMessage3].forEach {
-            thirdStackView.addArrangedSubview($0)
-        }
+        setupWithdrawMessages()
         
         verticalStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
@@ -304,7 +298,7 @@ class WithdrawView: UIViewController {
         
         reasonLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(verticalStackView.snp.bottom).offset(34)
+            make.top.equalTo(verticalStackView.snp.bottom).offset(32)
         }
         
         [selectedReasonLabel, dropDownIcon].forEach {
@@ -322,7 +316,7 @@ class WithdrawView: UIViewController {
         dropDownIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         divider.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalTo(reasonStackView)
             make.top.equalTo(reasonStackView.snp.bottom)
         }
         
@@ -382,7 +376,7 @@ extension WithdrawView {
         
         // 탈퇴 동의
         agreeCheckBox.isChecked
-            .map { Reactor.Action.agreeCehckBoxtapped($0) }
+            .map { Reactor.Action.agreeCheckBoxTapped($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -474,9 +468,6 @@ extension WithdrawView {
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        alert.isSubtitleEnabled = false
-        alert.isCancelEnabled = false
-        
         alert.onPrimaryTapped = {
             AuthManager.shared.removeTokens()
             AuthManager.shared.switchToLoginView()
@@ -490,9 +481,6 @@ extension WithdrawView {
             title: String(localized: "ErrorMessage", table: "Common"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
-        
-        alert.isSubtitleEnabled = false
-        alert.isCancelEnabled = false
         
         alert.onPrimaryTapped = {
             AuthManager.shared.removeTokens()

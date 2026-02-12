@@ -25,7 +25,7 @@ class WithdrawReactor: Reactor {
         // 드롭 다운 메뉴 선택시
         case dropDownCellTapped(Int)
         // 동의 체크박스 선택시
-        case agreeCehckBoxtapped(Bool)
+        case agreeCheckBoxTapped(Bool)
         // 탈퇴 버튼 클릭시
         case withdrawButtonTapped
         // 탈퇴 사유 내용 변경시
@@ -64,14 +64,13 @@ class WithdrawReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-            
         case .reasonTapped(let isMenuOpen):
             return Observable.just(.setIsMenuOpen(isMenuOpen))
             
         case .dropDownCellTapped(let reasonNumber):
             return Observable.just(.setReasonNumber(reasonNumber))
             
-        case .agreeCehckBoxtapped(let isAgree):
+        case .agreeCheckBoxTapped(let isAgree):
             return Observable.just(.setIsAgree(isAgree))
         
         case .withdrawButtonTapped:
@@ -90,7 +89,6 @@ class WithdrawReactor: Reactor {
         var newState = state
         
         switch mutation {
-            
         case .setIsMenuOpen(let isMenuOpen):
             newState.isMenuOpen = isMenuOpen
             
@@ -119,7 +117,7 @@ class WithdrawReactor: Reactor {
     private func withdraw() -> Observable<Mutation> {
         guard let reasonNumber = currentState.reasonNumber else {
             logger.error("탈퇴 사유가 선택되지 않음")
-            return Observable.just(.setError("탈퇴 사유를 선택해주세요."))
+            return Observable.just(.setError(String(localized: "SelectWithdrawReason", table: "Settings")))
         }
         
         let reasonCode = String(format: "%03d", reasonNumber)

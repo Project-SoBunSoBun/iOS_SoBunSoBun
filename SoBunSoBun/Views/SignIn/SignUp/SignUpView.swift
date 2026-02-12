@@ -338,7 +338,9 @@ extension SignUpView {
     // 위치 권한 설정 알림창
     private func showLocationSettingAlert() {
         let alert = CustomAlertView(
-            title: String(localized: "LocationSettingTitle", table: "Common")
+            title: String(localized: "LocationSettingTitle", table: "Common"),
+            primaryTitleKey: String(localized: "GoToSetting", table: "Common"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
         alert.onPrimaryTapped = {

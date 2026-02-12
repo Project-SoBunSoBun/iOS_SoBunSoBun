@@ -73,7 +73,8 @@ class ProfileImagePicker: NSObject {
         guard let viewController = presentingViewController else { return }
         
         let alertView = CustomAlertView(
-            title: String(localized: "GalleryPermissionMessage", table: "SignIn")
+            title: String(localized: "GalleryPermissionMessage", table: "SignIn"),
+            primaryTitleKey: String(localized: "GoToSetting", table: "Common")
         )
         
         alertView.onPrimaryTapped = {

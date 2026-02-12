@@ -50,9 +50,6 @@ class AuthManager {
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alert.isSubtitleEnabled = true
-                alert.isCancelEnabled = false
-                
                 alert.onPrimaryTapped = {
                     self.switchToLoginView()
                 }

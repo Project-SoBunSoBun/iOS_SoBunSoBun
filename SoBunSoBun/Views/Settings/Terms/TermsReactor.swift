@@ -36,7 +36,6 @@ class TermsReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-            
         case .serviceTermTapped:
             return Observable.just(.setNavigate(.serviceTerm))
             
@@ -47,8 +46,8 @@ class TermsReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
+        
         switch mutation {
-            
         case .setNavigate(let viewType):
             newState.shouldNavigate = viewType
         }

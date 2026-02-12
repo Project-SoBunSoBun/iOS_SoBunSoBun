@@ -89,6 +89,7 @@ class SettingDropDownView: UIScrollView {
     private func createDivider() -> UIView {
         let dv = UIView()
         dv.backgroundColor = .neutral200
+        
         return dv
     }
     

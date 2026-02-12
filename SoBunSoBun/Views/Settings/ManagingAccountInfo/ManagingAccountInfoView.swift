@@ -135,8 +135,6 @@ extension ManagingAccountInfoView {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.isSubtitleEnabled = true
-        
         alert.onPrimaryTapped = {
             AuthManager.shared.logout()
         }

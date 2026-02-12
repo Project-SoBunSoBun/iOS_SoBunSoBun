@@ -109,7 +109,6 @@ extension CustomerSupportView {
                 let view: UIViewController
                 
                 switch viewType {
-                    
                 case .bugReport:
                     view = BugReportView()
                     

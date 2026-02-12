@@ -109,7 +109,6 @@ extension TermsView {
                 let view: UIViewController
                 
                 switch viewType {
-                    
                 case .serviceTerm:
                     view = ServiceTermView()
                     

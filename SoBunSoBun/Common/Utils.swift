@@ -144,7 +144,8 @@ func dateToISO8601String(date: Date) -> String? {
 // 위치 권한 설정 알림창
 func showLocationSettingAlert(_ vc: UIViewController, cancelAction: (() -> Void)? = nil) {
     let alert = CustomAlertView(
-        title: String(localized: "LocationSettingTitle", table: "Common")
+        title: String(localized: "LocationSettingTitle", table: "Common"),
+        primaryTitleKey: String(localized: "GoToSetting", table: "Common")
     )
     
     alert.onPrimaryTapped = {
