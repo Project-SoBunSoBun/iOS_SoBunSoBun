@@ -31,10 +31,13 @@ extension SettingAPIs: TargetType {
         switch self {
         case .getMeProfile:
             return "api/me/profile"
+            
         case .patchProfileImage:
             return "users/me/profile-image"
+            
         case .patchNickname:
             return "users/me/nickname"
+            
         case .postWithdraw:
             return "users/me/withdraw"
         }
