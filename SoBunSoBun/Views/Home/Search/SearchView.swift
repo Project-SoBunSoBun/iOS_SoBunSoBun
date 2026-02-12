@@ -457,13 +457,13 @@ extension SearchView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                showAlert(
+                let alert = CustomAlertView(
                     title: String(localized: "Error", table: "Common"),
-                    message: message,
-                    confirmTitle: String(localized: "Confirm", table: "Common"),
-                    confirmAction: {},
-                    vc: self
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
     }

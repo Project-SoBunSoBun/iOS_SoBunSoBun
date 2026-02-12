@@ -849,12 +849,12 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                showAlert(
+                let alert = CustomAlertView(
                     title: String(localized: "ReportDoneTitle", table: "Home"),
-                    confirmTitle: String(localized: "Confirm", table: "Common"),
-                    confirmAction: {},
-                    vc: self
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         
@@ -886,16 +886,18 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                showAlert(
+                let alert = CustomAlertView(
                     title: String(localized: "DeleteDoneTitle", table: "Home"),
-                    confirmTitle: String(localized: "Confirm", table: "Common"),
-                    confirmAction: {
-                        DispatchQueue.main.async {
-                            self.navigationController?.popViewController(animated: true)
-                        }
-                    },
-                    vc: self
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.onPrimaryTapped = {
+                    DispatchQueue.main.async {
+                        self.navigationController?.popViewController(animated: true)
+                    }
+                }
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         
@@ -938,12 +940,12 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                showAlert(
+                let alert = CustomAlertView(
                     title: String(localized: "ReportDoneTitle", table: "Home"),
-                    confirmTitle: String(localized: "Confirm", table: "Common"),
-                    confirmAction: {},
-                    vc: self
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         
@@ -975,12 +977,12 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                showAlert(
+                let alert = CustomAlertView(
                     title: String(localized: "DeleteDoneTitle", table: "Home"),
-                    confirmTitle: String(localized: "Confirm", table: "Common"),
-                    confirmAction: {},
-                    vc: self
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         
@@ -1025,12 +1027,12 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                showAlert(
+                let alert = CustomAlertView(
                     title: message,
-                    confirmTitle: String(localized: "Confirm", table: "Common"),
-                    confirmAction: {},
-                    vc: self
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
     }

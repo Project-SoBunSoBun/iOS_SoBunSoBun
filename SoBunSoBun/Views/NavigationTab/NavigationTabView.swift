@@ -138,7 +138,13 @@ extension NavigationTabView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                showAlert(title: message, vc: self)
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Common"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
     }
