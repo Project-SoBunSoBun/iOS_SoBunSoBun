@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "AgreeWithdraw" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위 내용을 확인하고 탈퇴에 동의합니다."
+          }
+        }
+      }
+    },
     "Announcement" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -397,6 +409,18 @@
         }
       }
     },
+    "SelectWithdrawReason" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 사유를 선택해 주세요."
+          }
+        }
+      }
+    },
     "ServiceTerm" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -457,6 +481,18 @@
         }
       }
     },
+    "withdrawCompleted" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴가 완료되었습니다."
+          }
+        }
+      }
+    },
     "WithdrawMessage1" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -501,6 +537,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "탈퇴 사유"
+          }
+        }
+      }
+    },
+    "WithdrawReason001" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 이상 이용하지 않음"
+          }
+        }
+      }
+    },
+    "WithdrawReason002" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "탈퇴 후 재가입 하려고"
+          }
+        }
+      }
+    },
+    "WithdrawReason003" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "원하는 정보가 없어서"
+          }
+        }
+      }
+    },
+    "WithdrawReason004" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용하기 불편해서"
           }
         }
       }
