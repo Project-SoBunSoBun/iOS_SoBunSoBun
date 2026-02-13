@@ -1,18 +1,18 @@
 //
-//  PostListTableViewCell.swift
+//  UserPagePostListTableViewCell.swift
 //  SoBunSoBun
 //
-//  Created by 김태은 on 11/30/25.
+//  Created by 김태은 on 11/2/26.
 //
 
 import UIKit
 import SnapKit
 import RxSwift
 
-class PostListTableViewCell: UITableViewCell {
-    static let identifier = "PostListTableViewCell"
+class UserPagePostListTableViewCell: UITableViewCell {
+    static let identifier = "UserPagePostListTableViewCell"
     
-    private let view = PostListCellView()
+    private let view = UserPagePostListCellView()
     private var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
