@@ -26,9 +26,9 @@ class CommonNetworkManager {
     }
     
     // 액세스 토큰 재발급
-    func refresh(refreshToken: String) -> Single<RefreshResponseModel> {
+    func refreshAccessToken(refreshToken: String) -> Single<RefreshResponseModel> {
         return provider.rx.request(
-            MultiTarget(CommonAPIs.refresh(refreshToken: refreshToken))
+            MultiTarget(CommonAPIs.refreshAccessToken(refreshToken: refreshToken))
         )
         .filterSuccessfulStatusCodes()
         .map(RefreshResponseModel.self)

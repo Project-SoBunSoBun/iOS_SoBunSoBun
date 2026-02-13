@@ -12,7 +12,7 @@ enum CommonAPIs {
     // myProfile
     case me
     // 액세스 토큰 재발급
-    case refresh(refreshToken: String)
+    case refreshAccessToken(refreshToken: String)
 }
 
 extension CommonAPIs: TargetType {
@@ -30,7 +30,7 @@ extension CommonAPIs: TargetType {
         case .me:
             return "/api/me"
             
-        case .refresh:
+        case .refreshAccessToken:
             return "/auth/token/refresh"
         }
     }
@@ -40,7 +40,7 @@ extension CommonAPIs: TargetType {
         case .me:
             return .get
             
-        case .refresh:
+        case .refreshAccessToken:
             return .post
         }
     }
@@ -50,7 +50,7 @@ extension CommonAPIs: TargetType {
         case .me:
             return .requestPlain
             
-        case .refresh(let refreshToken):
+        case .refreshAccessToken(let refreshToken):
             let body = RefreshBodyModel(refreshToken: refreshToken)
             
             return .requestJSONEncodable(body)

@@ -118,7 +118,7 @@ final class AuthInterceptor: RequestInterceptor {
         
         let networkManager = CommonNetworkManager()
         
-        networkManager.refresh(refreshToken: refreshToken)
+        networkManager.refreshAccessToken(refreshToken: refreshToken)
             .asObservable()
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
