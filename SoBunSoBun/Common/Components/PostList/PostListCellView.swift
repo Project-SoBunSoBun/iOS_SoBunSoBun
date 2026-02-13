@@ -95,29 +95,29 @@ class PostListCellView: UIView {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        // 카테고리
-        addSubview(categoriesWrappingView)
+        [categoriesWrappingView, titleLabel, locationStackView, dateStackView, divider].forEach {
+            addSubview($0)
+        }
         
+        // 카테고리
         categoriesWrappingView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(16)
         }
         
         // 제목
-        addSubview(titleLabel)
-        
         titleLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(categoriesWrappingView.snp.bottom).offset(8)
         }
         
         // 장소
-        locationStackView.addArrangedSubview(locationIcon)
-        locationStackView.addArrangedSubview(locationLabel)
+        [locationIcon, locationLabel].forEach {
+            locationStackView.addArrangedSubview($0)
+        }
         
         locationIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
-        
-        addSubview(locationStackView)
+        locationLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
         locationStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
@@ -125,13 +125,13 @@ class PostListCellView: UIView {
         }
         
         // 시간 및 인원 표시
-        dateStackView.addArrangedSubview(dateIcon)
-        dateStackView.addArrangedSubview(dateLabel)
+        [dateIcon, dateLabel, joinedLabel].forEach {
+            dateStackView.addArrangedSubview($0)
+        }
         
         dateIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
-        dateStackView.addArrangedSubview(joinedLabel)
-            
-        addSubview(dateStackView)
+        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        joinedLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         dateStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
@@ -139,8 +139,6 @@ class PostListCellView: UIView {
         }
         
         // 구분선
-        addSubview(divider)
-        
         divider.snp.makeConstraints { make in
             make.horizontalEdges.bottom.equalToSuperview()
             make.top.equalTo(dateStackView.snp.bottom).offset(16)
