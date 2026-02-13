@@ -299,19 +299,23 @@ class RegisterPostView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        view.addSubview(topNavigationBar)
+        [topNavigationBar, scrollView, loadingView].forEach {
+            view.addSubview($0)
+        }
         
         topNavigationBar.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(4)
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
-        view.addSubview(scrollView)
-        
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(topNavigationBar.snp.bottom)
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top) // 키보드 비활성화 시에는 safeAreaLayoutGuide bottom에 위치
+        }
+        
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
         scrollView.addSubview(contentView)
@@ -438,7 +442,7 @@ class RegisterPostView: UIViewController {
         }
     }
 }
- 
+
 extension RegisterPostView {
     // reactor와 view 연결
     private func bind(reactor: RegisterPostReactor) {
@@ -563,18 +567,10 @@ extension RegisterPostView {
             .bind(to: registerButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.isLoading }
+        reactor.state.map { !$0.isLoading }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isLoading in
-                guard let self = self else { return }
-                
-                if isLoading {
-                    self.showLoadingView()
-                } else {
-                    loadingView.isHidden = true
-                }
-            })
+            .bind(to: loadingView.rx.isHidden)
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.errorMessage }
@@ -657,7 +653,7 @@ extension RegisterPostView {
             contentViewController: sheetView,
             height: contentViewHeight,
             cornerRadius: 24)
-
+        
         present(bottomSheet, animated: true)
         
         sheetView.selectedDateRelay
@@ -696,7 +692,7 @@ extension RegisterPostView {
             contentViewController: sheetView,
             height: contentViewHeight,
             cornerRadius: 24)
-
+        
         present(bottomSheet, animated: true)
         
         sheetView.selectedTimeRelay
@@ -708,18 +704,6 @@ extension RegisterPostView {
                 bottomSheet.handleDismiss()
             })
             .disposed(by: disposeBag)
-    }
-    
-    private func showLoadingView() {
-        if loadingView.superview == nil {
-            view.addSubview(loadingView)
-            
-            loadingView.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
-        }
-        
-        loadingView.isHidden = false
     }
 }
 

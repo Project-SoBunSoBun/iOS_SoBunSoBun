@@ -16,7 +16,7 @@ class LoadingView: UIView {
     )
     
     private let gifImageView: GIFImageView = {
-        let gif = GIFImageView(fileName: "Loading", speed: 1)
+        let gif = GIFImageView(fileName: "Loading")
         gif.contentMode = .scaleAspectFit
         gif.clipsToBounds = true
         
