@@ -129,7 +129,7 @@ class WithdrawView: UIViewController {
             verticalStackView.addArrangedSubview(hs)
         }
     }
-
+    
     private let verticalStackView: UIStackView = {
         let vs = UIStackView()
         vs.axis = .vertical
@@ -250,7 +250,7 @@ class WithdrawView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [topNavigationBar, scrollView].forEach {
+        [topNavigationBar, scrollView, loadingView].forEach {
             view.addSubview($0)
         }
         
@@ -265,6 +265,10 @@ class WithdrawView: UIViewController {
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(topNavigationBar.snp.bottom)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
+        
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
         
         // 스크롤 뷰 안에 들어가는 요소들
@@ -449,18 +453,9 @@ extension WithdrawView {
             .disposed(by: disposeBag)
         
         // 로딩 상태
-        reactor.state.map { $0.isLoading }
+        reactor.state.map { !$0.isLoading }
             .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isLoading in
-                guard let self = self else { return }
-                
-                if isLoading {
-                    self.showLoadingView()
-                } else {
-                    loadingView.isHidden = true
-                }
-            })
+            .bind(to: loadingView.rx.isHidden)
             .disposed(by: disposeBag)
     }
     
