@@ -31,13 +31,25 @@ func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
     return isoFormatter.date(from: iso8601DatetimeString)
 }
 
+// ISO8601 Datetime에서 String(yyyy.MM.dd)형 변환
+func formatISO8601Date(_ isoString: String) -> String {
+    let inputFormatter = ISO8601DateFormatter()
+    if let date = inputFormatter.date(from: isoString) {
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "yyyy.MM.dd"
+        return outputFormatter.string(from: date)
+    }
+    
+    return String(isoString.prefix(10)).replacingOccurrences(of: "-", with: ".")
+}
+
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
 func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String {
     let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "Utils"
     )
-
+    
     if let date = ISO8601ToDate(iso8601DatetimeString) {
         let calendar = Calendar.current
         let minutes = calendar.component(.minute, from: date)
@@ -50,9 +62,9 @@ func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String
         switch Locale.current.language.languageCode?.identifier {
         case "ko":
             return minutes == 0 ?
-                    formattedString :
-                    formattedString.replacingOccurrences(of: ":", with: String(localized: "TimeHour", table: "Home") + " ")
-                    + String(localized: "TimeMinute", table: "Home")
+            formattedString :
+            formattedString.replacingOccurrences(of: ":", with: String(localized: "TimeHour", table: "Home") + " ")
+            + String(localized: "TimeMinute", table: "Home")
         default:
             return formattedString
         }
@@ -134,7 +146,7 @@ func dateToString(date: Date, format: String) -> String? {
 func dateToISO8601String(date: Date) -> String? {
     let dateFormatter = ISO8601DateFormatter()
     dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
+    
     return dateFormatter.string(from: date)
 }
 
@@ -178,9 +190,9 @@ extension Reactive where Base: UITextField {
         let source = base.rx.text.orEmpty
             .map { [weak base] text -> String in
                 guard let base = base else { return "" }
-
+                
                 let numbers = text.filter { $0.isNumber }
-
+                
                 guard !numbers.isEmpty, let value = Int(numbers) else {
                     if base.text != "" {
                         base.text = ""
@@ -188,7 +200,7 @@ extension Reactive where Base: UITextField {
                     
                     return ""
                 }
-
+                
                 let formatted = formatter.string(from: NSNumber(value: value)) ?? numbers
                 
                 if base.text != formatted {
