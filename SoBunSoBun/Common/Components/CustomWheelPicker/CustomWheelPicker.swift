@@ -59,11 +59,10 @@ class CustomWheelPicker: UIView {
     }
     
     // MARK: - 디자인 요소
-    private let tableView: UITableView = {
-        let tv = UITableView()
+    private let tableView: BaseTableView = {
+        let tv = BaseTableView()
         tv.register(WheelPickerCell.self, forCellReuseIdentifier: WheelPickerCell.identifier)
-        tv.backgroundColor = .clear
-        tv.separatorStyle = .none
+        tv.contentInset = .zero
         tv.showsVerticalScrollIndicator = false
         tv.decelerationRate = .fast
         
