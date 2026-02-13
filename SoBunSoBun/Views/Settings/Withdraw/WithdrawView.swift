@@ -495,6 +495,7 @@ extension WithdrawView {
     private func showLoadingView() {
         if loadingView.superview == nil {
             view.addSubview(loadingView)
+            
             loadingView.snp.makeConstraints { make in
                 make.edges.equalToSuperview()
             }
