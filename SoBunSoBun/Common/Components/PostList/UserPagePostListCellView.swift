@@ -1,14 +1,14 @@
 //
-//  PostListCellView.swift
+//  UserPagePostListCellView.swift
 //  SoBunSoBun
 //
-//  Created by 김태은 on 10/22/25.
+//  Created by 김태은 on 11/2/26.
 //
 
 import UIKit
 import SnapKit
 
-class PostListCellView: UIView {
+class UserPagePostListCellView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureUI()
@@ -16,13 +16,6 @@ class PostListCellView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    // 구분선 표시 여부
-    var isDividerHidden: Bool = true {
-        didSet {
-            changeShowDivider(isDividerHidden)
-        }
     }
     
     // MARK: - 디자인 요소
@@ -86,16 +79,13 @@ class PostListCellView: UIView {
     
     private let joinedLabel: UILabel = UILabel()
     
-    private let divider: UIView = {
-        let view = UIView()
-        view.backgroundColor = .primary100
-        
-        return view
-    }()
-    
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        [categoriesWrappingView, titleLabel, locationStackView, dateStackView, divider].forEach {
+        self.backgroundColor = .primary50
+        self.layer.cornerRadius = 12
+        self.clipsToBounds = true
+        
+        [categoriesWrappingView, titleLabel, locationStackView, dateStackView].forEach {
             addSubview($0)
         }
         
@@ -136,13 +126,7 @@ class PostListCellView: UIView {
         dateStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(locationStackView.snp.bottom).offset(4)
-        }
-        
-        // 구분선
-        divider.snp.makeConstraints { make in
-            make.horizontalEdges.bottom.equalToSuperview()
-            make.top.equalTo(dateStackView.snp.bottom).offset(16)
-            make.height.equalTo(1)
+            make.bottom.equalToSuperview().inset(16)
         }
     }
     
@@ -177,10 +161,5 @@ class PostListCellView: UIView {
         joinedAttributes[.foregroundColor] = model.joinedMembers + 1 >= model.maxMembers ? UIColor.primary400 : UIColor.neutral300
         
         joinedLabel.attributedText = NSAttributedString(string: "\(model.joinedMembers)/\(model.maxMembers)", attributes: joinedAttributes)
-    }
-    
-    // 구분선 표시 변경 함수
-    private func changeShowDivider(_ isDividerHidden: Bool) {
-        divider.isHidden = isDividerHidden
     }
 }
