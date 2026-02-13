@@ -280,7 +280,7 @@ class RegisterPostView: UIViewController {
     
     private let registerButton = Button(title: String(localized: "Register", table: "Common"))
     
-    private let loadingView: LoadingView = {
+    private lazy var loadingView: LoadingView = {
         let view = LoadingView()
         view.isHidden = true
         
@@ -312,12 +312,6 @@ class RegisterPostView: UIViewController {
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(topNavigationBar.snp.bottom)
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top) // 키보드 비활성화 시에는 safeAreaLayoutGuide bottom에 위치
-        }
-        
-        view.addSubview(loadingView)
-        
-        loadingView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
         }
         
         scrollView.addSubview(contentView)
@@ -569,9 +563,18 @@ extension RegisterPostView {
             .bind(to: registerButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        reactor.state.map { !$0.isLoading }
+        reactor.state.map { $0.isLoading }
             .distinctUntilChanged()
-            .bind(to: loadingView.rx.isHidden)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isLoading in
+                guard let self = self else { return }
+                
+                if isLoading {
+                    self.showLoadingView()
+                } else {
+                    loadingView.isHidden = true
+                }
+            })
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.errorMessage }
@@ -705,6 +708,18 @@ extension RegisterPostView {
                 bottomSheet.handleDismiss()
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func showLoadingView() {
+        if loadingView.superview == nil {
+            view.addSubview(loadingView)
+            
+            loadingView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
+        
+        loadingView.isHidden = false
     }
 }
 
