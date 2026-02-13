@@ -24,4 +24,13 @@ class CommonNetworkManager {
         .filterSuccessfulStatusCodes()
         .map(UserInfoModel.self)
     }
+    
+    // 액세스 토큰 재발급
+    func refreshAccessToken(refreshToken: String) -> Single<RefreshResponseModel> {
+        return provider.rx.request(
+            MultiTarget(CommonAPIs.refreshAccessToken(refreshToken: refreshToken))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(RefreshResponseModel.self)
+    }
 }

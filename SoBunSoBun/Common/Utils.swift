@@ -23,9 +23,6 @@ let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
 // API URL
 let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
 
-// 재발급 중
-var isRefreshing: Bool = false
-
 // ISO8601 Datetime에서 Date형 변환
 func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
     let isoFormatter = ISO8601DateFormatter()
@@ -161,6 +158,7 @@ func showLocationSettingAlert(_ vc: UIViewController, cancelAction: (() -> Void)
 }
 
 extension Encodable {
+    /// Encodable을 Dictionary 타입으로 변환
     func toDictionary() -> [String: Any]? {
         guard let data = try? JSONEncoder().encode(self) else { return nil }
         guard let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
@@ -170,7 +168,7 @@ extension Encodable {
 }
 
 extension Reactive where Base: UITextField {
-    /// 천 단위 콤마가 포함된 숫자 텍스트
+    /// 천 단위 콤마가 포함된 숫자 텍스트로 변환
     var formattedNumericText: ControlProperty<String> {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
