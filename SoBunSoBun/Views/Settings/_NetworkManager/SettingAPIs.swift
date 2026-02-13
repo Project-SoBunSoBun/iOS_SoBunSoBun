@@ -13,6 +13,8 @@ enum SettingAPIs {
     case getMeProfile
     case patchProfileImage(profileImage: Data)
     case patchNickname(nickname: String)
+    // 공지사항
+    case getAnnouncement(page: Int, size: Int)
     // 탈퇴
     case postWithdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool)
 }
@@ -38,6 +40,9 @@ extension SettingAPIs: TargetType {
         case .patchNickname:
             return "users/me/nickname"
             
+        case .getAnnouncement:
+            return "api/announcements"
+            
         case .postWithdraw:
             return "users/me/withdraw"
         }
@@ -46,7 +51,8 @@ extension SettingAPIs: TargetType {
     var method: Moya.Method {
         switch self {
         case // GET
-                .getMeProfile:
+                .getMeProfile,
+                .getAnnouncement:
             return .get
             
         case // POST
@@ -82,6 +88,11 @@ extension SettingAPIs: TargetType {
             let body: [String: String] = ["nickname": nickname]
             
             return .requestJSONEncodable(body)
+            
+        case .getAnnouncement(page: let page, size: let size):
+            let parameters = AnnouncementRequestModel(page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
         case .postWithdraw(let reasonCode, let reasonDetail, let agreedToTerms):
             let model = WithdrawRequestBodyModel(reasonCode: reasonCode, reasonDetail: reasonDetail, agreedToTerms: agreedToTerms)
