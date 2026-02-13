@@ -68,7 +68,7 @@ class SearchReactor: Reactor {
         switch action {
         case .viewWillAppear:
             return getSearchHistory()
-        
+            
         case .backButtonTapped:
             return Observable.just(.setGoBack)
             
@@ -244,8 +244,7 @@ class SearchReactor: Reactor {
                     
                     return Observable.concat([
                         mutations,
-                        Observable.just(.setHasMore(!response.pageInfo.last)),
-                        Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
+                        Observable.just(.setHasMore(!response.pageInfo.last))
                     ])
                 }
                 .catch { error in
@@ -253,11 +252,11 @@ class SearchReactor: Reactor {
                     
                     return Observable.concat([
                         isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
-                        Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
                         Observable.just(.setHasMore(false)),
                         Observable.just(.setPage(0))
                     ])
-                }
+                },
+            Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
         ])
     }
 }
