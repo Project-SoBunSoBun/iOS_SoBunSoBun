@@ -83,18 +83,12 @@ class PostDetailView: UIViewController {
     }()
     
     // tableView
-    private let tableView: UITableView = {
-        let tv = UITableView()
+    private let tableView: BaseTableView = {
+        let tv = BaseTableView()
         tv.register(CommentTableViewCell.self, forCellReuseIdentifier: CommentTableViewCell.identifier)
-        tv.backgroundColor = .clear
-        tv.separatorStyle = .none
         tv.estimatedRowHeight = 124
-        tv.rowHeight = UITableView.automaticDimension
         tv.contentInset = .init(top: 0, left: 0, bottom: 24, right: 0)
         tv.isHidden = true
-        tv.minimumZoomScale = 1.0
-        tv.maximumZoomScale = 1.0
-        tv.pinchGestureRecognizer?.isEnabled = false
         
         return tv
     }()
