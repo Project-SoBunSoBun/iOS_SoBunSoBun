@@ -57,6 +57,13 @@ class AnnouncementTableViewCell: UITableViewCell {
         return lb
     }()
     
+    private let divider: UIView = {
+        let v = UIView()
+        v.backgroundColor = .neutral100
+        
+        return v
+    }()
+    
     private let dateLable = UILabel()
     
     // MARK: - 레이아웃 설정
@@ -67,11 +74,20 @@ class AnnouncementTableViewCell: UITableViewCell {
         contentView.addSubview(stackView)
         
         stackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.horizontalEdges.top.equalToSuperview()
         }
         
         [titleLabel, dateLable].forEach {
             stackView.addArrangedSubview($0)
+        }
+        
+        contentView.addSubview(divider)
+        
+        divider.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(stackView.snp.bottom)
+            make.bottom.equalToSuperview()
+            make.height.equalTo(1)
         }
     }
     
