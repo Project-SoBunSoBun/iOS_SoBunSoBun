@@ -212,7 +212,7 @@ class WithdrawView: UIViewController {
     
     // 내용을 입력해 주세요
     private let reasonDetailTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 230, maxHeight: 240, maxLength: 100, fontStyle: body16)
+        let ahtv = AutoHeightTextView(minHeight: 240, maxHeight: 240, maxLength: 100, fontStyle: body16)
         ahtv.placeholder = String(localized: "InsertContent", table: "Common")
         ahtv.textContainerInset = .init(top: 16, left: 16, bottom: 16, right: 16)
         ahtv.showCharactersCount = true
@@ -231,7 +231,7 @@ class WithdrawView: UIViewController {
     private let withDrawButton = Button(title: String(localized: "Withdraw", table: "Settings"))
     
     // 로딩 화면
-    private let loadingView: LoadingView = {
+    private lazy var loadingView: LoadingView = {
         let view = LoadingView()
         view.isHidden = true
         
@@ -265,13 +265,6 @@ class WithdrawView: UIViewController {
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(topNavigationBar.snp.bottom)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-        }
-        
-        // 로딩 화면
-        view.addSubview(loadingView)
-        
-        loadingView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
         }
         
         // 스크롤 뷰 안에 들어가는 요소들
@@ -456,9 +449,18 @@ extension WithdrawView {
             .disposed(by: disposeBag)
         
         // 로딩 상태
-        reactor.state.map { !$0.isLoading }
+        reactor.state.map { $0.isLoading }
             .distinctUntilChanged()
-            .bind(to: loadingView.rx.isHidden)
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isLoading in
+                guard let self = self else { return }
+                
+                if isLoading {
+                    self.showLoadingView()
+                } else {
+                    loadingView.isHidden = true
+                }
+            })
             .disposed(by: disposeBag)
     }
     
@@ -488,5 +490,16 @@ extension WithdrawView {
         }
         
         alert.show(on: self)
+    }
+    
+    private func showLoadingView() {
+        if loadingView.superview == nil {
+            view.addSubview(loadingView)
+            loadingView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
+        
+        loadingView.isHidden = false
     }
 }
