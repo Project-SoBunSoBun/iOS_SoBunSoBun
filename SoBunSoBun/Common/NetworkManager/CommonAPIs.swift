@@ -11,6 +11,8 @@ import Moya
 enum CommonAPIs {
     // myProfile
     case me
+    // 액세스 토큰 재발급
+    case refresh(refreshToken: String)
 }
 
 extension CommonAPIs: TargetType {
@@ -27,6 +29,9 @@ extension CommonAPIs: TargetType {
         switch self {
         case .me:
             return "/api/me"
+            
+        case .refresh:
+            return "/auth/token/refresh"
         }
     }
     
@@ -34,6 +39,9 @@ extension CommonAPIs: TargetType {
         switch self {
         case .me:
             return .get
+            
+        case .refresh:
+            return .post
         }
     }
     
@@ -41,12 +49,17 @@ extension CommonAPIs: TargetType {
         switch self {
         case .me:
             return .requestPlain
+            
+        case .refresh(let refreshToken):
+            let body = RefreshBodyModel(refreshToken: refreshToken)
+            
+            return .requestJSONEncodable(body)
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .me:
+        default:
             return [:]
         }
     }

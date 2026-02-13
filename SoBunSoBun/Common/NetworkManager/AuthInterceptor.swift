@@ -7,10 +7,13 @@
 
 import Foundation
 import Alamofire
-import Moya
+import RxSwift
 import OSLog
 
 final class AuthInterceptor: RequestInterceptor {
+    nonisolated(unsafe) private let disposeBag = DisposeBag()
+    nonisolated(unsafe) private var isRefreshing: Bool = false
+    
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "AuthInterceptor"
@@ -82,7 +85,7 @@ final class AuthInterceptor: RequestInterceptor {
         } else {
             isRefreshing = true
             
-            refreshToken() { [weak self] isSuccess in
+            refreshAccessToken() { [weak self] isSuccess in
                 guard let self = self else {
                     completion(.doNotRetry)
                     return
@@ -91,21 +94,21 @@ final class AuthInterceptor: RequestInterceptor {
                 isRefreshing = false
                 
                 if isSuccess {
-                    logger.debug("액세스 토큰 재발급 완료")
                     completion(.retry)
+                    logger.debug("액세스 토큰 재발급 완료")
                 } else {
-                    logger.debug("리프레시 토큰 만료")
                     AuthManager.shared.logout()
                     completion(.doNotRetry)
+                    
+                    logger.debug("리프레시 토큰 만료")
                 }
             }
         }
     }
     
     // 리프레시 토큰을 사용하여 액세스 토큰을 재발급 후 Keychain에 저장
-    private func refreshToken(completion: @escaping(Bool) -> Void) {
-        guard let refresh = KeyChain.shared.get(key: "REFRESH_TOKEN"),
-              let body = RefreshBodyModel(refreshToken: refresh).toDictionary() else {
+    private func refreshAccessToken(completion: @escaping(Bool) -> Void) {
+        guard let refreshToken = KeyChain.shared.get(key: "REFRESH_TOKEN") else {
             AuthManager.shared.logout()
             logger.fault("리프레시 토큰 없음")
             completion(false)
@@ -113,25 +116,26 @@ final class AuthInterceptor: RequestInterceptor {
             return
         }
         
-        AF.request("\(API_URL)/auth/token/refresh",
-                   method: .post,
-                   parameters: body,
-                   encoding: JSONEncoding.default)
-        .validate(statusCode: 200..<300)
-        .responseDecodable(of: RefreshResponseModel.self) { [weak self] response in
-            guard let self = self else { return }
-            
-            switch response.result {
-            case .success(let model):
+        let networkManager = CommonNetworkManager()
+        
+        networkManager.refresh(refreshToken: refreshToken)
+            .asObservable()
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
                 KeyChain.shared.set(key: "ACCESS_TOKEN", value: model.accessToken)
                 KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: model.accessTokenExpiresAtKst)
-                logger.debug("[재발급한 ACCESS_TOKEN]\n\n\(model.accessToken)")
                 completion(true)
-            case .failure(let error):
+                
+                logger.debug("[재발급한 ACCESS_TOKEN]\n\n\(model.accessToken)")
+            }, onError: { [weak self] error in
+                guard let self = self else { return }
+                
                 AuthManager.shared.logout()
-                logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
                 completion(false)
-            }
-        }
+                
+                logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
 }
