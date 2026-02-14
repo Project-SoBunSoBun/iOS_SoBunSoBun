@@ -126,6 +126,12 @@ extension AnnouncementView {
             .map { _ in Reactor.Action.loadMore }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        // 테이블 뷰 셀 클릭
+        tableView.rx.modelSelected(AnnouncementContentModel.self)
+            .map { Reactor.Action.cellTapped($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: AnnouncementReactor) {
@@ -137,7 +143,7 @@ extension AnnouncementView {
                 cellIdentifier: AnnouncementTableViewCell.identifier,
                 cellType: AnnouncementTableViewCell.self
             )) { index, item, cell in
-                cell.configure(item: item)
+                cell.configureUI(model: item)
             }
             .disposed(by: disposeBag)
         
@@ -146,6 +152,16 @@ extension AnnouncementView {
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .bind(to: refreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
+        
+        // 공지사항 디테일 뷰 이동
+        reactor.pulse(\.$shouldPushDetailView)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(AnnouncementDetailView(model: model), animated: true)
+            })
             .disposed(by: disposeBag)
     }
 }

@@ -24,6 +24,7 @@ class AnnouncementReactor: Reactor {
         case viewWillAppear
         case loadMore // 페이지네이션
         case refresh // 새로고침
+        case cellTapped(AnnouncementContentModel) // 셀 클릭
     }
     
     enum Mutation {
@@ -34,6 +35,7 @@ class AnnouncementReactor: Reactor {
         case appendNotice([AnnouncementContentModel])
         case setPage(Int)
         case setHasMore(Bool)
+        case setNoticeDetailView(AnnouncementContentModel)
     }
     
     struct State {
@@ -43,6 +45,7 @@ class AnnouncementReactor: Reactor {
         var isRefreshing: Bool = false
         var hasMore: Bool = true // 페이지네이션 추가 가능 여부
         @Pulse var errorMessage: String?
+        @Pulse var shouldPushDetailView: AnnouncementContentModel? // 공지사항 디테일 뷰로 이동
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -74,6 +77,9 @@ class AnnouncementReactor: Reactor {
                 loadNotices(page: 0, size: pageSize),
                 Observable.just(.setRefreshing(false))
             ])
+            
+        case .cellTapped(let model):
+            return Observable.just(.setNoticeDetailView(model))
         }
     }
     
@@ -101,6 +107,9 @@ class AnnouncementReactor: Reactor {
             
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
+            
+        case .setNoticeDetailView(let model):
+            newState.shouldPushDetailView = model
         }
         
         return newState
