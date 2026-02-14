@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class AnnouncementCellView: UIView {
     override init(frame: CGRect) {
