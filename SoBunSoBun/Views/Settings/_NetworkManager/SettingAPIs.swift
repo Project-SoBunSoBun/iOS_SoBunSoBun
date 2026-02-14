@@ -15,6 +15,7 @@ enum SettingAPIs {
     case patchNickname(nickname: String)
     // 공지사항
     case getAnnouncement(page: Int, size: Int)
+    case getAnnouncementDetail(id: Int)
     // 탈퇴
     case postWithdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool)
 }
@@ -45,6 +46,9 @@ extension SettingAPIs: TargetType {
             
         case .postWithdraw:
             return "users/me/withdraw"
+            
+        case .getAnnouncementDetail(let id):
+            return "api/announcements/\(id)"
         }
     }
     
@@ -52,7 +56,8 @@ extension SettingAPIs: TargetType {
         switch self {
         case // GET
                 .getMeProfile,
-                .getAnnouncement:
+                .getAnnouncement,
+                .getAnnouncementDetail:
             return .get
             
         case // POST
@@ -98,6 +103,9 @@ extension SettingAPIs: TargetType {
             let model = WithdrawRequestBodyModel(reasonCode: reasonCode, reasonDetail: reasonDetail, agreedToTerms: agreedToTerms)
             
             return .requestJSONEncodable(model)
+            
+        case .getAnnouncementDetail:
+            return .requestPlain
         }
     }
     

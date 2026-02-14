@@ -56,6 +56,24 @@ struct PageModel: Decodable {
     let first, last, hasNext, hasPrevious: Bool
 }
 
+struct AnnouncementDetailRequestModel: Encodable {
+    let id: Int
+}
+
+struct AnnouncementDetailModel: Decodable {
+    let success: Bool
+    let data: AnnouncementDetailDataModel
+    let error: ErrorModel?
+}
+
+struct AnnouncementDetailDataModel: Decodable, Equatable {
+    let id: Int
+    let title, content, category: String
+    let isPinned: Bool
+    let viewCount: Int
+    let createdAt, updatedAt: String
+}
+
 // MARK: - 탈퇴
 struct WithdrawRequestBodyModel: Encodable {
     let reasonCode: String

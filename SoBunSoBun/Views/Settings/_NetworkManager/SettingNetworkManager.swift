@@ -54,6 +54,15 @@ class SettingNetworkManager {
         .map(AnnouncementModel.self)
     }
     
+    // 공지사항 상세 조회
+    func getAnnouncementsDetail(id: Int) -> Single<AnnouncementDetailModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.getAnnouncementDetail(id: id))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(AnnouncementDetailModel.self)
+    }
+    
     // MARK: - 회원 탈퇴
     // 사용자 회원 탈퇴
     func withdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool) -> Single<Void> {
