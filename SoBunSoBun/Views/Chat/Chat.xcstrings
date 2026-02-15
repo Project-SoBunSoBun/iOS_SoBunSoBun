@@ -1,0 +1,61 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "Cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "취소하기"
+          }
+        }
+      }
+    },
+    "CancelAccepts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수락 취소하기"
+          }
+        }
+      }
+    },
+    "GoToPost" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임글 확인하기"
+          }
+        }
+      }
+    },
+    "RateManners" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가"
+          }
+        }
+      }
+    },
+    "SendMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메시지 보내기"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}
