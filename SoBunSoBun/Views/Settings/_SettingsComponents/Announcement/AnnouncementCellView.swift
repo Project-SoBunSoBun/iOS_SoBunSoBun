@@ -95,4 +95,16 @@ class AnnouncementCellView: UIView {
         
         dateLable.attributedText = dateAttributedText
     }
+    
+    // ISO8601 Datetime에서 String(yyyy.MM.dd)형 변환
+    private func formatISO8601Date(_ isoString: String) -> String {
+        let inputFormatter = ISO8601DateFormatter()
+        if let date = inputFormatter.date(from: isoString) {
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "yyyy.MM.dd"
+            return outputFormatter.string(from: date)
+        }
+        
+        return String(isoString.prefix(10)).replacingOccurrences(of: "-", with: ".")
+    }
 }

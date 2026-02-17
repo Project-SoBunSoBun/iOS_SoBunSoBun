@@ -33,14 +33,13 @@ class AnnouncementDetailReactor: Reactor {
     }
     
     struct State {
-        var noticeDetail: AnnouncementDetailDataModel?
         let id: Int
+        var noticeDetail: AnnouncementDetailDataModel?
         @Pulse var errorMessage: String?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-            
         case .viewDidLoad:
             loadNoticeDetail(id: currentState.id)
         }
@@ -48,13 +47,13 @@ class AnnouncementDetailReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
+        
         switch mutation {
+        case .setNoticeDetail(let noticeDetail):
+            newState.noticeDetail = noticeDetail
             
         case .setError(let message):
             newState.errorMessage = message
-            
-        case .setNoticeDetail(let noticeDetail):
-            newState.noticeDetail = noticeDetail
         }
         
         return newState

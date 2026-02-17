@@ -31,18 +31,6 @@ func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
     return isoFormatter.date(from: iso8601DatetimeString)
 }
 
-// ISO8601 Datetime에서 String(yyyy.MM.dd)형 변환
-func formatISO8601Date(_ isoString: String) -> String {
-    let inputFormatter = ISO8601DateFormatter()
-    if let date = inputFormatter.date(from: isoString) {
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "yyyy.MM.dd"
-        return outputFormatter.string(from: date)
-    }
-    
-    return String(isoString.prefix(10)).replacingOccurrences(of: "-", with: ".")
-}
-
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
 func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String {
     let logger = Logger(

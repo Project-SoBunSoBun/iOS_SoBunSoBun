@@ -28,29 +28,28 @@ class AnnouncementReactor: Reactor {
     }
     
     enum Mutation {
-        case setNotice([AnnouncementContentModel])
+        case setNotices([AnnouncementContentModel])
         case setError(String)
         case setLoading(Bool)
-        case setRefreshing(Bool)
-        case appendNotice([AnnouncementContentModel])
+        case appendNotices([AnnouncementContentModel])
         case setPage(Int)
         case setHasMore(Bool)
+        case setRefreshing(Bool)
         case setNoticeDetailView(AnnouncementContentModel)
     }
     
     struct State {
         var notices: [AnnouncementContentModel] = [] // 공지사항
-        var page: Int = 0 // 페이지네이션 페이지 번호
         var isLoading: Bool = false
-        var isRefreshing: Bool = false
+        var page: Int = 0 // 페이지네이션 페이지 번호
         var hasMore: Bool = true // 페이지네이션 추가 가능 여부
-        @Pulse var errorMessage: String?
+        var isRefreshing: Bool = false // 새로고침 여부
+        @Pulse var errorMessage: String? // 에러 메세지 
         @Pulse var shouldPushDetailView: AnnouncementContentModel? // 공지사항 디테일 뷰로 이동
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-            
         case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setPage(0)),
@@ -85,9 +84,9 @@ class AnnouncementReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
+        
         switch mutation {
-            
-        case .setNotice(let notices):
+        case .setNotices(let notices):
             newState.notices = notices
             
         case .setError(let message):
@@ -96,7 +95,7 @@ class AnnouncementReactor: Reactor {
         case .setRefreshing(let isRefreshing):
             newState.isRefreshing = isRefreshing
             
-        case .appendNotice(let notices):
+        case .appendNotices(let notices):
             newState.notices.append(contentsOf: notices)
             
         case .setPage(let page):
@@ -127,18 +126,17 @@ class AnnouncementReactor: Reactor {
                     let isFirst = response.data.page.first
                     
                     return Observable.concat([
-                        isFirst ? Observable.just(.setNotice(response.data.content)) : Observable.just(.appendNotice(response.data.content)),
-                        Observable.just(.setHasMore(!response.data.page.last)),
-                        Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
+                        isFirst ? Observable.just(.setNotices(response.data.content)) : Observable.just(.appendNotices(response.data.content)),
+                        Observable.just(.setHasMore(!response.data.page.last))
                     ])
                 }
                 .catch { error in
                     self.logger.fault("공지사항 조회 실패: \(error.localizedDescription)")
                     return Observable.concat([
-                        Observable.just(.setError(error.localizedDescription)),
-                        Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
+                        Observable.just(.setError(error.localizedDescription))
                     ])
-                }
+                },
+            Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
         ])
     }
 }
