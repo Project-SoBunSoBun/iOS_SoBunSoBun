@@ -138,25 +138,6 @@ func dateToISO8601String(date: Date) -> String? {
     return dateFormatter.string(from: date)
 }
 
-// 위치 권한 설정 알림창
-func showLocationSettingAlert(_ vc: UIViewController, cancelAction: (() -> Void)? = nil) {
-    let alert = CustomAlertView(
-        title: String(localized: "LocationSettingTitle", table: "Common"),
-        primaryTitleKey: String(localized: "GoToSetting", table: "Common")
-    )
-    
-    alert.onPrimaryTapped = {
-        // 설정 앱으로 이동
-        if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(settingsUrl)
-        }
-    }
-    
-    alert.onCancelTapped = cancelAction
-    
-    alert.show(on: vc)
-}
-
 extension Encodable {
     /// Encodable을 Dictionary 타입으로 변환
     func toDictionary() -> [String: Any]? {

@@ -129,13 +129,11 @@ class SearchView: UIViewController {
         return view
     }()
     
-    private let tableView: UITableView = {
-        let tv = UITableView()
-        tv.backgroundColor = .clear
-        tv.separatorStyle = .none
+    private let tableView: BaseTableView = {
+        let tv = BaseTableView()
         tv.register(PostListTableViewCell.self, forCellReuseIdentifier: PostListTableViewCell.identifier)
         tv.estimatedRowHeight = 142
-        tv.rowHeight = UITableView.automaticDimension
+        tv.contentInset = .zero
         
         return tv
     }()
