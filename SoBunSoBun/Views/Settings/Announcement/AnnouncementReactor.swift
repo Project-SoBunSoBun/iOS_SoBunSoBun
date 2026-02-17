@@ -29,12 +29,12 @@ class AnnouncementReactor: Reactor {
     
     enum Mutation {
         case setNotices([AnnouncementContentModel])
-        case setError(String)
         case setLoading(Bool)
         case appendNotices([AnnouncementContentModel])
         case setPage(Int)
         case setHasMore(Bool)
         case setRefreshing(Bool)
+        case setError(String)
         case setNoticeDetailView(AnnouncementContentModel)
     }
     
@@ -44,7 +44,7 @@ class AnnouncementReactor: Reactor {
         var page: Int = 0 // 페이지네이션 페이지 번호
         var hasMore: Bool = true // 페이지네이션 추가 가능 여부
         var isRefreshing: Bool = false // 새로고침 여부
-        @Pulse var errorMessage: String? // 에러 메세지 
+        @Pulse var errorMessage: String? // 에러 메세지
         @Pulse var shouldPushDetailView: AnnouncementContentModel? // 공지사항 디테일 뷰로 이동
     }
     
