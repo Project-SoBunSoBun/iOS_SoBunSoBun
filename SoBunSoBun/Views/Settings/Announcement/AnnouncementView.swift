@@ -34,16 +34,11 @@ class AnnouncementView: UIViewController {
     }()
     
     // 공지사항 테이블뷰
-    private let tableView: UITableView = {
-        let tv = UITableView()
+    private let tableView: BaseTableView = {
+        let tv = BaseTableView()
         tv.register(AnnouncementTableViewCell.self, forCellReuseIdentifier: AnnouncementTableViewCell.identifier)
-        tv.backgroundColor = .clear
-        tv.separatorStyle = .none
+        tv.backgroundColor = .clear    
         tv.estimatedRowHeight = 105
-        tv.rowHeight = UITableView.automaticDimension
-        tv.minimumZoomScale = 1.0
-        tv.maximumZoomScale = 1.0
-        tv.pinchGestureRecognizer?.isEnabled = false
         
         return tv
     }()
