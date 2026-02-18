@@ -28,8 +28,8 @@ class AnnouncementDetailReactor: Reactor {
     }
     
     enum Mutation {
-        case setError(String)
         case setNoticeDetail(AnnouncementDetailDataModel)
+        case setError(String)
     }
     
     struct State {
