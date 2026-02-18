@@ -114,17 +114,30 @@ extension NotificationSettingView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                self.openAppSystemSettings()
+                self.showNotificationSettingAlert()
             })
             .disposed(by: disposeBag)
     }
     
-    // 설정창으로 이동시키는 함수
-    private func openAppSystemSettings() {
-        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
+    // 알림 권한 설정 알림창
+    private func showNotificationSettingAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "NotificationReceiveSetting", table: "Settings"),
+            primaryTitleKey: String(localized: "GoToSetting", table: "Common"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
+        )
         
-        if UIApplication.shared.canOpenURL(settingsUrl) {
-            UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
+        alert.onPrimaryTapped = {
+            // 설정 앱으로 이동
+            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(settingsUrl)
+            }
         }
+        
+        alert.onCancelTapped = {
+            self.logger.debug("취소됨")
+        }
+        
+        alert.show(on: self)
     }
 }
