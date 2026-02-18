@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 
 class SettingCard: UIView {
-    init(frame: CGRect = .zero, cells: [SettingCardCell]) {
+    init(frame: CGRect = .zero, cells: [UIView]) {
         super.init(frame: frame)
         
         configure(cells: cells)
@@ -25,7 +25,7 @@ class SettingCard: UIView {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.spacing = 16
-        sv.alignment = .center
+        sv.alignment = .fill
         
         return sv
     }()
@@ -40,7 +40,7 @@ class SettingCard: UIView {
     }
     
     // MARK: - 레이아웃 설정
-    private func configure(cells: [SettingCardCell]) {
+    private func configure(cells: [UIView]) {
         self.backgroundColor = .backgroundWhite
         
         // 모서리
@@ -62,5 +62,9 @@ class SettingCard: UIView {
         stackView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(16)
         }
+    }
+    
+    func setSpacing() {
+        stackView.spacing = 8
     }
 }
