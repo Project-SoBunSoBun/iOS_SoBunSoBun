@@ -64,7 +64,7 @@ class SettingCard: UIView {
         }
     }
     
-    func setSpacing() {
-        stackView.spacing = 8
+    func setSpacing(spacing: CGFloat) {
+        stackView.spacing = spacing
     }
 }

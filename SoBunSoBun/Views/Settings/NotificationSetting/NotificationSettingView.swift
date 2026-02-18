@@ -88,7 +88,7 @@ class NotificationSettingView: UIViewController {
             }
         }
         
-        notificationSettingCard.setSpacing()
+        notificationSettingCard.setSpacing(spacing: 8)
     }
 }
 
