@@ -26,7 +26,7 @@ class TextFieldUnderline: BaseTextField {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let underlineLayer = CALayer()
+    let underlineLayer = CALayer()
     
     private func configureUI() {
         self.borderStyle = .none
