@@ -29,7 +29,7 @@ class SelectedImageView: UIView {
     }()
     
     // x 버튼
-    private let deleteButton: UIImageView = {
+    let deleteButton: UIImageView = {
         let iv = UIImageView()
         iv.image = .xCircle.resize(.init(width: 28, height: 28)) // 피그마상 26.67
         iv.contentMode = .scaleAspectFit
