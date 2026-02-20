@@ -80,3 +80,10 @@ struct WithdrawRequestBodyModel: Encodable {
     let reasonDetail: String
     let agreedToTerms: Bool
 }
+
+// MARK: - 1:1 문의
+struct InquiriesPostModel: Encodable {
+    let typeCode: String
+    let content: String
+    let replyEmail: String
+}
