@@ -73,6 +73,18 @@
         }
       }
     },
+    "CompletedInquiries" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문의 접수가 완료되었습니다."
+          }
+        }
+      }
+    },
     "Contact" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -477,6 +489,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "이미지 파일(PNG, JPG)을 기준으로 최대 2MB이하, 최대 2개까지 등록 가능합니다."
+          }
+        }
+      }
+    },
+    "PleaseInputEmail" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "답변 받을 이메일 주소를 적어주세요."
           }
         }
       }
