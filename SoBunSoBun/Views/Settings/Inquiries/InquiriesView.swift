@@ -21,6 +21,8 @@ class InquiriesView: UIViewController {
     typealias Reactor = InquiriesReactor
     private let reactor = InquiriesReactor()
     
+    private var profileImagePicker: ProfileImagePicker?
+    
     private let disposeBag = DisposeBag()
     
     // MARK: - 디자인 요소
@@ -166,11 +168,20 @@ class InquiriesView: UIViewController {
     // 문의하기 버튼
     private let inquiriesButton = Button(title: String(localized: "Inquiries", table: "Settings"))
     
+    // 로딩 화면
+    private lazy var loadingView: LoadingView = {
+        let view = LoadingView()
+        view.isHidden = true
+        
+        return view
+    }()
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureUI()
+        setImagePicker()
         bind(reactor: reactor)
     }
     
@@ -288,6 +299,11 @@ class InquiriesView: UIViewController {
             make.bottom.equalToSuperview()
         }
     }
+    
+    // 이미지 피커 설정
+    private func setImagePicker() {
+        profileImagePicker = ProfileImagePicker(presentingViewController: self)
+    }
 }
 
 extension InquiriesView {
@@ -315,12 +331,66 @@ extension InquiriesView {
                 reactor.action.onNext(.dropDownCellTapped(menuNum))
             })
             .disposed(by: disposeBag)
+        
+        // 문의 내용 Text 전달
+        detailTextView.rx.text
+            .distinctUntilChanged()
+            .map { Reactor.Action.detailChanged($0 ?? "") }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 이미지 추가 클릭
+        selectedImageView.rx.tapGesture()
+            .when(.recognized)
+            .map { _ in Reactor.Action.selectImageTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 이미지 선택 완료
+        profileImagePicker?.imageSelected
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] image in
+                guard let self = self else { return }
+                
+                self.logger.debug("이미지 선택 완료")
+                reactor.action.onNext(.profileImageSelected(image))
+            })
+            .disposed(by: disposeBag)
+        
+        // 이미지 선택 취소
+        profileImagePicker?.cancelled
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.logger.debug("이미지 선택 취소됨")
+            })
+            .disposed(by: disposeBag)
+        
+        // 이메일 Text 전달
+        inputEmailTextField.rx.text
+            .distinctUntilChanged()
+            .map { Reactor.Action.emailChanged($0 ?? "")}
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 제출 동의
+        agreeCheckBox.isChecked
+            .map { Reactor.Action.agreeCheckBoxTapped($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 문의하기 버튼 선택
+        inquiriesButton.rx.tap
+            .map { Reactor.Action.inquiriesButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: InquiriesReactor) {
         // 문의 사유 드롭다운 개폐
         reactor.state.map { $0.isMenuOpen }
-            .observe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] isOpen in
                 guard let self = self else { return }
                 
@@ -331,7 +401,7 @@ extension InquiriesView {
         // 문의 내용 라벨에 반영
         reactor.state.map { $0.menuNumber }
             .compactMap { $0 }
-            .observe(on: MainScheduler.instance)
+            .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext: { [weak self] menuNumber in
                 guard let self = self else { return }
                 
@@ -342,5 +412,133 @@ extension InquiriesView {
                 selectedInquiries.updateSelectedText(text: localizedString)
             })
             .disposed(by: disposeBag)
+        
+        // 이미지 피커 표시
+        reactor.pulse(\.$shouldShowImagePicker)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.profileImagePicker?.checkPhotoLibraryPermission()
+            })
+            .disposed(by: disposeBag)
+        
+        // 선택된 이미지 배열을 스택뷰에 업데이트
+        reactor.state.map { $0.selectedImages }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext: { [weak self] images in
+                guard let self = self else { return }
+                
+                self.updateImageStackView(images: images)
+            })
+            .disposed(by: disposeBag)
+        
+        // 버튼 활성화 상태
+        reactor.state.map { $0.isButtonEnabled }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind(to: inquiriesButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        // 문의 내용 전송 완료
+        reactor.pulse(\.$inquiriesCompleted)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.logger.debug("문의 완료 알림 표시")
+                inquiriesAlert()
+            })
+            .disposed(by: disposeBag)
+        
+        // 에러 처리
+        reactor.pulse(\.$errorMessage)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] errorMessage in
+                guard let self = self else { return }
+                
+                self.logger.error("에러: \(errorMessage)")
+                self.errorAlert(title: errorMessage)
+            })
+            .disposed(by: disposeBag)
+        
+        // 로딩 상태
+        reactor.state.map { !$0.isLoading }
+            .distinctUntilChanged()
+            .bind(to: loadingView.rx.isHidden)
+            .disposed(by: disposeBag)
+    }
+    
+    private func updateImageStackView(images: [UIImage]) {
+        // 선택된 사진 갯수 업데이트
+        selectedImageView.updateImageCountLabel(current: images.count, total: 2)
+        
+        // 최대 선택시 터치 X
+        selectedImageView.isUserInteractionEnabled = images.count < 2
+        
+        selectedImageStackView.arrangedSubviews.forEach { view in
+            if view != selectedImageView {
+                view.removeFromSuperview()
+            }
+        }
+        
+        images.enumerated().forEach { index, image in
+            let containerView = SelectedImageView()
+            containerView.updateImage(image: image)
+            
+            containerView.snp.makeConstraints { make in
+                make.size.equalTo(80)
+            }
+            
+            containerView.deleteButton.rx.tapGesture()
+                .when(.recognized)
+                .map { _ in Reactor.Action.deleteImage(index) }
+                .bind(to: reactor.action)
+                .disposed(by: disposeBag)
+            
+            selectedImageStackView.addArrangedSubview(containerView)
+        }
+    }
+    
+    private func inquiriesAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "CompletedInquiries", table: "Settings"),
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.navigationController?.popViewController(animated: true)
+        }
+        
+        alert.show(on: self)
+    }
+    
+    private func errorAlert(title: String) {
+        let alert = CustomAlertView(
+            title: title,
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.logger.debug("확인 버튼 클릭")
+        }
+        
+        alert.show(on: self)
+    }
+    
+    private func showLoadingView() {
+        if loadingView.superview == nil {
+            view.addSubview(loadingView)
+            
+            loadingView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
+        
+        loadingView.isHidden = false
     }
 }
