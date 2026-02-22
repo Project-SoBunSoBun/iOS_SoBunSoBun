@@ -301,6 +301,18 @@
         }
       }
     },
+    "InvalidEmailFormat" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 이메일 형식입니다."
+          }
+        }
+      }
+    },
     "LogOut" : {
       "comment" : "Settings",
       "extractionState" : "manual",
