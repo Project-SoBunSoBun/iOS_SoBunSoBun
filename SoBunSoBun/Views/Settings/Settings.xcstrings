@@ -13,6 +13,18 @@
         }
       }
     },
+    "AgreeReport" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위 내용을 확인하고 신고 제출에 동의합니다."
+          }
+        }
+      }
+    },
     "AgreeWithdraw" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -45,6 +57,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "앱 설정"
+          }
+        }
+      }
+    },
+    "BugLocation001" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "홈 화면"
+          }
+        }
+      }
+    },
+    "BugLocation002" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 화면"
+          }
+        }
+      }
+    },
+    "BugLocation003" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅 화면"
+          }
+        }
+      }
+    },
+    "BugLocation004" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이페이지 화면"
+          }
+        }
+      }
+    },
+    "BugLocation005" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 화면"
+          }
+        }
+      }
+    },
+    "BugLocation006" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기타"
           }
         }
       }
@@ -141,6 +225,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "회원 탈퇴"
+          }
+        }
+      }
+    },
+    "DescribeYourBug" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버그에 대해 설명해 주세요."
           }
         }
       }
@@ -553,6 +649,18 @@
         }
       }
     },
+    "Report" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신고하기"
+          }
+        }
+      }
+    },
     "SaveList" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -561,6 +669,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "저장 목록"
+          }
+        }
+      }
+    },
+    "SelectBugLocation" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버그 발생 위치를 선택해 주세요."
           }
         }
       }
