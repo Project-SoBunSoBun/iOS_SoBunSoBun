@@ -21,7 +21,7 @@ class InquiriesView: UIViewController {
     typealias Reactor = InquiriesReactor
     private let reactor = InquiriesReactor()
     
-    private var profileImagePicker: ProfileImagePicker?
+    private var inquiriesImagePicker: ProfileImagePicker?
     
     private let disposeBag = DisposeBag()
     
@@ -302,7 +302,7 @@ class InquiriesView: UIViewController {
     
     // 이미지 피커 설정
     private func setImagePicker() {
-        profileImagePicker = ProfileImagePicker(presentingViewController: self)
+        inquiriesImagePicker = ProfileImagePicker(presentingViewController: self)
     }
 }
 
@@ -347,18 +347,18 @@ extension InquiriesView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 완료
-        profileImagePicker?.imageSelected
+        inquiriesImagePicker?.imageSelected
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] image in
                 guard let self = self else { return }
                 
                 self.logger.debug("이미지 선택 완료")
-                reactor.action.onNext(.profileImageSelected(image))
+                reactor.action.onNext(.inquiriesImageSelected(image))
             })
             .disposed(by: disposeBag)
         
         // 이미지 선택 취소
-        profileImagePicker?.cancelled
+        inquiriesImagePicker?.cancelled
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
@@ -420,7 +420,7 @@ extension InquiriesView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                self.profileImagePicker?.checkPhotoLibraryPermission()
+                self.inquiriesImagePicker?.checkPhotoLibraryPermission()
             })
             .disposed(by: disposeBag)
         
