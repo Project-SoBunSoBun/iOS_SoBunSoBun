@@ -157,6 +157,18 @@
         }
       }
     },
+    "CompletedBugReport" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신고 접수가 완료되었습니다."
+          }
+        }
+      }
+    },
     "CompletedInquiries" : {
       "comment" : "Settings",
       "extractionState" : "manual",
