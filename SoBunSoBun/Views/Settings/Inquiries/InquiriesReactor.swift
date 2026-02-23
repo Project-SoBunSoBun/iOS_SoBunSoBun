@@ -28,7 +28,7 @@ class InquiriesReactor: Reactor {
         // 이미지 피커 선택시
         case selectImageTapped
         // 이미지 선택 완료시
-        case profileImageSelected(UIImage)
+        case inquiriesImageSelected(UIImage)
         // 이미지 삭제 버튼 선택시
         case deleteImage(Int)
         // 이메일 입력
@@ -69,10 +69,12 @@ class InquiriesReactor: Reactor {
         var menuNumber: Int?
         var isAgree: Bool = false
         var detailString: String?
+        
+        @Pulse var shouldShowImagePicker: Void?
         var selectedImages: [UIImage] = []
+        
         var emailString: String?
         var isLoading: Bool = false
-        @Pulse var shouldShowImagePicker: Void?
         @Pulse var inquiriesCompleted: Void?
         @Pulse var errorMessage: String?
         
@@ -100,7 +102,7 @@ class InquiriesReactor: Reactor {
         case .selectImageTapped:
             return Observable.just(.showImagePicker)
             
-        case .profileImageSelected(let image):
+        case .inquiriesImageSelected(let image):
             return Observable.just(.appendImage(image))
             
         case .deleteImage(let index):
