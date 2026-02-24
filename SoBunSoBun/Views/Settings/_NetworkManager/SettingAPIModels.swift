@@ -87,3 +87,9 @@ struct InquiriesPostModel: Encodable {
     let content: String
     let replyEmail: String
 }
+
+// MARK: - 버그 신고
+struct BugReportPostModel: Encodable {
+    let typeCode: String
+    let content: String
+}

@@ -75,13 +75,27 @@ class SettingNetworkManager {
     
     // MARK: - 1:1 문의
     // 1:1 문의 전송
-    func postInquiries(typeCode: String, content:String, replyEmail: String, selectedImages: [UIImage]?) -> Single<Void> {
+    func postInquiries(typeCode: String, content: String, replyEmail: String, selectedImages: [UIImage]?) -> Single<Void> {
         let imageDatas: [Data]? = selectedImages?.compactMap {
             $0.jpegData(compressionQuality: 0.7)
         }
 
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.postInquiries(typeCode: typeCode, content: content, replyEmail: replyEmail, selectedImages: imageDatas))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
+    
+    // MARK: - 버그 신고하기
+    // 버그 신고하기
+    func postBugReport(typeCode: String, content: String, selectedImages: [UIImage]?) -> Single<Void> {
+        let imageDatas: [Data]? = selectedImages?.compactMap {
+            $0.jpegData(compressionQuality: 0.7)
+        }
+        
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.postBugReport(typeCode: typeCode, content: content, selectedImages: imageDatas))
         )
         .filterSuccessfulStatusCodes()
         .map { _ in () }

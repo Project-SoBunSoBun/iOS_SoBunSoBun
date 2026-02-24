@@ -20,6 +20,8 @@ enum SettingAPIs {
     case postWithdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool)
     // 1:1 문의
     case postInquiries(typeCode: String, content: String, replyEmail: String, selectedImages: [Data]?)
+    // 버그 신고
+    case postBugReport(typeCode: String, content: String, selectedImages: [Data]?)
 }
 
 extension SettingAPIs: TargetType {
@@ -54,6 +56,9 @@ extension SettingAPIs: TargetType {
             
         case .postInquiries:
             return "api/support/inquiry"
+        
+        case .postBugReport:
+            return "/api/support/bug-report"
         }
     }
     
@@ -67,7 +72,8 @@ extension SettingAPIs: TargetType {
             
         case // POST
                 .postWithdraw,
-                .postInquiries:
+                .postInquiries,
+                .postBugReport:
             return .post
             
         case // PATCH
@@ -126,7 +132,7 @@ extension SettingAPIs: TargetType {
                     ))
                 }
             } else {
-                // 이미지가 없을 때 빈 데이터 전송 (요청하신 방식 유지)
+                // 이미지가 없을 때 빈 데이터 전송
                 formData.append(MultipartFormData(
                     provider: .data(Data()),
                     name: "screenshots",
@@ -142,13 +148,43 @@ extension SettingAPIs: TargetType {
             ]
             
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
+            
+        case .postBugReport(typeCode: let typeCode, content: let content, selectedImages: let selectedImages):
+            var formData: [MultipartFormData] = []
+            
+            if let images = selectedImages, !images.isEmpty {
+                images.forEach {
+                    formData.append(MultipartFormData(
+                        provider: .data($0),
+                        name: "screenshots",
+                        fileName: "",
+                        mimeType: "image/jpeg"
+                    ))
+                }
+            } else {
+                // 이미지가 없을 때 빈 데이터 전송
+                formData.append(MultipartFormData(
+                    provider: .data(Data()),
+                    name: "screenshots",
+                    fileName: "",
+                    mimeType: "image/jpeg"
+                ))
+            }
+            
+            let urlParameters: [String: Any] = [
+                "typeCode": typeCode,
+                "content": content
+            ]
+            
+            return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
         }
     }
     
     var headers: [String : String]? {
         switch self {
         case .patchProfileImage,
-                .postInquiries:
+                .postInquiries,
+                .postBugReport:
             return ["Content-Type": "multipart/form-data"]
             
         default:
