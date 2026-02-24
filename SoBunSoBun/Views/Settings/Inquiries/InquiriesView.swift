@@ -21,9 +21,9 @@ class InquiriesView: UIViewController {
     typealias Reactor = InquiriesReactor
     private let reactor = InquiriesReactor()
     
-    private var inquiriesImagePicker: ProfileImagePicker?
-    
     private let disposeBag = DisposeBag()
+    
+    private var inquiriesImagePicker: ProfileImagePicker?
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
