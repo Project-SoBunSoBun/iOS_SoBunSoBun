@@ -64,6 +64,7 @@ class PostDetailReactor: Reactor {
         case deleteCommentButtonTapped
         case deleteComment
         
+        // 채팅
         case chatButtonTapped
     }
     
@@ -96,7 +97,7 @@ class PostDetailReactor: Reactor {
         case setShouldShowDeleteCommentAlert
         case setShouldShowDeleteCommentDoneAlert
         
-        case setShouldNavigateToChat
+        case setShouldNavigateToChat(Int)
         
         case setRefreshing(Bool)
         
@@ -137,7 +138,7 @@ class PostDetailReactor: Reactor {
         @Pulse var shouldShowDeleteCommentAlert: Void?
         @Pulse var shouldShowDeleteCommentDoneAlert: Void?
         
-        @Pulse var shouldNavigateToChat: Void?
+        @Pulse var shouldNavigateToChat: Int?
         
         var isRefreshing: Bool = false
         
@@ -241,7 +242,7 @@ class PostDetailReactor: Reactor {
         case .chatButtonTapped:
             return Observable.concat([
                 Observable.just(.setIsEditMode(false)),
-                Observable.just(.setShouldNavigateToChat)
+                createChatRoom()
             ])
         }
     }
@@ -310,8 +311,8 @@ class PostDetailReactor: Reactor {
         case .setShouldShowDeleteCommentDoneAlert:
             newState.shouldShowDeleteCommentDoneAlert = ()
             
-        case .setShouldNavigateToChat:
-            newState.shouldNavigateToChat = ()
+        case .setShouldNavigateToChat(let chatRoomId):
+            newState.shouldNavigateToChat = chatRoomId
             
         case .setRefreshing(let isRefreshing):
             newState.isRefreshing = isRefreshing
@@ -626,6 +627,27 @@ class PostDetailReactor: Reactor {
         }
         
         return convertedText
+    }
+    
+    // 채팅방 조회
+    private func createChatRoom() -> Observable<Mutation> {
+        guard let ownerId = currentState.postInfo?.owner.id else {
+            return Observable.just(.setErrorMessage(errorMessage))
+        }
+        
+        return networkManager.createChatRoomId(userId: ownerId)
+            .asObservable()
+            .flatMap { model -> Observable<Mutation> in
+                return Observable.just(.setShouldNavigateToChat(model.data.roomId))
+            }
+            .catch { [weak self] error in
+                guard let self = self else {
+                    return Observable.just(.setErrorMessage("Error!"))
+                }
+                
+                logger.critical("채팅방 생성 혹은 조회 실패: \(error.localizedDescription)")
+                return Observable.just(.setErrorMessage(errorMessage))
+            }
     }
 }
 

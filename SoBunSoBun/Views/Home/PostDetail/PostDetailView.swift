@@ -172,7 +172,7 @@ class PostDetailView: UIViewController {
     }()
     
     // 댓글 생성 textView
-    private let createCommmentTextView: MentionTextView = {
+    private let createCommentTextView: MentionTextView = {
         let mtv = MentionTextView(minHeight: 24, maxHeight: 72, maxLength: 50, fontStyle: body16)
         mtv.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         mtv.placeholder = String(localized: "InsertComment", table: "Home")
@@ -414,7 +414,7 @@ class PostDetailView: UIViewController {
         
         createCommentStackView.addArrangedSubview(createCommentContainerStackView)
         
-        [createCommmentTextView, sendButton].forEach {
+        [createCommentTextView, sendButton].forEach {
             createCommentContainerStackView.addArrangedSubview($0)
         }
         
@@ -573,12 +573,12 @@ extension PostDetailView {
             .disposed(by: disposeBag)
         
         sendButton.rx.tap
-            .withLatestFrom(createCommmentTextView.rx.text.orEmpty)
+            .withLatestFrom(createCommentTextView.rx.text.orEmpty)
             .subscribe(onNext: { [weak self] text in
                 guard let self = self else { return }
                 
                 reactor.action.onNext(.createComment(text))
-                createCommmentTextView.text = ""
+                createCommentTextView.text = ""
             })
             .disposed(by: disposeBag)
         
@@ -655,9 +655,7 @@ extension PostDetailView {
             tableView.rx.didZoom.map { _ in },
             tableView.rx.didScroll.map { _ in }
         ])
-        .subscribe(onNext: { [weak self] _ in
-            guard let self = self else { return }
-            
+        .subscribe(onNext: { _ in
             reactor.action.onNext(.menuButtonTapped(false))
             reactor.action.onNext(.commentMenuButtonTapped(false))
         })
@@ -739,7 +737,7 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] users in
                 guard let self = self else { return }
                 
-                createCommmentTextView.commentedUsersToId.accept(users)
+                createCommentTextView.commentedUsersToId.accept(users)
                 editCommentTextView.commentedUsersToId.accept(users)
             })
             .disposed(by: disposeBag)
@@ -800,9 +798,9 @@ extension PostDetailView {
                 guard let self = self else { return }
                 
                 // 키보드 올리기
-                _ = createCommmentTextView.becomeFirstResponder()
+                _ = createCommentTextView.becomeFirstResponder()
             })
-            .bind(to: createCommmentTextView.rx.text)
+            .bind(to: createCommentTextView.rx.text)
             .disposed(by: disposeBag)
         
         // TODO: 공유 기능 추가 필요
@@ -980,14 +978,13 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
-        // TODO: 채팅 연결 기능 구현 필요
         reactor.pulse(\.$shouldNavigateToChat)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] roomId in
                 guard let self = self else { return }
                 
-                
+                self.navigationController?.pushViewController(ChatView(chatRoomId: roomId), animated: true)
             })
             .disposed(by: disposeBag)
         

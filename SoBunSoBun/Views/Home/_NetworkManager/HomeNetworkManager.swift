@@ -200,4 +200,13 @@ class HomeNetworkManager {
         .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
+    
+    // 채팅방 id 조회
+    func createChatRoomId(userId: Int) -> Single<CreateChatRoomResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(HomeAPIs.createChatRoomId(userId: userId))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(CreateChatRoomResponseModel.self)
+    }
 }
