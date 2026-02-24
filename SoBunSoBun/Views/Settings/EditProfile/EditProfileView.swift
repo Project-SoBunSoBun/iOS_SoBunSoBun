@@ -23,7 +23,7 @@ class EditProfileView: UIViewController {
     private let reactor = EditProfileReactor()
     
     private let profileImageUrl: URL?
-    private var profileImagePicker: ProfileImagePicker?
+    private var profileImagePicker: CustomImagePicker?
     
     private let disposeBag = DisposeBag()
     
@@ -146,7 +146,7 @@ class EditProfileView: UIViewController {
     
     // 이미지 피커 설정
     private func setImagePicker() {
-        profileImagePicker = ProfileImagePicker(presentingViewController: self)
+        profileImagePicker = CustomImagePicker(presentingViewController: self)
     }
 }
 

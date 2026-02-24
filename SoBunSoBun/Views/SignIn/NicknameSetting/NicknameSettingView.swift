@@ -23,7 +23,7 @@ class NicknameSettingView: UIViewController {
     typealias Reactor = NicknameSettingReactor
     private let reactor = NicknameSettingReactor()
     
-    private var profileImagePicker: ProfileImagePicker?
+    private var profileImagePicker: CustomImagePicker?
     
     private let disposeBag = DisposeBag()
     
@@ -115,7 +115,7 @@ class NicknameSettingView: UIViewController {
     }
     
     private func setImagePicker() {
-        profileImagePicker = ProfileImagePicker(presentingViewController: self)
+        profileImagePicker = CustomImagePicker(presentingViewController: self)
     }
 }
 
