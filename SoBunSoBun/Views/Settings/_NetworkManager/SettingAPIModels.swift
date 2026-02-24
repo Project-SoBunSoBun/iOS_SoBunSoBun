@@ -92,4 +92,5 @@ struct InquiriesPostModel: Encodable {
 struct BugReportPostModel: Encodable {
     let typeCode: String
     let content: String
+    let deviceInfo: String
 }

@@ -21,7 +21,7 @@ enum SettingAPIs {
     // 1:1 문의
     case postInquiries(typeCode: String, content: String, replyEmail: String, selectedImages: [Data]?)
     // 버그 신고
-    case postBugReport(typeCode: String, content: String, selectedImages: [Data]?)
+    case postBugReport(typeCode: String, content: String, deviceInfo: String, selectedImages: [Data]?)
 }
 
 extension SettingAPIs: TargetType {
@@ -149,7 +149,7 @@ extension SettingAPIs: TargetType {
             
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
             
-        case .postBugReport(typeCode: let typeCode, content: let content, selectedImages: let selectedImages):
+        case .postBugReport(let typeCode, let content, let deviceInfo, let selectedImages):
             var formData: [MultipartFormData] = []
             
             if let images = selectedImages, !images.isEmpty {
@@ -173,7 +173,8 @@ extension SettingAPIs: TargetType {
             
             let urlParameters: [String: Any] = [
                 "typeCode": typeCode,
-                "content": content
+                "content": content,
+                "deviceInfo": deviceInfo
             ]
             
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
