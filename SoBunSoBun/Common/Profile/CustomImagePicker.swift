@@ -7,24 +7,35 @@
 
 import Foundation
 import Photos
+import PhotosUI
 import UIKit
 import OSLog
 import RxSwift
 import RxCocoa
 
-class ProfileImagePicker: NSObject {
+class CustomImagePicker: NSObject {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "ProfileImagePicker"
     )
     
     weak var presentingViewController: UIViewController?
+    private let selectionMode: SelectionMode
     
     let imageSelected = PublishSubject<UIImage>()
+    let imagesSelected = PublishSubject<[UIImage]>()
     let cancelled = PublishSubject<Void>()
     
-    init(presentingViewController: UIViewController) {
+    enum SelectionMode {
+        case single
+        case multi(limit: Int)
+    }
+    
+    // .single .multi // limit: Int
+    init(presentingViewController: UIViewController, selectionMode: SelectionMode = .single) {
         self.presentingViewController = presentingViewController
+        self.selectionMode = selectionMode
+        
         super.init()
     }
     
@@ -59,13 +70,26 @@ class ProfileImagePicker: NSObject {
     private func presentImagePicker() {
         guard let viewController = presentingViewController else { return }
         
-        let picker = UIImagePickerController()
-        picker.sourceType = .photoLibrary
-        picker.allowsEditing = true
-        picker.delegate = self
-        picker.presentationController?.delegate = self
-        
-        viewController.present(picker, animated: true)
+        switch selectionMode {
+        case .single:
+            let picker = UIImagePickerController()
+            picker.sourceType = .photoLibrary
+            picker.allowsEditing = true
+            picker.delegate = self
+            picker.presentationController?.delegate = self
+            
+            viewController.present(picker, animated: true)
+            
+        case .multi(let limit):
+            var config = PHPickerConfiguration()
+            config.selectionLimit = limit
+            config.filter = .images
+            
+            let picker = PHPickerViewController(configuration: config)
+            picker.delegate = self
+            
+            viewController.present(picker, animated:  true)
+        }
     }
     
     // 권한 요청이 없을 때 설정으로 이동시키는 알러트
@@ -111,7 +135,8 @@ class ProfileImagePicker: NSObject {
     }
 }
 
-extension ProfileImagePicker: UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAdaptivePresentationControllerDelegate {
+// 단일 선택 피커뷰
+extension CustomImagePicker: UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIAdaptivePresentationControllerDelegate {
     func imagePickerController(
         _ picker: UIImagePickerController,
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]
@@ -152,5 +177,63 @@ extension ProfileImagePicker: UIImagePickerControllerDelegate, UINavigationContr
     // 사용자가 스와이프로 이미지 선택을 취소했을 때
     func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         cancelled.onNext(())
+    }
+}
+
+// 다중 선택 피커뷰
+extension CustomImagePicker: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        
+        // 취소 처리
+        if results.isEmpty {
+            cancelled.onNext(())
+            
+            return
+        }
+        
+        var selectedImages: [UIImage] = []
+        let group = DispatchGroup()
+        
+        var hasLargeImage = false
+        
+        for result in results {
+            group.enter()
+            let itemProvider = result.itemProvider
+            
+            if itemProvider.canLoadObject(ofClass: UIImage.self) {
+                itemProvider.loadObject(ofClass: UIImage.self) { [weak self] image, error in
+                    defer { group.leave() }
+                    
+                    guard let self = self, let image = image as? UIImage else { return }
+                    
+                    // 이미지 크기 체크 (5MB 제한)
+                    if let imageData = image.jpegData(compressionQuality: 0.8) {
+                        let imageSizeInMB = Double(imageData.count) / (1024.0 * 1024.0)
+                        self.logger.debug("이미지 사이즈: \(imageSizeInMB) MB")
+                        
+                        if imageSizeInMB > 5.0 {
+                            hasLargeImage = true
+                            
+                            return
+                        }
+                    }
+                    
+                    selectedImages.append(image)
+                }
+            } else {
+                group.leave()
+            }
+        }
+        
+        group.notify(queue: .main) { [weak self] in
+            guard let self = self else { return }
+            
+            if hasLargeImage {
+                self.showImageSizeAlert()
+            }
+            
+            self.imagesSelected.onNext(selectedImages)
+        }
     }
 }
