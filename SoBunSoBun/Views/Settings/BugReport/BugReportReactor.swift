@@ -163,11 +163,18 @@ class BugReportReactor: Reactor {
         
         let typeCode = String(format: "%03d", menuNumber)
         let content = currentState.detailString ?? ""
+        
+        let deviceModel = UIDevice.current.name // ex) iPhone 12 mini
+        let deviceOS = UIDevice.current.systemName // ex) iOS
+        let deviceVersion = UIDevice.current.systemVersion // ex) 18.2
+        let deviceInfo = "\(deviceModel) / \(deviceOS) \(deviceVersion)"
+        
         let selectedImages = currentState.selectedImages
         
         return networkManager.postBugReport(
             typeCode: typeCode,
             content: content,
+            deviceInfo: deviceInfo,
             selectedImages: selectedImages
         )
         .asObservable()
