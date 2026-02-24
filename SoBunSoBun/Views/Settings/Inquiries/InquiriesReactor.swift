@@ -28,7 +28,7 @@ class InquiriesReactor: Reactor {
         // 이미지 피커 선택시
         case selectImageTapped
         // 이미지 선택 완료시
-        case inquiriesImageSelected(UIImage)
+        case inquiriesImageSelected([UIImage])
         // 이미지 삭제 버튼 선택시
         case deleteImage(Int)
         // 이메일 입력
@@ -49,7 +49,7 @@ class InquiriesReactor: Reactor {
         // 이미지 피커 선택시
         case showImagePicker
         // 이미지 선택 완료시
-        case appendImage(UIImage)
+        case appendImage([UIImage])
         // 이미지 삭제 버튼 선택시
         case removeImage(Int)
         // 이메일 입력
@@ -102,8 +102,8 @@ class InquiriesReactor: Reactor {
         case .selectImageTapped:
             return Observable.just(.showImagePicker)
             
-        case .inquiriesImageSelected(let image):
-            return Observable.just(.appendImage(image))
+        case .inquiriesImageSelected(let images):
+            return Observable.just(.appendImage(images))
             
         case .deleteImage(let index):
             return Observable.just(.removeImage(index))
@@ -139,8 +139,8 @@ class InquiriesReactor: Reactor {
         case .showImagePicker:
             newState.shouldShowImagePicker = ()
             
-        case .appendImage(let image):
-            newState.selectedImages.append(image)
+        case .appendImage(let images):
+            newState.selectedImages.append(contentsOf: images)
             
         case .removeImage(let index):
             if newState.selectedImages.indices.contains(index) {
@@ -180,7 +180,7 @@ class InquiriesReactor: Reactor {
             return Observable.just(.setError(String(localized: "PleaseInputEmail", table: "Settings")))
         }
         
-        if !isValidEmail(replyEmail) {
+        guard isValidEmail(replyEmail) else {
             return Observable.just(.setError(String(localized: "InvalidEmailFormat", table: "Settings")))
         }
         
@@ -207,7 +207,7 @@ class InquiriesReactor: Reactor {
     
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailPred.evaluate(with: email)
+        
+        return email.range(of: emailRegEx, options: .regularExpression) != nil
     }
 }

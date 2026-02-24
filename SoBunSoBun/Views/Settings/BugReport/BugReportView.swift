@@ -23,7 +23,7 @@ class BugReportView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    private var bugImagePicker: ProfileImagePicker?
+    private var bugImagePicker: CustomImagePicker?
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -91,7 +91,7 @@ class BugReportView: UIViewController {
         var attributes = body14.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral700
         
-        var attributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "PhotoUploadLimitGuide", table: "Settings"),
             attributes: attributes
         )
@@ -108,7 +108,7 @@ class BugReportView: UIViewController {
         var attributes = body14.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.errorRed
         
-        var attributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "imagePolicyNotice", table: "Settings"),
             attributes: attributes
         )
@@ -165,7 +165,7 @@ class BugReportView: UIViewController {
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
-        [bugLocation, detailTextView, selectedImageScrollView, bugLocationDropDownView, imageUploadGuideLabel, imagePolicyNoticeLabel, agreeCheckBox, reportButton].forEach {
+        [bugLocation, detailTextView, selectedImageScrollView, bugLocationDropDownView, imageUploadGuideLabel, imagePolicyNoticeLabel, agreeCheckBox, reportButton, loadingView].forEach {
             contentView.addSubview($0)
         }
         
@@ -238,11 +238,16 @@ class BugReportView: UIViewController {
             make.top.equalTo(agreeCheckBox.snp.bottom).offset(16)
             make.bottom.equalToSuperview()
         }
+        
+        // 로딩 뷰
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
     // 이미지 피커 설정
     private func setImagePicker() {
-        bugImagePicker = ProfileImagePicker(presentingViewController: self)
+        bugImagePicker = CustomImagePicker(presentingViewController: self, selectionMode: .multi(limit: 2))
     }
 }
 
@@ -273,9 +278,9 @@ extension BugReportView {
             .disposed(by: disposeBag)
         
         // 버그 내용 Text 전달
-        detailTextView.rx.text
+        detailTextView.rx.text.orEmpty
             .distinctUntilChanged()
-            .map { Reactor.Action.detailChanged($0 ?? "")}
+            .map { Reactor.Action.detailChanged($0)}
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -287,13 +292,13 @@ extension BugReportView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 완료
-        bugImagePicker?.imageSelected
+        bugImagePicker?.imagesSelected
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] image in
+            .subscribe(onNext: { [weak self] images in
                 guard let self = self else { return }
                 
-                self.logger.debug("이미지 선택 완료")
-                reactor.action.onNext(.bugImageSelected(image))
+                self.logger.debug("\(images.count)장의 이미지 선택 완료")
+                reactor.action.onNext(.bugImageSelected(images))
             })
             .disposed(by: disposeBag)
         
@@ -394,7 +399,6 @@ extension BugReportView {
             .subscribe(onNext:  { [weak self] errorMessage in
                 guard let self = self else { return }
                 
-                self.logger.error("에러: \(errorMessage)")
                 self.errorAlert(title: errorMessage)
             })
             .disposed(by: disposeBag)
@@ -461,17 +465,5 @@ extension BugReportView {
         }
         
         alert.show(on: self)
-    }
-    
-    private func showLoadingView() {
-        if loadingView.superview == nil {
-            view.addSubview(loadingView)
-            
-            loadingView.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
-        }
-        
-        loadingView.isHidden = false
     }
 }

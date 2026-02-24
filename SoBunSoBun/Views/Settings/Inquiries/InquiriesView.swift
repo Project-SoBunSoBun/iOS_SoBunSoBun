@@ -23,7 +23,7 @@ class InquiriesView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    private var inquiriesImagePicker: ProfileImagePicker?
+    private var inquiriesImagePicker: CustomImagePicker?
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -125,7 +125,7 @@ class InquiriesView: UIViewController {
         var attributes = title16.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral900
         
-        var attributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "ReceivedEmailAddress", table: "Settings"),
             attributes: attributes
         )
@@ -150,7 +150,7 @@ class InquiriesView: UIViewController {
         var attributes = body12.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral300
         
-        var attributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "EmailCollectionDisclaimer", table: "Settings"),
             attributes: attributes
         )
@@ -207,7 +207,7 @@ class InquiriesView: UIViewController {
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
-        [selectedInquiries, detailTextView, inquiriesDropDownView, selectedImageScrollView, imageUploadGuideLabel, imagePolicyNoticeLabel, receivedEmailLabel, inputEmailTextField, emailCollectionDisclaimerLabel, agreeCheckBox, inquiriesButton].forEach {
+        [selectedInquiries, detailTextView, inquiriesDropDownView, selectedImageScrollView, imageUploadGuideLabel, imagePolicyNoticeLabel, receivedEmailLabel, inputEmailTextField, emailCollectionDisclaimerLabel, agreeCheckBox, inquiriesButton, loadingView].forEach {
             contentView.addSubview($0)
         }
         
@@ -298,11 +298,16 @@ class InquiriesView: UIViewController {
             make.top.equalTo(agreeCheckBox.snp.bottom).offset(16)
             make.bottom.equalToSuperview()
         }
+        
+        // 로딩 뷰
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
     // 이미지 피커 설정
     private func setImagePicker() {
-        inquiriesImagePicker = ProfileImagePicker(presentingViewController: self)
+        inquiriesImagePicker = CustomImagePicker(presentingViewController: self, selectionMode: .multi(limit: 2))
     }
 }
 
@@ -333,9 +338,9 @@ extension InquiriesView {
             .disposed(by: disposeBag)
         
         // 문의 내용 Text 전달
-        detailTextView.rx.text
+        detailTextView.rx.text.orEmpty
             .distinctUntilChanged()
-            .map { Reactor.Action.detailChanged($0 ?? "") }
+            .map { Reactor.Action.detailChanged($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -347,13 +352,13 @@ extension InquiriesView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 완료
-        inquiriesImagePicker?.imageSelected
+        inquiriesImagePicker?.imagesSelected
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] image in
+            .subscribe(onNext: { [weak self] images in
                 guard let self = self else { return }
                 
-                self.logger.debug("이미지 선택 완료")
-                reactor.action.onNext(.inquiriesImageSelected(image))
+                self.logger.debug("\(images.count)장의 이미지 선택 완료")
+                reactor.action.onNext(.inquiriesImageSelected(images))
             })
             .disposed(by: disposeBag)
         
@@ -528,17 +533,5 @@ extension InquiriesView {
         }
         
         alert.show(on: self)
-    }
-    
-    private func showLoadingView() {
-        if loadingView.superview == nil {
-            view.addSubview(loadingView)
-            
-            loadingView.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
-        }
-        
-        loadingView.isHidden = false
     }
 }

@@ -23,7 +23,7 @@ class SelectedImageView: UIView {
     // 이미지 뷰
     private let imageView: UIImageView = {
         let iv = UIImageView()
-        iv.contentMode = .scaleAspectFit
+        iv.contentMode = .scaleAspectFill
         
         return iv
     }()

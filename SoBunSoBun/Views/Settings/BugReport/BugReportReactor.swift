@@ -28,7 +28,7 @@ class BugReportReactor: Reactor {
         // 이미지 피커 선택시
         case selectedImageTapped
         // 이미지 선택 완료시
-        case bugImageSelected(UIImage)
+        case bugImageSelected([UIImage])
         // 이미지 삭제 버튼 선택시
         case deleteImage(Int)
         // 동의 체크박스 선택시
@@ -47,7 +47,7 @@ class BugReportReactor: Reactor {
         // 이미지 피커 선택시
         case showImagePicker
         // 이미지 선택 완료시
-        case appendImage(UIImage)
+        case appendImage([UIImage])
         // 이미지 삭제 버튼 선택시
         case removeImage(Int)
         // 동의 체크박스 선택시
@@ -96,8 +96,8 @@ class BugReportReactor: Reactor {
         case .selectedImageTapped:
             return Observable.just(.showImagePicker)
             
-        case .bugImageSelected(let image):
-            return Observable.just(.appendImage(image))
+        case .bugImageSelected(let images):
+            return Observable.just(.appendImage(images))
             
         case .deleteImage(let index):
             return Observable.just(.removeImage(index))
@@ -130,8 +130,8 @@ class BugReportReactor: Reactor {
         case .showImagePicker:
             newState.shouldShowIamgePicker = ()
             
-        case .appendImage(let image):
-            newState.selectedImages.append(image)
+        case .appendImage(let images):
+            newState.selectedImages.append(contentsOf: images)
             
         case .removeImage(let index):
             if newState.selectedImages.indices.contains(index) {
