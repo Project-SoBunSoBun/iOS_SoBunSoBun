@@ -74,6 +74,7 @@ class CustomImagePicker: NSObject {
         case .single:
             let picker = UIImagePickerController()
             picker.sourceType = .photoLibrary
+            picker.mediaTypes = ["public.image"]
             picker.allowsEditing = true
             picker.delegate = self
             picker.presentationController?.delegate = self
