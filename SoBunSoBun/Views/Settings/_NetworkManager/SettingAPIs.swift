@@ -18,6 +18,10 @@ enum SettingAPIs {
     case getAnnouncementDetail(id: Int)
     // 탈퇴
     case postWithdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool)
+    // 1:1 문의
+    case postInquiries(typeCode: String, content: String, replyEmail: String, selectedImages: [Data]?)
+    // 버그 신고
+    case postBugReport(typeCode: String, content: String, deviceInfo: String, selectedImages: [Data]?)
 }
 
 extension SettingAPIs: TargetType {
@@ -49,6 +53,12 @@ extension SettingAPIs: TargetType {
             
         case .getAnnouncementDetail(let id):
             return "api/announcements/\(id)"
+            
+        case .postInquiries:
+            return "api/support/inquiry"
+        
+        case .postBugReport:
+            return "/api/support/bug-report"
         }
     }
     
@@ -61,7 +71,9 @@ extension SettingAPIs: TargetType {
             return .get
             
         case // POST
-                .postWithdraw:
+                .postWithdraw,
+                .postInquiries,
+                .postBugReport:
             return .post
             
         case // PATCH
@@ -106,12 +118,74 @@ extension SettingAPIs: TargetType {
             
         case .getAnnouncementDetail:
             return .requestPlain
+            
+        case .postInquiries(let typeCode, let content, let replyEmail, let selectedImages):
+            var formData: [MultipartFormData] = []
+            
+            if let images = selectedImages, !images.isEmpty {
+                images.forEach {
+                    formData.append(MultipartFormData(
+                        provider: .data($0),
+                        name: "screenshots",
+                        fileName: "",
+                        mimeType: "image/jpeg"
+                    ))
+                }
+            } else {
+                // 이미지가 없을 때 빈 데이터 전송
+                formData.append(MultipartFormData(
+                    provider: .data(Data()),
+                    name: "screenshots",
+                    fileName: "",
+                    mimeType: "image/jpeg"
+                ))
+            }
+            
+            let urlParameters: [String: Any] = [
+                "typeCode": typeCode,
+                "content": content,
+                "replyEmail": replyEmail
+            ]
+            
+            return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
+            
+        case .postBugReport(let typeCode, let content, let deviceInfo, let selectedImages):
+            var formData: [MultipartFormData] = []
+            
+            if let images = selectedImages, !images.isEmpty {
+                images.forEach {
+                    formData.append(MultipartFormData(
+                        provider: .data($0),
+                        name: "screenshots",
+                        fileName: "",
+                        mimeType: "image/jpeg"
+                    ))
+                }
+            } else {
+                // 이미지가 없을 때 빈 데이터 전송
+                formData.append(MultipartFormData(
+                    provider: .data(Data()),
+                    name: "screenshots",
+                    fileName: "",
+                    mimeType: "image/jpeg"
+                ))
+            }
+            
+            let urlParameters: [String: Any] = [
+                "typeCode": typeCode,
+                "content": content,
+                "deviceInfo": deviceInfo
+            ]
+            
+            return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
         }
     }
     
     var headers: [String : String]? {
         switch self {
-        case .patchProfileImage:
+        case .patchProfileImage,
+                .postInquiries,
+                .postBugReport:
             return ["Content-Type": "multipart/form-data"]
             
         default:

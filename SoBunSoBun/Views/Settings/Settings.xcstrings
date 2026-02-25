@@ -1,6 +1,30 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "AgreeInquiries" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위 내용을 확인하고 문의 제출에 동의합니다."
+          }
+        }
+      }
+    },
+    "AgreeReport" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위 내용을 확인하고 신고 제출에 동의합니다."
+          }
+        }
+      }
+    },
     "AgreeWithdraw" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -37,6 +61,78 @@
         }
       }
     },
+    "BugLocation001" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "홈 화면"
+          }
+        }
+      }
+    },
+    "BugLocation002" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 화면"
+          }
+        }
+      }
+    },
+    "BugLocation003" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅 화면"
+          }
+        }
+      }
+    },
+    "BugLocation004" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이페이지 화면"
+          }
+        }
+      }
+    },
+    "BugLocation005" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 화면"
+          }
+        }
+      }
+    },
+    "BugLocation006" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기타"
+          }
+        }
+      }
+    },
     "BugReport" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -57,6 +153,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "완료"
+          }
+        }
+      }
+    },
+    "CompletedBugReport" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신고 접수가 완료되었습니다."
+          }
+        }
+      }
+    },
+    "CompletedInquiries" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문의 접수가 완료되었습니다."
           }
         }
       }
@@ -121,6 +241,18 @@
         }
       }
     },
+    "DescribeYourBug" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버그에 대해 설명해 주세요."
+          }
+        }
+      }
+    },
     "EditProfile" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -141,6 +273,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "이메일"
+          }
+        }
+      }
+    },
+    "EmailCollectionDisclaimer" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문의하신 내용에 대한 파악 및 원활한 상담을 위하여 이메일을 수집합니다. 수집된 개인정보는 개인정보의 수집 및 이용 목적이 달성되면 관련 법령 또는 회사 내부 방침에 의해 보존할 필요가 있는 경우를 제외하고는 지체없이 파기됩니다. 더 자세한 내용을 개인정보처리방침을 참고하시기 바랍니다."
           }
         }
       }
@@ -189,6 +333,102 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "방장 횟수"
+          }
+        }
+      }
+    },
+    "imagePolicyNotice1" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문의와 무관한 이미지를 첨부한 경우, 통보없이 삭제될 수 있습니다."
+          }
+        }
+      }
+    },
+    "imagePolicyNotice2" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신고와 무관한 이미지를 첨부한 경우, 통보없이 삭제될 수 있습니다."
+          }
+        }
+      }
+    },
+    "InputEmail" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이메일을 입력해 주세요."
+          }
+        }
+      }
+    },
+    "Inquiries" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문의하기"
+          }
+        }
+      }
+    },
+    "InquiriesReason001" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일반 문의"
+          }
+        }
+      }
+    },
+    "InquiriesReason002" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서비스 이용 문의"
+          }
+        }
+      }
+    },
+    "InquiriesReason003" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기타"
+          }
+        }
+      }
+    },
+    "InvalidEmailFormat" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잘못된 이메일 형식입니다."
           }
         }
       }
@@ -373,6 +613,30 @@
         }
       }
     },
+    "PhotoUploadLimitGuide" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 파일(PNG, JPG)을 기준으로 최대 2MB이하, 최대 2개까지 등록 가능합니다."
+          }
+        }
+      }
+    },
+    "PleaseInputEmail" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "답변 받을 이메일 주소를 적어주세요."
+          }
+        }
+      }
+    },
     "PrivacyPolicy" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -381,6 +645,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "개인정보처리방침"
+          }
+        }
+      }
+    },
+    "ReceivedEmailAddress" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "답변 받을 이메일 주소"
           }
         }
       }
@@ -397,6 +673,18 @@
         }
       }
     },
+    "Report" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신고하기"
+          }
+        }
+      }
+    },
     "SaveList" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -405,6 +693,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "저장 목록"
+          }
+        }
+      }
+    },
+    "SelectBugLocation" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버그 발생 위치를 선택해 주세요."
+          }
+        }
+      }
+    },
+    "SelectedImageCount" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진 %d/%d"
+          }
+        }
+      }
+    },
+    "SelectInquiries" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "문의 내용을 선택해 주세요."
           }
         }
       }

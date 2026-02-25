@@ -154,51 +154,8 @@ class WithdrawView: UIViewController {
         return lb
     }()
     
-    // 탈퇴 사유와 아이콘이 들어갈 스택뷰
-    private let reasonStackView: UIStackView = {
-        let sv = UIStackView()
-        sv.axis = .horizontal
-        sv.spacing = 4
-        sv.alignment = .center
-        sv.distribution = .fill
-        sv.isLayoutMarginsRelativeArrangement = true
-        sv.layoutMargins = .init(top: 16, left: 0, bottom: 16, right: 0)
-        sv.isUserInteractionEnabled = true
-        
-        return sv
-    }()
-    
-    // 선택된 탈퇴 사유 라벨
-    private let selectedReasonLabel: UILabel = {
-        var attributes = body16.attributes(alignment: .left)
-        attributes[.foregroundColor] = UIColor.neutral400
-        
-        let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "SelectWithdrawReason", table: "Settings"), attributes: attributes)
-        
-        return lb
-    }()
-    
-    // 드롭다운 아이콘
-    private let dropDownIcon: UIImageView = {
-        let iv = UIImageView()
-        iv.image = .blackDown.resize(.init(width: 24, height: 24))
-        iv.contentMode = .scaleAspectFit
-        
-        return iv
-    }()
-    
-    // 구분선
-    private let divider: UIView = {
-        let divider = UIView()
-        divider.backgroundColor = .neutral200
-        
-        divider.snp.makeConstraints { make in
-            make.height.equalTo(1)
-        }
-        
-        return divider
-    }()
+    // 탈퇴 사유 선택 컴포넌트
+    private let selectedReason = SelectMenuBox(placeholder: String(localized: "SelectWithdrawReason", table: "Settings"))
     
     // 탈퇴 사유 dropdown
     private let reasonDropDownView: SettingDropDownView = {
@@ -272,7 +229,7 @@ class WithdrawView: UIViewController {
         }
         
         // 스크롤 뷰 안에 들어가는 요소들
-        [titleLabel, verticalStackView, reasonLabel, reasonStackView, divider, reasonDetailTextView, agreeCheckBox, reasonDropDownView, withDrawButton].forEach {
+        [titleLabel, verticalStackView, reasonLabel, selectedReason, reasonDetailTextView, agreeCheckBox, reasonDropDownView, withDrawButton].forEach {
             contentView.addSubview($0)
         }
         
@@ -298,28 +255,14 @@ class WithdrawView: UIViewController {
             make.top.equalTo(verticalStackView.snp.bottom).offset(32)
         }
         
-        [selectedReasonLabel, dropDownIcon].forEach {
-            reasonStackView.addArrangedSubview($0)
-        }
-        
-        reasonStackView.snp.makeConstraints { make in
+        selectedReason.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(reasonLabel.snp.bottom).offset(8)
         }
         
-        selectedReasonLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        selectedReasonLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        dropDownIcon.setContentHuggingPriority(.required, for: .horizontal)
-        dropDownIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
-        
-        divider.snp.makeConstraints { make in
-            make.horizontalEdges.equalTo(reasonStackView)
-            make.top.equalTo(reasonStackView.snp.bottom)
-        }
-        
         reasonDetailTextView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(divider.snp.bottom).offset(16)
+            make.top.equalTo(selectedReason.snp.bottom).offset(16)
         }
         
         // 탈퇴 동의 설정
@@ -332,7 +275,7 @@ class WithdrawView: UIViewController {
         
         reasonDropDownView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(divider.snp.bottom).offset(16)
+            make.top.equalTo(selectedReason.snp.bottom).offset(16)
         }
         
         withDrawButton.snp.makeConstraints { make in
@@ -351,9 +294,7 @@ extension WithdrawView {
     
     private func bindAction(reactor: WithdrawReactor) {
         // 탈퇴 사유 드롭다운 열기
-        reasonStackView.rx
-            .tapGesture()
-            .when(.recognized)
+        selectedReason.didTap
             .observe(on: MainScheduler.instance)
             .map { _ in Reactor.Action.reasonTapped(!reactor.currentState.isMenuOpen)}
             .bind(to: reactor.action)
@@ -414,10 +355,7 @@ extension WithdrawView {
                 let key = "WithdrawReason\(paddedNumber)"
                 let localizedString = String(localized: String.LocalizationValue(key), table: "Settings")
                 
-                var attributes: [NSAttributedString.Key: Any] = body16.attributes(alignment: .left)
-                attributes[.foregroundColor] = UIColor.neutral900
-                
-                selectedReasonLabel.attributedText = NSAttributedString(string: localizedString, attributes: attributes)
+                selectedReason.updateSelectedText(text: localizedString)
             })
             .disposed(by: disposeBag)
         
