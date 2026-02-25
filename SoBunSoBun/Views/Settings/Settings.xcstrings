@@ -493,6 +493,30 @@
         }
       }
     },
+    "MoveToSetting" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정으로 이동"
+          }
+        }
+      }
+    },
+    "MoveToSettingDesc" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정으로 이동하여 알림 권한 설정을 해 주시기 바랍니다."
+          }
+        }
+      }
+    },
     "MyGroupBuying" : {
       "comment" : "Settings",
       "extractionState" : "manual",
