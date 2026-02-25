@@ -11,10 +11,17 @@ import ReactorKit
 import SnapKit
 import RxSwift
 import RxGesture
+import OSLog
 
 class LoginView: UIViewController {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SignIn.Login.View"
+    )
+    
     typealias Reactor = LoginReactor
     private let reactor = LoginReactor()
+    
     private let disposeBag = DisposeBag()
     
     // MARK: - 디자인 요소
@@ -227,12 +234,14 @@ extension LoginView {
     private func bindAction(reactor: LoginReactor) {
         // Apple로 시작하기 버튼 클릭 제스처
         appleButtonView.rx.tapGesture()
+            .when(.recognized)
             .map { _ in Reactor.Action.appleButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         // 카카오로 시작하기 버튼 클릭 제스처
         kakaoButtonView.rx.tapGesture()
+            .when(.recognized)
             .map{ _ in Reactor.Action.kakaoButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -264,6 +273,29 @@ extension LoginView {
                 self.navigationController?.setViewControllers([vc], animated: false)
             })
             .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$ErrorMessage)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.errorAlert()
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func errorAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "ErrorMessage", table: "Common"),
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.logger.debug("확인 버튼 클릭")
+        }
+        
+        alert.show(on: self)
     }
 }
 
