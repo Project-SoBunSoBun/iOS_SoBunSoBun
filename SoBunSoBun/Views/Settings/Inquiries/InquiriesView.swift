@@ -109,7 +109,7 @@ class InquiriesView: UIViewController {
         attributes[.foregroundColor] = UIColor.errorRed
         
         var attributedText = NSAttributedString(
-            string: String(localized: "imagePolicyNotice", table: "Settings"),
+            string: String(localized: "imagePolicyNotice1", table: "Settings"),
             attributes: attributes
         )
         

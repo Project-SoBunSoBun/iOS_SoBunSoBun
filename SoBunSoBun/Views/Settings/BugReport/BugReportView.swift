@@ -109,7 +109,7 @@ class BugReportView: UIViewController {
         attributes[.foregroundColor] = UIColor.errorRed
         
         let attributedText = NSAttributedString(
-            string: String(localized: "imagePolicyNotice", table: "Settings"),
+            string: String(localized: "imagePolicyNotice2", table: "Settings"),
             attributes: attributes
         )
         
