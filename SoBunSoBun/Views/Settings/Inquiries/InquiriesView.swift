@@ -91,7 +91,7 @@ class InquiriesView: UIViewController {
         var attributes = body14.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral700
         
-        var attributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "PhotoUploadLimitGuide", table: "Settings"),
             attributes: attributes
         )
@@ -108,7 +108,7 @@ class InquiriesView: UIViewController {
         var attributes = body14.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.errorRed
         
-        var attributedText = NSAttributedString(
+        let attributedText = NSAttributedString(
             string: String(localized: "imagePolicyNotice1", table: "Settings"),
             attributes: attributes
         )
@@ -373,9 +373,9 @@ extension InquiriesView {
             .disposed(by: disposeBag)
         
         // 이메일 Text 전달
-        inputEmailTextField.rx.text
+        inputEmailTextField.rx.text.orEmpty
             .distinctUntilChanged()
-            .map { Reactor.Action.emailChanged($0 ?? "")}
+            .map { Reactor.Action.emailChanged($0)}
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
