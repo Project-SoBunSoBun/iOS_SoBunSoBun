@@ -23,7 +23,7 @@ class BugReportView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    private var bugImagePicker: CustomImagePicker?
+    private lazy var bugImagePicker = CustomImagePicker(presentingViewController: self, selectionMode: .multi(limit: 2))
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -139,7 +139,6 @@ class BugReportView: UIViewController {
         super.viewDidLoad()
         
         configureUI()
-        setImagePicker()
         bind(reactor: reactor)
     }
     
@@ -244,11 +243,6 @@ class BugReportView: UIViewController {
             make.edges.equalToSuperview()
         }
     }
-    
-    // 이미지 피커 설정
-    private func setImagePicker() {
-        bugImagePicker = CustomImagePicker(presentingViewController: self, selectionMode: .multi(limit: 2))
-    }
 }
 
 extension BugReportView {
@@ -292,7 +286,7 @@ extension BugReportView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 완료
-        bugImagePicker?.imagesSelected
+        bugImagePicker.imagesSelected
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] images in
                 guard let self = self else { return }
@@ -303,7 +297,7 @@ extension BugReportView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 취소
-        bugImagePicker?.cancelled
+        bugImagePicker.cancelled
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
@@ -358,7 +352,7 @@ extension BugReportView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                self.bugImagePicker?.checkPhotoLibraryPermission()
+                self.bugImagePicker.checkPhotoLibraryPermission()
             })
             .disposed(by: disposeBag)
         

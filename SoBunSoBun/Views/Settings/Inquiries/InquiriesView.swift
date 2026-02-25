@@ -23,7 +23,7 @@ class InquiriesView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    private var inquiriesImagePicker: CustomImagePicker?
+    private lazy var inquiriesImagePicker = CustomImagePicker(presentingViewController: self, selectionMode: .multi(limit: 2))
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -181,7 +181,6 @@ class InquiriesView: UIViewController {
         super.viewDidLoad()
         
         configureUI()
-        setImagePicker()
         bind(reactor: reactor)
     }
     
@@ -304,11 +303,6 @@ class InquiriesView: UIViewController {
             make.edges.equalToSuperview()
         }
     }
-    
-    // 이미지 피커 설정
-    private func setImagePicker() {
-        inquiriesImagePicker = CustomImagePicker(presentingViewController: self, selectionMode: .multi(limit: 2))
-    }
 }
 
 extension InquiriesView {
@@ -352,7 +346,7 @@ extension InquiriesView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 완료
-        inquiriesImagePicker?.imagesSelected
+        inquiriesImagePicker.imagesSelected
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] images in
                 guard let self = self else { return }
@@ -363,7 +357,7 @@ extension InquiriesView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 취소
-        inquiriesImagePicker?.cancelled
+        inquiriesImagePicker.cancelled
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
@@ -425,7 +419,7 @@ extension InquiriesView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                self.inquiriesImagePicker?.checkPhotoLibraryPermission()
+                self.inquiriesImagePicker.checkPhotoLibraryPermission()
             })
             .disposed(by: disposeBag)
         

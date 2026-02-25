@@ -23,7 +23,7 @@ class NicknameSettingView: UIViewController {
     typealias Reactor = NicknameSettingReactor
     private let reactor = NicknameSettingReactor()
     
-    private var profileImagePicker: CustomImagePicker?
+    private lazy var profileImagePicker = CustomImagePicker(presentingViewController: self)
     
     private let disposeBag = DisposeBag()
     
@@ -64,7 +64,6 @@ class NicknameSettingView: UIViewController {
         super.viewDidLoad()
         
         configureUI()
-        setImagePicker()
         bind(reactor: reactor)
     }
     
@@ -113,10 +112,6 @@ class NicknameSettingView: UIViewController {
             .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
-    
-    private func setImagePicker() {
-        profileImagePicker = CustomImagePicker(presentingViewController: self)
-    }
 }
 
 extension NicknameSettingView {
@@ -153,7 +148,7 @@ extension NicknameSettingView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 완료
-        profileImagePicker?.imageSelected
+        profileImagePicker.imageSelected
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] image in
                 guard let self = self else { return }
@@ -165,7 +160,7 @@ extension NicknameSettingView {
             .disposed(by: disposeBag)
         
         // 이미지 선택 취소
-        profileImagePicker?.cancelled
+        profileImagePicker.cancelled
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
@@ -232,7 +227,7 @@ extension NicknameSettingView {
             .subscribe(onNext: {[weak self] _ in
                 guard let self = self else { return }
                 
-                self.profileImagePicker?.checkPhotoLibraryPermission()
+                self.profileImagePicker.checkPhotoLibraryPermission()
             })
             .disposed(by: disposeBag)
     }
