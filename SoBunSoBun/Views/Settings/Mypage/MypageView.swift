@@ -158,14 +158,11 @@ class MypageView: UIViewController {
     // 설정 라벨
     private lazy var settingLabel = makeLabel(string: String(localized: "Setting", table: "Settings"))
     
-    // 내 지역 설정
-    private let myLocationSetting = SettingCardCell(title: String(localized: "MyLocationSetting", table: "Settings"), type: .button)
-    
     // 앱 설정
     private let appSetting = SettingCardCell(title: String(localized: "AppSetting", table: "Settings"), type: .button)
     
     // 설정 세팅 카드
-    private lazy var appSettingCard = SettingCard(cells: [myLocationSetting, appSetting])
+    private lazy var appSettingCard = SettingCard(cells: [appSetting])
     
     // 그라데이션 뷰
     private let gradientView: UIView = {
@@ -326,10 +323,8 @@ class MypageView: UIViewController {
             make.bottom.equalToSuperview().inset(8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 16)
         }
         
-        [myLocationSetting, appSetting].forEach {
-            $0.snp.makeConstraints { make in
-                make.horizontalEdges.equalToSuperview()
-            }
+        appSetting.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
         }
     }
 }
@@ -371,12 +366,6 @@ extension MypageView {
         // 저장 목록 클릭
         saveList.didTap
             .map { Reactor.Action.saveListTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        // 내 지역 설정 클릭
-        myLocationSetting.didTap
-            .map { Reactor.Action.myLocationSettingTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -424,9 +413,6 @@ extension MypageView {
                     
                 case .appSetting:
                     view = AppSettingView()
-                    
-                case .myLocaionSetting:
-                    view = MyLocationSettingView()
                 }
                 
                 self.navigationController?.pushViewController(view, animated: true)

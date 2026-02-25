@@ -27,7 +27,6 @@ class MyPageReactor: Reactor {
         case myPost
         case saveList
         case appSetting
-        case myLocaionSetting
     }
     
     enum Action {
@@ -38,7 +37,6 @@ class MyPageReactor: Reactor {
         case myPostTapped
         case saveListTapped
         case appSettingTapped
-        case myLocationSettingTapped
     }
     
     enum Mutation {
@@ -89,9 +87,6 @@ class MyPageReactor: Reactor {
             
         case .appSettingTapped:
             return Observable.just(.setNavigate(.appSetting))
-        
-        case .myLocationSettingTapped:
-            return Observable.just(.setNavigate(.myLocaionSetting))
         }
     }
     

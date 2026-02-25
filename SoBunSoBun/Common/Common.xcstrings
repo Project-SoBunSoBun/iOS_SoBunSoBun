@@ -241,6 +241,18 @@
         }
       }
     },
+    "Move" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이동하기"
+          }
+        }
+      }
+    },
     "Mypage" : {
       "comment" : "Common",
       "extractionState" : "manual",
