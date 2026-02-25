@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import OSLog
+import KakaoSDKUser
 
 class AuthManager {
     private let logger = Logger(
@@ -20,10 +21,17 @@ class AuthManager {
     private init() {}
     
     func logout() {
+        kakaoLogout()
         removeTokens()
         showLogOutAlert()
         
         logger.debug("로그아웃 처리")
+    }
+    
+    func withdraw() {
+        kakaoUnlink()
+        removeTokens()
+        switchToLoginView()
     }
     
     func removeTokens() {
@@ -72,5 +80,21 @@ class AuthManager {
         }
         
         logger.debug("LoginView로 전환")
+    }
+    
+    private func kakaoLogout() {
+        UserApi.shared.logout() { error in
+            if let error = error {
+                self.logger.error("카카오 로그아웃 실패: \(error)")
+            }
+        }
+    }
+    
+    private func kakaoUnlink() {
+        UserApi.shared.unlink() { error in
+            if let error = error {
+                self.logger.error("카카오 연결 끊기 실패: \(error)")
+            }
+        }
     }
 }
