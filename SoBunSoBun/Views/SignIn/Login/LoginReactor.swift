@@ -11,11 +11,18 @@ import RxSwift
 import RxKakaoSDKUser
 import KakaoSDKUser
 import KakaoSDKAuth
+import OSLog
 
 class LoginReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SignIn.Login.Reactor"
+    )
+    
     private let disposeBag = DisposeBag()
     
     private let networkManager = SignInNetworkManager()
+    private let appleLoginManager = AppleLoginManager()
     
     let initialState = State()
     
@@ -45,11 +52,15 @@ class LoginReactor: Reactor {
             return kakaoLoginAction()
                 .flatMap { oauthToken in
                     let accessToken = oauthToken.accessToken
+                    // 로그인 타입 저장
+                    KeyChain.shared.set(key: "LOGIN_TYPE", value: "KAKAO")
+                    
                     return self.networkManager.fetchAuthLoginKakao(accessToken: accessToken)
                         .asObservable()
                         .map { kakaoAuthResponse in
                             // 임시 토큰 저장
                             KeyChain.shared.set(key: "LOGIN_TOKEN", value: kakaoAuthResponse.loginToken)
+                            
                             return Mutation.loginSuccess(isNewUser: kakaoAuthResponse.newUser)
                         }
                         .catch { error in
@@ -59,8 +70,32 @@ class LoginReactor: Reactor {
                 .catch { error in
                     Observable.just(Mutation.loginFailed("KakaoLoginFailed"))
                 }
+            
         case .appleButtonTapped:
-            return Observable.empty()
+            return appleLoginManager.appleLogin()
+                .flatMap { authInfo in
+                    // 테스트 후 삭제하기
+                    self.logger.debug("애플 code: \(authInfo.authorizationCode)")
+                    self.logger.debug("애플 token: \(authInfo.identityToken)")
+                    self.logger.debug("애플 userID: \(authInfo.userIdentifier)")
+                    // userID 저장
+                    KeyChain.shared.set(key: "APPLE_USER_ID", value: authInfo.userIdentifier)
+                    // 로그인 타입 저장
+                    KeyChain.shared.set(key: "LOGIN_TYPE", value: "APPLE")
+                    
+                    return self.networkManager.fethAuthLoginApple(code: authInfo.authorizationCode, idToken: authInfo.identityToken)
+                        .asObservable()
+                        .map { AppleAuthResponse in
+                            // 임시 토큰 저장
+                            KeyChain.shared.set(key: "LOGIN_TOKEN", value: AppleAuthResponse.loginToken)
+                            
+                            return Mutation.loginSuccess(isNewUser: AppleAuthResponse.newUser)
+                        }
+                }
+                .catch { error  in
+                    Observable.just(.loginFailed("AppleLoginFailed"))
+                }
+            
         case .completeLoginAndNavigateToHome:
             return saveToken()
         }
@@ -72,10 +107,13 @@ class LoginReactor: Reactor {
         switch mutation {
         case .loginSuccess(let isNewUser):
             newState.loginCompleted = isNewUser
+            
         case .loginFailed(let message):
             newState.ErrorMessage = message
+            
         case .loginAndNavigateToHomeSuccess(let isSaved):
             newState.shouldNavigateToHome = isSaved
+            
         case .loginAndNavigateToHomeFailed(let message):
             newState.ErrorMessage = message
         }
