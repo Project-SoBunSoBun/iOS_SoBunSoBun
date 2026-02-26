@@ -34,6 +34,7 @@ class SignUpReactor: Reactor {
         case setSignUpFailed(String) // 로그인 실패
         case setRequestLocationPermission
         case setShowLocationSettingAlert
+        case setNextButtonTapped
     }
     
     struct State {
@@ -51,25 +52,32 @@ class SignUpReactor: Reactor {
             "privacy": false,
             "location": false
         ]
+        var isNextButtonTapped: Bool = false
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .backButtonTapped:
             return Observable.just(.setBackButtonTapped)
+            
         case .allAgreeToggled:
             let newValue = !currentState.allAgreed
+            
             return Observable.concat([
                 Observable.just(Mutation.setAllAgree(newValue)),
                 Observable.just(Mutation.setTermsCheck("service", newValue)),
                 Observable.just(Mutation.setTermsCheck("privacy", newValue)),
                 Observable.just(Mutation.setTermsCheck("location", newValue))
             ])
+            
         case .termsToggled(let id):
             let newValue = !(currentState.termsChecked[id] ?? false)
+            
             return Observable.just(Mutation.setTermsCheck(id, newValue))
+            
         case .detailButtonTapped(let id):
             return Observable.just(Mutation.setTermsDetail(id))
+            
         case .nextButtonTapped:
             // 위치 권한 상태 확인
             let authStatus = LocationManager.shared.getCurrentAuthorizationStatus()
@@ -77,18 +85,28 @@ class SignUpReactor: Reactor {
             switch authStatus {
             case .notDetermined:
                 // 아직 권한을 요청하지 않음 -> 권한 요청
-                return Observable.just(.setRequestLocationPermission)
+                return Observable.concat([
+                    Observable.just(.setNextButtonTapped),
+                    Observable.just(.setRequestLocationPermission)
+                ])
+                
             case .denied, .restricted:
                 // 권한 거부됨 -> 설정 알러트
                 return Observable.just(.setShowLocationSettingAlert)
+                
             case .authorizedWhenInUse, .authorizedAlways:
                 // 권한 허용됨 -> 회원 가입 진행
                 return performSignUp()
+                
             default:
                 return Observable.just(.setShowLocationSettingAlert)
             }
+            
         case .locationPermisstionGranted:
+            guard currentState.isNextButtonTapped else { return Observable.empty() }
+            
             return performSignUp()
+            
         case .locationPermisstionDenied:
             return Observable.just(.setShowLocationSettingAlert)
         }
@@ -99,24 +117,35 @@ class SignUpReactor: Reactor {
         switch mutation {
         case .setBackButtonTapped:
             newState.shouldPopViewController = ()
+            
         case .setAllAgree(let agreed):
             newState.allAgreed = agreed
+            
         case .setTermsCheck(let id, let checked):
             newState.termsChecked[id] = checked
             let requiredTerms = ["service", "privacy", "location"]
             let allChecked = requiredTerms.allSatisfy { newState.termsChecked[$0] == true }
             newState.allAgreed = allChecked
+            
         case .setTermsDetail(let id):
             newState.shouldTermsDetail = id
+            
         case .setSignUpSuccess:
             newState.signUpCompleted = true
+            
         case .setSignUpFailed(let message):
             newState.signUpErrorMessage = message
+            
         case .setRequestLocationPermission:
             newState.shouldRequestLocationPermission = true
+            
         case .setShowLocationSettingAlert:
             newState.shouldShowLocationSettingAlert = true
+            
+        case .setNextButtonTapped:
+            newState.isNextButtonTapped = true
         }
+        
         return newState
     }
     
