@@ -7,9 +7,33 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
+import RxGesture
+import OSLog
 
 class ChatView: UIViewController {
-
+    private let chatRoomId: Int
+    
+    typealias Reactor = ChatReactor
+    private lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
+    
+    private let disposeBag = DisposeBag()
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Chat.Chat.View"
+    )
+    
+    init(chatRoomId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
+        self.chatRoomId = chatRoomId
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - 디자인 요소
     private lazy var gradientLayer = BackgroundGradientLayer(view)
     
@@ -92,14 +116,23 @@ class ChatView: UIViewController {
     // 채팅 tableview
     private lazy var tableView: BaseTableView = {
         let tv = BaseTableView()
+        tv.register(ChatTableViewCell.self, forCellReuseIdentifier: ChatTableViewCell.identifier)
         tv.separatorStyle = .none
         tv.backgroundColor = .clear
-        tv.contentInset = .init(top: topNavigationButton.frame.height, left: 0, bottom: 0, right: 0)
+        tv.transform = CGAffineTransform(scaleX: 1, y: -1)
         
         return tv
     }()
     
-    // 커스텀 바텀 메뉴
+    // 커스텀 하단 메뉴
+    private let bottomMenuView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .backgroundWhite
+        view.frame = .init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 285)
+        
+        return view
+    }()
+    
     private let bottomMenuStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .vertical
@@ -107,9 +140,25 @@ class ChatView: UIViewController {
         sv.alignment = .center
         sv.backgroundColor = .backgroundWhite
         sv.isLayoutMarginsRelativeArrangement = true
-        sv.layoutMargins = .init(top: 32, left: 16, bottom: 32, right: 16)
         
         return sv
+    }()
+    
+    private let sendImageButton = ChatBottomMenuButton(image: .blueImageIcon, text: String(localized: "SendPicture", table: "Chat"))
+    
+    private lazy var imagePicker = {
+        let picker = CustomImagePicker(presentingViewController: self, selectionMode: .single)
+        picker.allowEditing = false
+        
+        return picker
+    }()
+    
+    // chat longtap dropDown
+    private let chatCellLongTappedMenuDropDownView: DropDownView = {
+        let ddv = DropDownView(selectionMode: .plain, tableName: "Chat")
+        ddv.textAlignment = .center
+        
+        return ddv
     }()
     
     // MARK: - 생명주기
@@ -117,6 +166,16 @@ class ChatView: UIViewController {
         super.viewDidLoad()
         
         configureUI()
+        bind(reactor: reactor)
+        
+        // tableview pop gesture 충돌 방지
+        navigationController?.interactivePopGestureRecognizer?.delegate = self
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        tableView.contentInset = .init(top: 0, left: 0, bottom: topNavigationBar.frame.height, right: 0)
     }
     
     // MARK: - 레이아웃 설정
@@ -124,13 +183,8 @@ class ChatView: UIViewController {
         view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
-        [topNavigationBar, chatStackView, safeareaBottomBackgroundView, tableView].forEach {
+        [chatStackView, safeareaBottomBackgroundView, tableView, topNavigationBar, chatCellLongTappedMenuDropDownView].forEach {
             view.addSubview($0)
-        }
-        
-        topNavigationBar.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
         [plusButton, chatTextView, sendButton].forEach {
@@ -153,6 +207,326 @@ class ChatView: UIViewController {
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
             make.bottom.equalTo(chatStackView.snp.top)
         }
+        
+        topNavigationBar.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+        }
+        
+        // 하단 메뉴
+        bottomMenuView.addSubview(bottomMenuStackView)
+        
+        bottomMenuStackView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
+        }
+        
+        bottomMenuStackView.addArrangedSubview(sendImageButton)
+        
+        sendImageButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.height.equalTo(88)
+        }
+    }
+}
+
+extension ChatView {
+    private func bind(reactor: ChatReactor) {
+        bindAction(reactor: reactor)
+        bindState(reactor: reactor)
+    }
+    
+    private func bindAction(reactor: ChatReactor) {
+        reactor.action.onNext(.viewDidLoad)
+        
+        sendButton.rx.tap
+            .withLatestFrom(chatTextView.rx.text.orEmpty)
+            .subscribe(onNext: { [weak self] text in
+                guard let self = self else { return }
+                
+                reactor.action.onNext(.sendMessage(text))
+                chatTextView.text = ""
+            })
+            .disposed(by: disposeBag)
+        
+        plusButton.rx.tap
+            .map { Reactor.Action.bottomMenuTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        sendImageButton.rx.tap
+            .map { Reactor.Action.showImagePicker }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 채팅 페이지네이션
+        tableView.rx.willDisplayCell
+            .filter { _, indexPath -> Bool in
+                let lastRow = self.tableView.numberOfRows(inSection: 0) - 1
+                return self.tableView.isDragging && indexPath.row >= lastRow - 10
+            }
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .map { _ in Reactor.Action.getMoreMessages }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        chatCellLongTappedMenuDropDownView
+            .didCellTap
+            .subscribe(onNext: { [weak self] menu in
+                guard let self = self else { return }
+                
+                let currentState = reactor.currentState
+                let selectedMessageModel = currentState.selectedChatMessageModel
+                
+                switch menu {
+                case "Copy":
+                    guard let content = selectedMessageModel?.content else {
+                        return
+                    }
+                    
+                    UIPasteboard.general.string = content
+                    
+                default:
+                    logger.fault("chatCellLongTappedMenuDropDownView의 didCellTap의 case에서 등록되지 않은 메뉴가 있음: \(menu)")
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        tableView.rx.modelSelected(ChatMessageModel.self)
+            .map { Reactor.Action.setSelectedChatMessageModel($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        Observable.merge([
+            tableView.rx.didZoom.map { _ in },
+            tableView.rx.didScroll.map { _ in }
+        ])
+        .subscribe(onNext: { _ in
+            reactor.action.onNext(.chatLongPressed(false))
+        })
+        .disposed(by: disposeBag)
+        
+        view.rx
+            .tapGesture(configuration: { gesture, delegate in
+                gesture.cancelsTouchesInView = false
+                
+                delegate.otherFailureRequirementPolicy = .custom { _, otherGesture in
+                    // longPress가 활성화 중이면 tap 제스처 실패 처리
+                    return otherGesture is UILongPressGestureRecognizer
+                }
+            })
+            .when(.recognized)
+            .subscribe(onNext: { _ in
+                if reactor.currentState.isChatCellMenuOpen {
+                    reactor.action.onNext(.chatLongPressed(false))
+                } else {
+                    reactor.action.onNext(.backToKeyboard)
+                }
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func bindState(reactor: ChatReactor) {
+        reactor.state.map { $0.detailInfoModel }
+            .distinctUntilChanged()
+            .filter { $0 != nil }
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                topNavigationBar.title = model.data.roomName
+                topNavigationBar.buttons = [topNavigationButton]
+                
+                if model.data.roomType == .ONE_TO_ONE {
+                    
+                } else if model.data.roomType == .GROUP {
+                    
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.messages }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind(to: tableView.rx.items(cellIdentifier: ChatTableViewCell.identifier, cellType: ChatTableViewCell.self)) { index, model, cell in
+                let messages = reactor.currentState.messages
+                let previousMessage = index + 1 < messages.count ? messages[index + 1] : nil
+                
+                let isFirstChatOfDay: Bool
+                
+                if index == messages.count - 1 { // 첫 메시지일 때
+                    isFirstChatOfDay = true
+                } else if let previousMessage = previousMessage,
+                          let prevDate = ISO8601ToDate(previousMessage.createdAt),
+                          let currentDate = ISO8601ToDate(model.createdAt) {
+                    isFirstChatOfDay = !Calendar.current.isDate(prevDate, inSameDayAs: currentDate)
+                } else { // nil 처리
+                    isFirstChatOfDay = false
+                }
+                
+                guard let myIdString = KeyChain.shared.get(key: "USER_ID"),
+                      let myId = Int(myIdString) else {
+                    return
+                }
+                
+                let isMine: Bool = myId == model.userId
+                
+                cell.configureUI(model: model, isMine: isMine, isFirstChatOfDay: isFirstChatOfDay)
+                
+                cell.didImageLoad
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: {
+                        if self.isScrollNearBottom() {
+                            self.scrollToBottom()
+                        }
+                    })
+                    .disposed(by: cell.disposeBag)
+                
+                cell.didLongPressed
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: { [weak self] chatCellView in
+                        guard let self = self else { return }
+                        
+                        chatCellLongTappedMenuDropDownView.animationAnchor = isMine ? .topRight : .topLeft
+                        
+                        let chatCellViewFrame = chatCellView.convert(chatCellView.bounds, to: view)
+                        
+                        chatCellLongTappedMenuDropDownView.snp.remakeConstraints { make in
+                            if isMine {
+                                make.trailing.equalTo(self.view.snp.leading).offset(chatCellViewFrame.maxX)
+                            } else {
+                                make.leading.equalTo(self.view.snp.leading).offset(chatCellViewFrame.minX)
+                            }
+                            
+                            make.top.equalToSuperview().offset(chatCellViewFrame.maxY + 4)
+                            make.width.equalTo(70)
+                        }
+                        
+                        let currentState = reactor.currentState
+                        let isSameChatId = currentState.selectedChatMessageModel?.id == model.id
+                        let shouldChatCellMenuOpen = !(currentState.isChatCellMenuOpen && isSameChatId)
+                        
+                        reactor.action.onNext(.setSelectedChatMessageModel(model))
+                        
+                        switch model.type {
+                        case .TEXT:
+                            chatCellLongTappedMenuDropDownView.items = ["Copy"]
+                            reactor.action.onNext(.chatLongPressed(shouldChatCellMenuOpen))
+                            
+                        default:
+                            chatCellLongTappedMenuDropDownView.items = []
+                        }
+                    })
+                    .disposed(by: cell.disposeBag)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.messages }
+            .distinctUntilChanged()
+            .filter { !$0.isEmpty }
+            .observe(on: MainScheduler.instance)
+            .take(1)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                DispatchQueue.main.async {
+                    self.scrollToBottom()
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.messages }
+            .distinctUntilChanged()
+            .filter { !$0.isEmpty }
+            .observe(on: MainScheduler.instance)
+            .delay(.milliseconds(100), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                DispatchQueue.main.async {
+                    if self.isScrollNearBottom() {
+                        self.scrollToBottom()
+                    }
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isOpenBottomMenu }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] isBottomMenu in
+                guard let self = self else { return }
+                
+                chatTextView.textView.inputView = isBottomMenu ? bottomMenuView : nil
+                
+                if chatTextView.textView.isFirstResponder {
+                    chatTextView.textView.reloadInputViews()
+                } else if isBottomMenu { // 키보드가 닫혀있으면 메뉴를 열음
+                    _ = chatTextView.textView.becomeFirstResponder()
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        // 이미지 선택 완료
+        imagePicker.imageSelected
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] image in
+                guard let self = self else { return }
+                
+                logger.debug("이미지 선택")
+                reactor.action.onNext(.sendImage(image))
+            })
+            .disposed(by: disposeBag)
+        
+        // 이미지 선택 취소
+        imagePicker.cancelled
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.logger.debug("이미지 선택 취소됨")
+            })
+            .disposed(by: disposeBag)
+        
+        // 이미지 피커 표시
+        reactor.pulse(\.$shouldShowIamgePicker)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.imagePicker.checkPhotoLibraryPermission()
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isChatCellMenuOpen }
+            .subscribe(onNext: { [weak self] isOpen in
+                guard let self = self else { return }
+                
+                chatCellLongTappedMenuDropDownView.setOpen(isOpen: isOpen)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func isScrollNearBottom() -> Bool {
+        return tableView.contentOffset.y < 300
+    }
+    
+    private func scrollToBottom() {
+        tableView.layoutIfNeeded()
+        
+        guard tableView.numberOfRows(inSection: 0) > 0 else {
+            return
+        }
+        
+        tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
+    }
+}
+
+extension ChatView: UIGestureRecognizerDelegate {
+    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return (navigationController?.viewControllers.count ?? 0) > 1
     }
 }
 
@@ -163,7 +537,7 @@ import SwiftUI
 struct ChatViewController_Preview: PreviewProvider {
     static var previews: some SwiftUI.View {
         UIViewControllerPreview {
-            ChatView()
+            ChatView(chatRoomId: -1)
         }
     }
 }

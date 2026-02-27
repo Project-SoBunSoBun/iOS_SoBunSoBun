@@ -23,6 +23,39 @@
         }
       }
     },
+    "Copy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복사하기"
+          }
+        }
+      }
+    },
+    "ErrorGetChatRoomDetail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅방 정보를 불러오는 중 오류가 발생했습니다."
+          }
+        }
+      }
+    },
+    "ErrorSendImage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 보내는 중 오류가 발생했습니다."
+          }
+        }
+      }
+    },
     "GoToPost" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -30,6 +63,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "모임글 확인하기"
+          }
+        }
+      }
+    },
+    "LeftUserMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님께서 퇴장하셨습니다."
           }
         }
       }
@@ -52,6 +96,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "메시지 보내기"
+          }
+        }
+      }
+    },
+    "SendPicture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진 보내기"
           }
         }
       }

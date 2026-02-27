@@ -23,6 +23,8 @@ class ChatBottomMenuButton: UIButton {
         var config = UIButton.Configuration.filled()
         config.background.backgroundColor = .primary50
         config.background.cornerRadius = 16
+        config.background.strokeWidth = 1
+        config.background.strokeColor = .primary100
         config.image = image.resize(.init(width: 24, height: 24))
         config.imagePlacement = .leading
         config.imagePadding = 8
@@ -33,12 +35,5 @@ class ChatBottomMenuButton: UIButton {
         config.attributedTitle = AttributedString(NSAttributedString(string: text, attributes: attributes))
         
         self.configuration = config
-        
-        self.layer.borderWidth = 1
-        self.layer.borderColor = UIColor.primary100.cgColor
-        
-        self.snp.makeConstraints { make in
-            make.height.equalTo(88)
-        }
     }
 }

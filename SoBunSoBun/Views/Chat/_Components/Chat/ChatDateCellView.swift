@@ -11,6 +11,8 @@ import SnapKit
 class ChatDateCellView: UIView {
     init(frame: CGRect = .zero, date: String) {
         super.init(frame: frame)
+        
+        configureUI(date: date)
     }
     
     required init?(coder: NSCoder) {
@@ -35,7 +37,7 @@ class ChatDateCellView: UIView {
     
     private let dateLabel: UILabel = {
         let label = UILabel()
-        label.numberOfLines = 1
+        label.numberOfLines = 0
         
         return label
     }()
@@ -44,7 +46,7 @@ class ChatDateCellView: UIView {
         addSubview(dateContainerView)
         
         dateContainerView.snp.makeConstraints { make in
-            make.width.equalTo(UIScreen.main.bounds.width).multipliedBy(0.5867)
+            make.horizontalEdges.equalToSuperview()
             make.verticalEdges.equalToSuperview().inset(8)
         }
         

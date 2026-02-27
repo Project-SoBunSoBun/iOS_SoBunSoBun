@@ -7,6 +7,9 @@
 
 import UIKit
 import SnapKit
+import Kingfisher
+import RxSwift
+import RxCocoa
 import OSLog
 
 class OtherChatCellView: UIView {
@@ -24,6 +27,10 @@ class OtherChatCellView: UIView {
         subsystem: "SoBunSoBun",
         category: "Chat.Chat.OtherChatCellView"
     )
+    
+    let didImageLoad = PublishRelay<Void>()
+    let didInviteCardButtonTapped = PublishRelay<Int>()
+    let didSettlementCardButtonTapped = PublishRelay<Int>()
     
     static let PROFILE_IMAGE_SIZE: CGFloat = 32
     private let UNKNOWN_STRING = String(localized: "Unknown", table: "Common")
@@ -52,7 +59,7 @@ class OtherChatCellView: UIView {
         return lb
     }()
     
-    private let chatBubbleView: UIView = {
+    let chatBubbleView: UIView = {
         let view = UIView()
         view.backgroundColor = .primary100
         view.layer.cornerRadius = 16
@@ -75,6 +82,16 @@ class OtherChatCellView: UIView {
         
         return lb
     }()
+    
+    private let chatImageView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFill
+        iv.clipsToBounds = true
+        return iv
+    }()
+
+    private var imageWidthConstraint: Constraint?
+    private var imageHeightConstraint: Constraint?
     
     private let timeAttributes: [NSAttributedString.Key: Any] = {
         var attributes = body14.attributes()
@@ -109,16 +126,11 @@ class OtherChatCellView: UIView {
         chatBubbleView.snp.makeConstraints { make in
             make.leading.equalTo(nicknameLabel)
             make.top.equalTo(nicknameLabel.snp.bottom).offset(8)
+            make.bottom.equalToSuperview()
+            make.width.lessThanOrEqualTo(UIScreen.main.bounds.width * 0.56)
         }
         
         chatBubbleView.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
-        chatBubbleView.addSubview(chatLabel)
-        
-        chatLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.verticalEdges.equalToSuperview().inset(10)
-        }
         
         timeLabel.snp.makeConstraints { make in
             make.leading.equalTo(chatBubbleView.snp.trailing).offset(4)
@@ -128,31 +140,8 @@ class OtherChatCellView: UIView {
         timeLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
     }
     
-    // 임시
-    func configureUI(profileImageUrl: String?, nickname: String?, message: String, date: String, isFirstChatOfDay: Bool) {
-        if isFirstChatOfDay {
-            let dateView = ChatDateCellView(date: date)
-            insertSubview(dateView, at: 0)
-            
-            dateView.snp.makeConstraints { make in
-                make.centerX.equalToSuperview()
-                make.top.equalToSuperview()
-            }
-            
-            profileImageView.snp.remakeConstraints { make in
-                make.leading.equalToSuperview()
-                make.top.equalTo(dateView.snp.bottom).offset(16)
-                make.size.equalTo(OtherChatCellView.PROFILE_IMAGE_SIZE)
-            }
-            
-            nicknameLabel.snp.remakeConstraints { make in
-                make.leading.equalTo(profileImageView.snp.trailing).offset(8)
-                make.trailing.equalToSuperview()
-                make.top.equalTo(dateView.snp.bottom).offset(16)
-            }
-        }
-        
-        if let profileImageUrl {
+    func configureUI(model: ChatMessageModel) {
+        if let profileImageUrl = model.profileImage {
             let imageUrl = URL(string: API_URL + profileImageUrl)
             
             profileImageView.kf.setImage(
@@ -161,9 +150,8 @@ class OtherChatCellView: UIView {
                     guard let self = self else { return }
                     
                     switch result {
-                    case .success(let value):
-                        let urlString = value.source.url?.absoluteString ?? "알 수 없음"
-                        self.logger.debug("프로필 이미지 비동기 로드 성공: \(urlString)")
+                    case .success(_):
+                        break
                         
                     case .failure(let error):
                         self.logger.fault("\(error.localizedDescription)")
@@ -175,13 +163,24 @@ class OtherChatCellView: UIView {
             profileImageView.image = .defaultProfile
         }
         
-        nicknameLabel.attributedText = NSAttributedString(string: nickname ?? UNKNOWN_STRING, attributes: nicknameAttributes)
+        nicknameLabel.attributedText = NSAttributedString(string: model.nickname ?? UNKNOWN_STRING, attributes: nicknameAttributes)
         
-        chatLabel.attributedText = NSAttributedString(string: message, attributes: chatAttributes)
+        switch model.type {
+        case .TEXT:
+            configureText(model: model)
+        case .IMAGE:
+            configureImage(model: model)
+        case .INVITE_CARD:
+            configureInvite(model: model)
+        case .SETTLEMENT_CARD:
+            configureSettleUp(model: model)
+        default:
+            break
+        }
         
         let timeString: String
         
-        if let date = ISO8601ToDate(date),
+        if let date = ISO8601ToDate(model.createdAt),
            let convertedTimeString = dateToString(date: date, format: "hh:mm") {
             timeString = convertedTimeString
         } else {
@@ -189,5 +188,89 @@ class OtherChatCellView: UIView {
         }
         
         timeLabel.attributedText = NSAttributedString(string: timeString, attributes: timeAttributes)
+    }
+    
+    private func configureText(model: ChatMessageModel) {
+        initializeChatBubbleView()
+        
+        chatBubbleView.addSubview(chatLabel)
+        
+        chatLabel.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(10)
+        }
+        
+        chatLabel.attributedText = NSAttributedString(string: model.content ?? "", attributes: chatAttributes)
+    }
+    
+    private func configureImage(model: ChatMessageModel) {
+        initializeChatBubbleView()
+        
+        chatBubbleView.addSubview(chatImageView)
+        
+        chatImageView.snp.makeConstraints { make in
+            make.edges.equalToSuperview().inset(10)
+            make.size.equalTo(UIScreen.main.bounds.width * 0.5)
+        }
+        
+        if let imageUrl = model.imageUrl {
+            chatImageView.kf.cancelDownloadTask()
+            
+            chatImageView.kf.setImage(
+                with: URL(string: API_URL + imageUrl),
+                placeholder: UIImage.defaultProfile) { [weak self] result in
+                    guard let self = self else { return }
+                    
+                    switch result {
+                    case .success(let value):
+                        let size = self.calculateImageSize(image: value.image)
+                        
+                        self.chatImageView.snp.remakeConstraints { make in
+                            make.leading.top.equalToSuperview().inset(10)
+                            make.size.equalTo(size)
+                            make.trailing.bottom.equalToSuperview().inset(10)
+                        }
+                        
+                        didImageLoad.accept(())
+                        
+                    case .failure(let error):
+                        self.logger.fault("\(error.localizedDescription)")
+                        chatImageView.image = .defaultProfile
+                    }
+                }
+        } else {
+            // profileImageUrl이 nil 인 경우 기본 이미지 설정
+            chatImageView.image = .defaultProfile
+        }
+    }
+    
+    private func configureInvite(model: ChatMessageModel) {
+        
+    }
+    
+    private func configureSettleUp(model: ChatMessageModel) {
+        
+    }
+    
+    private func calculateImageSize(image: UIImage) -> CGSize {
+        let maxWidth = UIScreen.main.bounds.width * 0.5
+        let maxHeight: CGFloat = 300
+        
+        let ratio = image.size.width / image.size.height
+        
+        var targetWidth = maxWidth
+        var targetHeight = maxWidth / ratio
+        
+        if targetHeight > maxHeight {
+            targetHeight = maxHeight
+            targetWidth = maxHeight * ratio
+        }
+        
+        return CGSize(width: targetWidth, height: targetHeight)
+    }
+    
+    private func initializeChatBubbleView() {
+        chatBubbleView.subviews.forEach {
+            $0.removeFromSuperview()
+        }
     }
 }

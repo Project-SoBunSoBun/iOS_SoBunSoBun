@@ -30,9 +30,16 @@ let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
 // ISO8601 Datetime에서 Date형 변환
 func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
     let isoFormatter = ISO8601DateFormatter()
-    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
     
-    return isoFormatter.date(from: iso8601DatetimeString)
+    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+        return date
+    }
+    
+    let fallbackFormatter = DateFormatter()
+    fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    fallbackFormatter.timeZone = .current
+    
+    return fallbackFormatter.date(from: iso8601DatetimeString)
 }
 
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
