@@ -17,12 +17,30 @@ class SignInNetworkManager {
     
     // MARK: - 로그인
     // 서버에서 카카오 토큰을 통해 임시 토큰을 가져오는 메서드
-    func fetchAuthLoginKakao(accessToken: String) -> Single<KakaoAuthResponse> {
+    func fetchAuthLoginKakao(accessToken: String) -> Single<AuthResponse> {
         return provider.rx.request(
             MultiTarget(SignInAPIs.authLoginKakao(accessToken: accessToken))
         )
         .filterSuccessfulStatusCodes()
-        .map(KakaoAuthResponse.self)
+        .map(AuthResponse.self)
+    }
+    
+    // 애플 로그인
+    func fethAuthLoginApple(code: String, idToken: String) -> Single<AuthResponse> {
+        return provider.rx.request(
+            MultiTarget(SignInAPIs.authLoginApple(code: code, idToken: idToken))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(AuthResponse.self)
+    }
+    
+    // 애플 계정 연결 해제
+    func fetchAuthRevokeApple() -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(SignInAPIs.authRevokeApple)
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
     }
     
     // 서버에서 임시 토큰을 통해 사용자 정보를 가져오는 메서드

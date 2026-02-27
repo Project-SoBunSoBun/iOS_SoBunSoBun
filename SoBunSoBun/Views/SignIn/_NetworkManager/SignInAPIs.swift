@@ -11,6 +11,8 @@ import Moya
 enum SignInAPIs {
     // 로그인
     case authLoginKakao(accessToken: String)
+    case authLoginApple(code: String, idToken: String)
+    case authRevokeApple
     case authCompleteSignUp(loginToken: String, serviceTermsAgreed: Bool, privacyPolicyAgreed: Bool, marketingOptionalAgreed: Bool)
     case health
     case checkNickname(nickname: String)
@@ -31,6 +33,12 @@ extension SignInAPIs: TargetType {
         switch self {
         case .authLoginKakao:
             return "/auth/verify/kakao-token"
+            
+        case .authLoginApple:
+            return "/auth/verify/apple-token"
+            
+        case .authRevokeApple:
+            return "/auth/revoke/apple"
             
         case .authCompleteSignUp:
             return "/auth/complete-signup"
@@ -55,12 +63,17 @@ extension SignInAPIs: TargetType {
             
         case // POST
                 .authLoginKakao,
+                .authLoginApple,
                 .authCompleteSignUp:
             return .post
             
         case // PATCH
                 .saveProfile:
             return .patch
+            
+        case // DELETE
+                .authRevokeApple:
+            return .delete
         }
     }
     
@@ -68,7 +81,16 @@ extension SignInAPIs: TargetType {
         switch self {
         case .authLoginKakao(accessToken: let accessToken):
             let body = AuthKakaoTokenModel(accessToken: accessToken)
+            
             return .requestJSONEncodable(body)
+            
+        case .authLoginApple(code: let code, idToken: let idToken):
+            let body = AuthAppleTokenModel(code: code, idToken: idToken)
+            
+            return .requestJSONEncodable(body)
+            
+        case .authRevokeApple:
+            return .requestPlain
             
         case .authCompleteSignUp(loginToken: let loginToken,
                                  serviceTermsAgreed: let serviceTermsAgreed,
@@ -78,6 +100,7 @@ extension SignInAPIs: TargetType {
                                        serviceTermsAgreed: serviceTermsAgreed,
                                        privacyPolicyAgreed: privacyPolicyAgreed,
                                        marketingOptionalAgreed: marketingOptionalAgreed)
+            
             return .requestJSONEncodable(body)
             
         case .health:

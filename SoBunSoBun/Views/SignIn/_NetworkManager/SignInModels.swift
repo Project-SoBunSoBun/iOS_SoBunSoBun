@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - 로그인
-struct KakaoAuthResponse: Decodable {
+struct AuthResponse: Decodable {
     let email: String
     let nickname: String?
     let profileImageUrl: String?
@@ -38,4 +38,9 @@ struct LoginTokenModel: Encodable {
     let serviceTermsAgreed: Bool
     let privacyPolicyAgreed: Bool
     let marketingOptionalAgreed: Bool
+}
+
+struct AuthAppleTokenModel: Encodable {
+    let code: String
+    let idToken: String
 }
