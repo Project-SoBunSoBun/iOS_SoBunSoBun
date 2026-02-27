@@ -715,8 +715,8 @@ extension PostDetailView {
                         let buttonFrame = button.convert(button.bounds, to: view)
                         
                         commentMenuDropDownView.snp.remakeConstraints { make in
-                            make.top.equalToSuperview().offset(buttonFrame.maxY)
                             make.trailing.equalTo(self.view.snp.leading).offset(buttonFrame.maxX)
+                            make.top.equalToSuperview().offset(buttonFrame.maxY)
                             make.width.equalTo(70)
                         }
                         
