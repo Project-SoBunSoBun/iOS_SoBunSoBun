@@ -70,7 +70,6 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
     }
     
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        
         return currentWindow ?? UIWindow()
     }
     
