@@ -16,9 +16,12 @@ struct AppleAuthInfo {
 }
 
 final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    private let loginSubject = PublishSubject<AppleAuthInfo>()
+    private var currentLoginSubject: PublishSubject<AppleAuthInfo>?
     
     func appleLogin() -> Observable<AppleAuthInfo> {
+        let newSubject = PublishSubject<AppleAuthInfo>()
+        self.currentLoginSubject = newSubject
+        
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.email]
@@ -28,7 +31,7 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
         authorizationController.presentationContextProvider = self
         authorizationController.performRequests()
         
-        return loginSubject.asObservable()
+        return newSubject.asObservable()
     }
     
     // 성공 시 호출
@@ -45,7 +48,7 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
                 userInfo: [NSLocalizedDescriptionKey: "애플 로그인 데이터(Token/Code)를 가져오는 데 실패했습니다."]
             )
             
-            loginSubject.onError(decodingError)
+            currentLoginSubject?.onError(decodingError)
             
             return
         }
@@ -57,12 +60,13 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
             userIdentifier: userIdentifier
         )
         
-        loginSubject.onNext(authInfo)
+        currentLoginSubject?.onNext(authInfo)
+        currentLoginSubject?.onCompleted()
     }
     
     // 실패 시 호출
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        loginSubject.onError(error)
+        currentLoginSubject?.onError(error)
     }
     
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
