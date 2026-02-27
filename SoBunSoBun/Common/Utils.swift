@@ -12,13 +12,17 @@ import RxSwift
 import RxCocoa
 
 // window
-let scenes = UIApplication.shared.connectedScenes
-let windowScene = scenes.first as? UIWindowScene
-let window = windowScene?.windows.first
+var currentWindow: UIWindow? {
+    let windowScene = UIApplication.shared.connectedScenes
+        .filter { $0.activationState == .foregroundActive }
+        .first { $0 is UIWindowScene } as? UIWindowScene
+    
+    return windowScene?.windows.first { $0.isKeyWindow }
+}
 
 // safearea
-let safeareaTop = window?.safeAreaInsets.top ?? 0
-let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
+var safeareaTop: CGFloat { currentWindow?.safeAreaInsets.top ?? 0 }
+var safeareaBottom: CGFloat { currentWindow?.safeAreaInsets.bottom ?? 0 }
 
 // API URL
 let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String

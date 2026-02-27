@@ -64,13 +64,16 @@ extension SignInAPIs: TargetType {
         case // POST
                 .authLoginKakao,
                 .authLoginApple,
-                .authRevokeApple,
                 .authCompleteSignUp:
             return .post
             
         case // PATCH
                 .saveProfile:
             return .patch
+            
+        case // DELETE
+                .authRevokeApple:
+            return .delete
         }
     }
     

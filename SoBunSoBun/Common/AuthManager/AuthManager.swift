@@ -93,7 +93,7 @@ class AuthManager {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            if let currentVC = window?.rootViewController {
+            if let currentVC = currentWindow?.rootViewController {
                 let alert = CustomAlertView(
                     title: String(localized: "Notice", table: "Common"),
                     subTitle: String(localized: "YouShouldSignInAgain", table: "Common"),
@@ -113,11 +113,11 @@ class AuthManager {
     
     func switchToLoginView() {
         DispatchQueue.main.async {
-            if let window {
+            if let currentWindow {
                 let vc = UINavigationController(rootViewController: LoginView())
                 vc.isNavigationBarHidden = true
                 
-                window.rootViewController = vc
+                currentWindow.rootViewController = vc
             }
         }
         

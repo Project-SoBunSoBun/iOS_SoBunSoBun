@@ -33,21 +33,31 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
     
     // 성공 시 호출
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-           let identityTokenData = appleIDCredential.identityToken,
-           let authorizationCodeData = appleIDCredential.authorizationCode,
-           let identityToken = String(data: identityTokenData, encoding: .utf8),
-           let authorizationCode = String(data: authorizationCodeData, encoding: .utf8) {
-            let userIdentifier = appleIDCredential.user
-            
-            let authInfo = AppleAuthInfo(
-                identityToken: identityToken,
-                authorizationCode: authorizationCode,
-                userIdentifier: userIdentifier
+        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let identityTokenData = appleIDCredential.identityToken,
+              let authorizationCodeData = appleIDCredential.authorizationCode,
+              let identityToken = String(data: identityTokenData, encoding: .utf8),
+              let authorizationCode = String(data: authorizationCodeData, encoding: .utf8) else
+        {
+            let decodingError = NSError(
+                domain: "AppleLoginManager",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "애플 로그인 데이터(Token/Code)를 가져오는 데 실패했습니다."]
             )
             
-            loginSubject.onNext(authInfo)
+            loginSubject.onError(decodingError)
+            
+            return
         }
+        
+        let userIdentifier = appleIDCredential.user
+        let authInfo = AppleAuthInfo(
+            identityToken: identityToken,
+            authorizationCode: authorizationCode,
+            userIdentifier: userIdentifier
+        )
+        
+        loginSubject.onNext(authInfo)
     }
     
     // 실패 시 호출
@@ -56,10 +66,8 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
     }
     
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        let scene = UIApplication.shared.connectedScenes
-            .first { $0.activationState == .foregroundActive } as? UIWindowScene
         
-        return scene?.windows.first { $0.isKeyWindow } ?? UIWindow()
+        return currentWindow ?? UIWindow()
     }
     
     // 애플 연결 상태 체크
@@ -73,6 +81,7 @@ final class AppleLoginManager: NSObject, ASAuthorizationControllerDelegate, ASAu
                     
                     return
                 }
+                
                 observer.onNext(credentialState)
                 observer.onCompleted()
             }

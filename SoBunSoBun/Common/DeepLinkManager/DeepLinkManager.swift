@@ -22,7 +22,7 @@ class DeepLinkManager {
         logger.debug("딥링크 감지됨: \(url)")
         
         DispatchQueue.main.async {
-            guard let window else { return }
+            guard let currentWindow else { return }
             
             let path = url.path
             // let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
@@ -33,7 +33,7 @@ class DeepLinkManager {
                 let postIdString = path.replacingOccurrences(of: "/post/", with: "")
                 if let postId = Int(postIdString) {
                     let vc = PostDetailView(postId: postId)
-                    window.rootViewController?.navigationController?.pushViewController(vc, animated: true)
+                    currentWindow.rootViewController?.navigationController?.pushViewController(vc, animated: true)
                 }
             }
             
