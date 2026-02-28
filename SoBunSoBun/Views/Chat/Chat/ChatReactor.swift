@@ -251,7 +251,7 @@ class ChatReactor: Reactor {
     private func getMessagesFromServer() -> Observable<Mutation> {
         return networkManager.getChatHistory(
             id: chatRoomId,
-            lastMessageId: currentState.messages.last?.id,
+            cursor: currentState.messages.last?.createdAt,
             size: MESSAGE_LIMIT_COUNT
         )
         .asObservable()

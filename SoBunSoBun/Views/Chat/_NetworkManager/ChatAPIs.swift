@@ -10,7 +10,7 @@ import Moya
 
 enum ChatAPIs {
     case getChatRoomDetail(id: Int)
-    case getChatHistory(id: Int, lastMessageId: String?, size: Int)
+    case getChatHistory(id: Int, cursor: String?, size: Int)
     case uploadChatImage(id: Int, message: String?, image: Data)
     case leaveChatRoom(id: Int)
 }
@@ -63,11 +63,11 @@ extension ChatAPIs: TargetType {
         case .getChatRoomDetail:
             return .requestPlain
             
-        case .getChatHistory(_, let lastMessageId, let size):
+        case .getChatHistory(_, let cursor, let size):
             var parameters: [String: Any] = ["size": size]
             
-            if let lastMessageId {
-                parameters["lastMessageId"] = lastMessageId
+            if let cursor {
+                parameters["cursor"] = cursor
             }
             
             return .requestParameters(parameters: parameters, encoding: URLEncoding.default)

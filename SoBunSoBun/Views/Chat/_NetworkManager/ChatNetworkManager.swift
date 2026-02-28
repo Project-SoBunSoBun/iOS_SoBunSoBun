@@ -21,9 +21,9 @@ class ChatNetworkManager {
         .map(ChatRoomDetailModel.self)
     }
     
-    func getChatHistory(id: Int, lastMessageId: String?, size: Int) -> Single<ChatMessageHistoryModel> {
+    func getChatHistory(id: Int, cursor: String?, size: Int) -> Single<ChatMessageHistoryModel> {
         return authProvider.rx.request(
-            MultiTarget(ChatAPIs.getChatHistory(id: id, lastMessageId: lastMessageId, size: size))
+            MultiTarget(ChatAPIs.getChatHistory(id: id, cursor: cursor, size: size))
         )
         .filterSuccessfulStatusCodes()
         .map(ChatMessageHistoryModel.self)
