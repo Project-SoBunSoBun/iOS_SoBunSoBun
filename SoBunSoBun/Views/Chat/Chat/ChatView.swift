@@ -154,7 +154,7 @@ class ChatView: UIViewController {
     }()
     
     // chat longtap dropDown
-    private let chatCellLongTappedMenuDropDownView: DropDownView = {
+    private let chatCellMenuDropDownView: DropDownView = {
         let ddv = DropDownView(selectionMode: .plain, tableName: "Chat")
         ddv.textAlignment = .center
         
@@ -183,7 +183,7 @@ class ChatView: UIViewController {
         view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
-        [chatStackView, safeareaBottomBackgroundView, tableView, topNavigationBar, chatCellLongTappedMenuDropDownView].forEach {
+        [chatStackView, safeareaBottomBackgroundView, tableView, topNavigationBar, chatCellMenuDropDownView].forEach {
             view.addSubview($0)
         }
         
@@ -270,7 +270,7 @@ extension ChatView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        chatCellLongTappedMenuDropDownView
+        chatCellMenuDropDownView
             .didCellTap
             .subscribe(onNext: { [weak self] menu in
                 guard let self = self else { return }
@@ -388,11 +388,11 @@ extension ChatView {
                     .subscribe(onNext: { [weak self] chatCellView in
                         guard let self = self else { return }
                         
-                        chatCellLongTappedMenuDropDownView.animationAnchor = isMine ? .topRight : .topLeft
+                        chatCellMenuDropDownView.animationAnchor = isMine ? .topRight : .topLeft
                         
                         let chatCellViewFrame = chatCellView.convert(chatCellView.bounds, to: view)
                         
-                        chatCellLongTappedMenuDropDownView.snp.remakeConstraints { make in
+                        chatCellMenuDropDownView.snp.remakeConstraints { make in
                             if isMine {
                                 make.trailing.equalTo(self.view.snp.leading).offset(chatCellViewFrame.maxX)
                             } else {
@@ -411,11 +411,11 @@ extension ChatView {
                         
                         switch model.type {
                         case .TEXT:
-                            chatCellLongTappedMenuDropDownView.items = ["Copy"]
+                            chatCellMenuDropDownView.items = ["Copy"]
                             reactor.action.onNext(.chatLongPressed(shouldChatCellMenuOpen))
                             
                         default:
-                            chatCellLongTappedMenuDropDownView.items = []
+                            chatCellMenuDropDownView.items = []
                         }
                     })
                     .disposed(by: cell.disposeBag)
@@ -504,7 +504,7 @@ extension ChatView {
             .subscribe(onNext: { [weak self] isOpen in
                 guard let self = self else { return }
                 
-                chatCellLongTappedMenuDropDownView.setOpen(isOpen: isOpen)
+                chatCellMenuDropDownView.setOpen(isOpen: isOpen)
             })
             .disposed(by: disposeBag)
     }
