@@ -32,7 +32,7 @@ class ImageDetailView: UIViewController {
         sv.maximumZoomScale = 3.0
         sv.showsVerticalScrollIndicator = false
         sv.showsHorizontalScrollIndicator = false
-        sv.contentInsetAdjustmentBehavior = .never
+        sv.contentInsetAdjustmentBehavior = .never // safearea 범위 무시
         
         return sv
     }()
