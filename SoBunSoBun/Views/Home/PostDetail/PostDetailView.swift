@@ -897,10 +897,11 @@ extension PostDetailView {
         reactor.state.map { $0.isCommentMenuOpen }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isMenuOpen in
+            .subscribe(onNext: { [weak self] isOpen in
                 guard let self = self else { return }
                 
-                commentMenuDropDownView.setOpen(isOpen: isMenuOpen)
+                tableView.isScrollEnabled = !isOpen
+                commentMenuDropDownView.setOpen(isOpen: isOpen)
             })
             .disposed(by: disposeBag)
         
