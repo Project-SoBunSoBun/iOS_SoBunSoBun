@@ -383,10 +383,13 @@ extension ChatView {
                     })
                     .disposed(by: cell.disposeBag)
                 
-                cell.didLongPressed
+                cell.didTextLongPressed
                     .observe(on: MainScheduler.instance)
                     .subscribe(onNext: { [weak self] chatCellView in
-                        guard let self = self else { return }
+                        guard let self = self,
+                              model.type == .TEXT else {
+                            return
+                        }
                         
                         chatCellMenuDropDownView.animationAnchor = isMine ? .topRight : .topLeft
                         
@@ -407,16 +410,23 @@ extension ChatView {
                         let isSameChatId = currentState.selectedChatMessageModel?.id == model.id
                         let shouldChatCellMenuOpen = !(currentState.isChatCellMenuOpen && isSameChatId)
                         
+                        chatCellMenuDropDownView.items = ["Copy"]
                         reactor.action.onNext(.setSelectedChatMessageModel(model))
-                        
-                        switch model.type {
-                        case .TEXT:
-                            chatCellMenuDropDownView.items = ["Copy"]
-                            reactor.action.onNext(.chatLongPressed(shouldChatCellMenuOpen))
-                            
-                        default:
-                            chatCellMenuDropDownView.items = []
+                        reactor.action.onNext(.chatLongPressed(shouldChatCellMenuOpen))
+                    })
+                    .disposed(by: cell.disposeBag)
+                
+                cell.didImageTapped
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: { [weak self] image in
+                        guard let self = self,
+                              let image = image,
+                              model.type == .IMAGE else {
+                            return
                         }
+                        
+                        let vc = ImageDetailView(image: image)
+                        self.navigationController?.pushViewController(vc, animated: true)
                     })
                     .disposed(by: cell.disposeBag)
             }
@@ -504,6 +514,7 @@ extension ChatView {
             .subscribe(onNext: { [weak self] isOpen in
                 guard let self = self else { return }
                 
+                tableView.isScrollEnabled = !isOpen
                 chatCellMenuDropDownView.setOpen(isOpen: isOpen)
             })
             .disposed(by: disposeBag)

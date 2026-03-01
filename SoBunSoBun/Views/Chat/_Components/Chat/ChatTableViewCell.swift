@@ -17,14 +17,14 @@ class ChatTableViewCell: UITableViewCell {
     var disposeBag = DisposeBag()
     
     let didImageLoad = PublishRelay<Void>()
-    let didLongPressed = PublishRelay<UIView>()
+    let didTextLongPressed = PublishRelay<UIView>()
+    let didImageTapped = PublishRelay<UIImage?>()
     let didInviteCardButtonTapped = PublishRelay<Int>()
     let didSettlementCardButtonTapped = PublishRelay<Int>()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
         configureUI()
     }
     
@@ -59,6 +59,7 @@ class ChatTableViewCell: UITableViewCell {
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
+        contentView.transform = CGAffineTransform(scaleX: 1, y: -1)
     }
     
     func configureUI(model: ChatMessageModel, isMine: Bool, isFirstChatOfDay: Bool) {
@@ -103,11 +104,18 @@ class ChatTableViewCell: UITableViewCell {
                 .bind(to: didImageLoad)
                 .disposed(by: disposeBag)
             
-            myView.rx
+            myView.chatLabel.rx
                 .longPressGesture()
                 .when(.began)
                 .map { _ in myView.chatBubbleView }
-                .bind(to: didLongPressed)
+                .bind(to: didTextLongPressed)
+                .disposed(by: disposeBag)
+            
+            myView.chatImageView.rx
+                .tapGesture()
+                .when(.recognized)
+                .map { _ in myView.chatImageView.image }
+                .bind(to: didImageTapped)
                 .disposed(by: disposeBag)
         } else if let otherView = chatCellView as? OtherChatCellView {
             otherView.configureUI(model: model)
@@ -120,11 +128,18 @@ class ChatTableViewCell: UITableViewCell {
                 .bind(to: didImageLoad)
                 .disposed(by: disposeBag)
             
-            otherView.rx
+            otherView.chatLabel.rx
                 .longPressGesture()
                 .when(.began)
                 .map { _ in otherView.chatBubbleView }
-                .bind(to: didLongPressed)
+                .bind(to: didTextLongPressed)
+                .disposed(by: disposeBag)
+            
+            otherView.chatImageView.rx
+                .tapGesture()
+                .when(.recognized)
+                .map { _ in otherView.chatImageView.image }
+                .bind(to: didImageTapped)
                 .disposed(by: disposeBag)
         }
         

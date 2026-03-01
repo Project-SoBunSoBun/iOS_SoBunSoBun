@@ -76,14 +76,14 @@ class OtherChatCellView: UIView {
         return attributes
     }()
     
-    private let chatLabel: UILabel = {
+    let chatLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
         
         return lb
     }()
     
-    private let chatImageView: UIImageView = {
+    let chatImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
