@@ -55,10 +55,6 @@ class UserPagePostListCellView: UIView {
         return attributes
     }
     
-    private lazy var locationStackView: UIStackView = descStackView()
-    
-    private lazy var locationIcon: UIImageView = iconImage(image: .greyLocationS)
-    
     private let locationLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
@@ -67,8 +63,6 @@ class UserPagePostListCellView: UIView {
     }()
     
     private lazy var dateStackView: UIStackView = descStackView()
-    
-    private lazy var dateIcon: UIImageView = iconImage(image: .greyClockS)
     
     private let dateLabel: UILabel = {
         let lb = UILabel()
@@ -85,7 +79,7 @@ class UserPagePostListCellView: UIView {
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
         
-        [categoriesWrappingView, titleLabel, locationStackView, dateStackView].forEach {
+        [categoriesWrappingView, titleLabel, locationLabel, dateStackView].forEach {
             addSubview($0)
         }
         
@@ -102,30 +96,22 @@ class UserPagePostListCellView: UIView {
         }
         
         // 장소
-        [locationIcon, locationLabel].forEach {
-            locationStackView.addArrangedSubview($0)
-        }
-        
-        locationIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
-        locationLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
-        locationStackView.snp.makeConstraints { make in
+        locationLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
         }
         
         // 시간 및 인원 표시
-        [dateIcon, dateLabel, joinedLabel].forEach {
+        [dateLabel, joinedLabel].forEach {
             dateStackView.addArrangedSubview($0)
         }
         
-        dateIcon.setContentCompressionResistancePriority(.required, for: .horizontal)
         dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         joinedLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         dateStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(locationStackView.snp.bottom).offset(4)
+            make.top.equalTo(locationLabel.snp.bottom).offset(4)
             make.bottom.equalToSuperview().inset(16)
         }
     }
