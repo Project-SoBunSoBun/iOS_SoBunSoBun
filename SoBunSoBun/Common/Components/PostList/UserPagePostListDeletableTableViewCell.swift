@@ -13,7 +13,7 @@ class UserPagePostListDeletableTableViewCell: UITableViewCell {
     static let identifier = "UserPAgePostListDeletableTableViewCell"
     
     private let view = UserPagePostListDeletableCellView()
-    private var disposeBag = DisposeBag()
+    var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -23,6 +23,10 @@ class UserPagePostListDeletableTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    var didTapMenu: Observable<Void> {
+        return view.didTap.asObservable()
     }
     
     override func awakeFromNib() {
@@ -50,7 +54,7 @@ class UserPagePostListDeletableTableViewCell: UITableViewCell {
         
         view.snp.makeConstraints { make in
             make.horizontalEdges.top.equalToSuperview()
-            make.bottom.equalToSuperview().priority(.high)
+            make.bottom.equalToSuperview().inset(24).priority(.high)
         }
     }
     
