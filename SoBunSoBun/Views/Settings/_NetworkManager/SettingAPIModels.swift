@@ -27,6 +27,12 @@ struct MannerTagModel: Decodable, Equatable {
     let count: Int
 }
 
+// MARK: - 내 게시글 조회
+struct MyPostRequestModel: Encodable {
+    let page: Int
+    let size: Int
+}
+
 // MARK: - 공지사항
 struct AnnouncementRequestModel: Encodable {
     let page: Int

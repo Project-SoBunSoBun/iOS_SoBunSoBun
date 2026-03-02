@@ -44,6 +44,16 @@ class SettingNetworkManager {
         .map { _ in () }
     }
     
+    // MARK: - 내 게시글 조회
+    // 내 게시글 전체 조회
+    func getMyPosts(page: Int, size: Int) -> Single<PostListResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.getMyPosts(page: page, size: size))
+        )
+        .filterSuccessfulStatusCodes()
+        .map(PostListResponseModel.self)
+    }
+    
     // MARK: - 공지사항
     // 공지사항 목록 조회
     func getAnnouncements(page: Int, size: Int) -> Single<AnnouncementModel> {

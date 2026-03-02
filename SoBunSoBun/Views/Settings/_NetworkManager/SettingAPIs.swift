@@ -13,6 +13,8 @@ enum SettingAPIs {
     case getMeProfile
     case patchProfileImage(profileImage: Data)
     case patchNickname(nickname: String)
+    // 내 게시글
+    case getMyPosts(page: Int, size: Int)
     // 공지사항
     case getAnnouncement(page: Int, size: Int)
     case getAnnouncementDetail(id: Int)
@@ -45,6 +47,9 @@ extension SettingAPIs: TargetType {
         case .patchNickname:
             return "users/me/nickname"
             
+        case .getMyPosts:
+            return "/api/posts/my"
+            
         case .getAnnouncement:
             return "api/announcements"
             
@@ -66,6 +71,7 @@ extension SettingAPIs: TargetType {
         switch self {
         case // GET
                 .getMeProfile,
+                .getMyPosts,
                 .getAnnouncement,
                 .getAnnouncementDetail:
             return .get
@@ -105,6 +111,11 @@ extension SettingAPIs: TargetType {
             let body: [String: String] = ["nickname": nickname]
             
             return .requestJSONEncodable(body)
+            
+        case .getMyPosts(page: let page, size: let size):
+            let parameters = MyPostRequestModel(page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
         case .getAnnouncement(page: let page, size: let size):
             let parameters = AnnouncementRequestModel(page: page, size: size)
