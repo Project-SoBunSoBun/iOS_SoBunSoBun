@@ -47,16 +47,6 @@ class UserPagePostListDeletableCellView: UIView {
         return lb
     }()
     
-    // stackview 컴포넌트
-    private func descStackView() -> UIStackView {
-        let sv = UIStackView()
-        sv.axis = .horizontal
-        sv.spacing = 4
-        sv.alignment = .top
-        
-        return sv
-    }
-    
     // 설명(장소 및 시간) attributes 컴포넌트
     private func descAttributes() -> [NSAttributedString.Key: Any] {
         var attributes: [NSAttributedString.Key: Any] = body14.attributes()
@@ -71,6 +61,17 @@ class UserPagePostListDeletableCellView: UIView {
         
         return lb
     }()
+    
+    // stackview 컴포넌트
+    private func descStackView() -> UIStackView {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 8
+        sv.alignment = .firstBaseline
+        sv.distribution = .fill
+        
+        return sv
+    }
     
     private lazy var dateStackView: UIStackView = descStackView()
     
@@ -96,7 +97,7 @@ class UserPagePostListDeletableCellView: UIView {
         // 카테고리
         categoriesWrappingView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(dotIcon.snp.leading).inset(8)
+            make.trailing.equalTo(dotIcon.snp.leading).offset(-8)
             make.top.equalToSuperview().offset(16)
         }
         
@@ -124,7 +125,10 @@ class UserPagePostListDeletableCellView: UIView {
             dateStackView.addArrangedSubview($0)
         }
         
-        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        dateLabel.setContentHuggingPriority(.init(249), for: .horizontal)
+        joinedLabel.setContentHuggingPriority(.required, for: .horizontal)
+        
+        dateLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         joinedLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         dateStackView.snp.makeConstraints { make in
