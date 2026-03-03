@@ -22,6 +22,10 @@ class UserPagePostListDeletableCellView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    func dotIconFrameInWindow() -> CGRect {
+        return dotIcon.convert(dotIcon.bounds, to: nil)
+    }
+    
     private let disposeBag = DisposeBag()
     
     let didTap = PublishRelay<Void>()

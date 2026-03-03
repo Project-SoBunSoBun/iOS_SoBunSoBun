@@ -62,4 +62,8 @@ class UserPagePostListDeletableTableViewCell: UITableViewCell {
         view.configureUI(model: model)
         view.layoutIfNeeded()
     }
+    
+    func dotIconFrameInWindow() -> CGRect {
+        return view.dotIconFrameInWindow()
+    }
 }
