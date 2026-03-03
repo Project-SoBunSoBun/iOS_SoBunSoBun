@@ -17,15 +17,17 @@ class MyPostReactor: Reactor {
     
     let initialState = State()
     
-    private let networkManager = SettingNetworkManager()
+    private let settingNetworkManager = SettingNetworkManager()
+    private let homeNetworkManager = HomeNetworkManager()
     private let pageSize: Int = 20
     
     enum Action {
         case viewWillAppear
         case loadMore // 페이지네이션
         case refresh // 새로고침
-        case cellTapped(PostModel) // 셀 클릭
-        case menuButtonTapped(Int) // 셀의 메뉴버튼 클릭
+        case cellTapped(PostModel) // 테이블 뷰 셀 클릭
+        case menuButtonTapped(Bool) // 테이블 뷰 셀의 메뉴버튼 클릭
+        case deletePostId(Int) // 게시글 삭제 id
     }
     
     enum Mutation {
@@ -37,6 +39,9 @@ class MyPostReactor: Reactor {
         case setRefreshing(Bool)
         case setError(String)
         case setMyPostDetailView(PostModel)
+        case setIsMenuOpen(Bool)
+        case removePostById(Int)
+        case setShouldShowDeletePostDoneAlert
     }
     
     struct State {
@@ -45,8 +50,12 @@ class MyPostReactor: Reactor {
         var page: Int = 0 // 페이지네이션 페이지 번호
         var hasMore: Bool = true //  페이지네이션 추가 가능 여부
         var isRefreshing: Bool = false // 새로고침 여부
-        @Pulse var errorMessage: String?
+        
+        @Pulse var errorMessage: String? // 에러 메세지
         @Pulse var shouldPushMyPostDetailView: PostModel? // 해당 게시글로 이동
+        
+        var isMenuOpen: Bool = false // 드롭다운 개폐
+        @Pulse var shouldShowDeletePostDoneAlert: Void? // 삭제 완료 알러트
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -80,8 +89,11 @@ class MyPostReactor: Reactor {
         case .cellTapped(let model):
             return Observable.just(.setMyPostDetailView(model))
             
-        case .menuButtonTapped(let id):
-            return Observable.empty()
+        case .menuButtonTapped(let isMenuOpen):
+            return Observable.just(.setIsMenuOpen(isMenuOpen))
+            
+        case .deletePostId(let id):
+            return deletePost(id: id)
         }
     }
     
@@ -112,38 +124,70 @@ class MyPostReactor: Reactor {
             
         case .setMyPostDetailView(let model):
             newState.shouldPushMyPostDetailView = model
+            
+        case .setIsMenuOpen(let isMenuOpen):
+            newState.isMenuOpen = isMenuOpen
+            
+        case .removePostById(let id):
+            if let index = newState.myPosts.firstIndex(where: { $0.id == id }) {
+                newState.myPosts.remove(at: index)
+            }
+            
+        case .setShouldShowDeletePostDoneAlert:
+            newState.shouldShowDeletePostDoneAlert = ()
         }
         
         return newState
     }
     
     private func loadMyPosts(page: Int, size: Int, isFirst: Bool) -> Observable<Mutation> {
+        return settingNetworkManager.getMyPosts(page: page, size: size)
+            .asObservable()
+            .flatMap { response -> Observable<Mutation> in
+                self.logger.debug("내 게시글 조회 성공")
+                
+                let mutations: Observable<Mutation> = isFirst
+                ? Observable.just(.setMyPosts(response.posts))
+                : Observable.just(.setAppendMyPosts(response.posts))
+                
+                return Observable.concat([
+                    mutations,
+                    Observable.just(.setHasMore(!response.pageInfo.last))
+                ])
+            }
+            .catch { error in
+                self.logger.critical("내가 게시한 글 불러오기 실패: \(error.localizedDescription)")
+                
+                return Observable.concat([
+                    isFirst ? Observable.just(.setMyPosts([])) : Observable.empty(),
+                    Observable.just(.setHasMore(false)),
+                    Observable.just(.setPage(0))
+                ])
+            }
+    }
+    
+    private func deletePost(id: Int) -> Observable<Mutation> {
         return Observable.concat([
             Observable.just(.setLoading(true)),
-            networkManager.getMyPosts(page: page, size: size)
+            homeNetworkManager.deletePost(id: id)
                 .asObservable()
-                .flatMap { response -> Observable<Mutation> in
-                    self.logger.debug("내 게시글 조회 성공")
-                    
-                    let mutations: Observable<Mutation> = isFirst
-                    ? Observable.just(.setMyPosts(response.posts))
-                    : Observable.just(.setAppendMyPosts(response.posts))
-                    
+                .flatMap { _ -> Observable<Mutation> in
                     return Observable.concat([
-                        mutations,
-                        Observable.just(.setHasMore(!response.pageInfo.last))
+                        Observable.just(.removePostById(id)),
+                        Observable.just(.setShouldShowDeletePostDoneAlert),
+                        Observable.just(.setLoading(false))
                     ])
                 }
-                .catch { error in
-                    self.logger.critical("내가 게시한 글 불러오기 실패: \(error.localizedDescription)")
+                .catch { [weak self] error in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.error("게시글 삭제 실패: \(error.localizedDescription)")
                     
                     return Observable.concat([
-                        isFirst ? Observable.just(.setMyPosts([])) : Observable.empty(),
-                        Observable.just(.setHasMore(false)),
-                        Observable.just(.setPage(0))
+                        Observable.just(.setError("게시글 삭제에 실패했습니다")),
+                        Observable.just(.setLoading(false))
                     ])
-                },
-            Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
+                }
         ])
     }
 }
