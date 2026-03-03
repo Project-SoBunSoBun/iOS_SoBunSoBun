@@ -22,6 +22,8 @@ class MyPostView: UIViewController {
     private let reactor = MyPostReactor()
     
     private let disposeBag = DisposeBag()
+    private var selectedPostId: Int?
+    private var selectedIndexPathRow: Int?
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -44,10 +46,30 @@ class MyPostView: UIViewController {
         return tv
     }()
     
+    // 새로고침
     private let refreshControl: BlueMeatballsRefreshController = {
         let rc = BlueMeatballsRefreshController()
         
         return rc
+    }()
+    
+    // 삭제하기 메뉴 dropdown
+    private let dropDownView: DropDownView = {
+        let ddv = DropDownView(
+            selectionMode: .plain, tableName: "Common")
+        ddv.textAlignment = .center
+        ddv.items = ["Delete"]
+        ddv.animationAnchor = .topRight
+        
+        return ddv
+    }()
+    
+    // 로딩 화면
+    private lazy var loadingView: LoadingView = {
+        let view = LoadingView()
+        view.isHidden = true
+        
+        return view
     }()
     
     // MARK: - 생명주기
@@ -63,12 +85,12 @@ class MyPostView: UIViewController {
         
         reactor.action.onNext(.viewWillAppear)
     }
-
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
-    
-        [topNavigationBar, tableView].forEach {
+        
+        [topNavigationBar, tableView, dropDownView, loadingView].forEach {
             view.addSubview($0)
         }
         
@@ -86,6 +108,17 @@ class MyPostView: UIViewController {
         }
         
         tableView.refreshControl = refreshControl
+        
+        // 드롭다운뷰
+        dropDownView.snp.makeConstraints { make in
+            make.width.equalTo(70)
+            make.top.equalTo(view.snp.top)
+            make.trailing.equalTo(view.snp.trailing)
+        }
+        
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 }
 
@@ -96,24 +129,6 @@ extension MyPostView {
     }
     
     private func bindAction(reactor: MyPostReactor) {
-        // 메뉴 버튼 클릭
-        tableView.rx.willDisplayCell
-            .subscribe(onNext: { [weak self] cell, indexPath in
-                guard let self = self,
-                let deletableCell = cell as? UserPagePostListDeletableTableViewCell else { return }
-                
-                deletableCell.didTapMenu
-                    .map { _ in
-                        let post = reactor.currentState.myPosts[indexPath.row]
-                        self.logger.debug("선택된 post id: \(post.id)")
-                        
-                        return Reactor.Action.menuButtonTapped(post.id)
-                    }
-                    .bind(to: reactor.action)
-                    .disposed(by: deletableCell.disposeBag)
-            })
-            .disposed(by: disposeBag)
-        
         // 새로고침
         refreshControl.rx.controlEvent(.valueChanged)
             .map { Reactor.Action.refresh }
@@ -139,6 +154,47 @@ extension MyPostView {
             .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
             .map { _ in Reactor.Action.loadMore }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 메뉴 버튼 클릭
+        tableView.rx.willDisplayCell
+            .subscribe(onNext: { [weak self] cell, indexPath in
+                guard let self = self,
+                      let deletableCell = cell as? UserPagePostListDeletableTableViewCell else { return }
+                
+                deletableCell.disposeBag = DisposeBag()
+                
+                deletableCell.didTapMenu
+                    .subscribe(onNext: { [weak self] _ in
+                        guard let self = self else { return }
+                        
+                        let posts = self.reactor.currentState.myPosts
+                        guard posts.indices.contains(indexPath.row) else { return }
+                        
+                        let post = posts[indexPath.row]
+                        self.selectedPostId = post.id
+                        self.selectedIndexPathRow = indexPath.row
+                        
+                        // 드롭다운 위치 계산 및 표시
+                        let dotIconFrame = deletableCell.dotIconFrameInWindow()
+                        self.showDropDown(frame: dotIconFrame)
+                        
+                        self.reactor.action.onNext(.menuButtonTapped(!self.reactor.currentState.isMenuOpen))
+                    })
+                    .disposed(by: deletableCell.disposeBag)
+            })
+            .disposed(by: disposeBag)
+        
+        // 드롭다운 삭제하기 클릭
+        dropDownView.didCellTap
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                reactor.action.onNext(.menuButtonTapped(false))
+                
+                self.deletePostAlert()
+            })
             .disposed(by: disposeBag)
     }
     
@@ -172,5 +228,98 @@ extension MyPostView {
             .observe(on: MainScheduler.instance)
             .bind(to: refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
+        
+        // 삭제하기 드롭다운 개폐
+        reactor.state.map { $0.isMenuOpen }
+            .observe(on: MainScheduler.asyncInstance)
+            .subscribe(onNext:  { [weak self] isOpen in
+                guard let self = self else { return }
+                
+                dropDownView.setOpen(isOpen: isOpen)
+            })
+            .disposed(by: disposeBag)
+        
+        // 삭제 완료 알러트
+        reactor.pulse(\.$shouldShowDeletePostDoneAlert)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.deletePostDoneAlert()
+            })
+            .disposed(by: disposeBag)
+        
+        // 에러 알러트
+        reactor.pulse(\.$errorMessage)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.errorAlert()
+            })
+            .disposed(by: disposeBag)
+        
+        // 로딩 상태
+        reactor.state.map { !$0.isLoading }
+            .distinctUntilChanged()
+            .bind(to: loadingView.rx.isHidden)
+            .disposed(by: disposeBag)
+    }
+    
+    private func showDropDown(frame: CGRect) {
+        let topOffset: CGFloat = 4
+        let trailingInset: CGFloat = 24
+        
+        dropDownView.snp.updateConstraints { make in
+            make.top.equalTo(view.snp.top).offset(frame.maxY + topOffset)
+            make.trailing.equalTo(view.snp.trailing).inset(trailingInset)
+        }
+        
+        dropDownView.setOpen(isOpen: true)
+    }
+    
+    private func deletePostAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "DeleteAlertTitle", table: "Settings"),
+            subTitle: String(localized: "DeleteAlertSubtitle", table: "Settings"),
+            primaryTitleKey: String(localized: "Delete", table: "Common"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            guard let selectedId = self.selectedPostId else { return }
+            
+            self.reactor.action.onNext(.deletePostId(selectedId))
+        }
+        
+        alert.show(on: self)
+    }
+    
+    private func deletePostDoneAlert() {
+        let alert = CustomAlertView (
+            title: String(localized: "DeleteCompleted", table: "Common"),
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.logger.debug("확인 버튼 클릭")
+        }
+        
+        alert.show(on: self)
+    }
+    
+    private func errorAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "ErrorMessage", table: "Common"),
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.logger.debug("확인 버튼 클릭")
+        }
+        
+        alert.show(on: self)
     }
 }
