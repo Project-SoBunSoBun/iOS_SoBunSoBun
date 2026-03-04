@@ -93,6 +93,7 @@
       }
     },
     "DeleteCommentTitle" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -114,6 +115,7 @@
       }
     },
     "DeletePostTitle" : {
+      "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
