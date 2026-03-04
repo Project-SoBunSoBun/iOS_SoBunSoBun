@@ -22,8 +22,6 @@ class MyPostView: UIViewController {
     private let reactor = MyPostReactor()
     
     private let disposeBag = DisposeBag()
-    private var selectedPostId: Int?
-    private var selectedIndexPathRow: Int?
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -72,6 +70,14 @@ class MyPostView: UIViewController {
         return view
     }()
     
+    private let backgroundDimView: UIButton = {
+        let bt = UIButton()
+        bt.backgroundColor = .clear
+        bt.isHidden = true
+        
+        return bt
+    }()
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,7 +96,7 @@ class MyPostView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [topNavigationBar, tableView, dropDownView, loadingView].forEach {
+        [topNavigationBar, tableView, backgroundDimView ,dropDownView, loadingView].forEach {
             view.addSubview($0)
         }
         
@@ -108,6 +114,11 @@ class MyPostView: UIViewController {
         }
         
         tableView.refreshControl = refreshControl
+        
+        // 투명 터치 버튼
+        backgroundDimView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
         
         // 드롭다운뷰
         dropDownView.snp.makeConstraints { make in
@@ -156,45 +167,24 @@ extension MyPostView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // 메뉴 버튼 클릭
-        tableView.rx.willDisplayCell
-            .subscribe(onNext: { [weak self] cell, indexPath in
-                guard let self = self,
-                      let deletableCell = cell as? UserPagePostListDeletableTableViewCell else { return }
-                
-                deletableCell.disposeBag = DisposeBag()
-                
-                deletableCell.didTapMenu
-                    .subscribe(onNext: { [weak self] _ in
-                        guard let self = self else { return }
-                        
-                        let posts = self.reactor.currentState.myPosts
-                        guard posts.indices.contains(indexPath.row) else { return }
-                        
-                        let post = posts[indexPath.row]
-                        self.selectedPostId = post.id
-                        self.selectedIndexPathRow = indexPath.row
-                        
-                        // 드롭다운 위치 계산 및 표시
-                        let dotIconFrame = deletableCell.dotIconFrameInWindow()
-                        self.showDropDown(frame: dotIconFrame)
-                        
-                        self.reactor.action.onNext(.menuButtonTapped(!self.reactor.currentState.isMenuOpen))
-                    })
-                    .disposed(by: deletableCell.disposeBag)
-            })
-            .disposed(by: disposeBag)
-        
         // 드롭다운 삭제하기 클릭
         dropDownView.didCellTap
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                reactor.action.onNext(.menuButtonTapped(false))
+                // 드롭다운 닫기
+                self.reactor.action.onNext(.closeMenu)
                 
+                // 삭제 확인 알러트
                 self.deletePostAlert()
             })
+            .disposed(by: disposeBag)
+        
+        // 드롭다운이 켜져있을 때 다른 곳을 누르면 드롭다운 끄기
+        backgroundDimView.rx.tap
+            .map { Reactor.Action.closeMenu }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
     
@@ -205,8 +195,29 @@ extension MyPostView {
             .bind(to: tableView.rx.items(
                 cellIdentifier: UserPagePostListDeletableTableViewCell.identifier,
                 cellType: UserPagePostListDeletableTableViewCell.self
-            )) { index, model, cell in
+            )) { [weak self] index, model, cell in
+                guard let self = self else { return }
+                
                 cell.configureUI(model: model)
+                
+                cell.disposeBag = DisposeBag()
+                
+                // 메뉴 버튼 클릭
+                cell.didTapMenu
+                    .subscribe(onNext: { [weak self] _ in
+                        guard let self = self else { return }
+                        
+                        let posts = self.reactor.currentState.myPosts
+                        guard posts.indices.contains(index) else { return }
+                        let post = posts[index]
+                        
+                        // 드롭다운 위치 계산 및 표시
+                        let dotIconFrame = cell.dotIconFrameInWindow()
+                        self.updateDropDownPosition(frame: dotIconFrame)
+                        
+                        self.reactor.action.onNext(.openMenu(id: post.id))
+                    })
+                    .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
         
@@ -216,9 +227,7 @@ extension MyPostView {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                self.navigationController?.pushViewController(
-                    PostDetailView(postId: model.id),
-                    animated: true)
+                self.navigationController?.pushViewController(PostDetailView(postId: model.id), animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -231,11 +240,14 @@ extension MyPostView {
         
         // 삭제하기 드롭다운 개폐
         reactor.state.map { $0.isMenuOpen }
+            .distinctUntilChanged()
             .observe(on: MainScheduler.asyncInstance)
             .subscribe(onNext:  { [weak self] isOpen in
                 guard let self = self else { return }
                 
-                dropDownView.setOpen(isOpen: isOpen)
+                self.dropDownView.setOpen(isOpen: isOpen)
+                self.tableView.isScrollEnabled = !isOpen
+                self.backgroundDimView.isHidden = !isOpen
             })
             .disposed(by: disposeBag)
         
@@ -268,18 +280,20 @@ extension MyPostView {
             .disposed(by: disposeBag)
     }
     
-    private func showDropDown(frame: CGRect) {
+    // 드롭다운뷰의 위치 업데이트
+    private func updateDropDownPosition(frame: CGRect) {
         let topOffset: CGFloat = 4
-        let trailingInset: CGFloat = 24
+        let trailingInset: CGFloat = 24 // 테이블 뷰의 셀에서 안쪽으로 8
         
         dropDownView.snp.updateConstraints { make in
             make.top.equalTo(view.snp.top).offset(frame.maxY + topOffset)
             make.trailing.equalTo(view.snp.trailing).inset(trailingInset)
         }
         
-        dropDownView.setOpen(isOpen: true)
+        view.layoutIfNeeded()
     }
     
+    // 삭제 확인 알러트
     private func deletePostAlert() {
         let alert = CustomAlertView(
             title: String(localized: "DeleteAlertTitle", table: "Settings"),
@@ -288,8 +302,9 @@ extension MyPostView {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
-            guard let selectedId = self.selectedPostId else { return }
+        alert.onPrimaryTapped = { [weak self] in
+            guard let self = self,
+                    let selectedId = self.reactor.currentState.selectedId else { return }
             
             self.reactor.action.onNext(.deletePostId(selectedId))
         }
@@ -297,6 +312,7 @@ extension MyPostView {
         alert.show(on: self)
     }
     
+    // 삭제 완료 알러트
     private func deletePostDoneAlert() {
         let alert = CustomAlertView (
             title: String(localized: "DeleteCompleted", table: "Common"),
@@ -310,6 +326,7 @@ extension MyPostView {
         alert.show(on: self)
     }
     
+    // 에러 알러트
     private func errorAlert() {
         let alert = CustomAlertView(
             title: String(localized: "ErrorMessage", table: "Common"),

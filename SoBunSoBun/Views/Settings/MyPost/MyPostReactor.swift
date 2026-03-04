@@ -26,7 +26,8 @@ class MyPostReactor: Reactor {
         case loadMore // 페이지네이션
         case refresh // 새로고침
         case cellTapped(PostModel) // 테이블 뷰 셀 클릭
-        case menuButtonTapped(Bool) // 테이블 뷰 셀의 메뉴버튼 클릭
+        case openMenu(id: Int) // 드롭다운 메뉴 열기 + 선택된 id 저장
+        case closeMenu // 드롭다운 메뉴 닫기
         case deletePostId(Int) // 게시글 삭제 id
     }
     
@@ -39,6 +40,7 @@ class MyPostReactor: Reactor {
         case setRefreshing(Bool)
         case setError(String)
         case setMyPostDetailView(PostModel)
+        case setSelectedId(Int)
         case setIsMenuOpen(Bool)
         case removePostById(Int)
         case setShouldShowDeletePostDoneAlert
@@ -54,7 +56,9 @@ class MyPostReactor: Reactor {
         @Pulse var errorMessage: String? // 에러 메세지
         @Pulse var shouldPushMyPostDetailView: PostModel? // 해당 게시글로 이동
         
+        var selectedId: Int? // 선택된 게시글 id
         var isMenuOpen: Bool = false // 드롭다운 개폐
+        
         @Pulse var shouldShowDeletePostDoneAlert: Void? // 삭제 완료 알러트
     }
     
@@ -89,8 +93,14 @@ class MyPostReactor: Reactor {
         case .cellTapped(let model):
             return Observable.just(.setMyPostDetailView(model))
             
-        case .menuButtonTapped(let isMenuOpen):
-            return Observable.just(.setIsMenuOpen(isMenuOpen))
+        case .openMenu(id: let id):
+            return Observable.concat([
+                Observable.just(.setSelectedId(id)),
+                Observable.just(.setIsMenuOpen(true))
+            ])
+            
+        case .closeMenu:
+            return Observable.just(.setIsMenuOpen(false))
             
         case .deletePostId(let id):
             return deletePost(id: id)
@@ -127,6 +137,9 @@ class MyPostReactor: Reactor {
             
         case .setIsMenuOpen(let isMenuOpen):
             newState.isMenuOpen = isMenuOpen
+            
+        case .setSelectedId(let id):
+            newState.selectedId = id
             
         case .removePostById(let id):
             if let index = newState.myPosts.firstIndex(where: { $0.id == id }) {
