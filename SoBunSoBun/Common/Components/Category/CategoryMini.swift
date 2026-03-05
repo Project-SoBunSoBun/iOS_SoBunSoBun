@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 
 class CategoryMini: UILabel {
-    /// 목록 내 보여질 카테코리 컴포넌트입니다.
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -19,11 +18,23 @@ class CategoryMini: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override var text: String? {
+        didSet {
+            guard let text = text else {
+                self.attributedText = nil
+                
+                return
+            }
+            
+            var attributes: [NSAttributedString.Key: Any] = title12.attributes(alignment: .center)
+            attributes[.foregroundColor] = UIColor.primary400
+            self.attributedText = NSAttributedString(string: text, attributes: attributes)
+        }
+    }
+    
     private let insets = UIEdgeInsets(top: 4, left: 4, bottom: 4, right: 4)
     
     private func configure() {
-        self.font = title12.font
-        self.textColor = .primary400
         self.backgroundColor = .neutral50
         self.layer.cornerRadius = 8
         self.clipsToBounds = true

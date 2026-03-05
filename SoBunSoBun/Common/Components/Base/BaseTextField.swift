@@ -25,17 +25,27 @@ class BaseTextField: UITextField {
     
     override var placeholder: String? {
         didSet {
-            guard let text = placeholder else {
-                super.placeholder = nil
-                super.attributedPlaceholder = nil
-                return
-            }
-            
-            var attributes: [NSAttributedString.Key: Any] = fontStyle.attributes()
-            attributes[.foregroundColor] = UIColor.neutral400
-            
-            self.attributedPlaceholder = NSAttributedString(string: text, attributes: attributes)
+            setPlaceholder()
         }
+    }
+    
+    var placeholderColor: UIColor = .neutral400 {
+        didSet {
+            setPlaceholder()
+        }
+    }
+    
+    private func setPlaceholder() {
+        guard let text = placeholder else {
+            super.placeholder = nil
+            super.attributedPlaceholder = nil
+            return
+        }
+        
+        var attributes: [NSAttributedString.Key: Any] = fontStyle.attributes()
+        attributes[.foregroundColor] = placeholderColor
+        
+        self.attributedPlaceholder = NSAttributedString(string: text, attributes: attributes)
     }
     
     private func configureUI() {

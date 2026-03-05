@@ -31,65 +31,44 @@ class HomeView: UIViewController {
     
     private let logoImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .logo
+        iv.image = .logo.resize(.init(width: 30, height: 30))
         iv.contentMode = .scaleAspectFit
-        
-        iv.snp.makeConstraints { make in
-            make.size.equalTo(30)
-        }
         
         return iv
     }()
     
     private let letterLogoImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .sobunSobunText
+        iv.image = .sobunSobunText.resize(.init(width: 65, height: 22))
         iv.contentMode = .scaleAspectFit
-        
-        iv.snp.makeConstraints { make in
-            make.width.equalTo(65)
-            make.height.equalTo(22)
-        }
         
         return iv
     }()
     
     private let locationIconImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .glassLocation
+        iv.image = .glassLocation.resize(.init(width: 24, height: 24))
         iv.contentMode = .scaleAspectFit
-        
-        iv.snp.makeConstraints { make in
-            make.size.equalTo(24)
-        }
         
         return iv
     }()
     
     private let myProfileButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .glassUser
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
+        config.image = .glassUser.resize(.init(width: 24, height: 24))
+        config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         
         let btn = UIButton(configuration: config)
-        
-        btn.snp.makeConstraints { make in
-            make.size.equalTo(48)
-        }
         
         return btn
     }()
     
     private let notificationButton: UIButton = {
         var config = UIButton.Configuration.plain()
-        config.image = .glassBell
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
+        config.image = .glassBell.resize(.init(width: 24, height: 24))
+        config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
         
         let btn = UIButton(configuration: config)
-        
-        btn.snp.makeConstraints { make in
-            make.size.equalTo(48)
-        }
         
         return btn
     }()
@@ -104,7 +83,19 @@ class HomeView: UIViewController {
         return lb
     }()
     
-    private let searchTextField: SearchTextField = SearchTextField()
+    private let searchTextField: SearchTextField = {
+        let tf = SearchTextField()
+        tf.isEnabled = false
+        
+        return tf
+    }()
+    
+    private let searchTextFieldCover: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        
+        return view
+    }()
     
     private let categoriesScrollView: UIScrollView = {
         let sv = UIScrollView()
@@ -146,13 +137,10 @@ class HomeView: UIViewController {
         return view
     }()
     
-    private let tableView: UITableView = {
-        let tv = UITableView()
-        tv.backgroundColor = .clear
-        tv.separatorStyle = .none
+    private let tableView: BaseTableView = {
+        let tv = BaseTableView()
         tv.register(PostListTableViewCell.self, forCellReuseIdentifier: PostListTableViewCell.identifier)
         tv.estimatedRowHeight = 142
-        tv.rowHeight = UITableView.automaticDimension
         tv.contentInset = .init(
             top: 0,
             left: 0,
@@ -173,16 +161,14 @@ class HomeView: UIViewController {
         config.background.backgroundColor = .primary500
         config.cornerStyle = .fixed
         config.background.cornerRadius = 100
-        var imageConfig = UIImage.SymbolConfiguration(pointSize: 20)
-        config.preferredSymbolConfigurationForImage = imageConfig
-        config.image = .whitePost
+        config.image = .whitePost.resize(.init(width: 20, height: 20))
         config.imagePadding = 8
         
         var attributes: [NSAttributedString.Key: Any] = title16.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.backgroundWhite
         
         let attributedTitle = NSAttributedString(
-            string: String(localized: "WritePost"),
+            string: String(localized: "WritePost", table: "Home"),
             attributes: attributes
         )
         
@@ -221,7 +207,7 @@ class HomeView: UIViewController {
         view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
-        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, categoriesScrollView, tableView, registerPostButton].forEach {
+        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, searchTextFieldCover, categoriesScrollView, tableView, registerPostButton].forEach {
             view.addSubview($0)
         }
         
@@ -229,27 +215,33 @@ class HomeView: UIViewController {
         logoImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8)
+            make.size.equalTo(30)
         }
         
         letterLogoImageView.snp.makeConstraints { make in
             make.leading.equalTo(logoImageView.snp.trailing).offset(8)
             make.centerY.equalTo(logoImageView)
+            make.width.equalTo(65)
+            make.height.equalTo(22)
         }
         
         // 지역 인증, 알림, 내 프로필
         locationIconImageView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.top.equalTo(logoImageView.snp.bottom).offset(20)
+            make.size.equalTo(24)
         }
         
         myProfileButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(4)
             make.centerY.equalTo(locationIconImageView)
+            make.size.equalTo(48)
         }
         
         notificationButton.snp.makeConstraints { make in
             make.trailing.equalTo(myProfileButton.snp.leading)
             make.centerY.equalTo(locationIconImageView)
+            make.size.equalTo(48)
         }
         
         locationLabel.snp.makeConstraints { make in
@@ -259,10 +251,15 @@ class HomeView: UIViewController {
         }
         
         // 검색창
-        searchTextField.isEnabled = false
         searchTextField.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(myProfileButton.snp.bottom).offset(8)
+        }
+        
+        searchTextFieldCover.snp.makeConstraints { make in
+            make.horizontalEdges.equalTo(searchTextField)
+            make.top.equalTo(searchTextField)
+            make.size.equalTo(searchTextField)
         }
         
         // 카테고리 목록
@@ -309,13 +306,6 @@ extension HomeView {
     }
     
     private func bindAction(reactor: HomeReactor) {
-        searchTextField.rx
-            .tapGesture()
-            .when(.recognized)
-            .map { _ in Reactor.Action.searchTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
         addCategoryButton.rx
             .tapGesture()
             .when(.recognized)
@@ -333,6 +323,13 @@ extension HomeView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        searchTextFieldCover.rx
+            .tapGesture()
+            .when(.recognized)
+            .map { _ in Reactor.Action.searchTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         registerPostButton.rx.tap
             .map { Reactor.Action.registerPostTapped }
             .bind(to: reactor.action)
@@ -346,12 +343,23 @@ extension HomeView {
         
         // 셀을 눌렀을 때
         tableView.rx.modelSelected(PostModel.self)
-            .subscribe(onNext: { [weak self] model in
-                guard let self = self else { return }
+            .map { Reactor.Action.postTapped($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 페이지네이션
+        tableView.rx.willDisplayCell
+            .filter { [weak self] cell, indexPath -> Bool in
+                guard let self = self else { return false }
                 
-                // TODO: 상세 뷰 이동 기능 추가
-                print(model)
-            })
+                let totalCount = self.tableView.numberOfRows(inSection: 0)
+                let triggerCount = 3
+                
+                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
+            }
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .map { _ in Reactor.Action.loadMorePosts }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
     
@@ -384,7 +392,7 @@ extension HomeView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                // TODO: 검색 뷰 이동 기능 추가
+                self.navigationController?.pushViewController(SearchView(), animated: false)
             })
             .disposed(by: disposeBag)
         
@@ -425,31 +433,23 @@ extension HomeView {
             })
             .disposed(by: disposeBag)
         
+        reactor.pulse(\.$shouldPushPostDetailView)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(PostDetailView(postId: model.id), animated: true)
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.posts }
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(
                 cellIdentifier: PostListTableViewCell.identifier,
                 cellType: PostListTableViewCell.self
             )) { index, model, cell in
-                let isLast = index == reactor.currentState.posts.count - 1
-                
-                cell.configureUI(model: model, isLast: isLast)
+                cell.configureUI(model: model)
             }
-            .disposed(by: disposeBag)
-        
-        // 페이지네이션
-        tableView.rx.willDisplayCell
-            .filter { [weak self] cell, indexPath -> Bool in
-                guard let self = self else { return false }
-                
-                let totalCount = self.tableView.numberOfRows(inSection: 0)
-                let triggerCount = 3
-                
-                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
-            }
-            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
-            .map { _ in Reactor.Action.loadMorePosts }
-            .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.isRefreshing }
@@ -460,9 +460,10 @@ extension HomeView {
     }
     
     private func addCategoryAll() {
-        let categoryAll = CategorySelected()
-        categoryAll.text = String(localized: "CategoryAll")
-        categoriesStackView.addArrangedSubview(categoryAll)
+        let view = CategorySelected()
+        view.text = String(localized: "All", table: "Category")
+        
+        categoriesStackView.addArrangedSubview(view)
     }
     
     private func updateCategoriesStackView(_ selectedCategories: [String]) {
@@ -474,11 +475,10 @@ extension HomeView {
             addCategoryAll()
         } else {
             selectedCategories.forEach {
-                let categoryString = NSLocalizedString("Category\($0)", comment: "Category \($0)")
-                let category = CategorySelected()
-                category.text = categoryString
+                let view = CategorySelected()
+                view.text = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
                 
-                categoriesStackView.addArrangedSubview(category)
+                categoriesStackView.addArrangedSubview(view)
             }
         }
         

@@ -20,6 +20,8 @@ class NicknameSettingReactor: Reactor {
     let initialState = State()
     private let disposeBag = DisposeBag()
     
+    private let networkManager = SignInNetworkManager()
+    
     enum Action {
         case backButtonTapped // 뒤로가기 버튼 클릭
         case nicknameChanged(String)
@@ -52,12 +54,16 @@ class NicknameSettingReactor: Reactor {
         switch action {
         case .backButtonTapped:
             return Observable.just(.setBackButtonTapped)
+            
         case .nicknameChanged(let nickname):
             return Observable.just(.setNickname(nickname))
+            
         case .profileImageSelected(let image):
             return Observable.just(.setProfileImage(image))
+            
         case .nextButtonTapped:
             return saveProfile()
+            
         case .cameraImageTapped:
             return Observable.just(.showImagePicker)
         }
@@ -65,22 +71,30 @@ class NicknameSettingReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
+        
         switch mutation {
         case .setBackButtonTapped:
             newState.shouldPopViewController = ()
+            
         case .setNickname(let nickname):
             newState.nickname = nickname
+            
         case .setProfileImage(let image):
             newState.profileImage = image
+            
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
+            
         case .setProfileSaved:
             newState.profileSaved = ()
+            
         case .setError(let message):
             newState.errorMessage = message
+            
         case .showImagePicker:
             newState.shouldShowImagePicker = ()
         }
+        
         return newState
     }
     
@@ -95,8 +109,7 @@ class NicknameSettingReactor: Reactor {
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
-            
-            NetworkManager.shared.saveProfile(nickname: nickname, profileImage: profileImage)
+            networkManager.saveProfile(nickname: nickname, profileImage: profileImage)
                 .asObservable()
                 .flatMap { _ -> Observable<Mutation> in
                     return Observable.just(.setProfileSaved)

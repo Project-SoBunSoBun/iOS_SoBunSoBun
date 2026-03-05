@@ -85,7 +85,7 @@ class SettleUp1stStepView: UIViewController {
     private let titleLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpRegisterItem"),
+            string: String(localized: "SettleUpRegisterItem", table: "SettleUp"),
             attributes: title24.attributes(alignment: .left)
         )
         lb.attributedText = attributedText
@@ -107,7 +107,7 @@ class SettleUp1stStepView: UIViewController {
     // 등록된 상품 수량 라벨
     private let subtitleLabel: UILabel = {
         let lb = UILabel()
-        let format = String(localized: "SettleUpItemRegistered")
+        let format = String(localized: "SettleUpItemRegistered", table: "SettleUp")
         let attributedText = NSAttributedString(
             string: String(format: format, 0),
             attributes: body14.attributes(alignment: .center)
@@ -134,7 +134,7 @@ class SettleUp1stStepView: UIViewController {
     private let itemNameLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpItemName"),
+            string: String(localized: "SettleUpItemName", table: "SettleUp"),
             attributes: title14.attributes(alignment: .left)
         )
         
@@ -151,7 +151,7 @@ class SettleUp1stStepView: UIViewController {
         tf.layer.borderColor = UIColor.primary100.cgColor
         tf.textColor = .neutral900
         tf.backgroundColor = .backgroundWhite
-        tf.placeholder = String(localized: "SettleUpItemNamePlaceholder")
+        tf.placeholder = String(localized: "SettleUpItemNamePlaceholder", table: "SettleUp")
         
         return tf
     }()
@@ -160,7 +160,7 @@ class SettleUp1stStepView: UIViewController {
     private let unitLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpUnit"),
+            string: String(localized: "SettleUpUnit", table: "SettleUp"),
             attributes: title14.attributes(alignment: .left)
         )
         
@@ -194,7 +194,7 @@ class SettleUp1stStepView: UIViewController {
     
     // 단위 textField
     private let itemCountTextField = {
-        let tf = RightViewTextField(rightText: String(localized: "Count"))
+        let tf = RightViewTextField(rightText: String(localized: "Count", table: "SettleUp"))
         tf.keyboardType = .numberPad
         
         return tf
@@ -204,7 +204,7 @@ class SettleUp1stStepView: UIViewController {
     private let amountLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpAmount"),
+            string: String(localized: "SettleUpAmount", table: "SettleUp"),
             attributes: title14.attributes(alignment: .left)
         )
         lb.attributedText = attributedText
@@ -215,21 +215,21 @@ class SettleUp1stStepView: UIViewController {
     
     // 금액 textField
     private let itemAmountTextField = {
-        let tf = RightViewTextField(rightText: String(localized: "Won"))
+        let tf = RightViewTextField(rightText: String(localized: "KRW", table: "SettleUp"))
         tf.keyboardType = .numberPad
         
         return tf
     }()
     
     // 등록하기 버튼
-    private let registerButton = Button(title: String(localized: "Register")
+    private let registerButton = Button(title: String(localized: "Register", table: "Common")
     )
     
     // 등록된 상품 Label
     private let registeredItemLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpRegisteredItem"),
+            string: String(localized: "SettleUpRegisteredItem", table: "SettleUp"),
             attributes: title18.attributes(alignment: .left)
         )
         lb.attributedText = attributedText
@@ -257,7 +257,7 @@ class SettleUp1stStepView: UIViewController {
     private let emptyStateLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpRegisterEmpty"),
+            string: String(localized: "SettleUpRegisterEmpty", table: "SettleUp"),
             attributes: body16.attributes(alignment: .center)
         )
         lb.attributedText = attributedText
@@ -302,7 +302,7 @@ class SettleUp1stStepView: UIViewController {
     private let totalLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpTotalPrice"),
+            string: String(localized: "SettleUpTotalPrice", table: "SettleUp"),
             attributes: title18.attributes(alignment: .left)
         )
         lb.attributedText = attributedText
@@ -314,7 +314,7 @@ class SettleUp1stStepView: UIViewController {
     // 총 금액 원 Label
     private let totalPriceLabel: UILabel = {
         let lb = UILabel()
-        let won = String(localized: "Won")
+        let won = String(localized: "KRW", table: "SettleUp")
         let attributedText = NSAttributedString(
             string: "0\(won)",
             attributes: title18.attributes(alignment: .right)
@@ -336,7 +336,7 @@ class SettleUp1stStepView: UIViewController {
     }()
     
     // 정산하기 버튼
-    private let settleUpButton = Button(title: String(localized: "SettleUpStart"))
+    private let settleUpButton = Button(title: String(localized: "SettleUpStart", table: "SettleUp"))
     
     // MARK: - 생명주기
     override func viewDidLoad() {
@@ -488,7 +488,7 @@ class SettleUp1stStepView: UIViewController {
     }
     
     private func updateItemCountLabel(count: Int) {
-        let format = String(localized: "SettleUpRegisteredItemCount")
+        let format = String(localized: "SettleUpRegisteredItemCount", table: "SettleUp")
         let fullText = String(format: format, count)
         let countString = "\(count)"
         
@@ -507,7 +507,7 @@ class SettleUp1stStepView: UIViewController {
     }
     
     private func updateSubTitleLabel(count: Int) {
-        let format = String(localized: "SettleUpItemRegistered")
+        let format = String(localized: "SettleUpItemRegistered", table: "SettleUp")
         
         let attributedText = NSAttributedString(
             string: String(format: format, count),
@@ -621,12 +621,10 @@ class SettleUp1stStepView: UIViewController {
     // 삭제 알림창
     private func showDeleteItemAlert(index: Int) {
         let alert = CustomAlertView(
-            title: String(localized: "SettleUp1stStepDeleteMessage"),
-            primaryTitleKey: String(localized: "Delete"),
-            cancelTitleKey: String(localized: "Cancel")
+            title: String(localized: "SettleUp1stStepDeleteMessage", table: "SettleUp"),
+            primaryTitleKey: String(localized: "Delete", table: "Common"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
-        
-        alert.isSubtitleEnabled = false
         
         alert.onPrimaryTapped = {
             self.reactor.action.onNext(.productDeleted(index))
@@ -642,12 +640,10 @@ class SettleUp1stStepView: UIViewController {
     // 수정 알림창
     private func showEditItemAlert(index: Int) {
         let alert = CustomAlertView(
-            title: String(localized: "SettleUp1stStepEditMessage"),
-            primaryTitleKey: String(localized: "ListedProductEdit"),
-            cancelTitleKey: String(localized: "Cancel")
+            title: String(localized: "SettleUp1stStepEditMessage", table: "SettleUp"),
+            primaryTitleKey: String(localized: "Edit", table: "Common"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
-        
-        alert.isSubtitleEnabled = false
         
         alert.onPrimaryTapped = {
             self.reactor.action.onNext(.productEdited(index))
@@ -777,7 +773,7 @@ extension SettleUp1stStepView {
             .subscribe(onNext: { [weak self] total in
                 guard let self = self else { return }
                 
-                let won = String(localized: "Won")
+                let won = String(localized: "KRW", table: "SettleUp")
                 let formattedNumber = priceFormatter.string(from: NSNumber(value: total)) ?? "\(total)"
                 let format = "\(formattedNumber)\(won)"
                 let attributedText = NSAttributedString(
@@ -818,7 +814,7 @@ extension SettleUp1stStepView {
             .subscribe(onNext: { [weak self] isEditing in
                 guard let self = self else { return }
                 
-                let title = isEditing ? String(localized: "ListedProductEdit") : String(localized: "Register")
+                let title = isEditing ? String(localized: "Edit", table: "Common") : String(localized: "Register", table: "Common")
                 
                 self.registerButton.changeTitle(title: title)
             })
@@ -856,7 +852,7 @@ extension SettleUp1stStepView {
         weightButton.layer.borderColor = isQuantity ? UIColor.primary100.cgColor : UIColor.primary400.cgColor
         
         // unit text 업데이트
-        itemCountTextField.updateRightViewText(isQuantity ? String(localized: "Count") : "g")
+        itemCountTextField.updateRightViewText(isQuantity ? String(localized: "Count", table: "SettleUp") : "g")
         itemCountTextField.text = ""
     }
 }

@@ -14,8 +14,8 @@ import OSLog
 class BlueMeatballsRefreshController: UIRefreshControl {
     private let disposeBag = DisposeBag()
     
-    private let gifImageView: GIFImageView = {
-        let gif = GIFImageView(fileName: "BlueMeatballs", speed: 5)
+    private lazy var gifImageView: GIFImageView = {
+        let gif = GIFImageView(fileName: "BlueMeatballs")
         gif.contentMode = .scaleAspectFit
         gif.clipsToBounds = true
         

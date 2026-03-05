@@ -12,19 +12,20 @@ import RxSwift
 import RxCocoa
 
 // window
-let scenes = UIApplication.shared.connectedScenes
-let windowScene = scenes.first as? UIWindowScene
-let window = windowScene?.windows.first
+var currentWindow: UIWindow? {
+    let windowScene = UIApplication.shared.connectedScenes
+        .filter { $0.activationState == .foregroundActive }
+        .first { $0 is UIWindowScene } as? UIWindowScene
+    
+    return windowScene?.windows.first { $0.isKeyWindow }
+}
 
 // safearea
-let safeareaTop = window?.safeAreaInsets.top ?? 0
-let safeareaBottom = window?.safeAreaInsets.bottom ?? 0
+var safeareaTop: CGFloat { currentWindow?.safeAreaInsets.top ?? 0 }
+var safeareaBottom: CGFloat { currentWindow?.safeAreaInsets.bottom ?? 0 }
 
 // API URL
 let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
-
-// 재발급 중
-var isRefreshing: Bool = false
 
 // ISO8601 Datetime에서 Date형 변환
 func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
@@ -40,7 +41,7 @@ func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String
         subsystem: "SoBunSoBun",
         category: "Utils"
     )
-
+    
     if let date = ISO8601ToDate(iso8601DatetimeString) {
         let calendar = Calendar.current
         let minutes = calendar.component(.minute, from: date)
@@ -53,9 +54,9 @@ func ISO8601ToLocalizedDateTimeString(_ iso8601DatetimeString: String) -> String
         switch Locale.current.language.languageCode?.identifier {
         case "ko":
             return minutes == 0 ?
-                    formattedString :
-                    formattedString.replacingOccurrences(of: ":", with: String(localized: "TimeHour") + " ")
-                    + String(localized: "TimeMinute")
+            formattedString :
+            formattedString.replacingOccurrences(of: ":", with: String(localized: "TimeHour", table: "Home") + " ")
+            + String(localized: "TimeMinute", table: "Home")
         default:
             return formattedString
         }
@@ -137,61 +138,12 @@ func dateToString(date: Date, format: String) -> String? {
 func dateToISO8601String(date: Date) -> String? {
     let dateFormatter = ISO8601DateFormatter()
     dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
+    
     return dateFormatter.string(from: date)
 }
 
-// 위치 권한 설정 알림창
-func showLocationSettingAlert(_ vc: UIViewController, cancelAction: (() -> Void)? = nil) {
-    let alert = CustomAlertView(
-        title: String(localized: "LocationSettingTitle")
-    )
-    
-    alert.onPrimaryTapped = {
-        // 설정 앱으로 이동
-        if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
-            UIApplication.shared.open(settingsUrl)
-        }
-    }
-    
-    alert.onCancelTapped = cancelAction
-    
-    alert.show(on: vc)
-}
-
-// alert 표시
-func showAlert(
-    title: String,
-    message: String? = nil,
-    prefferredStyle: UIAlertController.Style = .alert,
-    confirmTitle: String? = nil,
-    confirmAction: (() -> Void)? = nil,
-    cancelTitle: String? = nil,
-    cancelAction: (() -> Void)? = nil,
-    vc: UIViewController
-) {
-    let alert = UIAlertController(title: title, message: message, preferredStyle: prefferredStyle)
-    
-    if let confirmTitle, let confirmAction {
-        let action = UIAlertAction(title: confirmTitle, style: .default) { _ in
-            confirmAction()
-        }
-        
-        alert.addAction(action)
-    }
-    
-    if let cancelTitle, let cancelAction {
-        let action = UIAlertAction(title: cancelTitle, style: .cancel) { _ in
-            cancelAction()
-        }
-        
-        alert.addAction(action)
-    }
-    
-    vc.present(alert, animated: true)
-}
-
 extension Encodable {
+    /// Encodable을 Dictionary 타입으로 변환
     func toDictionary() -> [String: Any]? {
         guard let data = try? JSONEncoder().encode(self) else { return nil }
         guard let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
@@ -201,7 +153,7 @@ extension Encodable {
 }
 
 extension Reactive where Base: UITextField {
-    /// 천 단위 콤마가 포함된 숫자 텍스트
+    /// 천 단위 콤마가 포함된 숫자 텍스트로 변환
     var formattedNumericText: ControlProperty<String> {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
@@ -211,9 +163,9 @@ extension Reactive where Base: UITextField {
         let source = base.rx.text.orEmpty
             .map { [weak base] text -> String in
                 guard let base = base else { return "" }
-
+                
                 let numbers = text.filter { $0.isNumber }
-
+                
                 guard !numbers.isEmpty, let value = Int(numbers) else {
                     if base.text != "" {
                         base.text = ""
@@ -221,7 +173,7 @@ extension Reactive where Base: UITextField {
                     
                     return ""
                 }
-
+                
                 let formatted = formatter.string(from: NSNumber(value: value)) ?? numbers
                 
                 if base.text != formatted {
@@ -251,6 +203,30 @@ extension Reactive where Base: UITextField {
     }
 }
 
+extension UIImage {
+    /// 이미지 리사이즈
+    func resize(_ newSize: CGSize) -> UIImage {
+        let image = UIGraphicsImageRenderer(size: newSize).image { _ in
+            draw(in: CGRect(origin: .zero, size: newSize))
+        }
+        
+        return image.withRenderingMode(renderingMode)
+    }
+}
+
+extension String {
+    /// 줄바꿈 개수 제한
+    func limitNewLines(limit: Int = 2) -> String {
+        let pattern = "\n{\(limit + 1),}"
+        let replacement = String(repeating: "\n", count: limit)
+        
+        return self.replacingOccurrences(
+            of: pattern,
+            with: replacement,
+            options: .regularExpression
+        )
+    }
+}
 
 // 미리보기
 #if DEBUG

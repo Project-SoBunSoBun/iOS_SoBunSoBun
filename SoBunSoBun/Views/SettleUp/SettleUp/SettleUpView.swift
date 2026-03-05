@@ -15,7 +15,7 @@ import OSLog
 class SettleUpView: UIViewController {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "SettleUp.View"
+        category: "SettleUp.SettleUp.View"
     )
     
     typealias Reactor = SettleUpReactor
@@ -28,7 +28,7 @@ class SettleUpView: UIViewController {
     private let titleLabel: UILabel = {
         let title = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpStart"),
+            string: String(localized: "SettleUpStart", table: "SettleUp"),
             attributes: title24.attributes(alignment: .left)
         )
         title.attributedText = attributedText
@@ -56,7 +56,7 @@ class SettleUpView: UIViewController {
     private let tableViewEmptyDescLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpTableViewEmpty"),
+            string: String(localized: "SettleUpTableViewEmpty", table: "SettleUp"),
             attributes: body18.attributes(alignment: .center)
         )
         lb.attributedText = attributedText
@@ -155,9 +155,9 @@ class SettleUpView: UIViewController {
         }
         
         // Calculation Category
-        allCategories.text = String(localized: "SettleUpAll")
-        incompleteCategories.text = String(localized: "SettleUpIncomplete")
-        completeCategories.text = String(localized: "SettleUpComplete")
+        allCategories.text = String(localized: "SettleUpAll", table: "SettleUp")
+        incompleteCategories.text = String(localized: "SettleUpIncomplete", table: "SettleUp")
+        completeCategories.text = String(localized: "SettleUpComplete", table: "SettleUp")
         
         allCategories.isChecked = true
         
@@ -283,12 +283,12 @@ extension SettleUpView {
             switch category {
             case .all, .incomplete:
                 self.tableViewEmptyDescLabel.attributedText = NSAttributedString(
-                    string: String(localized: "SettleUpTableViewEmpty"),
+                    string: String(localized: "SettleUpTableViewEmpty", table: "SettleUp"),
                     attributes: body18.attributes(alignment: .center)
                 )
             case .complete:
                 self.tableViewEmptyDescLabel.attributedText = NSAttributedString(
-                    string: String(localized: "SettleUpTableViewCompleteEmpty"),
+                    string: String(localized: "SettleUpTableViewCompleteEmpty", table: "SettleUp"),
                     attributes: body18.attributes(alignment: .center)
                 )
             }
@@ -305,13 +305,11 @@ extension SettleUpView {
     // 삭제 알림창
     private func showDeleteAlert(id: Int) {
         let alert = CustomAlertView(
-            title: String(localized: "SettleUpDeleteMessage1st"),
-            subTitle: String(localized: "SettleUpDeleteMessage2nd"),
-            primaryTitleKey: String(localized: "Delete"),
-            cancelTitleKey: String(localized: "Cancel")
+            title: String(localized: "SettleUpDeleteMessage1st", table: "SettleUp"),
+            subTitle: String(localized: "SettleUpDeleteMessage2nd", table: "SettleUp"),
+            primaryTitleKey: String(localized: "Delete", table: "Common"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
-        
-        alert.isSubtitleEnabled = true
         
         alert.onPrimaryTapped = {
             self.reactor.action.onNext(.deleteSettleUpTapped(id: id))

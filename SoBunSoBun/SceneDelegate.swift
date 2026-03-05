@@ -23,6 +23,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             if (AuthApi.isKakaoTalkLoginUrl(url)) {
                 _ = AuthController.rx.handleOpenUrl(url: url)
             }
+            
+            // 딥링크 처리
+            DeepLinkManager.shared.handle(url: url)
         }
     }
     
@@ -30,8 +33,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         self.window = window
-        
-        window.backgroundColor = .backgroundWhite
         
         // 텍스트 입력창 밖 tap할 시 키보드 내리기
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -47,14 +48,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
            let dateRefreshTokenExpireAtKST = ISO8601ToDate(refreshTokenExpireAtKST),
            dateRefreshTokenExpireAtKST > now {
             nav = UINavigationController(rootViewController: NavigationTabView())
+            nav.isNavigationBarHidden = true
+            
+            window.rootViewController = nav
+            window.makeKeyAndVisible()
+            
+            // 딥링크 처리
+            if let urlContext = connectionOptions.urlContexts.first {
+                DeepLinkManager.shared.handle(url: urlContext.url)
+            }
         } else {
             nav = UINavigationController(rootViewController: LoginView())
+            nav.isNavigationBarHidden = true
+            
+            window.rootViewController = nav
+            window.makeKeyAndVisible()
         }
-        
-        nav.isNavigationBarHidden = true
-        
-        window.rootViewController = nav
-        window.makeKeyAndVisible()
         
         logger.debug("[저장된 ACCESS_TOKEN]\n\n\(KeyChain.shared.get(key: "ACCESS_TOKEN") ?? "KeyChain에 저장되지 않음")")
         // logger.debug("[저장된 LOGIN_TOKEN]\n\n\(KeyChain.shared.get(key: "LOGIN_TOKEN") ?? "KeyChain에 저장되지 않음")")
@@ -72,8 +81,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        // 애플 계정 연결 상태 체크
+        AuthManager.shared.checkAppleAuthentication()
     }
     
     func sceneWillResignActive(_ scene: UIScene) {

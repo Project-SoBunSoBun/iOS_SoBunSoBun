@@ -1,0 +1,45 @@
+//
+//  SettleUpAPIModels.swift
+//  SoBunSoBun
+//
+//  Created by 허성필 on 2/13/26.
+//
+
+import Foundation
+
+// MARK: - 정산
+struct SettleUpModel: Decodable {
+    let content: [SettleUpContentModel]
+    let pageable: SettleUpPageableModel
+    let totalElements, totalPages: Int
+    let last: Bool
+    let size, number: Int
+    let sort: SettleUpSortModel
+    let numberOfElements: Int
+    let first, empty: Bool
+}
+
+struct SettleUpContentModel: Decodable {
+    let id, groupPostId: Int
+    let groupPostTitle: String
+    let settledById: Int
+    let settledByNickname: String?
+    let status: Int
+    let title, locationName: String
+    let meetAt, createdAt, updatedAt: String
+}
+
+struct SettleUpPageableModel: Decodable {
+    let pageNumber, pageSize: Int
+    let sort: SettleUpSortModel
+    let offset: Int
+    let paged, unpaged: Bool
+}
+
+struct SettleUpSortModel: Decodable {
+    let sorted, empty, unsorted: Bool
+}
+
+struct SettleUpMyRequestModel: Encodable {
+    let activeOnly, page, size: Int
+}

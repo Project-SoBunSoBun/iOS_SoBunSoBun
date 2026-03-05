@@ -25,10 +25,10 @@ class NavigationTabView: UIViewController {
     private lazy var viewControllers: [UIViewController] = [homeView, chatListView, settleUpView, myPageView]
     
     private let buttons: [TabBarButton] = [
-        TabBarButton(icons: [.greyFilledHome, .blueFilledHome], title: String(localized: "Home")),
-        TabBarButton(icons: [.greyFilledMessage, .blueFilledMessage], title: String(localized: "Chat")),
-        TabBarButton(icons: [.greyFilledReceipt, .blueFilledReceipt], title: String(localized: "SettleUp")),
-        TabBarButton(icons: [.greyFilledUser, .blueFilledUser], title: String(localized: "Mypage"))
+        TabBarButton(icons: [.greyFilledHome, .blueFilledHome], title: String(localized: "Home", table: "Common")),
+        TabBarButton(icons: [.greyFilledMessage, .blueFilledMessage], title: String(localized: "Chat", table: "Common")),
+        TabBarButton(icons: [.greyFilledReceipt, .blueFilledReceipt], title: String(localized: "SettleUp", table: "Common")),
+        TabBarButton(icons: [.greyFilledUser, .blueFilledUser], title: String(localized: "Mypage", table: "Common"))
     ]
     
     private var currentVC: UIViewController? = nil
@@ -105,12 +105,14 @@ extension NavigationTabView {
         homeView.shouldShowLocationSettingAlert
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: {
-                showLocationSettingAlert(self)
+                self.showLocationSettingAlert()
             })
             .disposed(by: disposeBag)
     }
     
     private func bindAction(reactor: NavigationTabReactor) {
+        reactor.action.onNext(.viewDidLoad)
+        
         bottomNavigationBar.didChangeIndex
             .map { Reactor.Action.selectIndex($0) }
             .bind(to: reactor.action)
@@ -130,6 +132,37 @@ extension NavigationTabView {
                 bottomNavigationBar.updateSelectedIndex(index: index)
             })
             .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.errorMessage }
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] message in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Common"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.show(on: self)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func showLocationSettingAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "LocationSettingTitle", table: "Common"),
+            primaryTitleKey: String(localized: "GoToSetting", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            // 설정 앱으로 이동
+            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                UIApplication.shared.open(settingsUrl)
+            }
+        }
+        
+        alert.show(on: self)
     }
 }
 

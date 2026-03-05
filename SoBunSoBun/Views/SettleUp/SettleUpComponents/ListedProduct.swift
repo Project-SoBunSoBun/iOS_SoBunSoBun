@@ -64,7 +64,7 @@ class ListedProduct: UIView {
         let bt = UIButton()
         var config = UIButton.Configuration.filled()
         
-        var attributedString = NSAttributedString(string: String(localized: "ListedProductEdit"), attributes: title14.attributes())
+        var attributedString = NSAttributedString(string: String(localized: "Edit", table: "Common"), attributes: title14.attributes())
         
         config.attributedTitle = .init(attributedString)
         config.baseBackgroundColor = .backgroundWhite
@@ -128,20 +128,20 @@ class ListedProduct: UIView {
         itemNameLabel.lineBreakMode = .byTruncatingTail
         
         // 상품 수량 or 중량,  총 가격
-        let won = String(localized: "Won")
+        let won = String(localized: "KRW", table: "SettleUp")
         let countString = formatter.string(from: NSNumber(value: itemCount)) ?? "\(itemCount)"
         let priceString = formatter.string(from: NSNumber(value: itemPrice)) ?? "\(itemPrice)"
         let totalText: String
         
         switch unitIndex {
         case 1:
-            let format = String(localized: "ListedProductItemTotal")
+            let format = String(localized: "ListedProductItemTotal", table: "SettleUp")
             totalText = String(format: format, countString, priceString)
         case 2:
             totalText = "\(countString)g \(priceString)\(won)"
         
         default:
-            let format = String(localized: "ListedProductItemTotal")
+            let format = String(localized: "ListedProductItemTotal", table: "SettleUp")
             totalText = String(format: format, countString, priceString)
         }
         

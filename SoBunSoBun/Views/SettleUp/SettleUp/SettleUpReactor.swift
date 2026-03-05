@@ -18,10 +18,14 @@ enum SettleUpCategory: Int {
 class SettleUpReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "SettleUp.Reactor"
+        category: "SettleUp.SettleUp.Reactor"
     )
     
     let initialState = State()
+    
+    private let disposeBag = DisposeBag()
+    
+    private let networkManager = SettleUpNetworkManager()
     
     enum Action {
         case viewDidLoad
@@ -48,11 +52,13 @@ class SettleUpReactor: Reactor {
             
         case .viewDidLoad:
             return loadItems()
+            
         case .categorySelected(let category):
             return Observable.concat([
                 Observable.just(.setSelectedCategory(category)),
                 loadItems(for: category)
             ])
+            
         case .deleteSettleUpTapped(id: let id):
             return deleteSettleUp(id: id)
         }
@@ -64,10 +70,13 @@ class SettleUpReactor: Reactor {
             
         case .setSelectedCategory(let category):
             newState.selectedCategory = category
+            
         case .setItems(let items):
             newState.items = items
+            
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
+            
         case .setError(let message):
             newState.errorMessage = message
         }
@@ -76,21 +85,22 @@ class SettleUpReactor: Reactor {
     
     private func loadItems(for category: SettleUpCategory? = nil) -> Observable<Mutation> {
         let selectedCategory = category ?? currentState.selectedCategory
-        
         let activeOnly: Int
+        
         switch selectedCategory {
         case .all:
             activeOnly = 0
+            
         case .incomplete:
             activeOnly = 1
+            
         case .complete:
             activeOnly = 2
         }
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
-            
-            NetworkManager.shared.mySettleUps(activeOnly: activeOnly, page: 0, size: 20)
+            networkManager.mySettleUps(activeOnly: activeOnly, page: 0, size: 20)
                 .asObservable()
                 .flatMap { SettleUpModel -> Observable<Mutation> in
                     let items: [SettleUpItemModel] = SettleUpModel.content.map { content in
@@ -113,16 +123,14 @@ class SettleUpReactor: Reactor {
                     self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
                     return Observable.just(.setError("정산 목록을 불러오는데 실패했습니다."))
                 },
-            
             Observable.just(.setLoading(false))
         ])
     }
     
     private func deleteSettleUp(id: Int) -> Observable<Mutation> {
         return Observable.concat([
-            .just(.setLoading(true)),
-            
-            NetworkManager.shared.deleteSettleUp(id: id)
+            Observable.just(.setLoading(true)),
+            networkManager.deleteSettleUp(id: id)
                 .asObservable()
                 .flatMap { [weak self] _ -> Observable<Mutation> in
                     guard let self = self else { return Observable.empty() }
@@ -137,7 +145,6 @@ class SettleUpReactor: Reactor {
                     self.logger.critical("정산 삭제 실패: \(error.localizedDescription)")
                     return Observable.just(.setError("정산을 삭제하지 못했습니다."))
                 },
-            
             Observable.just(.setLoading(false))
         ])
     }

@@ -6,15 +6,23 @@
 //
 
 import UIKit
-import RxSwift
 import SnapKit
+import RxSwift
 
 class PostListTableViewCell: UITableViewCell {
     static let identifier = "PostListTableViewCell"
     
+    private let view = PostListCellView()
     private var disposeBag = DisposeBag()
     
-    private var view: PostList?
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        configureUI()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,8 +32,6 @@ class PostListTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
-        view?.removeFromSuperview()
-        view = nil
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -34,24 +40,21 @@ class PostListTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func configureUI(model: PostModel, isLast: Bool = false) {
+    private func configureUI() {
         selectionStyle = .none
         backgroundColor = .clear
         contentView.backgroundColor = .clear
         
-        let view = PostList(model: model)
-        
         contentView.addSubview(view)
         
         view.snp.makeConstraints { make in
-            make.edges.equalToSuperview().priority(.high)
-            make.width.equalToSuperview()
+            make.horizontalEdges.top.equalToSuperview()
+            make.bottom.equalToSuperview().priority(.high)
         }
-        
-        self.view = view
-        
-        // TODO: 현재 이 코드를
-        contentView.setNeedsLayout()
-        contentView.layoutIfNeeded()
+    }
+    
+    func configureUI(model: PostModel) {
+        view.configureUI(model: model)
+        view.layoutIfNeeded()
     }
 }

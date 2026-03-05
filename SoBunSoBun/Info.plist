@@ -2,35 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>VWORLD_CERT_KEY</key>
-	<string>$(VWORLD_CERT_KEY)</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>$(NSLocationWhenInUseUsageDescription)</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>$(NSPhotoLibraryUsageDescription)</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>$(NSPhotoLibraryAddUsageDescription)</string>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Pretendard-Regular.otf</string>
-		<string>Pretendard-SemiBold.otf</string>
-	</array>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
 	<key>API_URL</key>
 	<string>$(API_URL)</string>
-	<key>KAKAO_APP_KEY</key>
-	<string>$(KAKAO_APP_KEY)</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>kakaokompassauth</string>
-		<string>kakaolink</string>
-	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -41,6 +14,32 @@
 				<string>kakao$(KAKAO_APP_KEY)</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sobunsobun</string>
+			</array>
+		</dict>
+	</array>
+	<key>KAKAO_APP_KEY</key>
+	<string>$(KAKAO_APP_KEY)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakaotalk</string>
+		<string>kakaokompassauth</string>
+		<string>kakaolink</string>
+	</array>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Pretendard-Regular.otf</string>
+		<string>Pretendard-SemiBold.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
@@ -59,5 +58,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>VWORLD_CERT_KEY</key>
+	<string>$(VWORLD_CERT_KEY)</string>
 </dict>
 </plist>

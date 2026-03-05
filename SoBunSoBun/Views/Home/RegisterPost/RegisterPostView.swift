@@ -21,18 +21,17 @@ class RegisterPostView: UIViewController {
     private static let memberMaxValue: Int = 10
     
     // MARK: - 디자인 요소
-    private static func titleLabel() -> UILabel {
-        let lb = UILabel()
-        lb.font = title16.font
-        lb.textColor = .neutral900
+    private func titleAttributes() -> [NSAttributedString.Key: Any] {
+        var attributes: [NSAttributedString.Key: Any] = title16.attributes()
+        attributes[.foregroundColor] = UIColor.neutral900
         
-        return lb
+        return attributes
     }
     
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
         tnb.parentViewController = self
-        tnb.title = String(localized: "RegisterPostTitle")
+        tnb.title = String(localized: "RegisterPostTitle", table: "Home")
         
         return tnb
     }()
@@ -49,30 +48,30 @@ class RegisterPostView: UIViewController {
     private let infoLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
-        let attributedText = NSAttributedString(string: String(localized: "RegisterPostInfo"), attributes: body12.attributes())
+        let attributedText = NSAttributedString(string: String(localized: "RegisterPostInfo", table: "Home"), attributes: body12.attributes())
         lb.attributedText = attributedText
         lb.textColor = .neutral300
         
         return lb
     }()
     
-    private let groupTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "GroupTitle")
+    private lazy var groupTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "GroupTitle", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let groupTitleTextField: TextFieldUnderline = {
         let tfu = TextFieldUnderline(maxLength: 40)
-        tfu.placeholder = String(localized: "InsertTitle")
+        tfu.placeholder = String(localized: "InsertTitle", table: "Home")
         
         return tfu
     }()
     
-    private let keywordTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "ItemKeywords")
+    private lazy var keywordTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "ItemKeywords", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
@@ -139,9 +138,9 @@ class RegisterPostView: UIViewController {
     
     private let minimumContainerView: UIStackView = fieldContainerView()
     
-    private let minimumTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "MinimumMembers")
+    private lazy var minimumTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "MinimumMembers", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
@@ -159,9 +158,9 @@ class RegisterPostView: UIViewController {
     
     private let maximumContainerView: UIStackView = fieldContainerView()
     
-    private let maximumTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "MaximumMembers")
+    private lazy var maximumTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "MaximumMembers", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
@@ -177,16 +176,16 @@ class RegisterPostView: UIViewController {
         return tfm
     }()
     
-    private let locationTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "MeetingLocation")
+    private lazy var locationTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "MeetingLocation", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let locationTextField: TextFieldUnderline = {
         let tfu = TextFieldUnderline(maxLength: 40)
-        tfu.placeholder = String(localized: "InsertLocation")
+        tfu.placeholder = String(localized: "InsertLocation", table: "Home")
         
         return tfu
     }()
@@ -195,25 +194,25 @@ class RegisterPostView: UIViewController {
     
     private let dateContainerView: UIStackView = fieldContainerView()
     
-    private let dateTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "Date")
+    private lazy var dateTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "Date", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let dateTextField: TextFieldPicker = {
         let tfp = TextFieldPicker(icon: .blackCalendar)
-        tfp.placeholder = String(localized: "DatePlaceholder")
+        tfp.placeholder = String(localized: "DatePlaceholder", table: "Home")
         
         return tfp
     }()
     
     private let timeContainerView: UIStackView = fieldContainerView()
     
-    private let timeTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "Time")
+    private lazy var timeTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "Time", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
@@ -232,50 +231,57 @@ class RegisterPostView: UIViewController {
         var attributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.primary400
         
-        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostDeadlineInfoMessage"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostDeadlineInfoMessage", table: "Home"), attributes: attributes)
         
         return lb
     }()
     
-    private let plannedItemsTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "PlannedItems")
+    private lazy var plannedItemsTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "PlannedItems", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let plannedItemsTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 120)
-        ahtv.placeholder = String(localized: "InsertContent")
+        let ahtv = AutoHeightTextView(minHeight: 112, maxLength: 120, fontStyle: body16)
+        ahtv.placeholder = String(localized: "InsertContent", table: "Common")
+        ahtv.textContainerInset = .init(top: 16, left: 16, bottom: 16, right: 16)
+        ahtv.showCharactersCount = true
+        ahtv.layer.cornerRadius = 16
+        ahtv.layer.borderWidth = 1
+        ahtv.layer.borderColor = UIColor.primary100.cgColor
+        ahtv.frame = CGRectInset(ahtv.frame, -ahtv.layer.borderWidth, -ahtv.layer.borderWidth)
+        ahtv.isScrollEnabled = false
         
         return ahtv
     }()
     
-    private let notesTitleLabel: UILabel = {
-        let lb = titleLabel()
-        lb.text = String(localized: "Notes")
+    private lazy var notesTitleLabel: UILabel = {
+        let lb = UILabel()
+        lb.attributedText = NSAttributedString(string: String(localized: "Notes", table: "Home"), attributes: titleAttributes())
         
         return lb
     }()
     
     private let notesTextView: AutoHeightTextView = {
-        let ahtv = AutoHeightTextView(minHeight: 240, maxLength: 250)
-        ahtv.placeholder = String(localized: "InsertContent")
+        let ahtv = AutoHeightTextView(minHeight: 240, maxLength: 250, fontStyle: body16)
+        ahtv.placeholder = String(localized: "InsertContent", table: "Common")
+        ahtv.textContainerInset = .init(top: 16, left: 16, bottom: 16, right: 16)
+        ahtv.showCharactersCount = true
+        ahtv.layer.cornerRadius = 16
+        ahtv.layer.borderWidth = 1
+        ahtv.layer.borderColor = UIColor.primary100.cgColor
+        ahtv.frame = CGRectInset(ahtv.frame, -ahtv.layer.borderWidth, -ahtv.layer.borderWidth)
+        ahtv.isScrollEnabled = false
         
         return ahtv
     }()
     
-    private let registerButton = Button(title: String(localized: "Register"))
+    private let registerButton = Button(title: String(localized: "Register", table: "Common"))
     
-    private let loadingView: LoadingView = {
+    private lazy var loadingView: LoadingView = {
         let view = LoadingView()
-        view.isHidden = true
-        
-        return view
-    }()
-    
-    private let successView: RegisterPostSuccessView = {
-        let view = RegisterPostSuccessView()
         view.isHidden = true
         
         return view
@@ -293,14 +299,14 @@ class RegisterPostView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        view.addSubview(topNavigationBar)
+        [topNavigationBar, scrollView, loadingView].forEach {
+            view.addSubview($0)
+        }
         
         topNavigationBar.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(4)
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
-        
-        view.addSubview(scrollView)
         
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
@@ -308,15 +314,7 @@ class RegisterPostView: UIViewController {
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top) // 키보드 비활성화 시에는 safeAreaLayoutGuide bottom에 위치
         }
         
-        view.addSubview(loadingView)
-        
         loadingView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        view.addSubview(successView)
-        
-        successView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
@@ -444,7 +442,7 @@ class RegisterPostView: UIViewController {
         }
     }
 }
- 
+
 extension RegisterPostView {
     // reactor와 view 연결
     private func bind(reactor: RegisterPostReactor) {
@@ -571,6 +569,7 @@ extension RegisterPostView {
         
         reactor.state.map { !$0.isLoading }
             .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
             .bind(to: loadingView.rx.isHidden)
             .disposed(by: disposeBag)
         
@@ -579,25 +578,28 @@ extension RegisterPostView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                showAlert(
-                    title: String(localized: "Error"),
-                    message: message,
-                    confirmTitle: String(localized: "Confirm"),
-                    confirmAction: {},
-                    vc: self
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Common"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$isSuccess)
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
+            .withLatestFrom(reactor.state.map {$0.postId})
+            .subscribe(onNext: { [weak self] postId in
                 guard let self = self else { return }
                 
-                successView.isHidden = false
-                
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                    self.navigationController?.popViewController(animated: true)
+                DispatchQueue.main.async {
+                    if let postId {
+                        self.navigationController?.pushViewController(PostDetailView(postId: postId, isNew: true), animated: true)
+                    } else {
+                        self.navigationController?.popViewController(animated: true)
+                    }
                 }
             })
             .disposed(by: disposeBag)
@@ -613,11 +615,10 @@ extension RegisterPostView {
         
         if !selectedCategories.isEmpty {
             selectedCategories.forEach {
-                let categoryString = NSLocalizedString("Category\($0)", comment: "Category \($0)")
-                let category = CategorySelected()
-                category.text = categoryString
+                let view = CategorySelected()
+                view.text = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
                 
-                categoriesStackView.addArrangedSubview(category)
+                categoriesStackView.addArrangedSubview(view)
             }
         }
     }
@@ -652,7 +653,7 @@ extension RegisterPostView {
             contentViewController: sheetView,
             height: contentViewHeight,
             cornerRadius: 24)
-
+        
         present(bottomSheet, animated: true)
         
         sheetView.selectedDateRelay
@@ -676,7 +677,7 @@ extension RegisterPostView {
         let minuteString = separatedTimeString?[1]
         
         let sheetView = TimePickerView(
-            title: String(localized: "RegisterPostTimePickerTitle"),
+            title: String(localized: "RegisterPostTimePickerTitle", table: "Home"),
             selectedHour: hourString,
             selectedMinute: minuteString,
             selectedPeriod: periodString
@@ -691,7 +692,7 @@ extension RegisterPostView {
             contentViewController: sheetView,
             height: contentViewHeight,
             cornerRadius: 24)
-
+        
         present(bottomSheet, animated: true)
         
         sheetView.selectedTimeRelay
