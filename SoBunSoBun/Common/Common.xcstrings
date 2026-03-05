@@ -97,6 +97,18 @@
         }
       }
     },
+    "DeleteCompleted" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제가 완료되었습니다."
+          }
+        }
+      }
+    },
     "DenyNicknameInput" : {
       "comment" : "Common",
       "extractionState" : "manual",

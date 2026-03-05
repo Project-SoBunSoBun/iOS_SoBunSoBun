@@ -241,6 +241,30 @@
         }
       }
     },
+    "DeleteAlertSubtitle" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "그래도 삭제하시겠습니까?"
+          }
+        }
+      }
+    },
+    "DeleteAlertTitle" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내 글을 삭제하면 해당 글을 복구할 수 없습니다."
+          }
+        }
+      }
+    },
     "DescribeYourBug" : {
       "comment" : "Settings",
       "extractionState" : "manual",

@@ -1,25 +1,47 @@
 //
-//  UserPagePostListCellView.swift
+//  UserPagePostListDeletableCellView.swift
 //  SoBunSoBun
 //
-//  Created by 김태은 on 11/2/26.
+//  Created by 허성필 on 2/27/26.
 //
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
+import RxGesture
 
-class UserPagePostListCellView: UIView {
+class UserPagePostListDeletableCellView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         configureUI()
+        bind()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private let disposeBag = DisposeBag()
+    
+    let didTap = PublishRelay<UIButton>()
+    
     // MARK: - 디자인 요소
     private let categoriesWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
+    
+    private let menuButton: UIButton = {
+        var config = UIButton.Configuration.plain()
+        config.image = .greyHorizontalDot
+        config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+        
+        let bt = UIButton(configuration: config)
+        
+        bt.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+        
+        return bt
+    }()
     
     private let titleLabel: UILabel = {
         let lb = UILabel()
@@ -27,25 +49,6 @@ class UserPagePostListCellView: UIView {
         
         return lb
     }()
-    
-    // stackview 컴포넌트
-    private func descStackView() -> UIStackView {
-        let sv = UIStackView()
-        sv.axis = .horizontal
-        sv.spacing = 4
-        sv.alignment = .top
-        
-        return sv
-    }
-    
-    // 아이콘 컴포넌트
-    private func iconImage(image: UIImage) -> UIImageView {
-        let iv = UIImageView()
-        iv.image = image.resize(.init(width: 20, height: 20))
-        iv.contentMode = .scaleAspectFit
-        
-        return iv
-    }
     
     // 설명(장소 및 시간) attributes 컴포넌트
     private func descAttributes() -> [NSAttributedString.Key: Any] {
@@ -61,6 +64,17 @@ class UserPagePostListCellView: UIView {
         
         return lb
     }()
+    
+    // stackview 컴포넌트
+    private func descStackView() -> UIStackView {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 8
+        sv.alignment = .firstBaseline
+        sv.distribution = .fill
+        
+        return sv
+    }
     
     private lazy var dateStackView: UIStackView = descStackView()
     
@@ -79,13 +93,20 @@ class UserPagePostListCellView: UIView {
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
         
-        [categoriesWrappingView, titleLabel, locationLabel, dateStackView].forEach {
+        [categoriesWrappingView, menuButton, titleLabel, locationLabel, dateStackView].forEach {
             addSubview($0)
         }
         
         // 카테고리
         categoriesWrappingView.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalTo(menuButton.snp.leading).offset(-8)
+            make.top.equalToSuperview().offset(16)
+        }
+        
+        // 메뉴 버튼
+        menuButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(16)
         }
         
@@ -106,7 +127,10 @@ class UserPagePostListCellView: UIView {
             dateStackView.addArrangedSubview($0)
         }
         
-        dateLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        dateLabel.setContentHuggingPriority(.init(249), for: .horizontal)
+        joinedLabel.setContentHuggingPriority(.required, for: .horizontal)
+        
+        dateLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         joinedLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         dateStackView.snp.makeConstraints { make in
@@ -147,5 +171,18 @@ class UserPagePostListCellView: UIView {
         joinedAttributes[.foregroundColor] = model.joinedMembers + 1 >= model.maxMembers ? UIColor.primary400 : UIColor.neutral300
         
         joinedLabel.attributedText = NSAttributedString(string: "\(model.joinedMembers)/\(model.maxMembers)", attributes: joinedAttributes)
+    }
+}
+
+extension UserPagePostListDeletableCellView {
+    private func bind() {
+        menuButton.rx.tap
+            .observe(on: MainScheduler.instance) 
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                didTap.accept(self.menuButton)
+            })
+            .disposed(by: disposeBag)
     }
 }
