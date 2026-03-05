@@ -22,23 +22,25 @@ class UserPagePostListDeletableCellView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func dotIconFrameInWindow() -> CGRect {
-        return dotIcon.convert(dotIcon.bounds, to: nil)
-    }
-    
     private let disposeBag = DisposeBag()
     
-    let didTap = PublishRelay<Void>()
+    let didTap = PublishRelay<UIButton>()
     
     // MARK: - 디자인 요소
     private let categoriesWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
     
-    private let dotIcon =  {
-        let iv = UIImageView()
-        iv.image = .greyHorizontalDot.resize(.init(width: 24, height: 24))
-        iv.contentMode = .scaleAspectFit
+    private let dotIcon: UIButton =  {
+        var config = UIButton.Configuration.plain()
+        config.image = .greyHorizontalDot
+        config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
-        return iv
+        let bt = UIButton(configuration: config)
+        
+        bt.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+        
+        return bt
     }()
     
     private let titleLabel: UILabel = {
@@ -106,7 +108,6 @@ class UserPagePostListDeletableCellView: UIView {
         dotIcon.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(16)
-            make.size.equalTo(24)
         }
         
         // 제목
@@ -171,13 +172,17 @@ class UserPagePostListDeletableCellView: UIView {
         
         joinedLabel.attributedText = NSAttributedString(string: "\(model.joinedMembers)/\(model.maxMembers)", attributes: joinedAttributes)
     }
-    
+}
+
+extension UserPagePostListDeletableCellView {
     private func bind() {
-        dotIcon.rx
-            .tapGesture()
-            .when(.recognized)
-            .map { _ in () }
-            .bind(to: didTap)
+        dotIcon.rx.tap
+            .observe(on: MainScheduler.instance) 
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                didTap.accept(self.dotIcon)
+            })
             .disposed(by: disposeBag)
     }
 }

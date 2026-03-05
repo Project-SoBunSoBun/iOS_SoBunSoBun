@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import RxSwift
+import RxCocoa
 
 class UserPagePostListDeletableTableViewCell: UITableViewCell {
     static let identifier = "UserPAgePostListDeletableTableViewCell"
@@ -19,15 +20,14 @@ class UserPagePostListDeletableTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         configureUI()
+        bind()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    var didTapMenu: Observable<Void> {
-        return view.didTap.asObservable()
-    }
+    let didTap = PublishRelay<UIButton>()
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -43,6 +43,7 @@ class UserPagePostListDeletableTableViewCell: UITableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         disposeBag = DisposeBag()
+        bind()
     }
 
     private func configureUI() {
@@ -62,8 +63,12 @@ class UserPagePostListDeletableTableViewCell: UITableViewCell {
         view.configureUI(model: model)
         view.layoutIfNeeded()
     }
-    
-    func dotIconFrameInWindow() -> CGRect {
-        return view.dotIconFrameInWindow()
+}
+
+extension UserPagePostListDeletableTableViewCell {
+    func bind() {
+        view.didTap
+            .bind(to: didTap)
+            .disposed(by: disposeBag)
     }
 }

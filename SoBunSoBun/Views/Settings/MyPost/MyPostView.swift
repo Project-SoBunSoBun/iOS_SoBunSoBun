@@ -122,9 +122,9 @@ class MyPostView: UIViewController {
         
         // 드롭다운뷰
         dropDownView.snp.makeConstraints { make in
-            make.width.equalTo(70)
-            make.top.equalTo(view.snp.top)
             make.trailing.equalTo(view.snp.trailing)
+            make.top.equalTo(view.snp.top)
+            make.width.equalTo(70)
         }
         
         loadingView.snp.makeConstraints { make in
@@ -206,22 +206,17 @@ extension MyPostView {
                 
                 cell.configureUI(model: model)
                 
-                cell.disposeBag = DisposeBag()
-                
                 // 메뉴 버튼 클릭
-                cell.didTapMenu
-                    .subscribe(onNext: { [weak self] _ in
+                cell.didTap
+                    .subscribe(onNext: { [weak self] button in
                         guard let self = self else { return }
                         
-                        let posts = self.reactor.currentState.myPosts
-                        guard posts.indices.contains(index) else { return }
-                        let post = posts[index]
-                        
                         // 드롭다운 위치 계산 및 표시
-                        let dotIconFrame = cell.dotIconFrameInWindow()
+                        let dotIconFrame = button.convert(button.bounds, to: view)
+                        
                         self.updateDropDownPosition(frame: dotIconFrame)
                         
-                        self.reactor.action.onNext(.openMenu(id: post.id))
+                        self.reactor.action.onNext(.openMenu(id: model.id))
                     })
                     .disposed(by: cell.disposeBag)
             }
@@ -252,7 +247,6 @@ extension MyPostView {
                 guard let self = self else { return }
                 
                 self.dropDownView.setOpen(isOpen: isOpen)
-                self.tableView.isScrollEnabled = !isOpen
                 self.backgroundDimView.isHidden = !isOpen
             })
             .disposed(by: disposeBag)
@@ -291,12 +285,11 @@ extension MyPostView {
         let topOffset: CGFloat = 4
         let trailingInset: CGFloat = 24 // 테이블 뷰의 셀에서 안쪽으로 8
         
-        dropDownView.snp.updateConstraints { make in
+        dropDownView.snp.remakeConstraints { make in
+            make.width.equalTo(70)
             make.top.equalTo(view.snp.top).offset(frame.maxY + topOffset)
             make.trailing.equalTo(view.snp.trailing).inset(trailingInset)
         }
-        
-        view.layoutIfNeeded()
     }
     
     // 삭제 확인 알러트
