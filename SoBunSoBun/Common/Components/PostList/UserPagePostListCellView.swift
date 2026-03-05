@@ -49,7 +49,7 @@ class UserPagePostListCellView: UIView {
     
     // 설명(장소 및 시간) attributes 컴포넌트
     private func descAttributes() -> [NSAttributedString.Key: Any] {
-        var attributes: [NSAttributedString.Key: Any] = body14.attributes()
+        var attributes: [NSAttributedString.Key: Any] = body12.attributes()
         attributes[.foregroundColor] = UIColor.neutral500
         
         return attributes
@@ -132,7 +132,7 @@ class UserPagePostListCellView: UIView {
         categoriesWrappingView.addArrangedSubviews(categoryViews)
         
         // 제목
-        var titleAttributes: [NSAttributedString.Key: Any] = title18.attributes(alignment: .left)
+        var titleAttributes: [NSAttributedString.Key: Any] = title16.attributes(alignment: .left)
         titleAttributes[.foregroundColor] = UIColor.neutral900
         
         titleLabel.attributedText = NSAttributedString(string: model.title, attributes: titleAttributes)
