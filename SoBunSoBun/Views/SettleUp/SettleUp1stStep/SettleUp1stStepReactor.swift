@@ -11,7 +11,6 @@ class SettleUp1stStepReactor: Reactor {
     let initialState = State()
     
     enum Action {
-        case backButtonTapped // 뒤로가기 버튼 클릭
         case unitButtonTapped(Int) // 단위 버튼 클릭 (1: 수량, 2: 중량)
         case registerButtonTapped(name: String, count: String, amount: String) // 등록하기 버튼 클릭
         case productDeleted(Int) // 상품 삭제하기
@@ -20,7 +19,6 @@ class SettleUp1stStepReactor: Reactor {
     }
     
     enum Mutation {
-        case setBackButtonTapped
         case setSelectedUnit(Int)
         case addProduct(ListedProductModel)
         case deleteProduct(Int)
@@ -31,7 +29,6 @@ class SettleUp1stStepReactor: Reactor {
     }
     
     struct State {
-        @Pulse var shouldPopViewController: Void?
         @Pulse var shouldNavigateToNextStep: [ListedProductModel]?
         var selectedUnitIndex: Int = 1
         var products: [ListedProductModel] = [] // productStackView에 들어갈 데이터들
@@ -42,9 +39,6 @@ class SettleUp1stStepReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .backButtonTapped:
-            return Observable.just(.setBackButtonTapped)
-            
         case .unitButtonTapped(let index):
             return Observable.just(.setSelectedUnit(index))
             
@@ -89,9 +83,6 @@ class SettleUp1stStepReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case .setBackButtonTapped:
-            newState.shouldPopViewController = ()
-            
         case .setSelectedUnit(let index):
             newState.selectedUnitIndex = index
             
