@@ -170,14 +170,20 @@ extension MyPostView {
         // 드롭다운 삭제하기 클릭
         dropDownView.didCellTap
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] menu in
                 guard let self = self else { return }
                 
-                // 드롭다운 닫기
-                self.reactor.action.onNext(.closeMenu)
-                
-                // 삭제 확인 알러트
-                self.deletePostAlert()
+                switch menu {
+                case "Delete":
+                    // 드롭다운 닫기
+                    self.reactor.action.onNext(.closeMenu)
+                    
+                    // 삭제 확인 알러트
+                    self.deletePostAlert()
+                    
+                default:
+                    self.logger.fault("dropDownView의 didCellTap의 case에서 등록되지 않은 메뉴가 있음: \(menu)")
+                }
             })
             .disposed(by: disposeBag)
         

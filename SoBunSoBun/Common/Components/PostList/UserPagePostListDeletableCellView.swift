@@ -33,16 +33,13 @@ class UserPagePostListDeletableCellView: UIView {
     // MARK: - 디자인 요소
     private let categoriesWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
     
-    // 아이콘 컴포넌트
-    private func iconImage(image: UIImage) -> UIImageView {
+    private let dotIcon =  {
         let iv = UIImageView()
-        iv.image = image.resize(.init(width: 24, height: 24))
+        iv.image = .greyHorizontalDot.resize(.init(width: 24, height: 24))
         iv.contentMode = .scaleAspectFit
         
         return iv
-    }
-    
-    private lazy var dotIcon = iconImage(image: .greyHorizontalDot)
+    }()
     
     private let titleLabel: UILabel = {
         let lb = UILabel()
