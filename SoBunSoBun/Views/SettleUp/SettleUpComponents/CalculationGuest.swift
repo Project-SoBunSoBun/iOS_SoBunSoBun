@@ -29,8 +29,8 @@ class CalculationGuest: UIView {
         category: "SettleUpComponents.Calculation_gu"
     )
     
-    private let disposeBag = DisposeBag()
-    private var labelBindingDisposeBag = DisposeBag() // 추후에 사용하는 disposeBag이 없다면 삭제
+    private var disposeBag = DisposeBag()
+
     private let product: ListedProductModel
     
     private var availableParticipants: [String] = [] {
@@ -38,6 +38,7 @@ class CalculationGuest: UIView {
             updateParticipantLabels()
         }
     }
+    
     private var selectedParticipants: Set<String> = []
     
     // MARK: - 디자인 요소
@@ -159,8 +160,10 @@ class CalculationGuest: UIView {
         case 1:
             let format = String(localized: "ListedProductItemTotal", table: "SettleUp")
             totalText = String(format: format, countString, priceString)
+            
         case 2:
             totalText = "\(countString)g \(priceString)\(won)"
+            
         default:
             let format = String(localized: "ListedProductItemTotal", table: "SettleUp")
             totalText = String(format: format, countString, priceString)
@@ -177,7 +180,7 @@ class CalculationGuest: UIView {
     private func updateParticipantLabels() {
         // 기존 라벨 및 바인딩 초기화
         participantLabelsView.removeAllArrangedSubviews()
-        labelBindingDisposeBag = DisposeBag()
+        disposeBag = DisposeBag()
         
         // 선택되지 않은 참여자 필터링
         let filteredParticipants = availableParticipants.filter { !selectedParticipants.contains($0) }
@@ -194,7 +197,7 @@ class CalculationGuest: UIView {
                     guard let self = self else { return }
                     self.handleParticipantTapped(nickname: tappedNickname)
                 })
-                .disposed(by: labelBindingDisposeBag)
+                .disposed(by: disposeBag)
             
             participantLabelsView.addArrangedSubview(label)
         }
