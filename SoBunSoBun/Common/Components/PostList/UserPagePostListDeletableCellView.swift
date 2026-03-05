@@ -29,7 +29,7 @@ class UserPagePostListDeletableCellView: UIView {
     // MARK: - 디자인 요소
     private let categoriesWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
     
-    private let dotIcon: UIButton =  {
+    private let menuButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.image = .greyHorizontalDot
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
@@ -93,19 +93,19 @@ class UserPagePostListDeletableCellView: UIView {
         self.layer.cornerRadius = 12
         self.clipsToBounds = true
         
-        [categoriesWrappingView, dotIcon, titleLabel, locationLabel, dateStackView].forEach {
+        [categoriesWrappingView, menuButton, titleLabel, locationLabel, dateStackView].forEach {
             addSubview($0)
         }
         
         // 카테고리
         categoriesWrappingView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
-            make.trailing.equalTo(dotIcon.snp.leading).offset(-8)
+            make.trailing.equalTo(menuButton.snp.leading).offset(-8)
             make.top.equalToSuperview().offset(16)
         }
         
         // 메뉴 버튼
-        dotIcon.snp.makeConstraints { make in
+        menuButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(16)
         }
@@ -176,12 +176,12 @@ class UserPagePostListDeletableCellView: UIView {
 
 extension UserPagePostListDeletableCellView {
     private func bind() {
-        dotIcon.rx.tap
+        menuButton.rx.tap
             .observe(on: MainScheduler.instance) 
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                didTap.accept(self.dotIcon)
+                didTap.accept(self.menuButton)
             })
             .disposed(by: disposeBag)
     }

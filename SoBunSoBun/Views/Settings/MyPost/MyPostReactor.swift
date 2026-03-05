@@ -38,12 +38,12 @@ class MyPostReactor: Reactor {
         case setPage(Int)
         case setHasMore(Bool)
         case setRefreshing(Bool)
-        case setError(String)
         case setMyPostDetailView(PostModel)
         case setSelectedId(Int)
         case setIsMenuOpen(Bool)
         case removePostById(Int)
         case setShouldShowDeletePostDoneAlert
+        case setError(String)
     }
     
     struct State {
@@ -53,13 +53,13 @@ class MyPostReactor: Reactor {
         var hasMore: Bool = true //  페이지네이션 추가 가능 여부
         var isRefreshing: Bool = false // 새로고침 여부
         
-        @Pulse var errorMessage: String? // 에러 메세지
         @Pulse var shouldPushMyPostDetailView: PostModel? // 해당 게시글로 이동
         
         var selectedId: Int? // 선택된 게시글 id
         var isMenuOpen: Bool = false // 드롭다운 개폐
         
         @Pulse var shouldShowDeletePostDoneAlert: Void? // 삭제 완료 알러트
+        @Pulse var errorMessage: String? // 에러 메세지
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -129,9 +129,6 @@ class MyPostReactor: Reactor {
         case .setRefreshing(let isRefreshing):
             newState.isRefreshing = isRefreshing
             
-        case .setError(let message):
-            newState.errorMessage = message
-            
         case .setMyPostDetailView(let model):
             newState.shouldPushMyPostDetailView = model
             
@@ -148,6 +145,9 @@ class MyPostReactor: Reactor {
             
         case .setShouldShowDeletePostDoneAlert:
             newState.shouldShowDeletePostDoneAlert = ()
+        
+        case .setError(let message):
+            newState.errorMessage = message
         }
         
         return newState

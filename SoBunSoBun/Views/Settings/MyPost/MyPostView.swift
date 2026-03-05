@@ -286,9 +286,9 @@ extension MyPostView {
         let trailingInset: CGFloat = 24 // 테이블 뷰의 셀에서 안쪽으로 8
         
         dropDownView.snp.remakeConstraints { make in
-            make.width.equalTo(70)
-            make.top.equalTo(view.snp.top).offset(frame.maxY + topOffset)
             make.trailing.equalTo(view.snp.trailing).inset(trailingInset)
+            make.top.equalTo(view.snp.top).offset(frame.maxY + topOffset)
+            make.width.equalTo(70)
         }
     }
     
