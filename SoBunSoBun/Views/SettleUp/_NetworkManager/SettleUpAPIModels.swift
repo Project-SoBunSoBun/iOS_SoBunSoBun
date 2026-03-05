@@ -22,10 +22,9 @@ struct SettleUpModel: Decodable {
 struct SettleUpContentModel: Decodable {
     let id, groupPostId: Int
     let groupPostTitle: String
-    let settledById: Int
-    let settledByNickname: String?
-    let status: Int
-    let title, locationName: String
+    let status: String
+    let totalAmount, participantCount: Int
+    let locationName: String
     let meetAt, createdAt, updatedAt: String
 }
 
@@ -41,5 +40,6 @@ struct SettleUpSortModel: Decodable {
 }
 
 struct SettleUpMyRequestModel: Encodable {
-    let activeOnly, page, size: Int
+    let status: String
+    let page, size: Int
 }
