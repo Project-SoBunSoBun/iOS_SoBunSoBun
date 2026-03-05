@@ -60,7 +60,7 @@ class CalculationGuestItem: UIView {
     
     // 수량 textField
     private let countTextField: RightViewTextField = {
-        let tv = RightViewTextField(rightText: String(localized: "Count"))
+        let tv = RightViewTextField(rightText: String(localized: "Count", table: "SettleUp"))
         tv.keyboardType = .numberPad
         
         return tv
@@ -88,7 +88,7 @@ class CalculationGuestItem: UIView {
             make.height.equalTo(44)
         }
         
-        countTextField.updateRightViewText(product.unitIndex == 1 ? String(localized: "Count") : "g")
+        countTextField.updateRightViewText(product.unitIndex == 1 ? String(localized: "Count", table: "SettleUp") : "g")
         
         let attributedText = NSAttributedString(
             string: nickname,
