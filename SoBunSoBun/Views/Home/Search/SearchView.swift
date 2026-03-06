@@ -468,6 +468,7 @@ extension SearchView {
     
     private func clearHistoryListView() {
         historyListView.arrangedSubviews.forEach {
+            historyListView.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
     }
