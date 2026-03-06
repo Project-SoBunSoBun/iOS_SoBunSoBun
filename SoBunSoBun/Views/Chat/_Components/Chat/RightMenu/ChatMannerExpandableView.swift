@@ -13,8 +13,6 @@ import RxGesture
 import OSLog
 
 class ChatMannerExpandableView: UIView {
-    let reviewsTap = PublishRelay<[Int]>()
-    
     private let disposeBag = DisposeBag()
     
     private var isExpanded = false
@@ -22,13 +20,13 @@ class ChatMannerExpandableView: UIView {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "ChatMemberCancelCellView"
+        category: "Chat.Component.MemberCancelCellView"
     )
     
-    init(frame: CGRect = .zero, profileImageUrl: String?, nickname: String) {
+    init(frame: CGRect = .zero, model: ChatRoomDetailMemberModel) {
         super.init(frame: frame)
         
-        configureUI(profileImageUrl: profileImageUrl, nickname: nickname)
+        configureUI(model: model)
         bind()
     }
     
@@ -80,15 +78,15 @@ class ChatMannerExpandableView: UIView {
     
     private let contentView: UIView = {
         let view = UIView()
-        view.backgroundColor = .backgroundWhite
+        view.clipsToBounds = true
         
         return view
     }()
     
-    private let reviewsView: HorizontalWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
+    let reviewsView: HorizontalWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
     
     // MARK: - 레이아웃 설정
-    private func configureUI(profileImageUrl: String?, nickname: String) {
+    private func configureUI(model: ChatRoomDetailMemberModel) {
         self.backgroundColor = .backgroundWhite
         
         // 모서리
@@ -107,7 +105,6 @@ class ChatMannerExpandableView: UIView {
         
         stackView.snp.makeConstraints { make in
             make.horizontalEdges.top.equalToSuperview()
-            make.height.equalTo(82)
         }
         
         [profileImageView, nicknameLabel, arrowButton].forEach {
@@ -118,7 +115,7 @@ class ChatMannerExpandableView: UIView {
             make.size.equalTo(50)
         }
         
-        if let profileImageUrl {
+        if let profileImageUrl = model.profileImage {
             let imageUrl = URL(string: API_URL + profileImageUrl)
             
             profileImageView.kf.setImage(
@@ -141,34 +138,37 @@ class ChatMannerExpandableView: UIView {
             profileImageView.image = .defaultProfile
         }
         
-        profileImageView.setContentCompressionResistancePriority(.required, for: .horizontal)
         
         var attributes: [NSAttributedString.Key: Any] = body16.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
         
-        nicknameLabel.attributedText = NSAttributedString(string: nickname, attributes: attributes)
+        nicknameLabel.attributedText = NSAttributedString(string: model.nickname ?? String(localized: "Unknown", table: "Common"), attributes: attributes)
         
+        profileImageView.setContentHuggingPriority(.required, for: .horizontal)
+        profileImageView.setContentCompressionResistancePriority(.required, for: .horizontal)
         nicknameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        
+        arrowButton.setContentHuggingPriority(.required, for: .horizontal)
         arrowButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+
         
         contentView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(stackView.snp.bottom)
+            make.bottom.equalToSuperview()
             contentHeightConstraint = make.height.equalTo(0).constraint
         }
         
         contentView.addSubview(reviewsView)
         
         reviewsView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.horizontalEdges.top.equalToSuperview()
         }
     }
 }
 
 extension ChatMannerExpandableView {
     private func bind() {
-        self.rx
+        stackView.rx
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
@@ -182,12 +182,17 @@ extension ChatMannerExpandableView {
     private func toggleExpand() {
         isExpanded.toggle()
         
-        arrowButton.configuration?.image = isExpanded ? .blackUp : .blackDown
+        arrowButton.configuration?.image = isExpanded ?
+            .blackUp.resize(.init(width: 24, height: 24)) :
+            .blackDown.resize(.init(width: 24, height: 24))
         
-        contentHeightConstraint?.update(offset: isExpanded ? reviewsView.intrinsicContentSize.height : 0)
+        contentHeightConstraint?.update(offset: isExpanded ? reviewsView.intrinsicContentSize.height + 16 : 0)
         
+        // 높이 애니메이션은 상위 뷰의 layoutIfNeeded에 따라 달라짐
+        // 확실하게 하려면 window.layoutIfNeeded를 사용한다.
+        // 또는 self.superview?.superview?.layoutIfNeeded()를 써도 해결이 된다.
         UIView.animate(withDuration: 0.3) {
-            self.layoutIfNeeded()
+            self.superview?.superview?.layoutIfNeeded()
         }
     }
 }

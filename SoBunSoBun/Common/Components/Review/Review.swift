@@ -12,6 +12,8 @@ import RxSwift
 class Review: UIButton {
     let number: Int
     
+    private let EDGES_INSET: CGFloat = 10
+    
     private let disposeBag = DisposeBag()
     
     /// 숫자는 세자리까지만
@@ -74,23 +76,21 @@ class Review: UIButton {
         
         self.clipsToBounds = false
         
-        self.translatesAutoresizingMaskIntoConstraints = false
-        
         [emojiView, label].forEach {
             addSubview($0)
         }
         
         emojiView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(10)
-            make.verticalEdges.equalToSuperview().inset(10)
+            make.leading.equalToSuperview().offset(EDGES_INSET)
+            make.verticalEdges.equalToSuperview().inset(EDGES_INSET)
             make.centerY.equalToSuperview()
             make.size.equalTo(16)
         }
         
         label.snp.makeConstraints { make in
             make.leading.equalTo(emojiView.snp.trailing).offset(8)
-            make.trailing.equalToSuperview().inset(10)
-            make.verticalEdges.equalToSuperview().inset(10)
+            make.trailing.equalToSuperview().inset(EDGES_INSET)
+            make.verticalEdges.equalToSuperview().inset(EDGES_INSET)
             make.centerY.equalToSuperview()
         }
     }
@@ -173,6 +173,14 @@ class Review: UIButton {
             
             setTitleColor()
         }
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        let labelSize = label.intrinsicContentSize
+        let width = EDGES_INSET + 16 + 8 + labelSize.width + EDGES_INSET
+        let height = EDGES_INSET + labelSize.height + EDGES_INSET
+        
+        return CGSize(width: width, height: height)
     }
 }
 
