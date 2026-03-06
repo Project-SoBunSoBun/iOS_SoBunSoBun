@@ -10,14 +10,14 @@ import SnapKit
 import RxSwift
 
 class Review: UIButton {
-    let number: Int
+    let number: String
     
     private let EDGES_INSET: CGFloat = 10
     
     private let disposeBag = DisposeBag()
     
     /// 숫자는 세자리까지만
-    init(frame: CGRect = .zero, number: Int) {
+    init(frame: CGRect = .zero, number: String) {
         self.number = number
         
         super.init(frame: frame)
@@ -96,22 +96,22 @@ class Review: UIButton {
     }
     
     private func setEmoji() {
-        guard number < 1000 && number > 0 else { return }
+        guard number.count == 3 else { return }
         
         switch number {
-        case 1:
+        case "001":
             emojiView.image = .emojiEightOclock
             
-        case 2:
+        case "002":
             emojiView.image = .emojiGreenHeart
             
-        case 3:
+        case "003":
             emojiView.image = .emojiThumbsUp
             
-        case 4:
+        case "004":
             emojiView.image = .emojiGlowingStar
             
-        case 5:
+        case "005":
             emojiView.image = .emojiGrinningFace
             
         default:
@@ -120,24 +120,24 @@ class Review: UIButton {
     }
     
     private func setTitleColor() {
-        guard number < 1000 && number > 0 else { return }
+        guard number.count == 3 else { return }
         
         var attributes = body16.attributes(alignment: .center)
         
         switch number {
-        case 1:
+        case "001":
             attributes[.foregroundColor] = UIColor.review1
             
-        case 2:
+        case "002":
             attributes[.foregroundColor] = UIColor.review2
             
-        case 3:
+        case "003":
             attributes[.foregroundColor] = UIColor.review3
             
-        case 4:
+        case "004":
             attributes[.foregroundColor] = UIColor.review4
             
-        case 5:
+        case "005":
             attributes[.foregroundColor] = UIColor.review5
             
         default:
@@ -164,7 +164,7 @@ class Review: UIButton {
             
             var attributes = body16.attributes(alignment: .center)
             attributes[.foregroundColor] = UIColor.backgroundWhite
-            let localizedString = NSLocalizedString(String(format: "Review%03d", number), tableName: "Review", comment: "")
+            let localizedString = NSLocalizedString(String(format: "Review\(number)"), tableName: "Review", comment: "")
             
             label.attributedText = NSAttributedString(string: localizedString, attributes: attributes)
         } else {
