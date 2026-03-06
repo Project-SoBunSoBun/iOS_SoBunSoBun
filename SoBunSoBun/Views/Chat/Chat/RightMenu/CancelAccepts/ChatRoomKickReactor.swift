@@ -81,7 +81,10 @@ class ChatRoomKickReactor: Reactor {
             newState.shouldShowKickAlert = ()
             
         case .setMembers(let members):
-            newState.members = members
+            if let myIdString = KeyChain.shared.get(key: "USER_ID"),
+               let myId = Int(myIdString) {
+                newState.members = members.filter { $0.userId != myId }
+            }
             
         case .changeMembers(let id):
             newState.members = newState.members.filter { $0.userId != id }
