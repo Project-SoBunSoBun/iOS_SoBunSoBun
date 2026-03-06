@@ -12,6 +12,11 @@ import RxCocoa
 import OSLog
 
 class CalculationGuest: UIView {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SettleUpComponents.CalculationGuest"
+    )
+    
     init(frame: CGRect = .zero, product: ListedProductModel
     ) {
         self.product = product
@@ -24,13 +29,8 @@ class CalculationGuest: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let logger = Logger(
-        subsystem: "SoBunSoBun",
-        category: "SettleUpComponents.Calculation_gu"
-    )
-    
     private var disposeBag = DisposeBag()
-
+    
     private let product: ListedProductModel
     
     private var availableParticipants: [String] = [] {
@@ -39,7 +39,14 @@ class CalculationGuest: UIView {
         }
     }
     
+    // 선택된 참여자들 리스트
     private var selectedParticipants: Set<String> = []
+    
+    private var dividerTopAnchor: ConstraintItem {
+        return participantLabelsView.superview != nil
+            ? participantLabelsView.snp.bottom
+            : productLabel.snp.bottom
+    }
     
     // MARK: - 디자인 요소
     // 배경 View
@@ -185,21 +192,55 @@ class CalculationGuest: UIView {
         // 선택되지 않은 참여자 필터링
         let filteredParticipants = availableParticipants.filter { !selectedParticipants.contains($0) }
         
-        // 필터링된 참여자들로 라벨 생성 및 추가
-        filteredParticipants.forEach { nickname in
-            let label = CalculationGuestLabel()
-            label.text = nickname
+        if filteredParticipants.isEmpty {
+            // 모두 선택됨 → participantLabelsView 제거
+            if participantLabelsView.superview != nil {
+                participantLabelsView.removeFromSuperview()
+                
+                // divider가 표시 중이면 기준점 변경
+                if divider.superview != nil {
+                    divider.snp.remakeConstraints { make in
+                        make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+                        make.top.equalTo(dividerTopAnchor).offset(16)
+                        make.height.equalTo(2)
+                    }
+                }
+            }
+        } else {
+            // 선택 가능한 참여자 있음 → participantLabelsView 복원
+            if participantLabelsView.superview == nil {
+                backgroundView.addSubview(participantLabelsView)
+                
+                participantLabelsView.snp.remakeConstraints { make in
+                    make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+                    make.top.equalTo(productLabel.snp.bottom).offset(16)
+                }
+                
+                // divider가 표시 중이면 기준점 원복
+                if divider.superview != nil {
+                    divider.snp.remakeConstraints { make in
+                        make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+                        make.top.equalTo(dividerTopAnchor).offset(16)
+                        make.height.equalTo(2)
+                    }
+                }
+            }
             
-            // 라벨 탭 이벤트 바인딩
-            label.tapped
-                .take(1) // 한 번 클릭되면 해당 라벨은 사라지므로 take(1)
-                .subscribe(onNext: { [weak self] tappedNickname in
-                    guard let self = self else { return }
-                    self.handleParticipantTapped(nickname: tappedNickname)
-                })
-                .disposed(by: disposeBag)
-            
-            participantLabelsView.addArrangedSubview(label)
+            // 필터링된 참여자들로 라벨 생성 및 추가
+            filteredParticipants.forEach { nickname in
+                let label = CalculationGuestLabel()
+                label.text = nickname
+                
+                label.tapped
+                    .take(1)
+                    .subscribe(onNext: { [weak self] tappedNickname in
+                        guard let self = self else { return }
+                        self.handleParticipantTapped(nickname: tappedNickname)
+                    })
+                    .disposed(by: disposeBag)
+                
+                participantLabelsView.addArrangedSubview(label)
+            }
         }
         
         self.setNeedsLayout()
@@ -263,7 +304,7 @@ class CalculationGuest: UIView {
         
         divider.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
-            make.top.equalTo(participantLabelsView.snp.bottom).offset(16)
+            make.top.equalTo(dividerTopAnchor).offset(16)
             make.height.equalTo(2)
         }
         
@@ -279,9 +320,9 @@ class CalculationGuest: UIView {
         
         self.divider.removeFromSuperview()
         
-        self.selectedGuestsStackView.snp.remakeConstraints { make in
+        selectedGuestsStackView.snp.remakeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
-            make.top.equalTo(self.participantLabelsView.snp.bottom)
+            make.top.equalTo(dividerTopAnchor)
             make.bottom.equalToSuperview().inset(16).priority(999)
         }
     }
