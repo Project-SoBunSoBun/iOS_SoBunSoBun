@@ -58,15 +58,14 @@ struct ChatRoomDetailModel: Decodable, Equatable {
 }
 
 struct ChatRoomDetailDataModel: Decodable, Equatable {
-    let roomId, ownerId: Int
+    let roomId, ownerId, groupPostId: Int
     let roomName, createdAt: String
     let roomType: ChatRoomType
-    let groupPostId: Int?
     let lastMessage, lastMessageAt, groupPostTitle: String?
-    let members: [ChatRoomDetailMembersModel]
+    let members: [ChatRoomDetailMemberModel]
 }
 
-struct ChatRoomDetailMembersModel: Decodable, Equatable {
+struct ChatRoomDetailMemberModel: Decodable, Equatable {
     let userId: Int
     let nickname, profileImage: String?
     let isOwner: Bool

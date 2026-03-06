@@ -34,7 +34,7 @@ enum HomeAPIs {
     case patchPostComment(id: Int, content: String)
     case deletePostComment(id: Int)
     case reportPostComment(id: Int)
-    case createChatRoomId(userId: Int)
+    case createChatRoomId(userId: Int, groupPostId: Int)
 }
 
 extension HomeAPIs: TargetType {
@@ -230,8 +230,8 @@ extension HomeAPIs: TargetType {
             
             return .requestJSONEncodable(model)
             
-        case .createChatRoomId(let userId):
-            let body: [String: Int] = ["otherUserId": userId]
+        case .createChatRoomId(let userId, let groupPostId):
+            let body: [String: Int] = ["otherUserId": userId, "groupPostId": groupPostId]
             
             return .requestJSONEncodable(body)
         }

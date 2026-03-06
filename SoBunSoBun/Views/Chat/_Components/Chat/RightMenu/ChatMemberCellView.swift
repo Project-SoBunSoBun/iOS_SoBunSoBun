@@ -15,10 +15,10 @@ class ChatMemberCellView: UIStackView {
         category: "ChatMemberCellView"
     )
     
-    init(frame: CGRect = .zero, profileImageUrl: String?, nickname: String) {
+    init(frame: CGRect = .zero, isMe: String, model: ChatRoomDetailMemberModel) {
         super.init(frame: frame)
         
-        configureUI(profileImageUrl: profileImageUrl, nickname: nickname)
+        configureUI(isMe: isMe, model: model)
     }
     
     required init(coder: NSCoder) {
@@ -43,24 +43,15 @@ class ChatMemberCellView: UIStackView {
         return lb
     }()
     
-    private func configureUI(profileImageUrl: String?, nickname: String) {
+    private func configureUI(isMe: String, model: ChatRoomDetailMemberModel) {
         self.backgroundColor = .backgroundWhite
         
         // 모서리
         self.layer.cornerRadius = 16
         
-        // 그림자
-        self.layer.shadowOffset = .zero
-        self.layer.shadowColor = UIColor.primary300.withAlphaComponent(0.16).cgColor
-        self.layer.shadowOpacity = 1
-        self.layer.shadowRadius = 24
-        self.clipsToBounds = false
-        
         self.axis = .horizontal
         self.spacing = 8
         self.alignment = .center
-        self.isLayoutMarginsRelativeArrangement = true
-        self.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
         
         [profileImageView, nicknameLabel].forEach {
             self.addArrangedSubview($0)
@@ -70,7 +61,7 @@ class ChatMemberCellView: UIStackView {
             make.size.equalTo(50)
         }
         
-        if let profileImageUrl {
+        if let profileImageUrl = model.profileImage {
             let imageUrl = URL(string: API_URL + profileImageUrl)
             
             profileImageView.kf.setImage(
@@ -96,6 +87,6 @@ class ChatMemberCellView: UIStackView {
         var attributes: [NSAttributedString.Key: Any] = body16.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
         
-        nicknameLabel.attributedText = NSAttributedString(string: nickname, attributes: attributes)
+        nicknameLabel.attributedText = NSAttributedString(string: model.nickname ?? String(localized: "Unknown", table: "Common"), attributes: attributes)
     }
 }

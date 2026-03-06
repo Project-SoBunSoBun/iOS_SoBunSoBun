@@ -1,5 +1,5 @@
 //
-//  ChatMemberCancelCellView.swift
+//  ChatMemberKickCellView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 2/16/26.
@@ -9,20 +9,20 @@ import UIKit
 import SnapKit
 import OSLog
 
-class ChatMemberCancelCellView: UIStackView {
-    let id: Int
+class ChatMemberKickCellView: UIStackView {
+    let userId: Int
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "ChatMemberCancelCellView"
     )
     
-    init(frame: CGRect = .zero, profileImageUrl: String?, nickname: String, id: Int) {
-        self.id = id
+    init(frame: CGRect = .zero, model: ChatRoomDetailMemberModel) {
+        self.userId = model.userId
         
         super.init(frame: frame)
         
-        configureUI(profileImageUrl: profileImageUrl, nickname: nickname)
+        configureUI(model: model)
     }
     
     required init(coder: NSCoder) {
@@ -47,7 +47,7 @@ class ChatMemberCancelCellView: UIStackView {
         return lb
     }()
     
-    private let cancelButton: UIButton = {
+    let cancelButton: UIButton = {
         var config = UIButton.Configuration.filled()
         config.background.backgroundColor = .primary50
         config.background.cornerRadius = 17
@@ -63,7 +63,7 @@ class ChatMemberCancelCellView: UIStackView {
         return btn
     }()
     
-    private func configureUI(profileImageUrl: String?, nickname: String) {
+    private func configureUI(model: ChatRoomDetailMemberModel) {
         self.backgroundColor = .backgroundWhite
         
         // 모서리
@@ -91,7 +91,7 @@ class ChatMemberCancelCellView: UIStackView {
             make.size.equalTo(50)
         }
         
-        if let profileImageUrl {
+        if let profileImageUrl = model.profileImage {
             let imageUrl = URL(string: API_URL + profileImageUrl)
             
             profileImageView.kf.setImage(
@@ -119,7 +119,7 @@ class ChatMemberCancelCellView: UIStackView {
         var attributes: [NSAttributedString.Key: Any] = body16.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
         
-        nicknameLabel.attributedText = NSAttributedString(string: nickname, attributes: attributes)
+        nicknameLabel.attributedText = NSAttributedString(string: model.nickname ?? String(localized: "Unknown", table: "Common") , attributes: attributes)
         
         nicknameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         

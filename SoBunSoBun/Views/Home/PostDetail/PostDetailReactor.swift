@@ -635,7 +635,7 @@ class PostDetailReactor: Reactor {
             return Observable.just(.setErrorMessage(errorMessage))
         }
         
-        return networkManager.createChatRoomId(userId: ownerId)
+        return networkManager.createChatRoomId(userId: ownerId, groupPostId: postId)
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 return Observable.just(.setShouldNavigateToChat(model.data.roomId))

@@ -15,6 +15,8 @@ import OSLog
 class PostDetailView: UIViewController {
     private let postId: Int
     private let isNew: Bool
+    private let showBackButton: Bool
+    private let showChatButton: Bool
     
     typealias Reactor = PostDetailReactor
     private lazy var reactor = PostDetailReactor(postId: postId)
@@ -26,9 +28,18 @@ class PostDetailView: UIViewController {
         category: "Home.PostDetail.View"
     )
     
-    init(postId: Int, isNew: Bool = false, nibName: String? = nil, bundle: Bundle? = nil) {
+    init(
+        postId: Int,
+        isNew: Bool = false,
+        showBackButton: Bool = true,
+        showChatButton: Bool = true,
+        nibName: String? = nil,
+        bundle: Bundle? = nil
+    ) {
         self.postId = postId
         self.isNew = isNew
+        self.showBackButton = showBackButton
+        self.showChatButton = showChatButton
         
         super.init(nibName: nibName, bundle: bundle)
     }
@@ -41,7 +52,10 @@ class PostDetailView: UIViewController {
     // 상단 네비게이션 바
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
-        tnb.parentViewController = self
+        
+        if showBackButton {
+            tnb.parentViewController = self
+        }
         
         return tnb
     }()
@@ -357,6 +371,8 @@ class PostDetailView: UIViewController {
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.modalPresentationStyle = .pageSheet
         
         configureUI()
         bind(reactor: reactor)
@@ -886,6 +902,7 @@ extension PostDetailView {
                 alert.onPrimaryTapped = {
                     DispatchQueue.main.async {
                         self.navigationController?.popViewController(animated: true)
+                        self.dismiss(animated: true)
                     }
                 }
                 
@@ -1039,9 +1056,17 @@ extension PostDetailView {
         
         let isOwner = (myId == postInfo.owner.id)
         
-        topNavigationBar.buttons = isOwner
-        ? [topShareButton, topMoreButton]
-        : [topShareButton, topBookMarkButton, topMoreButton]
+        var buttons: [UIButton] = [topShareButton]
+        
+        if !isOwner {
+            buttons.append(topBookMarkButton)
+        }
+        
+        if showChatButton {
+            buttons.append(topMoreButton)
+        }
+        
+        topNavigationBar.buttons = buttons
         
         topMoreDropDownView.items = isOwner ? ["Delete"] : ["Report"]
         
@@ -1104,7 +1129,7 @@ extension PostDetailView {
         createCommentStackView.isHidden = false
         editCommentStackView.isHidden = false
         
-        if !isOwner {
+        if !isOwner && showChatButton {
             createCommentStackView.insertArrangedSubview(chatButton, at: 0)
         }
     }

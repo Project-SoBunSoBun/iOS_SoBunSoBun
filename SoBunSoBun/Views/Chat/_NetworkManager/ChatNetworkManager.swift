@@ -44,4 +44,12 @@ class ChatNetworkManager {
         .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
+    
+    func kickMember(chatRoomId: Int, userId: Int) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(ChatAPIs.kickMember(chatRoomId: chatRoomId, userId: userId))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
 }

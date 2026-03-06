@@ -13,6 +13,7 @@ enum ChatAPIs {
     case getChatHistory(id: Int, cursor: String?, size: Int)
     case uploadChatImage(id: Int, message: String?, image: Data)
     case leaveChatRoom(id: Int)
+    case kickMember(chatRoomId: Int, userId: Int)
 }
 
 extension ChatAPIs: TargetType {
@@ -38,6 +39,9 @@ extension ChatAPIs: TargetType {
             
         case .leaveChatRoom(let id):
             return "/api/v1/chat/rooms/\(id)/members/me"
+            
+        case .kickMember(let chatRoomId, let userID):
+            return "/api/chat/rooms/\(chatRoomId)/members/\(userID)"
         }
     }
     
@@ -53,7 +57,8 @@ extension ChatAPIs: TargetType {
             return .post
             
         case // DELETE
-                .leaveChatRoom:
+                .leaveChatRoom,
+                .kickMember:
             return .delete
         }
     }
@@ -92,6 +97,9 @@ extension ChatAPIs: TargetType {
             return .uploadCompositeMultipart(formData, urlParameters: parameters)
             
         case .leaveChatRoom:
+            return .requestPlain
+            
+        case .kickMember:
             return .requestPlain
         }
     }

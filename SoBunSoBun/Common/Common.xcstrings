@@ -382,6 +382,17 @@
         }
       }
     },
+    "Warning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "경고"
+          }
+        }
+      }
+    },
     "YouShouldSignInAgain" : {
       "comment" : "Common",
       "extractionState" : "manual",

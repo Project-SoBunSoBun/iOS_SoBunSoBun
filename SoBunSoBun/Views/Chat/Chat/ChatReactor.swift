@@ -40,6 +40,7 @@ class ChatReactor: Reactor {
         case viewDidLoad
         case getMoreMessages
         case sendMessage(String)
+        case rightMenuButtonTapped
         case bottomMenuTapped
         case backToKeyboard
         case showImagePicker
@@ -55,6 +56,7 @@ class ChatReactor: Reactor {
         case addNewMessage(ChatMessageModel)
         case setIsServerMessageEmpty(Bool)
         case setIsDBMessageEmpty(Bool)
+        case setShouldNavigateToRightMenu
         case setBottomOpenMenu(Bool)
         case setIsChatCellMenuOpen(Bool)
         case setSelectedChatMessageModel(ChatMessageModel)
@@ -72,6 +74,7 @@ class ChatReactor: Reactor {
         var isOpenBottomMenu: Bool = false
         var isChatCellMenuOpen: Bool = false
         var selectedChatMessageModel: ChatMessageModel?
+        @Pulse var shouldNavigateToRightMenu: Void?
         @Pulse var shouldShowIamgePicker: Void?
         @Pulse var errorMessage: String?
         @Pulse var criticalErrorMessage: String?
@@ -93,6 +96,9 @@ class ChatReactor: Reactor {
         case .sendMessage(let message):
             sendMessage(message: message)
             return Observable.empty()
+            
+        case .rightMenuButtonTapped:
+            return Observable.just(.setShouldNavigateToRightMenu)
             
         case .backToKeyboard:
             return Observable.just(.setBottomOpenMenu(false))
@@ -148,6 +154,9 @@ class ChatReactor: Reactor {
             
         case .setIsDBMessageEmpty(let isEmpty):
             newState.isDBMessageEmpty = isEmpty
+            
+        case .setShouldNavigateToRightMenu:
+            newState.shouldNavigateToRightMenu = ()
             
         case .setBottomOpenMenu(let isOpen):
             newState.isOpenBottomMenu = isOpen

@@ -25,6 +25,10 @@ class ChatView: UIViewController {
         category: "Chat.Chat.View"
     )
     
+    private var rightMenuView: ChatRightMenuView?
+    
+    private let willLeave = PublishRelay<Void>()
+    
     init(chatRoomId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
         self.chatRoomId = chatRoomId
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -45,7 +49,7 @@ class ChatView: UIViewController {
         return tnb
     }()
     
-    private let topNavigationButton: UIButton = {
+    private let rightMenuButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.image = .blackHorizontalDot.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 12, leading: 12, bottom: 12, trailing: 12)
@@ -239,6 +243,11 @@ extension ChatView {
     private func bindAction(reactor: ChatReactor) {
         reactor.action.onNext(.viewDidLoad)
         
+        rightMenuButton.rx.tap
+            .map { Reactor.Action.rightMenuButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         sendButton.rx.tap
             .withLatestFrom(chatTextView.rx.text.orEmpty)
             .subscribe(onNext: { [weak self] text in
@@ -336,7 +345,15 @@ extension ChatView {
                 guard let self = self else { return }
                 
                 topNavigationBar.title = model.data.roomName
-                topNavigationBar.buttons = [topNavigationButton]
+                topNavigationBar.buttons = [rightMenuButton]
+                
+                rightMenuView = ChatRightMenuView(
+                    chatRoomId: chatRoomId,
+                    groupPostId: model.data.groupPostId,
+                    type: model.data.roomType,
+                    members: model.data.members
+                )
+                rightMenuView?.willLeave = willLeave
                 
                 if model.data.roomType == .ONE_TO_ONE {
                     
@@ -462,6 +479,18 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        reactor.pulse(\.$shouldNavigateToRightMenu)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self,
+                      let rightMenuView = rightMenuView else {
+                    return
+                }
+                
+                self.navigationController?.pushViewController(rightMenuView, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.isOpenBottomMenu }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
@@ -516,6 +545,42 @@ extension ChatView {
                 
                 tableView.isScrollEnabled = !isOpen
                 chatCellMenuDropDownView.setOpen(isOpen: isOpen)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$errorMessage)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] message in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Common"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.show(on: self)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$criticalErrorMessage)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] message in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Common"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = {
+                    self.navigationController?.popViewController(animated: true)
+                }
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
     }

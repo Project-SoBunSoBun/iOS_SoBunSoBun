@@ -67,6 +67,72 @@
         }
       }
     },
+    "Kick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내보내기"
+          }
+        }
+      }
+    },
+    "KickMemberDoneTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 멤버를 내보냈습니다."
+          }
+        }
+      }
+    },
+    "KickMembers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "멤버 내보내기"
+          }
+        }
+      }
+    },
+    "KickMemberTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 멤버를 내보내시겠습니까?"
+          }
+        }
+      }
+    },
+    "LeaveChatRoom" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅방 나가기"
+          }
+        }
+      }
+    },
+    "LeaveChatRoomTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정말로 채팅방을 나가시겠습니까?"
+          }
+        }
+      }
+    },
     "LeftUserMessage" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -74,6 +140,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$(nickname)@님께서 퇴장하셨습니다."
+          }
+        }
+      }
+    },
+    "Me" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나"
+          }
+        }
+      }
+    },
+    "MemberCount" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "대화 상대 %1$d"
           }
         }
       }
