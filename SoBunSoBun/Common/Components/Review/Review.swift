@@ -31,6 +31,19 @@ class Review: UIButton {
     }
     
     // MARK: - 디자인 요소
+    private let emojiView: UIImageView = {
+        let iv = UIImageView()
+        iv.contentMode = .scaleAspectFit
+        iv.isUserInteractionEnabled = false
+        return iv
+    }()
+    
+    private let label: UILabel = {
+        let lb = UILabel()
+        lb.isUserInteractionEnabled = false
+        return lb
+    }()
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -44,30 +57,42 @@ class Review: UIButton {
     private func configureUI() {
         self.isUserInteractionEnabled = false
         
-        var config = UIButton.Configuration.plain()
-        config.imagePlacement = .leading
-        config.imagePadding = 8
-        config.contentInsets = .init(top: 10, leading: 10, bottom: 10, trailing: 10)
-        config.titleAlignment = .center
-        
         self.backgroundColor = .backgroundWhite
-        self.translatesAutoresizingMaskIntoConstraints = false
-        
-        // 모서리
-        self.layer.cornerRadius = 12
         
         // 테두리
         self.layer.borderWidth = 2
         self.layer.borderColor = UIColor.primary50.cgColor
+        
+        // 모서리
+        self.layer.cornerRadius = 12
         
         // 그림자
         self.layer.shadowOffset = .zero
         self.layer.shadowColor = UIColor.primary300.withAlphaComponent(0.16).cgColor
         self.layer.shadowOpacity = 1
         self.layer.shadowRadius = 16
+        
         self.clipsToBounds = false
         
-        self.configuration = config
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        [emojiView, label].forEach {
+            addSubview($0)
+        }
+        
+        emojiView.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(10)
+            make.verticalEdges.equalToSuperview().inset(10)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(16)
+        }
+        
+        label.snp.makeConstraints { make in
+            make.leading.equalTo(emojiView.snp.trailing).offset(8)
+            make.trailing.equalToSuperview().inset(10)
+            make.verticalEdges.equalToSuperview().inset(10)
+            make.centerY.equalToSuperview()
+        }
     }
     
     private func setEmoji() {
@@ -75,22 +100,22 @@ class Review: UIButton {
         
         switch number {
         case 1:
-            configuration?.image = .emojiEightOclock.resize(.init(width: 16, height: 16))
+            emojiView.image = .emojiEightOclock
             
         case 2:
-            configuration?.image = .emojiGreenHeart.resize(.init(width: 16, height: 16))
+            emojiView.image = .emojiGreenHeart
             
         case 3:
-            configuration?.image = .emojiThumbsUp.resize(.init(width: 16, height: 16))
+            emojiView.image = .emojiThumbsUp
             
         case 4:
-            configuration?.image = .emojiGlowingStar.resize(.init(width: 16, height: 16))
+            emojiView.image = .emojiGlowingStar
             
         case 5:
-            configuration?.image = .emojiGrinningFace.resize(.init(width: 16, height: 16))
+            emojiView.image = .emojiGrinningFace
             
         default:
-            configuration?.image = .logo.resize(.init(width: 16, height: 16))
+            emojiView.image = .logo
         }
     }
     
@@ -119,32 +144,33 @@ class Review: UIButton {
             attributes[.foregroundColor] = UIColor.neutral900
         }
         
-        let localizedString = NSLocalizedString(String(format: "Review%03d", number), tableName: "Review", comment: "")
+        let localizedString = NSLocalizedString(
+            String(format: "Review%03d", number),
+            tableName: "Review",
+            comment: ""
+        )
         let attributedText = NSAttributedString(
             string: localizedString,
             attributes: attributes
         )
         
-        self.configuration?.attributedTitle = AttributedString(attributedText)
+        label.attributedText = attributedText
     }
     
     private func updateUI(isSelected: Bool) {
         if isSelected {
             self.backgroundColor = .primary300
             self.layer.borderColor = UIColor.primary300.cgColor
+            
             var attributes = body16.attributes(alignment: .center)
             attributes[.foregroundColor] = UIColor.backgroundWhite
-            
             let localizedString = NSLocalizedString(String(format: "Review%03d", number), tableName: "Review", comment: "")
-            let attributedText = NSAttributedString(
-                string: localizedString,
-                attributes: attributes
-            )
             
-            self.configuration?.attributedTitle = AttributedString(attributedText)
+            label.attributedText = NSAttributedString(string: localizedString, attributes: attributes)
         } else {
             self.backgroundColor = .backgroundWhite
             self.layer.borderColor = UIColor.primary50.cgColor
+            
             setTitleColor()
         }
     }
@@ -152,17 +178,12 @@ class Review: UIButton {
 
 extension Review {
     private func bind() {
-        self.configurationUpdateHandler = { [weak self] button in
-            guard let self = self else { return }
-            
-            updateUI(isSelected: button.isSelected)
-        }
-        
         self.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
                 self.isSelected.toggle()
+                self.updateUI(isSelected: self.isSelected)
             })
             .disposed(by: disposeBag)
     }
