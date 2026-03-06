@@ -10,7 +10,6 @@ import ReactorKit
 import OSLog
 
 class ChatRoomKickReactor: Reactor {
-    
     private let chatRoomId: Int
     
     init(chatRoomId: Int) {
@@ -19,7 +18,7 @@ class ChatRoomKickReactor: Reactor {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Chat.ChatRoomKickReactor.Reactor"
+        category: "Chat.ChatRoomKick.Reactor"
     )
     
     var initialState: State = State()
@@ -74,20 +73,20 @@ class ChatRoomKickReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case .setSelectedMemberId(let id):
-            newState.selectedMemberId = id
-            
-        case .setShouldShowKickAlert:
-            newState.shouldShowKickAlert = ()
-            
         case .setMembers(let members):
             if let myIdString = KeyChain.shared.get(key: "USER_ID"),
                let myId = Int(myIdString) {
                 newState.members = members.filter { $0.userId != myId }
             }
             
+        case .setSelectedMemberId(let id):
+            newState.selectedMemberId = id
+            
         case .changeMembers(let id):
             newState.members = newState.members.filter { $0.userId != id }
+            
+        case .setShouldShowKickAlert:
+            newState.shouldShowKickAlert = ()
             
         case .setShouldShowKickDoneAlert:
             newState.shouldShowKickDoneAlert = ()
