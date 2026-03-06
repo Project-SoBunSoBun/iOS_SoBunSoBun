@@ -42,6 +42,8 @@ class Review: UIButton {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
+        self.isUserInteractionEnabled = false
+        
         var config = UIButton.Configuration.plain()
         config.imagePlacement = .leading
         config.imagePadding = 8
