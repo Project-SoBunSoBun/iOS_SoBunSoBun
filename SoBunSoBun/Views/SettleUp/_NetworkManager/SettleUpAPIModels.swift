@@ -24,8 +24,14 @@ struct SettleUpContentModel: Decodable {
     let groupPostTitle: String
     let status: String
     let totalAmount, participantCount: Int
+    let participants: [ParticipantModel]
     let locationName: String
     let meetAt, createdAt, updatedAt: String
+}
+
+struct ParticipantModel: Decodable {
+    let userId: Int
+    let nickname: String
 }
 
 struct SettleUpPageableModel: Decodable {
