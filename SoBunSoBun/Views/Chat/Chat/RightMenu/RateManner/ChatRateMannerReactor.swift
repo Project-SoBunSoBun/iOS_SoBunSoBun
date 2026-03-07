@@ -104,7 +104,7 @@ class ChatRateMannerReactor: Reactor {
     }
     
     private func skipRateManner() -> Observable<Mutation> {
-        var body: [Int: [String]] = [:]
+        let body: [Int: [String]] = [:]
         
         return networkManager.rateManners(groupPostId: groupPostId, manners: body)
             .asObservable()
