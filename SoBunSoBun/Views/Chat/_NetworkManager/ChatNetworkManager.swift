@@ -52,4 +52,12 @@ class ChatNetworkManager {
         .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
+    
+    func rateManners(groupPostId: Int, manners: [Int: [String]]) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(ChatAPIs.rateManners(groupPostId: groupPostId, manners: manners))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
 }

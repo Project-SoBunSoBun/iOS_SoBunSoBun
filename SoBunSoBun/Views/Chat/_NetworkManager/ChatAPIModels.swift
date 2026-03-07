@@ -70,3 +70,13 @@ struct ChatRoomDetailMemberModel: Decodable, Equatable {
     let nickname, profileImage: String?
     let isOwner: Bool
 }
+
+struct ChatRateMannerRequestBodyModel: Encodable {
+    let groupPostId: Int
+    let reviews: [ChatRateMannerRequestBodyReviewModel]
+}
+
+struct ChatRateMannerRequestBodyReviewModel: Encodable {
+    let receiverId: Int
+    let tagCodes: [String]
+}

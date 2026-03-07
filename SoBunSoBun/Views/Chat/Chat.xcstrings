@@ -23,6 +23,28 @@
         }
       }
     },
+    "ConfirmRateMannersSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가를 완료하시겠습니까?"
+          }
+        }
+      }
+    },
+    "ConfirmRateMannerTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가를 완료하면\n취소할 수 없습니다."
+          }
+        }
+      }
+    },
     "Copy" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -166,6 +188,28 @@
         }
       }
     },
+    "Rate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가하기"
+          }
+        }
+      }
+    },
+    "RateDone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가 완료하기"
+          }
+        }
+      }
+    },
     "RateManners" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -173,6 +217,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "매너 평가"
+          }
+        }
+      }
+    },
+    "RateMannersDone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가가 완료되었습니다."
           }
         }
       }
@@ -195,6 +250,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "사진 보내기"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertCancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가 종료하기"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertPrimary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이어서 평가하기"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가를 종료하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이전 페이지로 돌아가면\n매너 평가를 진행할 수 없습니다."
           }
         }
       }

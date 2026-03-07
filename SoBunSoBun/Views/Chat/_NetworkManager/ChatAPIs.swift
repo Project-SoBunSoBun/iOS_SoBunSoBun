@@ -14,6 +14,7 @@ enum ChatAPIs {
     case uploadChatImage(id: Int, message: String?, image: Data)
     case leaveChatRoom(id: Int)
     case kickMember(chatRoomId: Int, userId: Int)
+    case rateManners(groupPostId: Int, manners: [Int: [String]])
 }
 
 extension ChatAPIs: TargetType {
@@ -42,6 +43,9 @@ extension ChatAPIs: TargetType {
             
         case .kickMember(let chatRoomId, let userID):
             return "/api/chat/rooms/\(chatRoomId)/members/\(userID)"
+            
+        case .rateManners:
+            return "/api/manner/review"
         }
     }
     
@@ -53,7 +57,8 @@ extension ChatAPIs: TargetType {
             return .get
             
         case // POST
-                .uploadChatImage:
+                .uploadChatImage,
+                .rateManners:
             return .post
             
         case // DELETE
@@ -101,6 +106,16 @@ extension ChatAPIs: TargetType {
             
         case .kickMember:
             return .requestPlain
+            
+        case .rateManners(let groupPostId, let manners):
+            let body: ChatRateMannerRequestBodyModel = ChatRateMannerRequestBodyModel(
+                groupPostId: groupPostId,
+                reviews: manners.map {
+                    ChatRateMannerRequestBodyReviewModel(receiverId: $0.key, tagCodes: $0.value)
+                }
+            )
+            
+            return .requestJSONEncodable(body)
         }
     }
     
