@@ -23,24 +23,24 @@
         }
       }
     },
-    "ConfirmRateMannersSubTitle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "매너 평가를 완료하시겠습니까?"
-          }
-        }
-      }
-    },
-    "ConfirmRateMannerTitle" : {
+    "ConfirmRateMannerAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "매너 평가를 완료하면\n취소할 수 없습니다."
+          }
+        }
+      }
+    },
+    "ConfirmRateMannersAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가를 완료하시겠습니까?"
           }
         }
       }
@@ -100,7 +100,18 @@
         }
       }
     },
-    "KickMemberDoneTitle" : {
+    "KickMemberAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 멤버를 내보내시겠습니까?"
+          }
+        }
+      }
+    },
+    "KickMemberDoneAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -122,17 +133,6 @@
         }
       }
     },
-    "KickMemberTitle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "해당 멤버를 내보내시겠습니까?"
-          }
-        }
-      }
-    },
     "LeaveChatRoom" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -144,7 +144,7 @@
         }
       }
     },
-    "LeaveChatRoomTitle" : {
+    "LeaveChatRoomAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
@@ -221,7 +221,7 @@
         }
       }
     },
-    "RateMannersDone" : {
+    "RateMannersDoneAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {

@@ -38,6 +38,7 @@ class ChatRateMannerView: UIViewController {
     // MARK: - 디자인 요소
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
+        tnb.title = String(localized: "RateManners", table: "Chat")
         tnb.onBackButtonTapped = {
             let alert = CustomAlertView(
                 title: String(localized: "SkipRateMannersAlertTitle", table: "Chat"),
@@ -57,8 +58,6 @@ class ChatRateMannerView: UIViewController {
             alert.show(on: self)
         }
         
-        tnb.title = String(localized: "RateManners", table: "Chat")
-        
         return tnb
     }()
     
@@ -70,7 +69,7 @@ class ChatRateMannerView: UIViewController {
         let sv = UIStackView()
         sv.axis = .vertical
         sv.spacing = 16
-        sv.alignment = .top
+        sv.alignment = .fill
         sv.isLayoutMarginsRelativeArrangement = true
         sv.layoutMargins = .init(top: 16, left: 0, bottom: 16, right: 0)
         
@@ -145,8 +144,8 @@ extension ChatRateMannerView {
                 guard let self = self else { return }
                 
                 let alert = CustomAlertView(
-                    title: String(localized: "ConfirmRateMannerTitle", table: "Chat"),
-                    subTitle: String(localized: "ConfirmRateMannerSubTitle", table: "Chat"),
+                    title: String(localized: "ConfirmRateMannerAlertTitle", table: "Chat"),
+                    subTitle: String(localized: "ConfirmRateMannerAlertSubTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Rate", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
@@ -201,7 +200,7 @@ extension ChatRateMannerView {
                 guard let self = self else { return }
                 
                 let alert = CustomAlertView(
-                    title: String(localized: "RateMannersDone", table: "Chat"),
+                    title: String(localized: "RateMannersDoneAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 

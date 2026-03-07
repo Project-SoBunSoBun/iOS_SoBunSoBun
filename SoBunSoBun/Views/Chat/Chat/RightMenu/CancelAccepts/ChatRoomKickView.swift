@@ -169,7 +169,7 @@ extension ChatRoomKickView {
                 
                 let alertView = CustomAlertView(
                     title: String(localized: "Warning", table: "Common"),
-                    subTitle: String(localized: "KickMemberTitle", table: "Chat"),
+                    subTitle: String(localized: "KickMemberAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Kick", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
@@ -193,7 +193,7 @@ extension ChatRoomKickView {
                 guard let self = self else { return }
                 
                 let alertView = CustomAlertView(
-                    title: String(localized: "KickMemberDoneTitle", table: "Chat"),
+                    title: String(localized: "KickMemberDoneAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
@@ -216,6 +216,10 @@ extension ChatRoomKickView {
                     subTitle: message,
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
+                
+                alert.onPrimaryTapped = {
+                    
+                }
                 
                 alert.show(on: self)
             })

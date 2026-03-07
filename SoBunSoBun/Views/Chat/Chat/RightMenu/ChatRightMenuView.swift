@@ -288,7 +288,7 @@ extension ChatRightMenuView {
                 
                 let alertView = CustomAlertView(
                     title: String(localized: "Warning", table: "Common"),
-                    subTitle: String(localized: "LeaveChatRoomTitle", table: "Chat"),
+                    subTitle: String(localized: "LeaveChatRoomAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "LeaveChatRoom", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
