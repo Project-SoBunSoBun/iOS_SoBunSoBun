@@ -75,8 +75,8 @@ class ChatTableViewCell: UITableViewCell {
             }
         }
         
-        if model.type == .LEAVE {
-            let chatView = LeaveChatCellView(nickname: model.nickname)
+        if model.type == .SYSTEM || model.type == .ENTER || model.type == .LEAVE {
+            let chatView = SystemChatCellView(model: model)
             
             contentView.addSubview(chatView)
             
@@ -119,6 +119,7 @@ class ChatTableViewCell: UITableViewCell {
                 .disposed(by: disposeBag)
         } else if let otherView = chatCellView as? OtherChatCellView {
             otherView.configureUI(model: model)
+            otherView.bind(model: model)
             
             otherView.didImageLoad
                 .do(onNext: { [weak self] in
@@ -140,6 +141,14 @@ class ChatTableViewCell: UITableViewCell {
                 .when(.recognized)
                 .map { _ in otherView.chatImageView.image }
                 .bind(to: didImageTapped)
+                .disposed(by: disposeBag)
+            
+            otherView.didInviteCardButtonTapped
+                .bind(to: didInviteCardButtonTapped)
+                .disposed(by: disposeBag)
+            
+            otherView.didSettlementCardButtonTapped
+                .bind(to: didSettlementCardButtonTapped)
                 .disposed(by: disposeBag)
         }
         
