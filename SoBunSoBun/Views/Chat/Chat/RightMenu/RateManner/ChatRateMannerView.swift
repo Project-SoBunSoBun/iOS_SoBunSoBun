@@ -144,8 +144,8 @@ extension ChatRateMannerView {
                 guard let self = self else { return }
                 
                 let alert = CustomAlertView(
-                    title: String(localized: "ConfirmRateMannerAlertTitle", table: "Chat"),
-                    subTitle: String(localized: "ConfirmRateMannerAlertSubTitle", table: "Chat"),
+                    title: String(localized: "ConfirmRateMannersAlertTitle", table: "Chat"),
+                    subTitle: String(localized: "ConfirmRateMannersAlertSubTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Rate", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
