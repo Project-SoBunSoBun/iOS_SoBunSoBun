@@ -14,6 +14,7 @@ enum ChatAPIs {
     case uploadChatImage(id: Int, message: String?, image: Data)
     case sendInviteCard(chatRoomId: Int, inviteeId: Int)
     case acceptInvitation(inviteId: Int)
+    case sendSettlementCard(chatRoomId: Int, settlementId: Int)
     case leaveChatRoom(id: Int)
     case kickMember(chatRoomId: Int, userId: Int)
     case rateManners(groupPostId: Int, manners: [Int: [String]])
@@ -46,6 +47,9 @@ extension ChatAPIs: TargetType {
         case .acceptInvitation(let inviteId):
             return "/api/chat/invites/\(inviteId)/accept"
             
+        case .sendSettlementCard(let chatRoomId, _):
+            return "/api/v1/chat/rooms/\(chatRoomId)/settlement-card"
+            
         case .leaveChatRoom(let id):
             return "/api/v1/chat/rooms/\(id)/members/me"
             
@@ -67,7 +71,8 @@ extension ChatAPIs: TargetType {
         case // POST
                 .uploadChatImage,
                 .rateManners,
-                .sendInviteCard:
+                .sendInviteCard,
+                .sendSettlementCard:
             return .post
             
         case // PATCH
@@ -121,6 +126,11 @@ extension ChatAPIs: TargetType {
             
         case .acceptInvitation:
             return .requestPlain
+            
+        case .sendSettlementCard(_, let settlementId):
+            let body: [String: Int] = ["settlementId": settlementId]
+            
+            return .requestJSONEncodable(body)
             
         case .leaveChatRoom:
             return .requestPlain

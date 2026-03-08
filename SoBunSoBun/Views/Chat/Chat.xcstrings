@@ -165,6 +165,17 @@
         }
       }
     },
+    "ErrorSendSettlementCardMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미 정산서를 보낸 상태이거나,\n일시적인 오류가 발생했습니다."
+          }
+        }
+      }
+    },
     "GoToPost" : {
       "extractionState" : "manual",
       "localizations" : {

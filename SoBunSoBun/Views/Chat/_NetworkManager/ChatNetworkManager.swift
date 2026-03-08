@@ -53,6 +53,14 @@ class ChatNetworkManager {
         .tryMap(GroupChatAcceptResponseModel.self)
     }
     
+    func sendSettlementCard(chatRoomId: Int, settlementId: Int) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(ChatAPIs.sendSettlementCard(chatRoomId: chatRoomId, settlementId: settlementId))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
+    
     func leaveChatRoom(id: Int) -> Single<Void> {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.leaveChatRoom(id: id))

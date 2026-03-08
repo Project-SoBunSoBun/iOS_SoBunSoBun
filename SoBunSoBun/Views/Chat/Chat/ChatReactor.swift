@@ -49,6 +49,7 @@ class ChatReactor: Reactor {
         case setSelectedChatMessageModel(ChatMessageModel) // 선택(상호작용)한 채팅
         case sendInviteCard // 그룹 채팅방 초대장 전송(개인 채팅 전용)
         case acceptGroupChatRoom(Int) // 그룹 채팅방 초대 수락(개인 채팅 전용)
+        case sendSettlementCard(Int) // 정산서 보내기
         case leaveChatRoom // 채팅방 나가기
     }
     
@@ -127,6 +128,9 @@ class ChatReactor: Reactor {
             
         case .acceptGroupChatRoom(let id):
             return acceptInvitationGroupChatRoom(inviteId: id)
+            
+        case .sendSettlementCard(let id):
+            return sendSettlementCard(settlementId: id)
             
         case .leaveChatRoom:
             return leaveChatRoom()
@@ -375,6 +379,22 @@ class ChatReactor: Reactor {
                 self.logger.critical("초대장 수락 실패: \(error.localizedDescription)")
                 
                 return Observable.just(.setError(String(localized: "ErrorAcceptGroupChatRoomMessage", table: "Chat")))
+            }
+    }
+    
+    // 정산서 보내기
+    private func sendSettlementCard(settlementId: Int) -> Observable<Mutation> {
+        return networkManager.sendSettlementCard(chatRoomId: chatRoomId, settlementId: settlementId)
+            .asObservable()
+            .flatMap { _ -> Observable<Mutation> in
+                self.logger.debug("정산서 전송 성공")
+                
+                return Observable.empty()
+            }
+            .catch { error in
+                self.logger.critical("정산서 전송 실패: \(error.localizedDescription)")
+                
+                return Observable.just(.setError(String(localized: "ErrorSendSettlementCardMessage", table: "Chat")))
             }
     }
     

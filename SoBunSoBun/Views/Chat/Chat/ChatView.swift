@@ -331,7 +331,7 @@ extension ChatView {
                 
                 alert.onPrimaryTapped = {
                     if let settlementId = model.data.settlementId {
-                        // TODO: 정산 보내기 기능 구현
+                        reactor.action.onNext(.sendSettlementCard(settlementId))
                     } else {
                         self.showNotSettledYetForOwnerAlert()
                     }
@@ -664,14 +664,13 @@ extension ChatView {
                     })
                     .disposed(by: cell.disposeBag)
                 
-                // TODO: 정산 구현 후 정산서 확인 기능 구현
                 // 정산서 확인 버튼 누름
                 cell.didSettlementCardButtonTapped
                     .observe(on: MainScheduler.instance)
                     .subscribe(onNext: { [weak self] groupChatRoomId in
                         guard let self = self else { return }
                         
-                        
+                        // TODO: 정산 구현 후 정산서 확인 기능 구현
                     })
                     .disposed(by: cell.disposeBag)
             }
