@@ -27,7 +27,7 @@ class ChatView: UIViewController {
     
     private var rightMenuView: ChatRightMenuView?
     
-    private let willLeave = PublishRelay<Void>()
+    private let willLeave = PublishRelay<Void?>()
     
     init(chatRoomId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
         self.chatRoomId = chatRoomId
@@ -76,6 +76,7 @@ class ChatView: UIViewController {
         sv.backgroundColor = .backgroundWhite
         sv.isLayoutMarginsRelativeArrangement = true
         sv.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
+        sv.isHidden = true
         
         return sv
     }()
@@ -132,7 +133,7 @@ class ChatView: UIViewController {
     private let bottomMenuView: UIView = {
         let view = UIView()
         view.backgroundColor = .backgroundWhite
-        view.frame = .init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 285)
+        view.frame = .init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 0)
         
         return view
     }()
@@ -149,6 +150,10 @@ class ChatView: UIViewController {
     }()
     
     private let sendImageButton = ChatBottomMenuButton(image: .blueImageIcon, text: String(localized: "SendPicture", table: "Chat"))
+    private let sendInvitationButton = ChatBottomMenuButton(image: .blueMail, text: String(localized: "SendInvitation", table: "Chat"))
+    private let checkPostButton = ChatBottomMenuButton(image: .blueDocument, text: String(localized: "CheckPost", table: "Chat"))
+    private let sendSettlementButton = ChatBottomMenuButton(image: .blueReceipt, text: String(localized: "SendSettlement", table: "Chat"))
+    private let confirmSettlementButton = ChatBottomMenuButton(image: .blueReceipt, text: String(localized: "ConfirmSettlement", table: "Chat"))
     
     private lazy var imagePicker = {
         let picker = CustomImagePicker(presentingViewController: self, selectionMode: .single)
@@ -180,6 +185,12 @@ class ChatView: UIViewController {
         super.viewDidLayoutSubviews()
         
         tableView.contentInset = .init(top: 0, left: 0, bottom: topNavigationBar.frame.height, right: 0)
+    }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        
+        bottomMenuView.frame.size.height = 258 + view.safeAreaInsets.bottom
     }
     
     // MARK: - 레이아웃 설정
@@ -224,13 +235,6 @@ class ChatView: UIViewController {
             make.horizontalEdges.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
         }
-        
-        bottomMenuStackView.addArrangedSubview(sendImageButton)
-        
-        sendImageButton.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.height.equalTo(88)
-        }
     }
 }
 
@@ -243,11 +247,20 @@ extension ChatView {
     private func bindAction(reactor: ChatReactor) {
         reactor.action.onNext(.viewDidLoad)
         
+        // 오른쪽 메뉴 버튼
         rightMenuButton.rx.tap
             .map { Reactor.Action.rightMenuButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        // 채팅방 나가기
+        willLeave
+            .compactMap { $0 }
+            .map { Reactor.Action.leaveChatRoom }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 메시지 전송
         sendButton.rx.tap
             .withLatestFrom(chatTextView.rx.text.orEmpty)
             .subscribe(onNext: { [weak self] text in
@@ -258,14 +271,131 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 하단 메뉴 버튼
         plusButton.rx.tap
             .map { Reactor.Action.bottomMenuTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        // 이미지 전송 버튼
         sendImageButton.rx.tap
             .map { Reactor.Action.showImagePicker }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 초대장 전송 버튼
+        sendInvitationButton.rx.tap
+            .withLatestFrom(
+                reactor.state.map { $0.detailInfoModel }
+                    .compactMap { $0 }
+            )
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "SendInvitationAlertTitle", table: "Chat"),
+                    subTitle: String(localized: "SendInvitationAlertSubTitle", table: "Chat"),
+                    primaryTitleKey: String(localized: "SendInvitation", table: "Chat"),
+                    cancelTitleKey: String(localized: "Cancel", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = {
+                    reactor.action.onNext(.sendInviteCard)
+                }
+                
+                alert.onCancelTapped = {
+                    
+                }
+                
+                alert.show(on: self)
+            })
+            .disposed(by: disposeBag)
+        
+        // 정산서 전송 버튼
+        sendSettlementButton.rx.tap
+            .withLatestFrom(
+                reactor.state.map { $0.detailInfoModel }
+                    .compactMap { $0 }
+            )
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "SendSettlementConfirmAlertTitle", table: "Chat"),
+                    subTitle: String(localized: "SendSettlementConfirmAlertSubTitle", table: "Chat"),
+                    primaryTitleKey: String(localized: "SendSettlement", table: "Chat"),
+                    cancelTitleKey: String(localized: "Cancel", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = {
+                    if let settlementId = model.data.settlementId {
+                        // TODO: 정산 보내기 기능 구현
+                    } else {
+                        self.showNotSettledYetForOwnerAlert()
+                    }
+                }
+                
+                alert.onCancelTapped = {
+                    
+                }
+                
+                alert.show(on: self)
+            })
+            .disposed(by: disposeBag)
+        
+        // 게시글 확인 버튼
+        checkPostButton.rx.tap
+            .withLatestFrom(
+                reactor.state.map { $0.detailInfoModel }
+                    .compactMap { $0 }
+            )
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                let sheetView = PostDetailView(
+                    postId: model.data.groupPostId,
+                    showBackButton: false,
+                    showChatButton: false
+                )
+                let bottomSheet = BottomSheetView(
+                    contentViewController: sheetView,
+                    height: 0.88,
+                    cornerRadius: 24
+                )
+                
+                self.present(bottomSheet, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        // 정산서 확인 버튼
+        confirmSettlementButton.rx.tap
+            .withLatestFrom(
+                reactor.state.map { $0.detailInfoModel }
+                    .compactMap { $0 }
+            )
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                if let settlementId = model.data.settlementId {
+                    // TODO: 정산 구현 후 정산서 확인 기능 구현
+                } else {
+                    let alert = CustomAlertView(
+                        title: String(localized: "NotSettledYetForMemberAlertTitle", table: "Chat"),
+                        subTitle: String(localized: "NotSettledYetForMemberAlertSubTitle", table: "Chat"),
+                        primaryTitleKey: String(localized: "Confirm", table: "Common")
+                    )
+                    
+                    alert.onPrimaryTapped = {
+                        
+                    }
+                    
+                    alert.show(on: self)
+                }
+            })
             .disposed(by: disposeBag)
         
         // 채팅 페이지네이션
@@ -279,6 +409,7 @@ extension ChatView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        // 채팅 상호작용 메뉴
         chatCellMenuDropDownView
             .didCellTap
             .subscribe(onNext: { [weak self] menu in
@@ -344,6 +475,7 @@ extension ChatView {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
+                // 제목, 메뉴 설정
                 topNavigationBar.title = model.data.roomName
                 topNavigationBar.buttons = [rightMenuButton]
                 
@@ -355,18 +487,76 @@ extension ChatView {
                 )
                 rightMenuView?.willLeave = willLeave
                 
-                if model.data.roomType == .ONE_TO_ONE {
-                    
-                } else if model.data.roomType == .GROUP {
-                    
+                // 하단 메뉴 설정
+                chatStackView.isHidden = false
+                
+                bottomMenuStackView.arrangedSubviews.forEach {
+                    self.bottomMenuStackView.removeArrangedSubview($0)
+                    $0.removeFromSuperview()
+                }
+                
+                guard let myIdString = KeyChain.shared.get(key: "USER_ID"),
+                      let myId = Int(myIdString) else {
+                    return
+                }
+                
+                bottomMenuStackView.addArrangedSubview(sendImageButton)
+                
+                sendImageButton.snp.makeConstraints { make in
+                    make.horizontalEdges.equalToSuperview()
+                    make.height.equalTo(88)
+                }
+                
+                if model.data.ownerId == myId {
+                    if model.data.roomType == .ONE_TO_ONE {
+                        bottomMenuStackView.addArrangedSubview(sendInvitationButton)
+                        sendInvitationButton.snp.makeConstraints { make in
+                            make.horizontalEdges.equalToSuperview()
+                            make.height.equalTo(88)
+                        }
+                    } else if model.data.roomType == .GROUP {
+                        bottomMenuStackView.addArrangedSubview(sendSettlementButton)
+                        sendSettlementButton.snp.makeConstraints { make in
+                            make.horizontalEdges.equalToSuperview()
+                            make.height.equalTo(88)
+                        }
+                    }
+                } else {
+                    if model.data.roomType == .ONE_TO_ONE {
+                        bottomMenuStackView.addArrangedSubview(checkPostButton)
+                        checkPostButton.snp.makeConstraints { make in
+                            make.horizontalEdges.equalToSuperview()
+                            make.height.equalTo(88)
+                        }
+                    } else if model.data.roomType == .GROUP {
+                        bottomMenuStackView.addArrangedSubview(confirmSettlementButton)
+                        confirmSettlementButton.snp.makeConstraints { make in
+                            make.horizontalEdges.equalToSuperview()
+                            make.height.equalTo(88)
+                        }
+                    }
+                }
+                
+                // 정산 후 자동 매너 평가 뷰 이동
+                if model.data.isSettled && !model.data.isReviewed {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        self.navigationController?.pushViewController(
+                            ChatRateMannerView(
+                                groupPostId: model.data.groupPostId,
+                                members: model.data.members
+                            ), animated: true
+                        )
+                    }
                 }
             })
             .disposed(by: disposeBag)
         
+        // 메시지
         reactor.state.map { $0.messages }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(cellIdentifier: ChatTableViewCell.identifier, cellType: ChatTableViewCell.self)) { index, model, cell in
+                // 하루 중 첫 채팅 표시 여부
                 let messages = reactor.currentState.messages
                 let previousMessage = index + 1 < messages.count ? messages[index + 1] : nil
                 
@@ -391,6 +581,7 @@ extension ChatView {
                 
                 cell.configureUI(model: model, isMine: isMine, isFirstChatOfDay: isFirstChatOfDay)
                 
+                // 이미지 비동기 로드 시 스크롤 아래로
                 cell.didImageLoad
                     .observe(on: MainScheduler.instance)
                     .subscribe(onNext: {
@@ -433,6 +624,7 @@ extension ChatView {
                     })
                     .disposed(by: cell.disposeBag)
                 
+                // 이미지 미리보기
                 cell.didImageTapped
                     .observe(on: MainScheduler.instance)
                     .subscribe(onNext: { [weak self] image in
@@ -446,9 +638,46 @@ extension ChatView {
                         self.navigationController?.pushViewController(vc, animated: true)
                     })
                     .disposed(by: cell.disposeBag)
+                
+                // 단체 채팅방 초대 수락
+                cell.didInviteCardButtonTapped
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: { [weak self] inviteId in
+                        guard let self = self else { return }
+                        
+                        let alert = CustomAlertView(
+                            title: String(localized: "ConfirmAcceptGroupChatRoomAlertTitle", table: "Chat"),
+                            subTitle: String(localized: "ConfirmAcceptGroupChatRoomAlertTitle", table: "Chat"),
+                            primaryTitleKey: String(localized: "Confirm", table: "Chat"),
+                            cancelTitleKey: String(localized: "Cancel", table: "Common")
+                        )
+                        
+                        alert.onPrimaryTapped = {
+                            reactor.action.onNext(.acceptGroupChatRoom(inviteId))
+                        }
+                        
+                        alert.onCancelTapped = {
+                            
+                        }
+                        
+                        alert.show(on: self)
+                    })
+                    .disposed(by: cell.disposeBag)
+                
+                // TODO: 정산 구현 후 정산서 확인 기능 구현
+                // 정산서 확인 버튼 누름
+                cell.didSettlementCardButtonTapped
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: { [weak self] groupChatRoomId in
+                        guard let self = self else { return }
+                        
+                        
+                    })
+                    .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
         
+        // 메시지 첫 표시할 때 스크롤 아래로
         reactor.state.map { $0.messages }
             .distinctUntilChanged()
             .filter { !$0.isEmpty }
@@ -463,6 +692,7 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 메시지 표시될 때마다 스크롤이 맨하단 근처에 있다면 아래로
         reactor.state.map { $0.messages }
             .distinctUntilChanged()
             .filter { !$0.isEmpty }
@@ -479,6 +709,7 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 메뉴 뷰로 이동
         reactor.pulse(\.$shouldNavigateToRightMenu)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
@@ -491,6 +722,7 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 하단 메뉴 표시
         reactor.state.map { $0.isOpenBottomMenu }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
@@ -539,6 +771,7 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 채팅 메뉴 표시 여부
         reactor.state.map { $0.isChatCellMenuOpen }
             .subscribe(onNext: { [weak self] isOpen in
                 guard let self = self else { return }
@@ -548,6 +781,29 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 그룹 채팅방 이동
+        reactor.pulse(\.$shouldNavigateToGroupChatRoom)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] groupChatRoomId in
+                guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(ChatView(chatRoomId: groupChatRoomId), animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        // 채팅방 나가기
+        reactor.pulse(\.$shouldNavigateToBack)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        // 오류 메시지
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
@@ -564,6 +820,7 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 심각한 오류 발생 시 채팅 이용 불가
         reactor.pulse(\.$criticalErrorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
@@ -598,11 +855,37 @@ extension ChatView {
         
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: false)
     }
+    
+    // 정산이 완료되지 않을 상태로 정산서 보내기를 시도할 때
+    private func showNotSettledYetForOwnerAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "NotSettledYetForOwnerAlertTitle", table: "Chat"),
+            subTitle: String(localized: "NotSettledYetForOwnerAlertSubTitle", table: "Chat"),
+            primaryTitleKey: String(localized: "GoToSettlementTab", table: "Chat"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            guard let navController = self.navigationController,
+                  let navigationTabView = navController.viewControllers.first(where: { $0 is NavigationTabView }) as? NavigationTabView else {
+                return
+            }
+            
+            navigationTabView.showViewController(index: 2)
+            navController.popToViewController(navigationTabView, animated: true)
+        }
+        
+        alert.onCancelTapped = {
+            
+        }
+        
+        alert.show(on: self)
+    }
 }
 
 extension ChatView: UIGestureRecognizerDelegate {
     func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return (navigationController?.viewControllers.count ?? 0) > 1
+        return (self.navigationController?.viewControllers.count ?? 0) > 1
     }
 }
 

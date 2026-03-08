@@ -12,6 +12,8 @@ enum ChatAPIs {
     case getChatRoomDetail(id: Int)
     case getChatHistory(id: Int, cursor: String?, size: Int)
     case uploadChatImage(id: Int, message: String?, image: Data)
+    case sendInviteCard(chatRoomId: Int, inviteeId: Int)
+    case acceptInvitation(inviteId: Int)
     case leaveChatRoom(id: Int)
     case kickMember(chatRoomId: Int, userId: Int)
     case rateManners(groupPostId: Int, manners: [Int: [String]])
@@ -38,6 +40,12 @@ extension ChatAPIs: TargetType {
         case .uploadChatImage(let id, _, _):
             return "/api/v1/chat/rooms/\(id)/images"
             
+        case .sendInviteCard(let chatRoomId, _):
+            return "/api/chat/rooms/\(chatRoomId)/invites"
+            
+        case .acceptInvitation(let inviteId):
+            return "/api/chat/invites/\(inviteId)/accept"
+            
         case .leaveChatRoom(let id):
             return "/api/v1/chat/rooms/\(id)/members/me"
             
@@ -58,8 +66,13 @@ extension ChatAPIs: TargetType {
             
         case // POST
                 .uploadChatImage,
-                .rateManners:
+                .rateManners,
+                .sendInviteCard:
             return .post
+            
+        case // PATCH
+                .acceptInvitation:
+            return .patch
             
         case // DELETE
                 .leaveChatRoom,
@@ -100,6 +113,14 @@ extension ChatAPIs: TargetType {
             }
             
             return .uploadCompositeMultipart(formData, urlParameters: parameters)
+            
+        case .sendInviteCard(_, let inviteeId):
+            let body: [String: Int] = ["inviteeId": inviteeId]
+            
+            return .requestJSONEncodable(body)
+            
+        case .acceptInvitation:
+            return .requestPlain
             
         case .leaveChatRoom:
             return .requestPlain

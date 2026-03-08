@@ -10,6 +10,7 @@ import SnapKit
 import Kingfisher
 import RxSwift
 import RxCocoa
+import RxGesture
 import OSLog
 
 class OtherChatCellView: UIView {
@@ -22,6 +23,8 @@ class OtherChatCellView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let disposeBag = DisposeBag()
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
@@ -36,7 +39,7 @@ class OtherChatCellView: UIView {
     private let UNKNOWN_STRING = String(localized: "Unknown", table: "Common")
     
     // MARK: - 디자인 요소
-    private let profileImageView: UIImageView = {
+    let profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
@@ -87,11 +90,97 @@ class OtherChatCellView: UIView {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
+        
         return iv
     }()
-
-    private var imageWidthConstraint: Constraint?
-    private var imageHeightConstraint: Constraint?
+    
+    private func chatButton(title: String) -> UIButton {
+        var config = UIButton.Configuration.plain()
+        config.background.backgroundColor = .primary400
+        config.background.cornerRadius = 16
+        config.contentInsets = .init(top: 10, leading: 16, bottom: 10, trailing: 16)
+        
+        var attributes: [NSAttributedString.Key: Any] = title16.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.backgroundWhite
+        
+        config.attributedTitle = AttributedString(NSAttributedString(string: title, attributes: attributes))
+        
+        let btn = UIButton(configuration: config)
+        
+        return btn
+    }
+    
+    private let invitationCardView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 16
+        sv.alignment = .center
+        
+        let iv = UIImageView()
+        iv.image = .mail.resize(.init(width: 80, height: 64))
+        iv.contentMode = .scaleAspectFit
+        
+        iv.snp.makeConstraints { make in
+            make.width.equalTo(80)
+            make.height.equalTo(64)
+        }
+        
+        sv.addArrangedSubview(iv)
+        
+        let title = UILabel()
+        var titleAttributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
+        titleAttributes[.foregroundColor] = UIColor.primary400
+        title.attributedText = NSAttributedString(string: String(localized: "InvitationCardReceivedTitle", table: "Chat"), attributes: titleAttributes)
+        
+        sv.addArrangedSubview(title)
+        
+        let subTitle = UILabel()
+        var subTitleAttributes: [NSAttributedString.Key: Any] = body14.attributes(alignment: .center)
+        subTitleAttributes[.foregroundColor] = UIColor.neutral600
+        subTitle.attributedText = NSAttributedString(string: String(localized: "InvitationCardReceivedSubTitle", table: "Chat"), attributes: subTitleAttributes)
+        
+        sv.addArrangedSubview(subTitle)
+        
+        return sv
+    }()
+    
+    private lazy var invitationAcceptButton = chatButton(title: String(localized: "Accept", table: "Chat"))
+    
+    private let settlementCardView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 16
+        sv.alignment = .center
+        
+        let iv = UIImageView()
+        iv.image = .receipt.resize(.init(width: 72, height: 74))
+        iv.contentMode = .scaleAspectFit
+        
+        iv.snp.makeConstraints { make in
+            make.width.equalTo(72)
+            make.height.equalTo(74)
+        }
+        
+        sv.addArrangedSubview(iv)
+        
+        let title = UILabel()
+        var titleAttributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
+        titleAttributes[.foregroundColor] = UIColor.primary400
+        title.attributedText = NSAttributedString(string: String(localized: "SettlementReceivedTitle", table: "Chat"), attributes: titleAttributes)
+        
+        sv.addArrangedSubview(title)
+        
+        let subTitle = UILabel()
+        var subTitleAttributes: [NSAttributedString.Key: Any] = body14.attributes(alignment: .center)
+        subTitleAttributes[.foregroundColor] = UIColor.neutral600
+        subTitle.attributedText = NSAttributedString(string: String(localized: "SettlementReceivedSubTitle", table: "Chat"), attributes: subTitleAttributes)
+        
+        sv.addArrangedSubview(subTitle)
+        
+        return sv
+    }()
+    
+    private lazy var settlementConfirmButton = chatButton(title: String(localized: "Confirm", table: "Chat"))
     
     private let timeAttributes: [NSAttributedString.Key: Any] = {
         var attributes = body14.attributes()
@@ -132,6 +221,10 @@ class OtherChatCellView: UIView {
         
         chatBubbleView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         
+        invitationCardView.addArrangedSubview(invitationAcceptButton)
+        
+        settlementCardView.addArrangedSubview(settlementConfirmButton)
+        
         timeLabel.snp.makeConstraints { make in
             make.leading.equalTo(chatBubbleView.snp.trailing).offset(4)
             make.bottom.equalTo(chatBubbleView)
@@ -171,7 +264,7 @@ class OtherChatCellView: UIView {
         case .IMAGE:
             configureImage(model: model)
         case .INVITE_CARD:
-            configureInvite(model: model)
+            configureInvitation(model: model)
         case .SETTLEMENT_CARD:
             configureSettleUp(model: model)
         default:
@@ -243,12 +336,34 @@ class OtherChatCellView: UIView {
         }
     }
     
-    private func configureInvite(model: ChatMessageModel) {
+    private func configureInvitation(model: ChatMessageModel) {
+        chatBubbleView.backgroundColor = .backgroundWhite
+        chatBubbleView.layer.borderWidth = 2
+        chatBubbleView.layer.borderColor = UIColor.primary100.cgColor
+        chatBubbleView.frame = CGRectInset(chatBubbleView.frame, -chatBubbleView.layer.borderWidth, -chatBubbleView.layer.borderWidth)
         
+        chatBubbleView.addSubview(invitationCardView)
+        
+        invitationCardView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.verticalEdges.equalToSuperview().inset(20)
+            make.width.equalTo(UIScreen.main.bounds.width * 0.5)
+        }
     }
     
     private func configureSettleUp(model: ChatMessageModel) {
+        chatBubbleView.backgroundColor = .backgroundWhite
+        chatBubbleView.layer.borderWidth = 2
+        chatBubbleView.layer.borderColor = UIColor.primary100.cgColor
+        chatBubbleView.frame = CGRectInset(chatBubbleView.frame, -chatBubbleView.layer.borderWidth, -chatBubbleView.layer.borderWidth)
         
+        chatBubbleView.addSubview(settlementCardView)
+        
+        settlementCardView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.verticalEdges.equalToSuperview().inset(20)
+            make.width.equalTo(UIScreen.main.bounds.width * 0.5)
+        }
     }
     
     private func calculateImageSize(image: UIImage) -> CGSize {
@@ -272,5 +387,29 @@ class OtherChatCellView: UIView {
         chatBubbleView.subviews.forEach {
             $0.removeFromSuperview()
         }
+    }
+}
+
+extension OtherChatCellView {
+    func bind(model: ChatMessageModel) {
+        profileImageView.rx
+            .tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { _ in
+                if let url = URL(string: "sobunsobun://profile/\(model.userId)") {
+                    UIApplication.shared.open(url)
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        invitationAcceptButton.rx.tap
+            .compactMap { model.inviteId }
+            .bind(to: didInviteCardButtonTapped)
+            .disposed(by: disposeBag)
+        
+        settlementConfirmButton.rx.tap
+            .compactMap { model.settlementId }
+            .bind(to: didSettlementCardButtonTapped)
+            .disposed(by: disposeBag)
     }
 }

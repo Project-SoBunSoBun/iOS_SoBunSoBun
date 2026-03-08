@@ -23,6 +23,7 @@ class ChatWebSocketManager {
     )
     
     let didReceiveMessage = PublishRelay<ChatMessageModel>()
+    let didReceiveSettlement = PublishRelay<Void?>()
     
     func connect(chatRoomId: Int) {
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
@@ -128,6 +129,10 @@ extension ChatWebSocketManager: SwiftStompDelegate {
             
             let model = try decoder.decode(ChatMessageModel.self, from: data)
             didReceiveMessage.accept(model)
+            
+            if model.type == .SETTLEMENT_CARD {
+                didReceiveSettlement.accept(())
+            }
             
         } catch {
             logger.fault("ChatMessageModel 디코딩 실패: \(error.localizedDescription)")

@@ -37,6 +37,22 @@ class ChatNetworkManager {
         .map { _ in () }
     }
     
+    func sendInviteCard(chatRoomId: Int, inviteeId: Int) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(ChatAPIs.sendInviteCard(chatRoomId: chatRoomId, inviteeId: inviteeId))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
+    
+    func acceptInvitation(inviteId: Int) -> Single<GroupChatAcceptResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(ChatAPIs.acceptInvitation(inviteId: inviteId))
+        )
+        .filterSuccessfulStatusCodes()
+        .tryMap(GroupChatAcceptResponseModel.self)
+    }
+    
     func leaveChatRoom(id: Int) -> Single<Void> {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.leaveChatRoom(id: id))

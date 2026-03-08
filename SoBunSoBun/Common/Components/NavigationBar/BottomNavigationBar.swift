@@ -190,6 +190,8 @@ class BottomNavigationBar: UIView {
         buttons.enumerated().forEach { i, btn in
             btn.isSelected = (i == index)
         }
+        
+        didChangeIndex.onNext(index)
     }
 }
 

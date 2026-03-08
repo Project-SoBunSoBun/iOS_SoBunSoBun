@@ -30,7 +30,7 @@ struct ChatMessageModel: Codable, Equatable, FetchableRecord, PersistableRecord 
     let type: ChatMessageType
     let content, imageUrl: String?
     let createdAt: String
-    let settlementId, groupChatRoomId: Int?
+    let settlementId, inviteId: Int?
     
     static var databaseTableName: String { "messages" }
 }
@@ -59,16 +59,28 @@ struct ChatRoomDetailModel: Decodable, Equatable {
 
 struct ChatRoomDetailDataModel: Decodable, Equatable {
     let roomId, ownerId, groupPostId: Int
-    let roomName, createdAt: String
+    let roomName, groupPostTitle, createdAt : String
     let roomType: ChatRoomType
-    let lastMessage, lastMessageAt, groupPostTitle: String?
     let members: [ChatRoomDetailMemberModel]
+    let isSettled, isReviewed: Bool
+    let settlementId: Int?
 }
 
 struct ChatRoomDetailMemberModel: Decodable, Equatable {
     let userId: Int
     let nickname, profileImage: String?
     let isOwner: Bool
+}
+
+struct GroupChatAcceptResponseModel: Decodable {
+    let success: Bool
+    let statusCode: Int
+    let message: String?
+    let data: GroupChatAcceptResponseDataModel
+}
+
+struct GroupChatAcceptResponseDataModel: Decodable {
+    let chatRoomId, inviterId, inviteeId: Int
 }
 
 struct ChatRateMannerRequestBodyModel: Encodable {

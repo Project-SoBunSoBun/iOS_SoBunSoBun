@@ -45,7 +45,7 @@ class ChatDataBaseManager {
                 t.column("imageUrl", .text)
                 t.column("createdAt", .text).notNull()
                 t.column("settlementId", .integer)
-                t.column("groupChatRoomId", .integer)
+                t.column("inviteId", .integer)
             }
             
             try db.create(index: "messages_roomId_createdAt", on: "messages", columns: ["roomId", "createdAt"], ifNotExists: true)

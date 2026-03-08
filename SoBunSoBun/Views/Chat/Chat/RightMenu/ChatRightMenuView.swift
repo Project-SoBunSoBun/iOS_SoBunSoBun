@@ -42,7 +42,7 @@ class ChatRightMenuView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    var willLeave: PublishRelay<Void>?
+    var willLeave: PublishRelay<Void?>?
     
     let changedMembers = PublishRelay<[ChatRoomDetailMemberModel]>()
     

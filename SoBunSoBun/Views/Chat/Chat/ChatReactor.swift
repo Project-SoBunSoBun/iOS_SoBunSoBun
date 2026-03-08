@@ -38,32 +38,35 @@ class ChatReactor: Reactor {
     
     enum Action {
         case viewDidLoad
-        case getMoreMessages
-        case sendMessage(String)
-        case rightMenuButtonTapped
-        case bottomMenuTapped
-        case backToKeyboard
-        case showImagePicker
-        case sendImage(UIImage)
-        case chatLongPressed(Bool)
-        case setSelectedChatMessageModel(ChatMessageModel)
-        case leaveChatRoom
+        case getMoreMessages // 과거 채팅 더 불러오기
+        case sendMessage(String) // 텍스트 전송
+        case rightMenuButtonTapped // 오른쪽 메뉴 버튼 누름
+        case bottomMenuTapped // 하단 메뉴 버튼 누름
+        case backToKeyboard // 키보드로 바꾸기
+        case showImagePicker // 이미지 피커 표시
+        case sendImage(UIImage) // 이미지 전송
+        case chatLongPressed(Bool) // 텍스트 채팅을 길게 눌렀을 때
+        case setSelectedChatMessageModel(ChatMessageModel) // 선택(상호작용)한 채팅
+        case sendInviteCard // 그룹 채팅방 초대장 전송(개인 채팅 전용)
+        case acceptGroupChatRoom(Int) // 그룹 채팅방 초대 수락(개인 채팅 전용)
+        case leaveChatRoom // 채팅방 나가기
     }
     
     enum Mutation {
-        case setDetailInfo(ChatRoomDetailModel)
-        case updateMessages([ChatMessageModel])
-        case addNewMessage(ChatMessageModel)
-        case setIsServerMessageEmpty(Bool)
-        case setIsDBMessageEmpty(Bool)
-        case setShouldNavigateToRightMenu
-        case setBottomOpenMenu(Bool)
-        case setIsChatCellMenuOpen(Bool)
-        case setSelectedChatMessageModel(ChatMessageModel)
-        case setShouldShowImagePicker
-        case setError(String)
-        case setCriticalError(String)
-        case setShouldNavigateToBack
+        case setDetailInfo(ChatRoomDetailModel) // 채팅방 상세 정보 설정
+        case updateMessages([ChatMessageModel]) // 메시지 데이터 업데이트
+        case addNewMessage(ChatMessageModel) // 메시지 추가
+        case setIsServerMessageEmpty(Bool) // 서버의 과거 메시지가 캐싱된 메시지보다 부족할 때
+        case setIsDBMessageEmpty(Bool) // 캐싱된 메시지가 없을 때
+        case setShouldNavigateToRightMenu // 오른쪽 메뉴 뷰 이동
+        case setBottomOpenMenu(Bool) // 하단 메뉴 표시
+        case setIsChatCellMenuOpen(Bool) // 채팅 상호작용 메뉴 표시
+        case setSelectedChatMessageModel(ChatMessageModel) // 선택(상호작용)할 채팅 설정
+        case setShouldShowImagePicker // 이미지 피커 표시
+        case setShouldNavigateToGroupChat(Int) // 그룹 채팅방 이동(개인 채팅 전용)
+        case setError(String) // 오류
+        case setCriticalError(String) // 심각한 오류
+        case setShouldNavigateToBack // 채팅방 나가기
     }
     
     struct State {
@@ -76,9 +79,10 @@ class ChatReactor: Reactor {
         var selectedChatMessageModel: ChatMessageModel?
         @Pulse var shouldNavigateToRightMenu: Void?
         @Pulse var shouldShowIamgePicker: Void?
+        @Pulse var shouldNavigateToGroupChatRoom: Int?
+        @Pulse var shouldNavigateToBack: Void?
         @Pulse var errorMessage: String?
         @Pulse var criticalErrorMessage: String?
-        @Pulse var shouldNavigateToBack: Void?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -117,6 +121,12 @@ class ChatReactor: Reactor {
             
         case .setSelectedChatMessageModel(let model):
             return Observable.just(.setSelectedChatMessageModel(model))
+            
+        case .sendInviteCard:
+            return sendInviteCard()
+            
+        case .acceptGroupChatRoom(let id):
+            return acceptInvitationGroupChatRoom(inviteId: id)
             
         case .leaveChatRoom:
             return leaveChatRoom()
@@ -169,35 +179,46 @@ class ChatReactor: Reactor {
             
         case .setSelectedChatMessageModel(let model):
             newState.selectedChatMessageModel = model
+            
+        case .setShouldNavigateToGroupChat(let id):
+            newState.shouldNavigateToGroupChatRoom = id
+            
+        case .setShouldNavigateToBack:
+            newState.shouldNavigateToBack = ()
         
         case .setError(let message):
             newState.errorMessage = message
             
         case .setCriticalError(let message):
             newState.criticalErrorMessage = message
-            
-        case .setShouldNavigateToBack:
-            newState.shouldNavigateToBack = ()
         }
         
         return newState
     }
     
-    // webSocketManager.didReceiveMessage mutation 연결 및 변환
+    // webSocketManager publish mutation 연결 및 변환
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let socketMutation = webSocketManager.didReceiveMessage
+        let didReceiveMessage = webSocketManager.didReceiveMessage
             .do {
                 self.databaseManager.insertMessage($0)
             }
             .map { Mutation.addNewMessage($0) }
         
-        return Observable.merge(mutation, socketMutation)
+        let didReceiveSettlement = webSocketManager.didReceiveSettlement
+            .compactMap { $0 }
+            .flatMap { _ -> Observable<Mutation> in
+                return self.getDetailInfo()
+            }
+        
+        return Observable.merge(mutation, didReceiveMessage, didReceiveSettlement)
     }
     
+    // websocket 연결
     private func connectWebSocket() {
         webSocketManager.connect(chatRoomId: chatRoomId)
     }
     
+    // 채팅방 상세 정보 불러오기
     private func getDetailInfo() -> Observable<Mutation> {
         return networkManager.getChatRoomDetail(id: chatRoomId)
             .asObservable()
@@ -211,6 +232,7 @@ class ChatReactor: Reactor {
             }
     }
     
+    // 메시지 불러오기
     private func getMessages() -> Observable<Mutation> {
         // deferred로 감싸지 않으면 action 발생 시점의 currentState가 아닌 이전 상태를 참조함
         return Observable.deferred { // 백그라운드에서 수행
@@ -227,6 +249,7 @@ class ChatReactor: Reactor {
         }
     }
     
+    // 캐싱된 메시지 불러오기
     private func getMessagesFromDatabase() -> Observable<Mutation> {
         // 메인 스레드에서 동기로 실행되어 UI 업데이트를 블로킹하기 때문에 백그라운드에서 수행함
         return Observable.deferred { // 백그라운드에서 수행
@@ -257,6 +280,7 @@ class ChatReactor: Reactor {
         .observe(on: MainScheduler.instance) // 결과 수신
     }
     
+    // 서버에서 메시지 불러오기
     private func getMessagesFromServer() -> Observable<Mutation> {
         return networkManager.getChatHistory(
             id: chatRoomId,
@@ -286,12 +310,14 @@ class ChatReactor: Reactor {
         }
     }
     
+    // 메시지 전송
     private func sendMessage(message: String) {
         if !message.isEmpty {
             webSocketManager.sendMessage(message: message)
         }
     }
     
+    // 이미지 전송
     private func sendImage(image: UIImage) -> Observable<Mutation> {
         if let imageData = image.jpegData(compressionQuality: 0.3) {
             return networkManager.uploadChatImage(id: chatRoomId, message: nil, image: imageData)
@@ -314,9 +340,58 @@ class ChatReactor: Reactor {
         }
     }
     
-    private func leaveChatRoom() -> Observable<Mutation> {
-        databaseManager.deleteMessages(roomId: chatRoomId)
+    // 그룹 채팅방 초대장 전송
+    private func sendInviteCard() -> Observable<Mutation> {
+        guard let myIdString = KeyChain.shared.get(key: "USER_ID"),
+              let myId = Int(myIdString),
+              let inviteeId: Int = currentState.detailInfoModel?.data.members.first(where: { $0.userId != myId })?.userId else {
+            return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
+        }
         
-        return Observable.just(.setShouldNavigateToBack)
+        return networkManager.sendInviteCard(chatRoomId: chatRoomId, inviteeId: inviteeId)
+            .asObservable()
+            .flatMap { _ -> Observable<Mutation> in
+                self.logger.debug("초대장 전송 성공")
+                
+                return Observable.empty()
+            }
+            .catch { error in
+                self.logger.critical("초대장 전송 실패: \(error.localizedDescription)")
+                
+                return Observable.just(.setError(String(localized: "ErrorSendInviteCardMessage", table: "Chat")))
+            }
+    }
+    
+    // 그룹 채팅방 초대 수락
+    private func acceptInvitationGroupChatRoom(inviteId: Int) -> Observable<Mutation> {
+        return networkManager.acceptInvitation(inviteId: inviteId)
+            .asObservable()
+            .flatMap { model -> Observable<Mutation> in
+                self.logger.debug("초대장 수락 성공")
+                
+                return Observable.just(.setShouldNavigateToGroupChat(model.data.chatRoomId))
+            }
+            .catch { error in
+                self.logger.critical("초대장 수락 실패: \(error.localizedDescription)")
+                
+                return Observable.just(.setError(String(localized: "ErrorAcceptGroupChatRoomMessage", table: "Chat")))
+            }
+    }
+    
+    // 채팅방 나가기
+    private func leaveChatRoom() -> Observable<Mutation> {
+        return networkManager.leaveChatRoom(id: chatRoomId)
+            .asObservable()
+            .flatMap { _ -> Observable<Mutation> in
+                self.logger.debug("채팅방 나가기 성공")
+                
+                self.databaseManager.deleteMessages(roomId: self.chatRoomId)
+                return Observable.just(.setShouldNavigateToBack)
+            }
+            .catch { error in
+                self.logger.critical("채팅방 나가기 실패: \(error.localizedDescription)")
+                
+                return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
+            }
     }
 }

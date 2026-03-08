@@ -66,6 +66,60 @@ class MyChatCellView: UIView {
         return iv
     }()
     
+    private let invitationCardView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 16
+        sv.alignment = .center
+        
+        let iv = UIImageView()
+        iv.image = .mail.resize(.init(width: 80, height: 64))
+        iv.contentMode = .scaleAspectFit
+        
+        iv.snp.makeConstraints { make in
+            make.width.equalTo(80)
+            make.height.equalTo(64)
+        }
+        
+        sv.addArrangedSubview(iv)
+        
+        let lb = UILabel()
+        var attributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.primary400
+        lb.attributedText = NSAttributedString(string: String(localized: "InvitationCardSentTitle", table: "Chat"), attributes: attributes)
+        
+        sv.addArrangedSubview(lb)
+        
+        return sv
+    }()
+    
+    private let settlementCardView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 16
+        sv.alignment = .center
+        
+        let iv = UIImageView()
+        iv.image = .receipt.resize(.init(width: 72, height: 74))
+        iv.contentMode = .scaleAspectFit
+        
+        iv.snp.makeConstraints { make in
+            make.width.equalTo(72)
+            make.height.equalTo(74)
+        }
+        
+        sv.addArrangedSubview(iv)
+        
+        let lb = UILabel()
+        var attributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.primary400
+        lb.attributedText = NSAttributedString(string: String(localized: "SettlementSentTitle", table: "Chat"), attributes: attributes)
+        
+        sv.addArrangedSubview(lb)
+        
+        return sv
+    }()
+    
     private let timeAttributes: [NSAttributedString.Key: Any] = {
         var attributes = body14.attributes()
         attributes[.foregroundColor] = UIColor.neutral500
@@ -108,7 +162,7 @@ class MyChatCellView: UIView {
         case .IMAGE:
             configureImage(model: model)
         case .INVITE_CARD:
-            configureInvite(model: model)
+            configureInvitation(model: model)
         case .SETTLEMENT_CARD:
             configureSettleUp(model: model)
         default:
@@ -180,12 +234,34 @@ class MyChatCellView: UIView {
         }
     }
     
-    private func configureInvite(model: ChatMessageModel) {
+    private func configureInvitation(model: ChatMessageModel) {
+        chatBubbleView.backgroundColor = .backgroundWhite
+        chatBubbleView.layer.borderWidth = 2
+        chatBubbleView.layer.borderColor = UIColor.primary100.cgColor
+        chatBubbleView.frame = CGRectInset(chatBubbleView.frame, -chatBubbleView.layer.borderWidth, -chatBubbleView.layer.borderWidth)
         
+        chatBubbleView.addSubview(invitationCardView)
+        
+        invitationCardView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.verticalEdges.equalToSuperview().inset(20)
+            make.width.equalTo(UIScreen.main.bounds.width * 0.5)
+        }
     }
     
     private func configureSettleUp(model: ChatMessageModel) {
+        chatBubbleView.backgroundColor = .backgroundWhite
+        chatBubbleView.layer.borderWidth = 2
+        chatBubbleView.layer.borderColor = UIColor.primary100.cgColor
+        chatBubbleView.frame = CGRectInset(chatBubbleView.frame, -chatBubbleView.layer.borderWidth, -chatBubbleView.layer.borderWidth)
         
+        chatBubbleView.addSubview(settlementCardView)
+        
+        settlementCardView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.verticalEdges.equalToSuperview().inset(20)
+            make.width.equalTo(UIScreen.main.bounds.width * 0.5)
+        }
     }
     
     private func calculateImageSize(image: UIImage) -> CGSize {
