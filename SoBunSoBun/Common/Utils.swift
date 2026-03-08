@@ -20,6 +20,7 @@ var currentWindow: UIWindow? {
     return windowScene?.windows.first { $0.isKeyWindow }
 }
 
+// TODO: 불안정한 전역 변수, 삭제 예정
 // safearea
 var safeareaTop: CGFloat { currentWindow?.safeAreaInsets.top ?? 0 }
 var safeareaBottom: CGFloat { currentWindow?.safeAreaInsets.bottom ?? 0 }
@@ -235,9 +236,34 @@ extension String {
     }
 }
 
+extension PrimitiveSequence where Trait == SingleTrait, Element == Response {
+    func tryMap<T: Decodable>(_ type: T.Type) -> Single<T> {
+        let logger = Logger(
+            subsystem: "SoBunSoBun",
+            category: "MoyaNetworkManager.tryMap"
+        )
+        
+        return flatMap { response in
+            do {
+                return .just(try response.map(type))
+            } catch {
+                if let json = try? JSONSerialization.jsonObject(with: response.data),
+                   let pretty = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
+                   let str = String(data: pretty, encoding: .utf8) {
+                    logger.critical("[Decode 오류]\n\ntype: \(type)\nresponse: \(str)")
+                } else {
+                    logger.critical("[Decode 오류]\n\ntype: \(type)\nresponse(raw): \(String(data: response.data, encoding: .utf8) ?? "String 변환 실패")")
+                }
+                throw error
+            }
+        }
+    }
+}
+
 // 미리보기
 #if DEBUG
 import SwiftUI
+import Moya
 
 struct UIViewControllerPreview: UIViewControllerRepresentable {
     let viewController: () -> UIViewController

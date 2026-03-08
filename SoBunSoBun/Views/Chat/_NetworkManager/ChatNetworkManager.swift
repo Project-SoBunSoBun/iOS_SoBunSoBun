@@ -18,7 +18,7 @@ class ChatNetworkManager {
             MultiTarget(ChatAPIs.getChatRoomDetail(id: id))
         )
         .filterSuccessfulStatusCodes()
-        .map(ChatRoomDetailModel.self)
+        .tryMap(ChatRoomDetailModel.self)
     }
     
     func getChatHistory(id: Int, cursor: String?, size: Int) -> Single<ChatMessageHistoryModel> {
@@ -26,7 +26,7 @@ class ChatNetworkManager {
             MultiTarget(ChatAPIs.getChatHistory(id: id, cursor: cursor, size: size))
         )
         .filterSuccessfulStatusCodes()
-        .map(ChatMessageHistoryModel.self)
+        .tryMap(ChatMessageHistoryModel.self)
     }
     
     func uploadChatImage(id: Int, message: String?, image: Data) -> Single<Void> {
