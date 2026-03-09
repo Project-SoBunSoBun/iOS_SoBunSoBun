@@ -608,6 +608,7 @@ extension RegisterPostView {
     // 카테고리 설정
     private func updateCategoriesStackView(_ selectedCategories: [String]) {
         categoriesStackView.subviews.forEach {
+            categoriesStackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
         

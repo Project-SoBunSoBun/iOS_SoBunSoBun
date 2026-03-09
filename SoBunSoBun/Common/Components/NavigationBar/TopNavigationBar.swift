@@ -57,6 +57,12 @@ class TopNavigationBar: UIView {
         }
     }
     
+    var onBackButtonTapped: (() -> Void)? {
+        didSet {
+            setBackButton()
+        }
+    }
+    
     var title: String = "" {
         didSet {
             setTitle(title)
@@ -92,7 +98,7 @@ class TopNavigationBar: UIView {
     }
     
     private func setBackButton() {
-        backButton.isHidden = parentViewController == nil
+        backButton.isHidden = parentViewController == nil && onBackButtonTapped != nil
     }
     
     private func setTitle(_ title: String) {
@@ -115,7 +121,11 @@ class TopNavigationBar: UIView {
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
-                parentViewController?.navigationController?.popViewController(animated: true)
+                if let onBackButtonTapped {
+                    onBackButtonTapped()
+                } else {
+                    parentViewController?.navigationController?.popViewController(animated: true)
+                }
             })
             .disposed(by: disposeBag)
     }

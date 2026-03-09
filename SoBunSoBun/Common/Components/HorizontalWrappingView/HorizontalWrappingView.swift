@@ -67,8 +67,9 @@ class HorizontalWrappingView: UIView {
     private func getViewSize(view: UIView, availableWidth: CGFloat) -> CGSize? {
         // intrinsicContentSize 유효성
         let intrinsicContentSize = view.intrinsicContentSize
-        
-        if intrinsicContentSize.width > 0 && intrinsicContentSize.height > 0 {
+            
+        if intrinsicContentSize.width != UIView.noIntrinsicMetric &&
+            intrinsicContentSize.height != UIView.noIntrinsicMetric {
             return intrinsicContentSize
         }
         

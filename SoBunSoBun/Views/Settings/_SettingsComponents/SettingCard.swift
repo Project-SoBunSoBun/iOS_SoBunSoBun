@@ -67,4 +67,15 @@ class SettingCard: UIView {
     func setSpacing(spacing: CGFloat) {
         stackView.spacing = spacing
     }
+    
+    func update(cells: [UIView]) {
+        stackView.arrangedSubviews.forEach {
+            stackView.removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+        
+        cells.forEach {
+            stackView.addArrangedSubview($0)
+        }
+    }
 }

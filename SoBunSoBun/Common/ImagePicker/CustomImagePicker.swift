@@ -26,6 +26,8 @@ class CustomImagePicker: NSObject {
     let imagesSelected = PublishSubject<[UIImage]>()
     let cancelled = PublishSubject<Void>()
     
+    var allowEditing: Bool = true
+    
     enum SelectionMode {
         case single
         case multi(limit: Int)
@@ -75,7 +77,7 @@ class CustomImagePicker: NSObject {
             let picker = UIImagePickerController()
             picker.sourceType = .photoLibrary
             picker.mediaTypes = ["public.image"]
-            picker.allowsEditing = true
+            picker.allowsEditing = allowEditing
             picker.delegate = self
             picker.presentationController?.delegate = self
             
@@ -89,7 +91,7 @@ class CustomImagePicker: NSObject {
             let picker = PHPickerViewController(configuration: config)
             picker.delegate = self
             
-            viewController.present(picker, animated:  true)
+            viewController.present(picker, animated: true)
         }
     }
     

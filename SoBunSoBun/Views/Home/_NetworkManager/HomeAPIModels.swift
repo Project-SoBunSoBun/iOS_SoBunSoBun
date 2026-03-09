@@ -100,3 +100,16 @@ struct ReportCommentModel: Encodable {
     let commentId: Int
     let reason, description: String
 }
+
+struct CreateChatRoomResponseModel: Decodable {
+    let status, message: String
+    let code: Int
+    let data: CreateChatRoomResponseDataModel
+    let error: String?
+}
+
+struct CreateChatRoomResponseDataModel: Decodable {
+    let roomId: Int
+    let roomName: String?
+    let roomType: ChatRoomType
+}

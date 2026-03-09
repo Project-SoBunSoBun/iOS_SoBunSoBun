@@ -20,6 +20,7 @@ var currentWindow: UIWindow? {
     return windowScene?.windows.first { $0.isKeyWindow }
 }
 
+// TODO: 불안정한 전역 변수, 삭제 예정
 // safearea
 var safeareaTop: CGFloat { currentWindow?.safeAreaInsets.top ?? 0 }
 var safeareaBottom: CGFloat { currentWindow?.safeAreaInsets.bottom ?? 0 }
@@ -30,9 +31,16 @@ let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
 // ISO8601 Datetime에서 Date형 변환
 func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
     let isoFormatter = ISO8601DateFormatter()
-    isoFormatter.formatOptions = [.withFullDate, .withFullTime]
     
-    return isoFormatter.date(from: iso8601DatetimeString)
+    if let date = isoFormatter.date(from: iso8601DatetimeString) {
+        return date
+    }
+    
+    let fallbackFormatter = DateFormatter()
+    fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+    fallbackFormatter.timeZone = .current
+    
+    return fallbackFormatter.date(from: iso8601DatetimeString)
 }
 
 // ISO8601 Datetime에서 현지화 Datetime 문자열 변환
@@ -228,9 +236,35 @@ extension String {
     }
 }
 
+extension PrimitiveSequence where Trait == SingleTrait, Element == Response {
+    /// Model Decode 실패 시 Data 로그를 추가로 출력합니다.
+    func tryMap<T: Decodable>(_ type: T.Type) -> Single<T> {
+        let logger = Logger(
+            subsystem: "SoBunSoBun",
+            category: "MoyaNetworkManager.tryMap"
+        )
+        
+        return flatMap { response in
+            do {
+                return .just(try response.map(type))
+            } catch {
+                if let json = try? JSONSerialization.jsonObject(with: response.data),
+                   let pretty = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
+                   let str = String(data: pretty, encoding: .utf8) {
+                    logger.critical("[Decode 오류]\n\ntype: \(type)\nresponse: \(str)")
+                } else {
+                    logger.critical("[Decode 오류]\n\ntype: \(type)\nresponse(raw): \(String(data: response.data, encoding: .utf8) ?? "String 변환 실패")")
+                }
+                throw error
+            }
+        }
+    }
+}
+
 // 미리보기
 #if DEBUG
 import SwiftUI
+import Moya
 
 struct UIViewControllerPreview: UIViewControllerRepresentable {
     let viewController: () -> UIViewController

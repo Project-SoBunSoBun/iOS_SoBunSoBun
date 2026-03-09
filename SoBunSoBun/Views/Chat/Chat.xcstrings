@@ -1,662 +1,599 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
-    "Chat" : {
+    "Accept" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "채팅하기"
+            "value" : "수락하기"
           }
         }
       }
     },
-    "CheckYourMinimumMembers" : {
-      "comment" : "Home",
+    "Cancel" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최소인원은 최대인원보다 많을 수 없습니다."
+            "value" : "취소하기"
           }
         }
       }
     },
-    "Comments" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "댓글"
-          }
-        }
-      }
-    },
-    "Date" : {
-      "comment" : "Home",
+    "CancelAccepts" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "날짜"
+            "value" : "수락 취소하기"
           }
         }
       }
     },
-    "DatePlaceholder" : {
-      "comment" : "Home",
+    "CheckPost" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "연도 - 월 - 일"
+            "value" : "모임글 확인하기"
           }
         }
       }
     },
-    "DateTime" : {
-      "comment" : "Home",
+    "Confirm" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "날짜 및 시간"
+            "value" : "확인하기"
           }
         }
       }
     },
-    "Deadline" : {
-      "comment" : "Home",
+    "ConfirmAcceptGroupChatRoomAlertSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "마감일"
+            "value" : "수락 후 단체 채팅방으로 이동합니다."
           }
         }
       }
     },
-    "Delete" : {
+    "ConfirmAcceptGroupChatRoomAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "삭제하기"
+            "value" : "단체 채팅방 초대를 수락하시겠습니까?"
           }
         }
       }
     },
-    "DeleteCommentTitle" : {
+    "ConfirmRateMannersAlertSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "해당 댓글을\r정말로 삭제하시겠습니까?"
+            "value" : "매너 평가를 완료하시겠습니까?"
           }
         }
       }
     },
-    "DeleteDoneTitle" : {
+    "ConfirmRateMannersAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "삭제가 완료되었습니다."
+            "value" : "매너 평가를 완료하면\n취소할 수 없습니다."
           }
         }
       }
     },
-    "DeletePostTitle" : {
+    "ConfirmSettlement" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "해당 게시글을\r정말로 삭제하시겠습니까?"
+            "value" : "정산서 확인하기"
           }
         }
       }
     },
-    "Edit" : {
+    "Copy" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "수정하기"
+            "value" : "복사하기"
           }
         }
       }
     },
-    "Edited" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "수정됨"
-          }
-        }
-      }
-    },
-    "EmptySearchResult" : {
-      "comment" : "Home",
+    "ErrorAcceptGroupChatRoomMessage" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "검색 결과가 없습니다."
+            "value" : "만료된 초대장이거나,\n오류가 발생했습니다."
           }
         }
       }
     },
-    "ErrorAlreadyReportedOrNot" : {
+    "ErrorGetChatRoomDetail" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이미 신고 처리가 완료되었거나,\r잠시 후 다시 시도해 주세요."
+            "value" : "채팅방 정보를 불러오는 중 오류가 발생했습니다."
           }
         }
       }
     },
-    "GroupTitle" : {
-      "comment" : "Home",
+    "ErrorSendImage" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모임 제목"
+            "value" : "이미지 보내는 중 오류가 발생했습니다."
           }
         }
       }
     },
-    "InsertComment" : {
+    "ErrorSendInviteCardMessage" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "댓글을 입력하세요."
+            "value" : "이미 초대장을 보낸 상태이거나,\n일시적인 오류가 발생했습니다."
           }
         }
       }
     },
-    "InsertLocation" : {
-      "comment" : "Home",
+    "ErrorSendSettlementCardMessage" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "장소를 입력해주세요."
+            "value" : "이미 정산서를 보낸 상태이거나,\n일시적인 오류가 발생했습니다."
           }
         }
       }
     },
-    "InsertTitle" : {
-      "comment" : "Home",
+    "GoToPost" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "제목을 입력해주세요."
+            "value" : "모임글 확인하기"
           }
         }
       }
     },
-    "ItemKeywords" : {
-      "comment" : "Home",
+    "GoToSettlementTab" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "상품 키워드"
+            "value" : "네. 정산 페이지로 이동합니다."
           }
         }
       }
     },
-    "LocationPermissionDenied" : {
-      "comment" : "Home",
+    "InvitationCardReceivedSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "위치 권한을 확인하세요."
+            "value" : "아래의 수락하기 버튼을 누르면\n단체 채팅방으로 이동합니다."
           }
         }
       }
     },
-    "Maximum" : {
-      "comment" : "Home",
+    "InvitationCardReceivedTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최대"
+            "value" : "초대장을\n받았습니다!"
           }
         }
       }
     },
-    "MaximumMembers" : {
-      "comment" : "Home",
+    "InvitationCardSentTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최대인원"
+            "value" : "초대장이 성공적으로\n전송되었습니다!"
           }
         }
       }
     },
-    "MeetingLocation" : {
-      "comment" : "Home",
+    "Kick" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모임 장소"
+            "value" : "내보내기"
           }
         }
       }
     },
-    "Minimum" : {
-      "comment" : "Home",
+    "KickMemberAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최소"
+            "value" : "해당 멤버를 내보내시겠습니까?"
           }
         }
       }
     },
-    "MinimumMembers" : {
-      "comment" : "Home",
+    "KickMemberDoneAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최소인원"
+            "value" : "해당 멤버를 내보냈습니다."
           }
         }
       }
     },
-    "Notes" : {
-      "comment" : "Home",
+    "KickMembers" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "전달 사항"
+            "value" : "멤버 내보내기"
           }
         }
       }
     },
-    "NumberOfParticipants" : {
-      "comment" : "Home",
+    "LeaveChatRoom" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모집 인원"
+            "value" : "채팅방 나가기"
           }
         }
       }
     },
-    "ParticipantCount" : {
-      "comment" : "Home",
+    "LeaveChatRoomAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최소 %1$d명 / 최대 %2$d명"
+            "value" : "정말로 채팅방을 나가시겠습니까?"
           }
         }
       }
     },
-    "PeopleCount" : {
-      "comment" : "Home",
+    "Me" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "명"
+            "value" : "나"
           }
         }
       }
     },
-    "PlannedItems" : {
-      "comment" : "Home",
+    "MemberCount" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "구매 예정 품목"
+            "value" : "대화 상대 %1$d"
           }
         }
       }
     },
-    "PlannedProducts" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "구매 예정 상품"
-          }
-        }
-      }
-    },
-    "RegionVerified" : {
-      "comment" : "Home",
+    "NotSettledYetForMemberAlertSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$(region)@ 인증"
+            "value" : "방장의 정산서 전송 후,\n정산 내용을 확인할 수 있습니다."
           }
         }
       }
     },
-    "RegisterPostDeadlineInfoMessage" : {
-      "comment" : "Home",
+    "NotSettledYetForMemberAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모임 날짜를 기준으로, 신청 마감일은 하루 전으로 자동 설정됩니다."
+            "value" : "아직 정산이 완료 되지 않아\n확인이 불가합니다."
           }
         }
       }
     },
-    "RegisterPostInfo" : {
-      "comment" : "Home",
+    "NotSettledYetForOwnerAlertSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "<안내> 명예훼손, 광고/홍보 목적의 글, 온라인 공동구매, 해외 직구 및 배송 글은 올리실 수가 없어요."
+            "value" : "정산하기 페이지로 이동하시겠습니까?"
           }
         }
       }
     },
-    "RegisterPostSuccess" : {
-      "comment" : "Home",
+    "NotSettledYetForOwnerAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모임글이\n성공적으로\n게시되었습니다!"
+            "value" : "아직 정산이 완료 되지 않아\n전송이 불가합니다."
           }
         }
       }
     },
-    "RegisterPostTimePickerTitle" : {
-      "comment" : "Home",
+    "Rate" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "새로운 모임의 만남 시간을\n지정해 주세요."
+            "value" : "평가하기"
           }
         }
       }
     },
-    "RegisterPostTitle" : {
-      "comment" : "Home",
+    "RateDone" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "글 등록하기"
+            "value" : "평가 완료하기"
           }
         }
       }
     },
-    "Reply" : {
+    "RateManners" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "답장하기"
+            "value" : "매너 평가"
           }
         }
       }
     },
-    "Report" : {
+    "RateMannersDoneAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "신고하기"
+            "value" : "매너 평가가 완료되었습니다."
           }
         }
       }
     },
-    "ReportCommentTitle" : {
+    "SendInvitation" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "해당 댓글을\r정말로 신고하시겠습니까?"
+            "value" : "초대장 보내기"
           }
         }
       }
     },
-    "ReportDoneTitle" : {
+    "SendInvitationAlertSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "신고 접수가 완료되었습니다."
+            "value" : "상대방은 초대장 수락 후,\n단체 채팅방으로 이동합니다."
           }
         }
       }
     },
-    "ReportPostTitle" : {
+    "SendInvitationAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "해당 게시글을\r정말로 신고하시겠습니까?"
+            "value" : "초대장을 보내시겠습니까?"
           }
         }
       }
     },
-    "SearchKeywordsHistory" : {
-      "comment" : "Home",
+    "SendMessage" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최근 검색어"
+            "value" : "메시지 보내기"
           }
         }
       }
     },
-    "SearchKeywordsSuggestion" : {
-      "comment" : "Home",
+    "SendPicture" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "추천 검색어"
+            "value" : "사진 보내기"
           }
         }
       }
     },
-    "SearchSomething" : {
-      "comment" : "Home",
+    "SendSettlement" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "검색어를 입력하세요."
+            "value" : "정산서 보내기"
           }
         }
       }
     },
-    "SobunSobunRule01" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "온라인 공동구매 모임 모집 불가"
-          }
-        }
-      }
-    },
-    "SobunSobunRule02" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "온라인 해외직구 및 배송 모임 모집 불가"
-          }
-        }
-      }
-    },
-    "SobunSobunRuleTitle" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "소분소분 서비스 이용 규칙"
-          }
-        }
-      }
-    },
-    "SortByDeadline" : {
-      "comment" : "Home",
+    "SendSettlementConfirmAlertSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "마감임박순"
+            "value" : "정산이 완료되면,\n채팅방의 멤버에게 정산 완료 알림을 보냅니다."
           }
         }
       }
     },
-    "SortByLatest" : {
-      "comment" : "Home",
+    "SendSettlementConfirmAlertTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "최신순"
+            "value" : "정산서를 보내시겠습니까?"
           }
         }
       }
     },
-    "Specify" : {
-      "comment" : "Home",
+    "SettlementReceivedSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "지정하기"
+            "value" : "아래의 확인하기 버튼을 눌러\n정산 내용을 확인해 보세요."
           }
         }
       }
     },
-    "Time" : {
-      "comment" : "Home",
+    "SettlementReceivedTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시간"
+            "value" : "정산서를\n받았습니다!"
           }
         }
       }
     },
-    "TimeHour" : {
-      "comment" : "Home",
+    "SettlementSentTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시"
+            "value" : "정산서가 성공적으로\n전송되었습니다!"
           }
         }
       }
     },
-    "TimeMinute" : {
-      "comment" : "Home",
+    "SkipRateMannersAlertCancel" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "분"
+            "value" : "평가 종료하기"
           }
         }
       }
     },
-    "Verified" : {
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "인증"
-          }
-        }
-      }
-    },
-    "WritePost" : {
-      "comment" : "Home",
+    "SkipRateMannersAlertPrimary" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "글쓰기"
+            "value" : "이어서 평가하기"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가를 종료하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이전 페이지로 돌아가면\n매너 평가를 진행할 수 없습니다."
+          }
+        }
+      }
+    },
+    "UserMessageJoined" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님께서 입장하셨습니다."
+          }
+        }
+      }
+    },
+    "UserMessageLeft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님께서 퇴장하셨습니다."
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version" : "1.1"
 }

@@ -107,7 +107,7 @@ final class AuthInterceptor: RequestInterceptor {
     }
     
     // 리프레시 토큰을 사용하여 액세스 토큰을 재발급 후 Keychain에 저장
-    private func refreshAccessToken(completion: @escaping(Bool) -> Void) {
+    func refreshAccessToken(completion: @escaping(Bool) -> Void) {
         guard let refreshToken = KeyChain.shared.get(key: "REFRESH_TOKEN") else {
             AuthManager.shared.logout()
             logger.fault("리프레시 토큰 없음")

@@ -34,7 +34,7 @@ class NavigationTabView: UIViewController {
     private var currentVC: UIViewController? = nil
     
     // MARK: - 디자인 요소
-    private lazy var bottomNavigationBar = BottomNavigationBar(buttons: buttons)
+    lazy var bottomNavigationBar = BottomNavigationBar(buttons: buttons)
     
     private let containerView: UIView = {
         let view = UIView()
@@ -78,7 +78,7 @@ class NavigationTabView: UIViewController {
         }
     }
     
-    private func showViewController(index: Int) {
+    func showViewController(index: Int) {
         let newVC = viewControllers[index]
         
         guard currentVC != newVC else { return }
