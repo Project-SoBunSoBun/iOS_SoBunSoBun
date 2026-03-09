@@ -13,16 +13,6 @@ import RxGesture
 import OSLog
 
 class ChatMannerExpandableView: UIView {
-    private let disposeBag = DisposeBag()
-    
-    private var isExpanded = false
-    private var contentHeightConstraint: Constraint?
-    
-    private let logger = Logger(
-        subsystem: "SoBunSoBun",
-        category: "Chat.Component.MemberCancelCellView"
-    )
-    
     init(frame: CGRect = .zero, model: ChatRoomDetailMemberModel) {
         super.init(frame: frame)
         
@@ -33,6 +23,18 @@ class ChatMannerExpandableView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Chat.Component.MemberCancelCellView"
+    )
+    
+    private let disposeBag = DisposeBag()
+    
+    private let PROFILE_IMAGE_SIZE: CGFloat = 50
+    
+    private var isExpanded = false
+    private var contentHeightConstraint: Constraint?
     
     // MARK: - 디자인 요소
     private let stackView: UIStackView = {
@@ -47,11 +49,11 @@ class ChatMannerExpandableView: UIView {
         return sv
     }()
     
-    private let profileImageView: UIImageView = {
+    private lazy var profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
-        iv.layer.cornerRadius = 50 / 2
+        iv.layer.cornerRadius = PROFILE_IMAGE_SIZE / 2
         iv.layer.borderWidth = 1
         iv.layer.borderColor = UIColor.primary50.cgColor
         
@@ -112,7 +114,7 @@ class ChatMannerExpandableView: UIView {
         }
         
         profileImageView.snp.makeConstraints { make in
-            make.size.equalTo(50)
+            make.size.equalTo(PROFILE_IMAGE_SIZE)
         }
         
         if let profileImageUrl = model.profileImage {
@@ -138,7 +140,6 @@ class ChatMannerExpandableView: UIView {
             profileImageView.image = .defaultProfile
         }
         
-        
         var attributes: [NSAttributedString.Key: Any] = body16.attributes()
         attributes[.foregroundColor] = UIColor.neutral900
         
@@ -149,7 +150,6 @@ class ChatMannerExpandableView: UIView {
         nicknameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         arrowButton.setContentHuggingPriority(.required, for: .horizontal)
         arrowButton.setContentCompressionResistancePriority(.required, for: .horizontal)
-
         
         contentView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)

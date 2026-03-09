@@ -37,12 +37,14 @@ class Review: UIButton {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
         iv.isUserInteractionEnabled = false
+        
         return iv
     }()
     
     private let label: UILabel = {
         let lb = UILabel()
         lb.isUserInteractionEnabled = false
+        
         return lb
     }()
     

@@ -237,6 +237,7 @@ extension String {
 }
 
 extension PrimitiveSequence where Trait == SingleTrait, Element == Response {
+    /// Model Decode 실패 시 Data 로그를 추가로 출력합니다.
     func tryMap<T: Decodable>(_ type: T.Type) -> Single<T> {
         let logger = Logger(
             subsystem: "SoBunSoBun",

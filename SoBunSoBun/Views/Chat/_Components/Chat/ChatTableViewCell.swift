@@ -14,14 +14,6 @@ import RxGesture
 class ChatTableViewCell: UITableViewCell {
     static let identifier = "ChatTableViewCell"
     
-    var disposeBag = DisposeBag()
-    
-    let didImageLoad = PublishRelay<Void>()
-    let didTextLongPressed = PublishRelay<UIView>()
-    let didImageTapped = PublishRelay<UIImage?>()
-    let didInviteCardButtonTapped = PublishRelay<Int>()
-    let didSettlementCardButtonTapped = PublishRelay<Int>()
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -52,6 +44,14 @@ class ChatTableViewCell: UITableViewCell {
         
         // Configure the view for the selected state
     }
+    
+    let didImageLoad = PublishRelay<Void>()
+    let didTextLongPressed = PublishRelay<UIView>()
+    let didImageTapped = PublishRelay<UIImage?>()
+    let didInviteCardButtonTapped = PublishRelay<Int>()
+    let didSettlementCardButtonTapped = PublishRelay<Int>()
+    
+    var disposeBag = DisposeBag()
     
     var chatCellView: UIView = UIView()
     
@@ -99,6 +99,7 @@ class ChatTableViewCell: UITableViewCell {
             myView.didImageLoad
                 .do(onNext: { [weak self] in
                     guard let self = self else { return }
+                    
                     updateTableView()
                 })
                 .bind(to: didImageLoad)
@@ -124,6 +125,7 @@ class ChatTableViewCell: UITableViewCell {
             otherView.didImageLoad
                 .do(onNext: { [weak self] in
                     guard let self = self else { return }
+                    
                     updateTableView()
                 })
                 .bind(to: didImageLoad)
@@ -158,6 +160,7 @@ class ChatTableViewCell: UITableViewCell {
             } else {
                 make.top.equalToSuperview()
             }
+            
             make.horizontalEdges.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().inset(16).priority(.high)
         }

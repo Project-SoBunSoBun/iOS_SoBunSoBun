@@ -12,11 +12,6 @@ import OSLog
 class ChatMemberKickCellView: UIStackView {
     let userId: Int
     
-    private let logger = Logger(
-        subsystem: "SoBunSoBun",
-        category: "ChatMemberCancelCellView"
-    )
-    
     init(frame: CGRect = .zero, model: ChatRoomDetailMemberModel) {
         self.userId = model.userId
         
@@ -29,11 +24,19 @@ class ChatMemberKickCellView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let profileImageView: UIImageView = {
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "ChatMemberCancelCellView"
+    )
+    
+    private let PROFILE_IMAGE_SIZE: CGFloat = 50
+    
+    // MARK: - 디자인 요소
+    private lazy var profileImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
-        iv.layer.cornerRadius = 50 / 2
+        iv.layer.cornerRadius = PROFILE_IMAGE_SIZE / 2
         iv.layer.borderWidth = 1
         iv.layer.borderColor = UIColor.primary50.cgColor
         
@@ -63,6 +66,7 @@ class ChatMemberKickCellView: UIStackView {
         return btn
     }()
     
+    // MARK: - 레이아웃 설정
     private func configureUI(model: ChatRoomDetailMemberModel) {
         self.backgroundColor = .backgroundWhite
         
@@ -88,7 +92,7 @@ class ChatMemberKickCellView: UIStackView {
         }
         
         profileImageView.snp.makeConstraints { make in
-            make.size.equalTo(50)
+            make.size.equalTo(PROFILE_IMAGE_SIZE)
         }
         
         if let profileImageUrl = model.profileImage {
