@@ -63,6 +63,7 @@ class MyChatCellView: UIView {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.clipsToBounds = true
+        
         return iv
     }()
     

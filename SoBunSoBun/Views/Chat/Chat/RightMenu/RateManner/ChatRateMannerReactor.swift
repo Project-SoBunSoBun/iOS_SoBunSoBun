@@ -18,7 +18,7 @@ class ChatRateMannerReactor: Reactor {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Chat.ChatRateManner.Reactor"
+        category: "Chat.RateManner.Reactor"
     )
     
     var initialState: State = State()

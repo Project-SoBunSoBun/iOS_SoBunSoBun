@@ -53,10 +53,6 @@ class ChatWebSocketManager {
         logger.debug("메시지 전송")
     }
     
-    func sendImage(image: UIImage) {
-        
-    }
-    
     func disconnect() {
         swiftStomp?.disconnect()
         currentChatRoomId = nil
