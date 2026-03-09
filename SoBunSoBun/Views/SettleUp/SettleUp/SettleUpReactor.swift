@@ -107,11 +107,12 @@ class SettleUpReactor: Reactor {
                         let isCompleted = (content.status == "COMPLETED")
                         
                         return SettleUpItemModel(
-                            id: content.id,
+                            postId: content.groupPostId,
                             settleUpStatus: isCompleted,
                             title: content.groupPostTitle,
                             location: content.locationName,
-                            meetingDate: content.meetAt
+                            meetingDate: content.meetAt,
+                            participants: content.participants
                         )
                     }
                     

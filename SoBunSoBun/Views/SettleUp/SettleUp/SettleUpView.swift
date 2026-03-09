@@ -240,18 +240,20 @@ extension SettleUpView {
                 guard let self = self else { return }
                 
                 cell.selectionStyle = .none
+                
                 cell.configure(with: item) {
-                    self.logger.debug("삭제 버튼 탭: id=\(item.id)")
-                    self.showDeleteAlert(id: item.id)
+                    self.logger.debug("삭제 버튼 탭: id=\(item.postId)")
+                    self.showDeleteAlert(id: item.postId)
                 } onSettleUpButtonTapped: {
-                    self.logger.debug("정산하기 버튼 탭: id=\(item.id)")
-                    let vc = SettleUp1stStepView(id: item.id)
+                    self.logger.debug("정산하기 버튼 탭: id=\(item.postId)")
+                    let vc = SettleUp1stStepView(postId: item.postId, participants: item.participants)
+                    
                     self.navigationController?.pushViewController(vc, animated: true)
                 } onStatementCheckButtonTapped: {
-                    self.logger.debug("정산서 확인 버튼 탭: id=\(item.id)")
+                    self.logger.debug("정산서 확인 버튼 탭: id=\(item.postId)")
                     // TODO: 정산서 화면으로 이동
                 } onShareButtonTapped: {
-                    self.logger.debug("공유 버튼 탭: id=\(item.id)")
+                    self.logger.debug("공유 버튼 탭: id=\(item.postId)")
                     // TODO: 공유 기능 구현하기
                 }
             }
