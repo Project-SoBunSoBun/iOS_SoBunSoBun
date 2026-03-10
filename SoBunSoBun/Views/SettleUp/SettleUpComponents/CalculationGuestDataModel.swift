@@ -23,7 +23,7 @@ struct ParticipantSelectionModel {
 
 // MARK: - 3단계 정산 DataModel
 struct SettleUp3rdStepDataModel {
-    let postId: Int
+    let settlementId: Int
     let totalAmount: Int
     let participants: [SettleUpParticipantModel]
 }

@@ -8,8 +8,8 @@
 import Foundation
 
 struct SettleUpItemModel {
-    let postId: Int
-    let settleUpStatus: Bool
+    let settlementId, authorId: Int
+    let settlementStatus: Bool
     let title: String
     let location: String
     let meetingDate: String
