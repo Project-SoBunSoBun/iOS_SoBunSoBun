@@ -336,6 +336,30 @@
           }
         }
       }
+    },
+    "ValidationCheckQuantity" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품의 수량 합계가 일치하지 않습니다.\n입력된 수량을 다시 확인해 주세요."
+          }
+        }
+      }
+    },
+    "ValidationError" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품 등록 실패"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
