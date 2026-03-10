@@ -12,26 +12,30 @@ import RxSwift
 import RxCocoa
 import ReactorKit
 
-class SettleUp1stStepView: UIViewController {
-    init(id: Int) {
-        self.id = id
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    typealias Reactor = SettleUp1stStepReactor
-    private let reactor = SettleUp1stStepReactor()
-    
-    private let disposeBag = DisposeBag()
-    private let id: Int
-    
+class SettleUp1stStepView: UIViewController{
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "SettleUp1stStep.View"
+        category: "SettleUp.SettleUp1stStep.View"
     )
+    
+    init(postId: Int, participants: [ParticipantModel]) {
+        self.postId = postId
+        self.participants = participants
+        
+        super.init(nibName: nil, bundle: nil)
+    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let postId: Int?
+    private let participants: [ParticipantModel]?
+    
+    var disposeBag = DisposeBag()
+    
+    typealias Reactor = SettleUp1stStepReactor
+    private let reactor = SettleUp1stStepReactor()
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -797,9 +801,11 @@ extension SettleUp1stStepView {
         reactor.pulse(\.$shouldNavigateToNextStep)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] products in
-                guard let self = self else { return }
+                guard let self = self,
+                let postId = self.postId,
+                let participants = self.participants else { return }
                 
-                let nextVC = SettleUp2ndStepView(id: self.id, products: products)
+                let nextVC = SettleUp2ndStepView(postId: postId, participants: participants, products: products)
                 self.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)
@@ -829,16 +835,3 @@ extension SettleUp1stStepView {
         itemCountTextField.text = ""
     }
 }
-
-// 미리보기
-#if DEBUG
-import SwiftUI
-
-struct SettleUp1stStepViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            SettleUp1stStepView(id: 1)
-        }
-    }
-}
-#endif
