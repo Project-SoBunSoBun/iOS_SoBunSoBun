@@ -13,18 +13,21 @@ import RxCocoa
 import ReactorKit
 
 class SettleUp2ndStepView: UIViewController {
-    init(id: Int, products: [ListedProductModel]) {
-        self.id = id
+    init(postId: Int, participants:[ParticipantModel] , products: [ListedProductModel]) {
+        reactor = SettleUp2ndStepReactor(postId: postId, participants: participants)
         self.products = products
+        self.participants = participants
+        
         super.init(nibName: nil, bundle: nil)
     }
     
     typealias Reactor = SettleUp2ndStepReactor
-    private let reactor = SettleUp2ndStepReactor()
+    private let reactor: SettleUp2ndStepReactor
     
     private let disposeBag = DisposeBag()
-    private let id: Int
+    
     private let products: [ListedProductModel]
+    private let participants: [ParticipantModel]
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
@@ -36,22 +39,12 @@ class SettleUp2ndStepView: UIViewController {
     }
     
     // MARK: - 디자인 요소
-    // 뒤로 가기 버튼
-    private let backButton: UIButton = {
-        let button = UIButton()
-        var config = UIButton.Configuration.plain()
+    // 상단 네비게이션 바
+    private lazy var topNavigationBar: TopNavigationBar = {
+        let tnb = TopNavigationBar()
+        tnb.parentViewController = self
         
-        config.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 0,
-            bottom: 0,
-            trailing: 0)
-        config.image = .blackLeft
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
-        
-        button.configuration = config
-        
-        return button
+        return tnb
     }()
     
     // 전체 스크롤 뷰
@@ -87,7 +80,7 @@ class SettleUp2ndStepView: UIViewController {
     private let titleLabel: UILabel = {
         let lb = UILabel()
         let attributedText = NSAttributedString(
-            string: String(localized: "SettleUpStart"),
+            string: String(localized: "SettleUpStart", table: "SettleUp"),
             attributes: title24.attributes(alignment: .left)
         )
         lb.attributedText = attributedText
@@ -108,13 +101,12 @@ class SettleUp2ndStepView: UIViewController {
     
     // 등록된 상품 수량 라벨
     private let subtitleLabel: UILabel = {
-        let lb = UILabel()
-        let format = String(localized: "SettleUpParticipant")
         let attributedText = NSAttributedString(
-            string: String(format: format, 0),
+            string: String(localized: "SettleUpParticipant", table: "SettleUp"),
             attributes: body14.attributes(alignment: .center)
         )
         
+        let lb = UILabel()
         lb.attributedText = attributedText
         lb.textColor = .neutral800
         lb.numberOfLines = 0
@@ -132,42 +124,14 @@ class SettleUp2ndStepView: UIViewController {
     }()
     
     // 등록하기 버튼
-    private let registerButton = Button(title: String(localized: "Register"))
-    
-    private let test: CalculationGuest = {
-        let testProduct = ListedProductModel(name: "두쫀쿠", count: 1000, price: 5000000, unitIndex: 1)
-        let test = CalculationGuest(product: testProduct)
-        
-        return test
-    }()
-    
-    private let test2: CalculationGuest = {
-        let testProduct = ListedProductModel(name: "두쫀쿠", count: 500, price: 1500000, unitIndex: 2)
-        let test = CalculationGuest(product: testProduct)
-        
-        return test
-    }()
-    
-    private let test3: CalculationGuest = {
-        let testProduct = ListedProductModel(name: "배추", count: 5, price: 25000, unitIndex: 1)
-        let test = CalculationGuest(product: testProduct)
-        
-        return test
-    }()
+    private let registerButton = Button(title: String(localized: "Register", table: "Common"))
     
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // products 정보 로깅
-        logger.debug("받은 ID: \(self.id)")
-        logger.debug("받은 상품 수: \(self.products.count)")
-        
-        products.forEach { product in
-            logger.debug("상품명: \(product.name), 수량: \(product.count), 가격: \(product.price), 단위: \(product.unitIndex)")
-        }
-        
         configureUI()
+        setUpCalculationGuests()
         bind(reactor: reactor)
     }
     
@@ -175,13 +139,18 @@ class SettleUp2ndStepView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [backButton, scrollView].forEach {
+        [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
+        }
+        
+        topNavigationBar.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
-            make.top.equalTo(backButton.snp.bottom)
+            make.top.equalTo(topNavigationBar.snp.bottom)
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
@@ -196,18 +165,7 @@ class SettleUp2ndStepView: UIViewController {
             contentView.addSubview($0)
         }
         
-        // CalculationGuest 컴포넌트가 들어갈 StackView
-        [test, test2, test3].forEach {
-            calculationStackView.addArrangedSubview($0)
-        }
-        
         subtitleBackground.addSubview(subtitleLabel)
-        
-        backButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(4)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.size.equalTo(48)
-        }
         
         stepLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
@@ -239,12 +197,30 @@ class SettleUp2ndStepView: UIViewController {
             make.top.equalTo(calculationStackView.snp.bottom).offset(16)
             make.bottom.equalToSuperview()
         }
+    }
+    
+    private func setUpCalculationGuests() {
+        calculationStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        let mockParticipants = ["닉네임(나)", "닉네임 A", "닉네임 B", "닉네임 C", "닉네임 D"]
+        guard let myUserIdString = KeyChain.shared.get(key: "USER_ID") else { return }
+        let myUserId = Int(myUserIdString)
         
-        test.setParticipants(mockParticipants)
-        test2.setParticipants(mockParticipants)
-        test3.setParticipants(mockParticipants)
+        let setParticipants = participants.map { participant -> String in
+            if let myId = myUserId, participant.userId == myId {
+                return "\(participant.nickname)(나)"
+            }
+            
+            return participant.nickname
+        }
+        .sorted { $0.hasSuffix("(나)") && !$1.hasSuffix("(나)") }
+        
+        products.forEach { product in
+            let guestView = CalculationGuest(product: product)
+            
+            guestView.setParticipants(setParticipants)
+            
+            calculationStackView.addArrangedSubview(guestView)
+        }
     }
 }
 
@@ -254,24 +230,61 @@ extension SettleUp2ndStepView {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
-        
+    
     private func bindAction(reactor: SettleUp2ndStepReactor) {
-        // Back 버튼 탭
-        backButton.rx.tap
-            .map { Reactor.Action.backButtonTapped }
+        registerButton.rx.tap
+            .map { [weak self] () -> Reactor.Action in
+                guard let self = self else { return .registerButtonTapped([]) }
+                
+                let allSelections = self.calculationStackView.arrangedSubviews
+                    .compactMap { $0 as? CalculationGuest }
+                    .map { $0.getSelectionData() }
+                
+                return .registerButtonTapped(allSelections)
+            }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: SettleUp2ndStepReactor) {
-        // Back  버튼 탭
-        reactor.pulse(\.$shouldPopViewController)
+        // 3단계 화면 전환
+        reactor.pulse(\.$shouldNavigateToNextStep)
             .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                self.navigationController?.popViewController(animated: true)
+                // TODO: 3단계 뷰 만들고 연결하기
+                self.logger.debug("3단계 뷰 이동")
+//                let nextVC = SettleUp3rdStepView(model: model)
+//                self.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)
+        
+        // 수량 불일치 알림
+        reactor.pulse(\.$validationError)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] message in
+                guard let self = self else { return }
+                
+                self.validationErrorAlert(title: message)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    // 수량 불일치 알러트
+    private func validationErrorAlert(title: String) {
+        let alert = CustomAlertView(
+            title: NSLocalizedString(title, tableName: "SettleUp", comment: ""),
+            subTitle: String(localized: "ValidationCheckQuantity", table: "SettleUp"),
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.logger.debug("확인 버튼 클릭")
+        }
+        
+        alert.show(on: self)
     }
 }
