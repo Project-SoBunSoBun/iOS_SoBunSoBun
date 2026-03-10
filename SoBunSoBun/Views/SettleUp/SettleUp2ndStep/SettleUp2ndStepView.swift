@@ -13,10 +13,14 @@ import RxCocoa
 import ReactorKit
 
 class SettleUp2ndStepView: UIViewController {
-    init(postId: Int, participants:[ParticipantModel] , products: [ListedProductModel]) {
-        reactor = SettleUp2ndStepReactor(postId: postId, participants: participants)
-        self.products = products
+    init(settlementId: Int, participants:[ParticipantModel] , products: [ListedProductModel], authorId: Int) {
+        reactor = SettleUp2ndStepReactor(
+            settlementId: settlementId,
+            participants: participants,
+            authorId: authorId
+        )
         self.participants = participants
+        self.products = products
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -256,8 +260,9 @@ extension SettleUp2ndStepView {
                 
                 // TODO: 3단계 뷰 만들고 연결하기
                 self.logger.debug("3단계 뷰 이동")
-//                let nextVC = SettleUp3rdStepView(model: model)
-//                self.navigationController?.pushViewController(nextVC, animated: true)
+                
+                let nextVC = SettleUp3rdStepView(model: model)
+                self.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)
         

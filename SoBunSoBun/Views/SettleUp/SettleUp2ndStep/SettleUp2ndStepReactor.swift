@@ -14,10 +14,11 @@ class SettleUp2ndStepReactor: Reactor {
         category: "SettleUp.SettleUp2ndStep.Reactor"
     )
     
-    init(postId: Int, participants: [ParticipantModel]) {
+    init(settlementId: Int, participants: [ParticipantModel], authorId: Int) {
         self.initialState = State(
-            postId: postId,
-            participants: participants
+            settlementId: settlementId,
+            participants: participants,
+            authorId: authorId
         )
     }
     
@@ -33,8 +34,9 @@ class SettleUp2ndStepReactor: Reactor {
     }
     
     struct State {
-        var postId: Int // 넘어온 postId
+        var settlementId: Int // 넘어온 postId
         var participants: [ParticipantModel]
+        var authorId: Int
         @Pulse var shouldNavigateToNextStep: SettleUp3rdStepDataModel?
         @Pulse var validationError: String?
     }
@@ -75,12 +77,16 @@ class SettleUp2ndStepReactor: Reactor {
         return newState
     }
     
-    // selections → SettleUp3rdStepModel 변환
+    // selections → SettleUp3rdStepModel 변환 (참여자별 금액 정산)
     private func buildNextStepModel(selections: [SettleUpProductSelectionModel]) -> SettleUp3rdStepDataModel {
         // nickname → userId 매핑
         let nicknameToUserId: [String: Int] = Dictionary(
             uniqueKeysWithValues: currentState.participants.map { ($0.nickname, $0.userId) }
         )
+        
+        // authorId에 해당하는 nickname 찾기
+        let authorNickname = currentState.participants
+            .first { $0.userId == currentState.authorId }?.nickname ?? ""
         
         // 참여자별로 그룹핑
         var participantItems: [String: (assignedAmount: Int, items: [SettleUpItemDetailModel])] = [:]
@@ -89,8 +95,36 @@ class SettleUp2ndStepReactor: Reactor {
             let totalCount = product.selections.map { $0.value }.reduce(0, +)
             guard totalCount > 0 else { return }
             
+            // 각 참여자별 금액 계산 (소수점 버림)
+            var calculatedAmounts: [String: Int] = [:]
             product.selections.forEach { selection in
-                let amount = (selection.value * product.totalPrice) / totalCount  // 소수점 버림
+                let amount = (selection.value * product.totalPrice) / totalCount
+                let nickname = selection.userNickname.replacingOccurrences(of: "(나)", with: "")
+                calculatedAmounts[nickname] = amount
+            }
+            
+            // 나머지 계산 → 방장에게 추가
+            let distributedTotal = calculatedAmounts.values.reduce(0, +)
+            var remainder = product.totalPrice - distributedTotal
+            
+            if remainder != 0 {
+                if calculatedAmounts[authorNickname] != nil {
+                    // 방장이 참여 중이면 나머지 전부 방장에게
+                    calculatedAmounts[authorNickname]! += remainder
+                } else {
+                    // 방장 미참여시 참여자들에게 1원씩 순서대로 분배
+                    for nickname in calculatedAmounts.keys {
+                        guard remainder > 0 else { break }
+                        calculatedAmounts[nickname]! += 1
+                        remainder -= 1
+                    }
+                }
+            }
+            
+            product.selections.forEach { selection in
+                let nickname = selection.userNickname.replacingOccurrences(of: "(나)", with: "")
+                let amount = calculatedAmounts[nickname] ?? 0
+                
                 let item = SettleUpItemDetailModel(
                     itemName: product.productName,
                     quantity: selection.value,
@@ -98,12 +132,12 @@ class SettleUp2ndStepReactor: Reactor {
                     amount: amount
                 )
                 
-                if participantItems[selection.userNickname] == nil {
-                    participantItems[selection.userNickname] = (assignedAmount: 0, items: [])
+                if participantItems[nickname] == nil {
+                    participantItems[nickname] = (assignedAmount: 0, items: [])
                 }
                 
-                participantItems[selection.userNickname]?.assignedAmount += amount
-                participantItems[selection.userNickname]?.items.append(item)
+                participantItems[nickname]?.assignedAmount += amount
+                participantItems[nickname]?.items.append(item)
             }
         }
         
@@ -119,7 +153,7 @@ class SettleUp2ndStepReactor: Reactor {
         let totalAmount = participants.map { $0.assignedAmount }.reduce(0, +)
         
         return SettleUp3rdStepDataModel(
-            postId: currentState.postId,
+            settlementId: currentState.settlementId,
             totalAmount: totalAmount,
             participants: participants
         )
@@ -128,7 +162,7 @@ class SettleUp2ndStepReactor: Reactor {
     // 3단계 전달 데이터 디버그 출력
     private func debugPrint3rdStepModel(_ model: SettleUp3rdStepDataModel) {
         logger.debug("======= 📌 3단계 전달 데이터 확인 =======")
-        logger.debug("📮 postId: \(model.postId)")
+        logger.debug("📮 settlementId: \(model.settlementId)")
         logger.debug("💰 총 금액: \(model.totalAmount)원")
         
         model.participants.forEach { participant in
