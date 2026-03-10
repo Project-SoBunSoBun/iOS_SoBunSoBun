@@ -10,7 +10,6 @@ import SnapKit
 import OSLog
 import RxSwift
 import RxCocoa
-import ReactorKit
 
 class SettleUp1stStepView: UIViewController{
     private let logger = Logger(
@@ -18,8 +17,9 @@ class SettleUp1stStepView: UIViewController{
         category: "SettleUp.SettleUp1stStep.View"
     )
     
-    init(postId: Int, participants: [ParticipantModel]) {
-        self.postId = postId
+    init(settlementId: Int, authorId: Int, participants: [ParticipantModel]) {
+        self.settlementId = settlementId
+        self.authorId = authorId
         self.participants = participants
         
         super.init(nibName: nil, bundle: nil)
@@ -29,7 +29,7 @@ class SettleUp1stStepView: UIViewController{
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let postId: Int?
+    private let settlementId, authorId: Int?
     private let participants: [ParticipantModel]?
     
     var disposeBag = DisposeBag()
@@ -802,10 +802,11 @@ extension SettleUp1stStepView {
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] products in
                 guard let self = self,
-                let postId = self.postId,
-                let participants = self.participants else { return }
+                let settlementId = self.settlementId,
+                let participants = self.participants,
+                let authorId = self.authorId else { return }
                 
-                let nextVC = SettleUp2ndStepView(postId: postId, participants: participants, products: products)
+                let nextVC = SettleUp2ndStepView(settlementId: settlementId, participants: participants, products: products, authorId: authorId)
                 self.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)
