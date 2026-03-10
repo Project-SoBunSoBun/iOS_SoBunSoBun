@@ -20,7 +20,7 @@ struct SettleUpModel: Decodable {
 }
 
 struct SettleUpContentModel: Decodable {
-    let id, groupPostId: Int
+    let id, authorId, groupPostId: Int
     let groupPostTitle: String
     let status: String
     let totalAmount, participantCount: Int
