@@ -30,7 +30,7 @@ extension SettleUpAPIs: TargetType {
             return "/api/v1/settlements/my"
             
         case .deleteSettleUp(let id):
-            return "/api/settleups/\(id)"
+            return "/api/v1/settlements/\(id)"
         }
     }
     
