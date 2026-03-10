@@ -62,7 +62,8 @@ struct ChatRoomDetailDataModel: Decodable, Equatable {
     let roomName, groupPostTitle, createdAt : String
     let roomType: ChatRoomType
     let members: [ChatRoomDetailMemberModel]
-    let isSettled, isReviewed: Bool
+    let isSettled: Bool
+    let isReviewed: Bool?
     let settlementId: Int?
 }
 

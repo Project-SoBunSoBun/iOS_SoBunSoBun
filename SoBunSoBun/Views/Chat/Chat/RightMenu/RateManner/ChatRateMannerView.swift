@@ -178,7 +178,7 @@ extension ChatRateMannerView {
                    }
                 
                 members.forEach {
-                    let view = ChatMannerExpandableView(model: $0)
+                    let view = ChatMannerAccordionView(model: $0)
                     
                     let reviewViews = reviews.keys.map {
                         let reviewView = Review(number: String($0.suffix(3)))
@@ -243,7 +243,7 @@ extension ChatRateMannerView {
     }
     
     private func getRatedManners() -> [[String]] {
-        let extendableViews: [ChatMannerExpandableView] = stackView.arrangedSubviews.compactMap { $0 as? ChatMannerExpandableView }
+        let extendableViews: [ChatMannerAccordionView] = stackView.arrangedSubviews.compactMap { $0 as? ChatMannerAccordionView }
         let reviewsView: [[Review]] = extendableViews.map { view in
             view.reviewsView.subviews.compactMap { $0 as? Review }
         }

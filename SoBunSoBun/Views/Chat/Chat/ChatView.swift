@@ -538,7 +538,7 @@ extension ChatView {
                 }
                 
                 // 방장만 정산 후 자동 매너 평가 뷰 이동
-                if model.data.ownerId == myId && model.data.isSettled && !model.data.isReviewed {
+                if model.data.ownerId == myId && model.data.isSettled && model.data.isReviewed == false {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         self.navigationController?.pushViewController(
                             ChatRateMannerView(

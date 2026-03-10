@@ -1,5 +1,5 @@
 //
-//  ChatMannerExpandableView.swift
+//  ChatMannerAccordionView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 2/16/26.
@@ -12,7 +12,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class ChatMannerExpandableView: UIView {
+class ChatMannerAccordionView: UIView {
     init(frame: CGRect = .zero, model: ChatRoomDetailMemberModel) {
         super.init(frame: frame)
         
@@ -166,7 +166,7 @@ class ChatMannerExpandableView: UIView {
     }
 }
 
-extension ChatMannerExpandableView {
+extension ChatMannerAccordionView {
     private func bind() {
         stackView.rx
             .tapGesture()

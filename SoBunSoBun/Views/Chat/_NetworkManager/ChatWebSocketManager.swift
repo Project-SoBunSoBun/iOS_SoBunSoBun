@@ -140,12 +140,11 @@ extension ChatWebSocketManager: SwiftStompDelegate {
     }
     
     func onError(swiftStomp: SwiftStomp, briefDescription: String, fullDescription: String?, receiptId: String?, type: StompErrorType) {
-        
         switch type {
         case .fromSocket:
-            logger.fault("Socket 오류: \(briefDescription)")
+            logger.fault("Socket 오류(\(String(describing: receiptId))): \(briefDescription) | \(String(describing: fullDescription))")
         case .fromStomp:
-            logger.critical("Stomp 오류: \(briefDescription) | \(String(describing: fullDescription))")
+            logger.critical("Stomp 오류(\(String(describing: receiptId))): \(briefDescription) | \(String(describing: fullDescription))")
         }
         
         if fullDescription?.contains("401") == true ||

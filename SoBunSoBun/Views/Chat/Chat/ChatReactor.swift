@@ -316,9 +316,13 @@ class ChatReactor: Reactor {
     
     // 메시지 전송
     private func sendMessage(message: String) {
-        if !message.isEmpty {
-            webSocketManager.sendMessage(message: message)
+        let cleanedMessage = message.limitNewLines(limit: 2).trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !cleanedMessage.isEmpty else {
+            return
         }
+        
+        webSocketManager.sendMessage(message: message)
     }
     
     // 이미지 전송
