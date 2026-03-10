@@ -44,8 +44,8 @@ class CalculationGuest: UIView {
     
     private var dividerTopAnchor: ConstraintItem {
         return participantLabelsView.superview != nil
-            ? participantLabelsView.snp.bottom
-            : productLabel.snp.bottom
+        ? participantLabelsView.snp.bottom
+        : productLabel.snp.bottom
     }
     
     // MARK: - 디자인 요소
@@ -345,5 +345,22 @@ class CalculationGuest: UIView {
         hideDivider()
         
         updateParticipantLabels()
+    }
+    
+    // 외부에서 각 항목별 정산 내용을 받는 함수
+    func getSelectionData() -> SettleUpProductSelectionModel {
+        let selections = selectedGuestsStackView.arrangedSubviews
+            .compactMap { $0 as? CalculationGuestItem }
+            .map { item in
+                ParticipantSelectionModel(userNickname: item.getNickname(), value: item.getCount())
+            }
+        
+        return SettleUpProductSelectionModel(
+            productName: self.product.name,
+            unitIndex: self.product.unitIndex,
+            totalPrice: self.product.price,
+            totalCount: self.product.count,
+            selections: selections
+        )
     }
 }

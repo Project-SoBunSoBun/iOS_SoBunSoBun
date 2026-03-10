@@ -109,7 +109,13 @@ class CalculationGuestItem: UIView {
             .disposed(by: disposeBag)
     }
     
-    func getCount() -> String {
-        return countTextField.text ?? ""
+    func getCount() -> Int {
+        guard let count = Int(countTextField.text ?? "0") else { return 0 }
+        
+        return count
+    }
+    
+    func getNickname() -> String {
+        return self.nickname
     }
 }
