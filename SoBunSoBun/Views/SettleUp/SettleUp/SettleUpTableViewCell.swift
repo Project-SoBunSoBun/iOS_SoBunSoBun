@@ -39,7 +39,7 @@ class SettleUpTableViewCell: UITableViewCell {
         incompleteView?.removeFromSuperview()
         
         let newIncompleteView = Incomplete(
-            SettleUpStatus: item.settleUpStatus,
+            SettleUpStatus: item.settlementStatus,
             title: item.title,
             location: item.location,
             meetingDate: item.meetingDate
