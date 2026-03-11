@@ -258,9 +258,6 @@ extension SettleUp2ndStepView {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                // TODO: 3단계 뷰 만들고 연결하기
-                self.logger.debug("3단계 뷰 이동")
-                
                 let nextVC = SettleUp3rdStepView(model: model)
                 self.navigationController?.pushViewController(nextVC, animated: true)
             })

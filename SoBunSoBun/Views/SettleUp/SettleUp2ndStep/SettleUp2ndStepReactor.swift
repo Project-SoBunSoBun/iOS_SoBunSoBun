@@ -93,7 +93,7 @@ class SettleUp2ndStepReactor: Reactor {
             let totalCount = product.selections.map { $0.value }.reduce(0, +)
             guard totalCount > 0 else { return }
             
-            // 각 참여자별 금액 계산 (소수점 버림)
+            // 각 참여자별 금액 계산
             var calculatedAmounts: [String: Int] = [:]
             product.selections.forEach { selection in
                 let amount = (selection.value * product.totalPrice) / totalCount
