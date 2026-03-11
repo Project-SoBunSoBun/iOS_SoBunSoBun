@@ -468,6 +468,7 @@ extension HomeView {
     
     private func updateCategoriesStackView(_ selectedCategories: [String]) {
         categoriesStackView.subviews.forEach {
+            categoriesStackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
         

@@ -500,10 +500,7 @@ extension MypageView {
         let sortedTags = mannerTags.sorted { $0.tagId < $1.tagId }
         
         let reviewViews = sortedTags.compactMap { tag -> UIView? in
-            let title = String(format: "Review%03d", tag.tagId)
-            let review = Review(title: title)
-            
-            return review
+            Review(number: String(format: "%03d", tag.tagId))
         }
         
         mannerWrappingViews.addArrangedSubviews(reviewViews)

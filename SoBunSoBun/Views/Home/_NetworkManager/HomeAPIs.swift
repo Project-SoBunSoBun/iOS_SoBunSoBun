@@ -34,6 +34,7 @@ enum HomeAPIs {
     case patchPostComment(id: Int, content: String)
     case deletePostComment(id: Int)
     case reportPostComment(id: Int)
+    case createChatRoomId(userId: Int, groupPostId: Int)
 }
 
 extension HomeAPIs: TargetType {
@@ -104,6 +105,9 @@ extension HomeAPIs: TargetType {
             
         case .reportPostComment:
             return "/api/v1/comments/reports"
+            
+        case .createChatRoomId:
+            return "/api/v1/chat/rooms/private"
         }
     }
     
@@ -127,7 +131,8 @@ extension HomeAPIs: TargetType {
                 .savePost,
                 .reportPost,
                 .createPostComment,
-                .reportPostComment:
+                .reportPostComment,
+                .createChatRoomId:
             return .post
             
         case // PATCH
@@ -224,6 +229,11 @@ extension HomeAPIs: TargetType {
             let model: ReportCommentModel = ReportCommentModel(commentId: id, reason: "OTHER", description: "유저가 신고한 댓글입니다.")
             
             return .requestJSONEncodable(model)
+            
+        case .createChatRoomId(let userId, let groupPostId):
+            let body: [String: Int] = ["otherUserId": userId, "groupPostId": groupPostId]
+            
+            return .requestJSONEncodable(body)
         }
     }
     

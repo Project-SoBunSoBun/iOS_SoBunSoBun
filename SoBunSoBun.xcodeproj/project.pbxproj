@@ -23,6 +23,8 @@
 		BB7572AC2E4F46ED008DFF98 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = BB7572AB2E4F46ED008DFF98 /* SnapKit */; };
 		BB7572B22E4F476C008DFF98 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = BB7572B12E4F476C008DFF98 /* .gitignore */; };
 		E238DF802F3F2AF20032C8E1 /* Gifu in Frameworks */ = {isa = PBXBuildFile; productRef = E238DF7F2F3F2AF20032C8E1 /* Gifu */; };
+		E254A4D82F48E82D0005A822 /* SwiftStomp in Frameworks */ = {isa = PBXBuildFile; productRef = E254A4D72F48E82D0005A822 /* SwiftStomp */; };
+		E254A8652F4A178C0005A822 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = E254A8642F4A178C0005A822 /* GRDB */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E254A8652F4A178C0005A822 /* GRDB in Frameworks */,
 				BB75728C2E4F4630008DFF98 /* FirebaseMessaging in Frameworks */,
 				BB7572952E4F467E008DFF98 /* RxKakaoSDKFriend in Frameworks */,
 				BB7572A12E4F46A0008DFF98 /* ReactorKit in Frameworks */,
@@ -66,6 +69,7 @@
 				BB7572A72E4F46D7008DFF98 /* Moya in Frameworks */,
 				E238DF802F3F2AF20032C8E1 /* Gifu in Frameworks */,
 				BB7572992E4F467E008DFF98 /* RxKakaoSDKTalk in Frameworks */,
+				E254A4D82F48E82D0005A822 /* SwiftStomp in Frameworks */,
 				BB7572AC2E4F46ED008DFF98 /* SnapKit in Frameworks */,
 				BB75729B2E4F467E008DFF98 /* RxKakaoSDKUser in Frameworks */,
 				BB7572972E4F467E008DFF98 /* RxKakaoSDKShare in Frameworks */,
@@ -82,7 +86,6 @@
 			children = (
 				BB7572B12E4F476C008DFF98 /* .gitignore */,
 				BB7572712E4F4436008DFF98 /* SoBunSoBun */,
-				E238DF7E2F3F2A750032C8E1 /* Frameworks */,
 				BB7572702E4F4436008DFF98 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -93,13 +96,6 @@
 				BB75726F2E4F4436008DFF98 /* SoBunSoBun.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		E238DF7E2F3F2A750032C8E1 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,6 +133,8 @@
 				BB7572A82E4F46D7008DFF98 /* RxMoya */,
 				BB7572AB2E4F46ED008DFF98 /* SnapKit */,
 				E238DF7F2F3F2AF20032C8E1 /* Gifu */,
+				E254A4D72F48E82D0005A822 /* SwiftStomp */,
+				E254A8642F4A178C0005A822 /* GRDB */,
 			);
 			productName = SoBunSoBun;
 			productReference = BB75726F2E4F4436008DFF98 /* SoBunSoBun.app */;
@@ -175,6 +173,8 @@
 				BB7572A52E4F46D7008DFF98 /* XCRemoteSwiftPackageReference "Moya" */,
 				BB7572AA2E4F46ED008DFF98 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				E238DF7D2F3F2A5E0032C8E1 /* XCRemoteSwiftPackageReference "Gifu" */,
+				E254A4D62F48E82D0005A822 /* XCRemoteSwiftPackageReference "SwiftStomp" */,
+				E254A8632F4A178C0005A822 /* XCRemoteSwiftPackageReference "GRDB" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = BB7572702E4F4436008DFF98 /* Products */;
@@ -210,8 +210,6 @@
 /* Begin XCBuildConfiguration section */
 		BB7572832E4F4438008DFF98 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = BB7572712E4F4436008DFF98 /* SoBunSoBun */;
-			baseConfigurationReferenceRelativePath = Common/debug.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -248,8 +246,6 @@
 		};
 		BB7572842E4F4438008DFF98 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReferenceAnchor = BB7572712E4F4436008DFF98 /* SoBunSoBun */;
-			baseConfigurationReferenceRelativePath = Common/release.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -497,6 +493,22 @@
 				minimumVersion = 4.0.1;
 			};
 		};
+		E254A4D62F48E82D0005A822 /* XCRemoteSwiftPackageReference "SwiftStomp" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Romixery/SwiftStomp";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+		E254A8632F4A178C0005A822 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -574,6 +586,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E238DF7D2F3F2A5E0032C8E1 /* XCRemoteSwiftPackageReference "Gifu" */;
 			productName = Gifu;
+		};
+		E254A4D72F48E82D0005A822 /* SwiftStomp */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E254A4D62F48E82D0005A822 /* XCRemoteSwiftPackageReference "SwiftStomp" */;
+			productName = SwiftStomp;
+		};
+		E254A8642F4A178C0005A822 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E254A8632F4A178C0005A822 /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -38,6 +38,12 @@ class DeepLinkManager {
             }
             
             // 프로필
+            if path.hasPrefix("/profile/") {
+                let profileIdString = path.replacingOccurrences(of: "/profile/", with: "")
+                if let profileId = Int(profileIdString) {
+                    
+                }
+            }
         }
     }
 }
