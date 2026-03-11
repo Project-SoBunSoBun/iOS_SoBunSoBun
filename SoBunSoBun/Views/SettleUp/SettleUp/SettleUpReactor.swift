@@ -103,7 +103,7 @@ class SettleUpReactor: Reactor {
             networkManager.mySettleUps(status: status, page: 0, size: 20)
                 .asObservable()
                 .flatMap { SettleUpModel -> Observable<Mutation> in
-                    let items: [SettleUpItemModel] = SettleUpModel.content.map { content in
+                    let items: [SettleUpItemModel] = SettleUpModel.data.content.map { content in
                         let isCompleted = (content.status == "COMPLETED")
                         
                         return SettleUpItemModel(

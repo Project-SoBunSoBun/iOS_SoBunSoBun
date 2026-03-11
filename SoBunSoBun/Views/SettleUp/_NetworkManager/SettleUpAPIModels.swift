@@ -8,6 +8,15 @@
 import Foundation
 
 // MARK: - 정산
+struct SettleUpResponseModel: Decodable {
+    let success: Bool
+    let statusCode: Int
+    let message: String?
+    let data: SettleUpModel
+    let errorCode: String?
+    let timestamp: String
+}
+
 struct SettleUpModel: Decodable {
     let content: [SettleUpContentModel]
     let pageable: SettleUpPageableModel
