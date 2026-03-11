@@ -30,7 +30,7 @@ class ChatReactor: Reactor {
     private let MESSAGE_LIMIT_COUNT: Int = 50
     
     private let disposeBag = DisposeBag()
-    private let webSocketManager = ChatWebSocketManager()
+    let webSocketManager = ChatWebSocketManager()
     private let databaseManager = ChatDataBaseManager()
     private let networkManager = ChatNetworkManager()
     

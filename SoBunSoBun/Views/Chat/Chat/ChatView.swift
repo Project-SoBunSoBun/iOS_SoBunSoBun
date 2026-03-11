@@ -197,6 +197,7 @@ class ChatView: UIViewController {
         super.viewDidDisappear(animated)
         
         chatTextView.textView.inputView = nil
+        reactor.webSocketManager.disconnect()
     }
     
     // MARK: - 레이아웃 설정
