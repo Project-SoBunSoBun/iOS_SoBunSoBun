@@ -57,8 +57,6 @@ class SettleUp2ndStepReactor: Reactor {
             
             let model = buildNextStepModel(selections: selections)
             
-            debugPrint3rdStepModel(model)
-            
             return Observable.just(.setNextStepData(model))
         }
     }
@@ -157,21 +155,5 @@ class SettleUp2ndStepReactor: Reactor {
             totalAmount: totalAmount,
             participants: participants
         )
-    }
-    
-    // 3단계 전달 데이터 디버그 출력
-    private func debugPrint3rdStepModel(_ model: SettleUp3rdStepDataModel) {
-        logger.debug("======= 📌 3단계 전달 데이터 확인 =======")
-        logger.debug("📮 settlementId: \(model.settlementId)")
-        logger.debug("💰 총 금액: \(model.totalAmount)원")
-        
-        model.participants.forEach { participant in
-            logger.debug("👤 \(participant.nickname) (userId: \(participant.userId)) - 총 \(participant.assignedAmount)원")
-            participant.items.forEach { item in
-                let unit = item.unitIndex == 1 ? "개" : "g"
-                logger.debug("   └ \(item.itemName) \(item.quantity)\(unit) → \(item.amount)원")
-            }
-        }
-        logger.debug("========================================")
     }
 }
