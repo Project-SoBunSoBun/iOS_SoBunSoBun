@@ -14,7 +14,7 @@ class SettleUp2ndStepReactor: Reactor {
         category: "SettleUp.SettleUp2ndStep.Reactor"
     )
     
-    init(settlementId: Int, participants: [ParticipantModel], authorId: Int) {
+    init(settlementId: Int, participants: [SettleUpParticipantModel], authorId: Int) {
         self.initialState = State(
             settlementId: settlementId,
             participants: participants,
@@ -35,7 +35,7 @@ class SettleUp2ndStepReactor: Reactor {
     
     struct State {
         var settlementId: Int // 넘어온 postId
-        var participants: [ParticipantModel]
+        var participants: [SettleUpParticipantModel]
         var authorId: Int
         @Pulse var shouldNavigateToNextStep: SettleUp3rdStepDataModel?
         @Pulse var validationError: String?
@@ -140,7 +140,7 @@ class SettleUp2ndStepReactor: Reactor {
         }
         
         let participants = participantItems.map { nickname, data in
-            SettleUpParticipantModel(
+            SettleUp3rdStepParticipantModel(
                 userId: nicknameToUserId[nickname] ?? -1,
                 nickname: nickname,
                 assignedAmount: data.assignedAmount,

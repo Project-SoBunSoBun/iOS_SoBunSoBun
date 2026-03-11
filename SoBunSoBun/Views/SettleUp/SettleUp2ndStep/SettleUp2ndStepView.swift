@@ -13,7 +13,7 @@ import RxCocoa
 import ReactorKit
 
 class SettleUp2ndStepView: UIViewController {
-    init(settlementId: Int, participants:[ParticipantModel] , products: [ListedProductModel], authorId: Int) {
+    init(settlementId: Int, participants:[SettleUpParticipantModel] , products: [ListedProductModel], authorId: Int) {
         reactor = SettleUp2ndStepReactor(
             settlementId: settlementId,
             participants: participants,
@@ -31,7 +31,7 @@ class SettleUp2ndStepView: UIViewController {
     private let disposeBag = DisposeBag()
     
     private let products: [ListedProductModel]
-    private let participants: [ParticipantModel]
+    private let participants: [SettleUpParticipantModel]
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",

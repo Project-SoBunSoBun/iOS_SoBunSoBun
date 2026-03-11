@@ -13,5 +13,5 @@ struct SettleUpItemModel {
     let title: String
     let location: String
     let meetingDate: String
-    let participants: [ParticipantModel]
+    let participants: [SettleUpParticipantModel]
 }

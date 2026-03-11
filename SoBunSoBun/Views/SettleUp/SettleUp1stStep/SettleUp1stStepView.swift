@@ -17,7 +17,7 @@ class SettleUp1stStepView: UIViewController{
         category: "SettleUp.SettleUp1stStep.View"
     )
     
-    init(settlementId: Int, authorId: Int, participants: [ParticipantModel]) {
+    init(settlementId: Int, authorId: Int, participants: [SettleUpParticipantModel]) {
         self.settlementId = settlementId
         self.authorId = authorId
         self.participants = participants
@@ -30,7 +30,7 @@ class SettleUp1stStepView: UIViewController{
     }
     
     private let settlementId, authorId: Int?
-    private let participants: [ParticipantModel]?
+    private let participants: [SettleUpParticipantModel]?
     
     var disposeBag = DisposeBag()
     
