@@ -21,7 +21,7 @@ class SettleUpNetworkManager {
             MultiTarget(SettleUpAPIs.mySettleUps(status: status, page: page, size: size))
         )
         .filterSuccessfulStatusCodes()
-        .map(SettleUpModel.self, atKeyPath: "data")
+        .tryMap(SettleUpModel.self, atKeyPath: "data")
     }
     
     // 정산 삭제 메서드
