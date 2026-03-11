@@ -1,5 +1,5 @@
 //
-//  ChatListCellView.swift
+//  ChatRoomListCellView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 2/10/26.
@@ -12,7 +12,7 @@ import RxCocoa
 import Kingfisher
 import OSLog
 
-class ChatListCellView: UIView {
+class ChatRoomListCellView: UIView {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "Chat.ChatListCellView"
@@ -57,7 +57,7 @@ class ChatListCellView: UIView {
         return attributes
     }()
     
-    private let titleLabel: UILabel = UILabel()
+    private let nameLabel: UILabel = UILabel()
     
     private let bottomStackView: UIStackView = {
         let sv = UIStackView()
@@ -87,7 +87,7 @@ class ChatListCellView: UIView {
     
     private let lastMessageLabel: UILabel = UILabel()
     
-    private let unreadCouneLabel: UnreadCountLabel = UnreadCountLabel()
+    private let unreadCountLabel: UnreadCountLabel = UnreadCountLabel()
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
@@ -100,11 +100,11 @@ class ChatListCellView: UIView {
             make.size.equalTo(50)
         }
         
-        [titleLabel, lastSentAtLabel].forEach {
+        [nameLabel, lastSentAtLabel].forEach {
             topStackView.addArrangedSubview($0)
         }
         
-        titleLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        nameLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
         lastSentAtLabel.setContentHuggingPriority(.required, for: .horizontal)
         
         topStackView.snp.makeConstraints { make in
@@ -113,24 +113,24 @@ class ChatListCellView: UIView {
             make.top.equalToSuperview().offset(2)
         }
         
-        [lastMessageLabel, unreadCouneLabel].forEach {
+        [lastMessageLabel, unreadCountLabel].forEach {
             bottomStackView.addArrangedSubview($0)
         }
         
         lastMessageLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        unreadCouneLabel.setContentHuggingPriority(.required, for: .horizontal)
+        unreadCountLabel.setContentHuggingPriority(.required, for: .horizontal)
         
         bottomStackView.snp.makeConstraints { make in
             make.leading.equalTo(topStackView)
             make.trailing.equalToSuperview()
             make.top.equalTo(topStackView.snp.bottom).offset(4)
+            make.bottom.equalToSuperview()
         }
     }
     
-    // 임시
-    func configureUI(imageUrl: String?, title: String, lastSentAt: String?, lastMessage: String?, unreadCount: Int?) {
-        if let imageUrl = imageUrl {
-            let imageUrl = URL(string: API_URL + imageUrl)
+    func configureUI(model: ChatRoomListResponseDataModel) {
+        if let profileImageUrl = model.profileImageUrl {
+            let imageUrl = URL(string: API_URL + profileImageUrl)
             
             imageView.kf.setImage(
                 with: imageUrl,
@@ -152,20 +152,49 @@ class ChatListCellView: UIView {
             imageView.image = .defaultProfile
         }
         
-        titleLabel.attributedText = NSAttributedString(string: title, attributes: titleAttributes)
+        nameLabel.attributedText = NSAttributedString(string: model.roomName, attributes: titleAttributes)
         
-        let lastSentAtString: String
+        var lastMessageString: String = ""
         
-        if let lastSentAt {
+        if let lastMessage = model.lastMessage {
+            let nickname = lastMessage.nickname ?? String(localized: "Unknown", table: "Common")
+            let content = lastMessage.content ?? ""
+            
+            switch lastMessage.type {
+            case .TEXT:
+                lastMessageString = "\(nickname): \(content)"
+                
+            case .IMAGE:
+                lastMessageString = String(format: String(localized: "UserMessageImageSent", table: "Chat"), nickname)
+                
+            case .INVITE_CARD:
+                lastMessageString = String(format: String(localized: "UserMessageInviteCard", table: "Chat"), nickname)
+                
+            case .SETTLEMENT_CARD:
+                lastMessageString = String(format: String(localized: "UserMessageSettlementCard", table: "Chat"), nickname)
+                
+            case .SYSTEM:
+                lastMessageString = content
+                
+            case .ENTER:
+                lastMessageString = String(format: String(localized: "UserMessageJoined", table: "Chat"), nickname)
+                
+            case .LEAVE:
+                lastMessageString = String(format: String(localized: "UserMessageLeft", table: "Chat"), nickname)
+            }
+        }
+        
+        var lastSentAtString: String = ""
+        
+        if let lastSentAt = model.lastMessage?.createdAt {
             lastSentAtString = ISO8601ToRelativeString(lastSentAt)
-        } else {
-            lastSentAtString = ""
         }
         
         lastSentAtLabel.attributedText = NSAttributedString(string: lastSentAtString, attributes: lastSentAtAttributes)
         
-        lastMessageLabel.attributedText = NSAttributedString(string: lastMessage ?? "", attributes: lastMeesageAttributes)
+        lastMessageLabel.attributedText = NSAttributedString(string: lastMessageString, attributes: lastMeesageAttributes)
         
-        unreadCouneLabel.text = "\(unreadCount ?? 0)"
+        unreadCountLabel.text = "\(model.unreadCount)"
+        unreadCountLabel.isHidden = model.unreadCount <= 0
     }
 }

@@ -198,6 +198,17 @@
         }
       }
     },
+    "GroupChat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단체 채팅"
+          }
+        }
+      }
+    },
     "InvitationCardReceivedSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -359,6 +370,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "아직 정산이 완료 되지 않아\n전송이 불가합니다."
+          }
+        }
+      }
+    },
+    "PrivateChat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인 채팅"
           }
         }
       }
@@ -572,6 +594,28 @@
         }
       }
     },
+    "UserMessageImageSent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 이미지를 보냈습니다."
+          }
+        }
+      }
+    },
+    "UserMessageInviteCard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 초대장을 보냈습니다."
+          }
+        }
+      }
+    },
     "UserMessageJoined" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -594,24 +638,13 @@
         }
       }
     },
-    "GroupChat" : {
+    "UserMessageSettlementCard" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "단체 채팅"
-          }
-        }
-      }
-    },
-    "PrivateChat" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "개인 채팅"
+            "value" : "%1$(nickname)@님이 정산서를 보냈습니다."
           }
         }
       }

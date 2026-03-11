@@ -1,5 +1,5 @@
 //
-//  ChatListCellTableViewCell.swift
+//  ChatRoomListCellTableViewCell.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 2/10/26.
@@ -8,10 +8,10 @@
 import UIKit
 import SnapKit
 
-class ChatListCellTableViewCell: UITableViewCell {
-    static let identifier = "ChatListTableViewCell"
+class ChatRoomListCellTableViewCell: UITableViewCell {
+    static let identifier = "ChatRoomListCellTableViewCell"
     
-    private let view = ChatListCellView()
+    private let view = ChatRoomListCellView()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -45,14 +45,14 @@ class ChatListCellTableViewCell: UITableViewCell {
         contentView.addSubview(view)
         
         view.snp.makeConstraints { make in
-            make.horizontalEdges.top.equalToSuperview()
+            make.horizontalEdges.equalToSuperview().inset(24)
             make.top.equalToSuperview().offset(10)
             make.bottom.equalToSuperview().inset(10).priority(.high)
         }
     }
     
-    func configureUI(imageUrl: String?, title: String, lastSentAt: String?, lastMessage: String?, unreadCount: Int?) {
-        view.configureUI(imageUrl: imageUrl, title: title, lastSentAt: lastSentAt, lastMessage: lastMessage, unreadCount: unreadCount)
+    func configureUI(model: ChatRoomListResponseDataModel) {
+        view.configureUI(model: model)
         view.layoutIfNeeded()
     }
 }
