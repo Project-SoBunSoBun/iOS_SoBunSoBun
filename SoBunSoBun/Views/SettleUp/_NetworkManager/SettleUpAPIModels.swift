@@ -33,12 +33,12 @@ struct SettleUpContentModel: Decodable {
     let groupPostTitle: String
     let status: String
     let totalAmount, participantCount: Int
-    let participants: [ParticipantModel]
+    let participants: [SettleUpParticipantModel]
     let locationName: String
     let meetAt, createdAt, updatedAt: String
 }
 
-struct ParticipantModel: Decodable {
+struct SettleUpParticipantModel: Decodable {
     let userId: Int
     let nickname: String
 }

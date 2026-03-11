@@ -25,10 +25,10 @@ struct ParticipantSelectionModel {
 struct SettleUp3rdStepDataModel {
     let settlementId: Int
     let totalAmount: Int
-    let participants: [SettleUpParticipantModel]
+    let participants: [SettleUp3rdStepParticipantModel]
 }
 
-struct SettleUpParticipantModel {
+struct SettleUp3rdStepParticipantModel {
     let userId: Int
     let nickname: String
     let assignedAmount: Int
