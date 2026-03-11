@@ -10,6 +10,10 @@ import RxSwift
 import OSLog
 
 class NavigationTabReactor: Reactor {
+    init() {
+        self.action.onNext(.onInit)
+    }
+    
     deinit {
         chatRoomListWebSocketManager.disconnect()
     }
@@ -26,6 +30,7 @@ class NavigationTabReactor: Reactor {
     )
     
     enum Action {
+        case onInit
         case viewDidLoad
         case selectIndex(Int)
     }
@@ -45,11 +50,11 @@ class NavigationTabReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .onInit:
+            return getChatRoomList()
+            
         case .viewDidLoad:
-            return Observable.concat([
-                getMyData(),
-                getChatRoomList()
-            ])
+            return getMyData()
             
         case .selectIndex(let index):
             return Observable.just(.setSelectedIndex(index))
