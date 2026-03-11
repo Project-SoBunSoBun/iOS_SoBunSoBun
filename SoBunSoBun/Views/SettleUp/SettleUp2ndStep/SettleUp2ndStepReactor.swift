@@ -9,11 +9,6 @@ import ReactorKit
 import OSLog
 
 class SettleUp2ndStepReactor: Reactor {
-    private let logger = Logger(
-        subsystem: "SoBunSoBun",
-        category: "SettleUp.SettleUp2ndStep.Reactor"
-    )
-    
     init(settlementId: Int, participants: [SettleUpParticipantModel], authorId: Int) {
         self.initialState = State(
             settlementId: settlementId,
@@ -21,6 +16,11 @@ class SettleUp2ndStepReactor: Reactor {
             authorId: authorId
         )
     }
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SettleUp.SettleUp2ndStep.Reactor"
+    )
     
     let initialState: State
     
@@ -90,37 +90,37 @@ class SettleUp2ndStepReactor: Reactor {
         var participantItems: [String: (assignedAmount: Int, items: [SettleUpItemDetailModel])] = [:]
         
         selections.forEach { product in
-            let totalCount = product.selections.map { $0.value }.reduce(0, +)
-            guard totalCount > 0 else { return }
+            let totalProductCount = product.selections.map { $0.value }.reduce(0, +)
+            guard totalProductCount > 0 else { return }
             
             // 각 참여자별 금액 계산
             var calculatedAmounts: [String: Int] = [:]
             product.selections.forEach { selection in
-                let amount = (selection.value * product.totalPrice) / totalCount
-                let nickname = selection.userNickname.replacingOccurrences(of: "(나)", with: "")
+                let amount = (selection.value * product.totalPrice) / totalProductCount
+                let nickname = selection.userNickname.replacingOccurrences(of: String(localized: "Me", table: "SettleUp"), with: "")
                 calculatedAmounts[nickname] = amount
             }
             
             // 나머지 계산 → 방장에게 추가
             let distributedTotal = calculatedAmounts.values.reduce(0, +)
-            var remainder = product.totalPrice - distributedTotal
+            var remainderPrice = product.totalPrice - distributedTotal
             
-            if remainder != 0 {
+            if remainderPrice != 0 {
                 if calculatedAmounts[authorNickname] != nil {
                     // 방장이 참여 중이면 나머지 전부 방장에게
-                    calculatedAmounts[authorNickname]! += remainder
+                    calculatedAmounts[authorNickname]! += remainderPrice
                 } else {
                     // 방장 미참여시 참여자들에게 1원씩 순서대로 분배
                     for nickname in calculatedAmounts.keys {
-                        guard remainder > 0 else { break }
+                        guard remainderPrice > 0 else { break }
                         calculatedAmounts[nickname]! += 1
-                        remainder -= 1
+                        remainderPrice -= 1
                     }
                 }
             }
             
             product.selections.forEach { selection in
-                let nickname = selection.userNickname.replacingOccurrences(of: "(나)", with: "")
+                let nickname = selection.userNickname.replacingOccurrences(of: String(localized: "Me", table: "SettleUp"), with: "")
                 let amount = calculatedAmounts[nickname] ?? 0
                 
                 let item = SettleUpItemDetailModel(

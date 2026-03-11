@@ -29,7 +29,7 @@ class CalculationGuestItem: UIView {
     private let nickname: String
     private let disposeBag = DisposeBag()
     
-    var onNicknameTapped: (() -> Void)?
+    let nicknameTapped = PublishRelay<Void>()
     
     // MARK: - 디자인 요소
     // label과 textField가 들어갈 StackView
@@ -46,10 +46,7 @@ class CalculationGuestItem: UIView {
     // 닉네임 Label
     private let nicknameLabel: UILabel = {
         let lb = UILabel()
-        lb.font = title16.font
-        lb.textColor = .primary400
         lb.backgroundColor = .primary100
-        lb.textAlignment = .center
         lb.layer.cornerRadius = 14
         lb.layer.borderWidth = 2
         lb.layer.borderColor = UIColor.primary400.cgColor
@@ -90,9 +87,12 @@ class CalculationGuestItem: UIView {
         
         countTextField.updateRightViewText(product.unitIndex == 1 ? String(localized: "Count", table: "SettleUp") : "g")
         
+        var attributes = title16.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.primary400
+        
         let attributedText = NSAttributedString(
             string: nickname,
-            attributes: title16.attributes(alignment: .center)
+            attributes: attributes
         )
         nicknameLabel.attributedText = attributedText
     }
@@ -101,11 +101,8 @@ class CalculationGuestItem: UIView {
         nicknameLabel.rx
             .tapGesture()
             .when(.recognized)
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                self.onNicknameTapped?()
-            })
+            .map { _ in () }
+            .bind(to: nicknameTapped)
             .disposed(by: disposeBag)
     }
     

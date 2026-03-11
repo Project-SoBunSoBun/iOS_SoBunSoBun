@@ -29,12 +29,12 @@ class SettleUp1stStepReactor: Reactor {
     }
     
     struct State {
-        @Pulse var shouldNavigateToNextStep: [ListedProductModel]?
         var selectedUnitIndex: Int = 1
         var products: [ListedProductModel] = [] // productStackView에 들어갈 데이터들
         var totalPrice: Int = 0
         var editingProduct: ListedProductModel? = nil // 수정할 상품 정보
         var isEditing: Bool = false // 등록하기 버튼 텍스트 제어용
+        @Pulse var shouldNavigateToNextStep: [ListedProductModel]?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -75,6 +75,7 @@ class SettleUp1stStepReactor: Reactor {
             guard !currentState.products.isEmpty else {
                 return Observable.empty()
             }
+            
             return Observable.just(.setShouldNavigateToNextStep(currentState.products))
         }
     }

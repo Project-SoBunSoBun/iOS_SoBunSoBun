@@ -17,6 +17,9 @@ class SettleUp1stStepView: UIViewController{
         category: "SettleUp.SettleUp1stStep.View"
     )
     
+    private let settlementId, authorId: Int?
+    private let participants: [SettleUpParticipantModel]?
+    
     init(settlementId: Int, authorId: Int, participants: [SettleUpParticipantModel]) {
         self.settlementId = settlementId
         self.authorId = authorId
@@ -28,11 +31,8 @@ class SettleUp1stStepView: UIViewController{
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private let settlementId, authorId: Int?
-    private let participants: [SettleUpParticipantModel]?
-    
-    var disposeBag = DisposeBag()
+
+    private let disposeBag = DisposeBag()
     
     typealias Reactor = SettleUp1stStepReactor
     private let reactor = SettleUp1stStepReactor()

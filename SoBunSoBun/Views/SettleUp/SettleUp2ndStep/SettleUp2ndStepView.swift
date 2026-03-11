@@ -13,7 +13,13 @@ import RxCocoa
 import ReactorKit
 
 class SettleUp2ndStepView: UIViewController {
-    init(settlementId: Int, participants:[SettleUpParticipantModel] , products: [ListedProductModel], authorId: Int) {
+    typealias Reactor = SettleUp2ndStepReactor
+    private let reactor: SettleUp2ndStepReactor
+    
+    private let products: [ListedProductModel]
+    private let participants: [SettleUpParticipantModel]
+    
+    init(settlementId: Int, participants:[SettleUpParticipantModel] , products: [ListedProductModel], authorId: Int, nibName: String? = nil, bundle: Bundle? = nil) {
         reactor = SettleUp2ndStepReactor(
             settlementId: settlementId,
             participants: participants,
@@ -22,17 +28,11 @@ class SettleUp2ndStepView: UIViewController {
         self.participants = participants
         self.products = products
         
-        super.init(nibName: nil, bundle: nil)
+        super.init(nibName: nibName, bundle: bundle)
     }
     
-    typealias Reactor = SettleUp2ndStepReactor
-    private let reactor: SettleUp2ndStepReactor
-    
     private let disposeBag = DisposeBag()
-    
-    private let products: [ListedProductModel]
-    private let participants: [SettleUpParticipantModel]
-    
+
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "SettleUp2ndStep.View"
@@ -69,50 +69,58 @@ class SettleUp2ndStepView: UIViewController {
     
     // 2/3
     private let stepLabel: UILabel = {
-        let lb = UILabel()
+        var attributes = title14.attributes(alignment: .left)
+        attributes[.foregroundColor] = UIColor.primary400
+        
         let attributedText = NSAttributedString(
             string: "2/3",
-            attributes: title14.attributes(alignment: .left)
+            attributes: attributes
         )
+        
+        let lb = UILabel()
         lb.attributedText = attributedText
-        lb.textColor = .primary400
         
         return lb
     }()
     
     // 제목 라벨
     private let titleLabel: UILabel = {
-        let lb = UILabel()
+        var attributes = title24.attributes(alignment: .left)
+        attributes[.foregroundColor] = UIColor.neutral900
+        
         let attributedText = NSAttributedString(
             string: String(localized: "SettleUpStart", table: "SettleUp"),
-            attributes: title24.attributes(alignment: .left)
+            attributes: attributes
         )
+        
+        let lb = UILabel()
         lb.attributedText = attributedText
-        lb.textColor = .neutral900
         
         return lb
     }()
     
     // 등록된 상품 수량 라벨 배경 뷰
     private let subtitleBackground: UIView = {
-        let view = UIView()
-        view.backgroundColor = .primary50
-        view.layer.cornerRadius = 14
-        view.clipsToBounds = true
+        let v = UIView()
+        v.backgroundColor = .primary50
+        v.layer.cornerRadius = 14
+        v.clipsToBounds = true
         
-        return view
+        return v
     }()
     
     // 등록된 상품 수량 라벨
     private let subtitleLabel: UILabel = {
+        var attributes = body14.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.neutral800
+        
         let attributedText = NSAttributedString(
             string: String(localized: "SettleUpParticipant", table: "SettleUp"),
-            attributes: body14.attributes(alignment: .center)
+            attributes: attributes
         )
         
         let lb = UILabel()
         lb.attributedText = attributedText
-        lb.textColor = .neutral800
         lb.numberOfLines = 0
         
         return lb
@@ -184,11 +192,10 @@ class SettleUp2ndStepView: UIViewController {
         subtitleBackground.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
-            make.height.equalTo(53)
         }
         
         subtitleLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.edges.equalToSuperview().inset(16)
         }
         
         calculationStackView.snp.makeConstraints { make in
@@ -206,21 +213,22 @@ class SettleUp2ndStepView: UIViewController {
     private func setUpCalculationGuests() {
         calculationStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        guard let myUserIdString = KeyChain.shared.get(key: "USER_ID") else { return }
-        let myUserId = Int(myUserIdString)
+        guard let myUserIdString = KeyChain.shared.get(key: "USER_ID"),
+        let myId = Int(myUserIdString) else { return }
+        
+        let localizedMe = String(localized: "Me", table: "SettleUp")
         
         let setParticipants = participants.map { participant -> String in
-            if let myId = myUserId, participant.userId == myId {
-                return "\(participant.nickname)(나)"
+            if participant.userId == myId {
+                return "\(participant.nickname)\(localizedMe)"
             }
             
             return participant.nickname
         }
-        .sorted { $0.hasSuffix("(나)") && !$1.hasSuffix("(나)") }
+        .sorted { $0.hasSuffix(localizedMe) && !$1.hasSuffix(localizedMe) }
         
         products.forEach { product in
             let guestView = CalculationGuest(product: product)
-            
             guestView.setParticipants(setParticipants)
             
             calculationStackView.addArrangedSubview(guestView)
@@ -238,13 +246,13 @@ extension SettleUp2ndStepView {
     private func bindAction(reactor: SettleUp2ndStepReactor) {
         registerButton.rx.tap
             .map { [weak self] () -> Reactor.Action in
-                guard let self = self else { return .registerButtonTapped([]) }
+                guard let self = self else { return Reactor.Action.registerButtonTapped([]) }
                 
                 let allSelections = self.calculationStackView.arrangedSubviews
                     .compactMap { $0 as? CalculationGuest }
                     .map { $0.getSelectionData() }
                 
-                return .registerButtonTapped(allSelections)
+                return Reactor.Action.registerButtonTapped(allSelections)
             }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)

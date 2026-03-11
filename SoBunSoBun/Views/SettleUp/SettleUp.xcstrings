@@ -37,6 +37,18 @@
         }
       }
     },
+    "Me" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(나)"
+          }
+        }
+      }
+    },
     "SettleUp" : {
       "comment" : "SettleUp",
       "extractionState" : "manual",

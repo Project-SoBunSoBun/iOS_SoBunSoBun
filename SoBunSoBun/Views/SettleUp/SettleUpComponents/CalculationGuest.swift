@@ -29,7 +29,8 @@ class CalculationGuest: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private var disposeBag = DisposeBag()
+    private let disposeBag = DisposeBag()
+    private var labelsDisposeBag = DisposeBag()
     
     private let product: ListedProductModel
     
@@ -64,7 +65,6 @@ class CalculationGuest: UIView {
         let lb = UILabel()
         lb.numberOfLines = 1
         lb.lineBreakMode = .byTruncatingTail
-        lb.textColor = .neutral900
         
         return lb
     }()
@@ -72,7 +72,6 @@ class CalculationGuest: UIView {
     // 상품 수량 및 총금액
     private let productLabel: UILabel = {
         let lb = UILabel()
-        lb.textColor = .neutral900
         
         return lb
     }()
@@ -151,9 +150,12 @@ class CalculationGuest: UIView {
     // TextField의 개 / g 텍스트 설정
     private func setupLabels(with product: ListedProductModel) {
         // 상품명 설정
+        var titleAttributes = title18.attributes(alignment: .left)
+        titleAttributes[.foregroundColor] = UIColor.neutral900
+        
         let titleAttributedText = NSAttributedString(
             string: product.name,
-            attributes: title18.attributes(alignment: .left)
+            attributes: titleAttributes
         )
         titleLabel.attributedText = titleAttributedText
         
@@ -176,9 +178,12 @@ class CalculationGuest: UIView {
             totalText = String(format: format, countString, priceString)
         }
         
+        var productAttributes = body16.attributes(alignment: .left)
+        productAttributes[.foregroundColor] = UIColor.neutral900
+        
         let productAttributedText = NSAttributedString(
             string: totalText,
-            attributes: body16.attributes(alignment: .left)
+            attributes: productAttributes
         )
         productLabel.attributedText = productAttributedText
     }
@@ -187,7 +192,7 @@ class CalculationGuest: UIView {
     private func updateParticipantLabels() {
         // 기존 라벨 및 바인딩 초기화
         participantLabelsView.removeAllArrangedSubviews()
-        disposeBag = DisposeBag()
+        labelsDisposeBag = DisposeBag()
         
         // 선택되지 않은 참여자 필터링
         let filteredParticipants = availableParticipants.filter { !selectedParticipants.contains($0) }
@@ -229,7 +234,7 @@ class CalculationGuest: UIView {
             // 필터링된 참여자들로 라벨 생성 및 추가
             filteredParticipants.forEach { nickname in
                 let label = CalculationGuestLabel()
-                label.text = nickname
+                label.attributedText = NSAttributedString(string: nickname, attributes: title14.attributes(alignment: .center))
                 
                 label.tapped
                     .take(1)
@@ -237,7 +242,7 @@ class CalculationGuest: UIView {
                         guard let self = self else { return }
                         self.handleParticipantTapped(nickname: tappedNickname)
                     })
-                    .disposed(by: disposeBag)
+                    .disposed(by: labelsDisposeBag)
                 
                 participantLabelsView.addArrangedSubview(label)
             }
@@ -266,11 +271,13 @@ class CalculationGuest: UIView {
         let guestItem = CalculationGuestItem(nickname: nickname, product: product)
         
         // 닉네임 라벨 탭 이벤트 처리
-        guestItem.onNicknameTapped = { [weak self] in
-            guard let self = self else { return }
-            
-            self.handleGuestItemRemoved(nickname: nickname, guestItem: guestItem)
-        }
+        guestItem.nicknameTapped
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                self.handleGuestItemRemoved(nickname: nickname, guestItem: guestItem)
+            })
+            .disposed(by: disposeBag)
         
         selectedGuestsStackView.addArrangedSubview(guestItem)
         self.layoutIfNeeded()
@@ -303,15 +310,15 @@ class CalculationGuest: UIView {
         backgroundView.addSubview(divider)
         
         divider.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+            make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(dividerTopAnchor).offset(16)
             make.height.equalTo(2)
         }
         
         selectedGuestsStackView.snp.remakeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+            make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(divider.snp.bottom).offset(16)
-            make.bottom.equalToSuperview().inset(16).priority(999)
+            make.bottom.equalToSuperview().inset(16)
         }
     }
     
@@ -321,9 +328,9 @@ class CalculationGuest: UIView {
         self.divider.removeFromSuperview()
         
         selectedGuestsStackView.snp.remakeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+            make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(dividerTopAnchor)
-            make.bottom.equalToSuperview().inset(16).priority(999)
+            make.bottom.equalToSuperview().inset(16)
         }
     }
     
@@ -343,7 +350,6 @@ class CalculationGuest: UIView {
         }
         
         hideDivider()
-        
         updateParticipantLabels()
     }
     
