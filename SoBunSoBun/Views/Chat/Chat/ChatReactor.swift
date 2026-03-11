@@ -351,8 +351,15 @@ class ChatReactor: Reactor {
     // 그룹 채팅방 초대장 전송
     private func sendInviteCard() -> Observable<Mutation> {
         guard let myIdString = KeyChain.shared.get(key: "USER_ID"),
-              let myId = Int(myIdString),
-              let inviteeId: Int = currentState.detailInfoModel?.data.members.first(where: { $0.userId != myId })?.userId else {
+              let myId = Int(myIdString) else {
+            self.logger.critical("내 USER_ID를 불러오는 중 오류 발생")
+            
+            return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
+        }
+        
+        guard let inviteeId: Int = currentState.detailInfoModel?.data.members.first(where: { $0.userId != myId })?.userId else {
+            self.logger.critical("초대할 상대가 없어 오류 발생")
+            
             return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
         }
         

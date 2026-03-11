@@ -193,6 +193,12 @@ class ChatView: UIViewController {
         bottomMenuView.frame.size.height = 258 + view.safeAreaInsets.bottom
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        chatTextView.textView.inputView = nil
+    }
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
@@ -870,7 +876,7 @@ extension ChatView {
                 return
             }
             
-            navigationTabView.showViewController(index: 2)
+            navigationTabView.changeTabViewIndex(index: 2)
             navController.popToViewController(navigationTabView, animated: true)
         }
         

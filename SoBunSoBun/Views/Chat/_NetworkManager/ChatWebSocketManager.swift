@@ -129,7 +129,6 @@ extension ChatWebSocketManager: SwiftStompDelegate {
             if model.type == .SETTLEMENT_CARD {
                 didReceiveSettlement.accept(())
             }
-            
         } catch {
             logger.fault("ChatMessageModel 디코딩 실패: \(error.localizedDescription)")
         }
