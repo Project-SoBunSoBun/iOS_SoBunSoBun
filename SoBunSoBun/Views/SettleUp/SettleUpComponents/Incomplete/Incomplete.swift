@@ -24,6 +24,7 @@ class Incomplete: UIView {
                     title: title,
                     location: location,
                     meetingDate: meetingDate)
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -37,10 +38,10 @@ class Incomplete: UIView {
     
     private let disposeBag = DisposeBag()
     
-    var onDeleteButtonTapped: (() -> Void)? // 삭제 버튼 클릭
-    var onSettleUpButtonTapped: (() -> Void)? // 정산하기 버튼 클릭
-    var onStatementCheckButtonTapped: (() -> Void)? // 정산서 확인 버튼 클릭
-    var onShareButtonTapped: (() -> Void)? // 공유하기 버튼 클릭
+    let deleteTrigger = PublishRelay<Void>() // 삭제 버튼 클릭
+    let settleUpTrigger = PublishRelay<Void>() // 정산하기 버튼 클릭
+    let statementTrigger = PublishRelay<Void>() // 정산서 버튼 클릭
+    let shareTrigger = PublishRelay<Void>() // 공유하기 버튼 클릭
     
     // MARK: - 디자인 요소
     // 정산 여부 상태 label
@@ -222,48 +223,15 @@ class Incomplete: UIView {
                 statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpComplete", table: "SettleUp"), attributes: title12.attributes())
                 statusLabel.textColor = .review2
                 settleUpButton.isHidden = true
-                
-                statementCheckButton.rx.tap
-                    .subscribe(onNext: { [weak self] in
-                        guard let self = self else { return }
-                        
-                        self.logger.debug("정산서 확인 버튼 터치")
-                        self.onStatementCheckButtonTapped?()
-                    })
-                    .disposed(by: disposeBag)
-                
-                shareButton.rx.tap
-                    .subscribe(onNext: { [weak self] in
-                        guard let self = self else { return }
-                        
-                        self.logger.debug("공유 버튼 터치")
-                        self.onShareButtonTapped?()
-                    })
-                    .disposed(by: disposeBag)
-                
-                deleteButton.rx.tap
-                    .subscribe(onNext: { [weak self] in
-                        guard let self = self else { return }
-                        
-                        self.logger.debug("삭제 버튼 터치")
-                        self.onDeleteButtonTapped?()
-                    })
-                    .disposed(by: disposeBag)
+                statementCheckButton.isHidden = false
+                shareButton.isHidden = false
+                deleteButton.isHidden = false
             } else {
                 statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpIncomplete", table: "SettleUp"), attributes: title12.attributes())
                 statusLabel.textColor = .errorRed
                 statementCheckButton.isHidden = true
                 shareButton.isHidden = true
                 deleteButton.isHidden = true
-                
-                settleUpButton.rx.tap
-                    .subscribe(onNext: { [weak self] in
-                        guard let self = self else { return }
-                        
-                        self.logger.debug("정산하기 버튼 터치")
-                        self.onSettleUpButtonTapped?()
-                    })
-                    .disposed(by: disposeBag)
             }
             
             // 정산 여부 Label
@@ -332,4 +300,22 @@ class Incomplete: UIView {
                 make.top.equalTo(statusLabel.snp.top)
             }
         }
+    
+    private func bind() {
+        deleteButton.rx.tap
+            .bind(to: deleteTrigger)
+            .disposed(by: disposeBag)
+        
+        settleUpButton.rx.tap
+            .bind(to: settleUpTrigger)
+            .disposed(by: disposeBag)
+        
+        statementCheckButton.rx.tap
+            .bind(to: statementTrigger)
+            .disposed(by: disposeBag)
+        
+        shareButton.rx.tap
+            .bind(to: shareTrigger)
+            .disposed(by: disposeBag)
+    }
 }

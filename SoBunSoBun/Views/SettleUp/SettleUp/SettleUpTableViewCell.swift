@@ -7,11 +7,10 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxRelay
 
 class SettleUpTableViewCell: UITableViewCell {
-    
-    private var incompleteView: Incomplete?
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
@@ -20,19 +19,25 @@ class SettleUpTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private var incompleteView: Incomplete?
+    
+    var disposeBag = DisposeBag()
+    
+    let deleteTrigger = PublishRelay<Void>()
+    let settleUpTrigger = PublishRelay<Void>()
+    let statementCheckTrigger = PublishRelay<Void>()
+    let shareTrigger = PublishRelay<Void>()
+    
     override func prepareForReuse() {
         super.prepareForReuse()
+        
+        disposeBag = DisposeBag()
         
         incompleteView?.removeFromSuperview()
         incompleteView = nil
     }
     
-    func configure(with item: SettleUpItemModel,
-                   onDeleteTapped: @escaping () -> Void = {},
-                   onSettleUpButtonTapped: @escaping () -> Void = {},
-                   onStatementCheckButtonTapped: @escaping () -> Void = {},
-                   onShareButtonTapped: @escaping () -> Void = {}
-    ) {
+    func configure(with item: SettleUpItemModel) {
         self.backgroundColor = .clear
         self.contentView.backgroundColor = .clear
         
@@ -54,9 +59,20 @@ class SettleUpTableViewCell: UITableViewCell {
             make.bottom.equalToSuperview().inset(8)
         }
         
-        incompleteView?.onDeleteButtonTapped = onDeleteTapped
-        incompleteView?.onSettleUpButtonTapped = onSettleUpButtonTapped
-        incompleteView?.onStatementCheckButtonTapped = onStatementCheckButtonTapped
-        incompleteView?.onShareButtonTapped = onShareButtonTapped
+        newIncompleteView.deleteTrigger
+            .bind(to: deleteTrigger)
+            .disposed(by: disposeBag)
+        
+        newIncompleteView.settleUpTrigger
+            .bind(to: settleUpTrigger)
+            .disposed(by: disposeBag)
+        
+        newIncompleteView.statementTrigger
+            .bind(to: statementCheckTrigger)
+            .disposed(by: disposeBag)
+        
+        newIncompleteView.shareTrigger
+            .bind(to: shareTrigger)
+            .disposed(by: disposeBag)
     }
 }
