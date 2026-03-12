@@ -80,7 +80,14 @@ class ChatRoomListWebSocketManager {
 
 extension ChatRoomListWebSocketManager: SwiftStompDelegate {
     func onConnect(swiftStomp: SwiftStomp, connectType: StompConnectType) {
-        logger.debug("STOMP 연결 성공")
+        switch connectType {
+        case .toSocketEndpoint:
+            logger.debug("Socket에서 연결 성공")
+        case .toStomp:
+            logger.debug("Stomp에서 연결 성공")
+        }
+        
+        subscribe()
     }
     
     func onDisconnect(swiftStomp: SwiftStomp, disconnectType: StompDisconnectType) {
