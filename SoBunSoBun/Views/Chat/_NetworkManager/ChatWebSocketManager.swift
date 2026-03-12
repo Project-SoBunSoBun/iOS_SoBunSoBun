@@ -105,9 +105,9 @@ extension ChatWebSocketManager: SwiftStompDelegate {
     func onDisconnect(swiftStomp: SwiftStomp, disconnectType: StompDisconnectType) {
         switch disconnectType {
         case .fromSocket:
-            logger.fault("Socket에서 연결 끊김")
+            logger.error("Socket에서 연결 끊김")
         case .fromStomp:
-            logger.critical("Stomp에서 연결 끊김")
+            logger.error("Stomp에서 연결 끊김")
         }
     }
     
