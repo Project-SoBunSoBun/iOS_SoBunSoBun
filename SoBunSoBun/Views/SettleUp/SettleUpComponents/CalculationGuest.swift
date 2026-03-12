@@ -139,8 +139,8 @@ class CalculationGuest: UIView {
         
         selectedGuestsStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
-            make.top.equalTo(participantLabelsView.snp.bottom)
-            make.bottom.equalToSuperview().inset(16).priority(999)
+            make.top.equalTo(productLabel.snp.bottom)
+            make.bottom.equalToSuperview().inset(16).priority(.high)
         }
         
         // 텍스트 설정 (레이아웃 제약 설정 후)
@@ -198,48 +198,33 @@ class CalculationGuest: UIView {
         let filteredParticipants = availableParticipants.filter { !selectedParticipants.contains($0) }
         
         if filteredParticipants.isEmpty {
-            // 모두 선택됨 → participantLabelsView 제거
-            if participantLabelsView.superview != nil {
-                participantLabelsView.removeFromSuperview()
-                
-                // divider가 표시 중이면 기준점 변경
-                if divider.superview != nil {
-                    divider.snp.remakeConstraints { make in
-                        make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
-                        make.top.equalTo(dividerTopAnchor).offset(16)
-                        make.height.equalTo(2)
-                    }
-                }
-            }
+            participantLabelsView.removeFromSuperview()
         } else {
-            // 선택 가능한 참여자 있음 → participantLabelsView 복원
             if participantLabelsView.superview == nil {
                 backgroundView.addSubview(participantLabelsView)
-                
-                participantLabelsView.snp.remakeConstraints { make in
-                    make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
-                    make.top.equalTo(productLabel.snp.bottom).offset(16)
-                }
-                
-                // divider가 표시 중이면 기준점 원복
-                if divider.superview != nil {
-                    divider.snp.remakeConstraints { make in
-                        make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
-                        make.top.equalTo(dividerTopAnchor).offset(16)
-                        make.height.equalTo(2)
-                    }
-                }
             }
             
-            // 필터링된 참여자들로 라벨 생성 및 추가
+            participantLabelsView.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+                make.top.equalTo(productLabel.snp.bottom).offset(16)
+            }
+            
+            // 필터링된 참여자들로 라벨 생성
             filteredParticipants.forEach { nickname in
+                var labelAttributes = title14.attributes(alignment: .center)
+                labelAttributes[.foregroundColor] = UIColor.primary300
+                
                 let label = CalculationGuestLabel()
-                label.attributedText = NSAttributedString(string: nickname, attributes: title14.attributes(alignment: .center))
+                label.attributedText = NSAttributedString(
+                    string: nickname,
+                    attributes: labelAttributes
+                )
                 
                 label.tapped
                     .take(1)
                     .subscribe(onNext: { [weak self] tappedNickname in
                         guard let self = self else { return }
+                        
                         self.handleParticipantTapped(nickname: tappedNickname)
                     })
                     .disposed(by: labelsDisposeBag)
@@ -248,7 +233,24 @@ class CalculationGuest: UIView {
             }
         }
         
-        self.setNeedsLayout()
+        if divider.superview != nil {
+            divider.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+                make.top.equalTo(dividerTopAnchor).offset(16)
+                make.height.equalTo(2)
+            }
+        }
+        
+        selectedGuestsStackView.snp.remakeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
+
+            let topAnchor = divider.superview != nil ? divider.snp.bottom : participantLabelsView.snp.bottom
+            let offset = divider.superview != nil ? 16 : 0
+            
+            make.top.equalTo(topAnchor).offset(offset)
+            make.bottom.equalToSuperview().inset(16).priority(.high)
+        }
+        
         self.layoutIfNeeded()
     }
     
@@ -258,14 +260,14 @@ class CalculationGuest: UIView {
         
         // 선택된 참여자 Set에 추가
         selectedParticipants.insert(nickname)
-        
-        // 라벨 목록 업데이트
-        updateParticipantLabels()
-        
+
         // 구분선 표시
         if divider.superview == nil {
             showDivider()
         }
+        
+        // 라벨 목록 업데이트
+        updateParticipantLabels()
         
         // 선택된 게스트 항목 추가
         let guestItem = CalculationGuestItem(nickname: nickname, product: product)
@@ -310,15 +312,15 @@ class CalculationGuest: UIView {
         backgroundView.addSubview(divider)
         
         divider.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
             make.top.equalTo(dividerTopAnchor).offset(16)
             make.height.equalTo(2)
         }
         
         selectedGuestsStackView.snp.remakeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
             make.top.equalTo(divider.snp.bottom).offset(16)
-            make.bottom.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(16).priority(.high)
         }
     }
     
@@ -328,9 +330,9 @@ class CalculationGuest: UIView {
         self.divider.removeFromSuperview()
         
         selectedGuestsStackView.snp.remakeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
             make.top.equalTo(dividerTopAnchor)
-            make.bottom.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(16).priority(.high)
         }
     }
     

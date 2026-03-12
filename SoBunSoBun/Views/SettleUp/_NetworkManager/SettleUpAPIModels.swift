@@ -32,8 +32,9 @@ struct SettleUpContentModel: Decodable {
     let id, authorId, groupPostId: Int
     let groupPostTitle: String
     let status: String
-    let totalAmount, participantCount: Int
-    let participants: [SettleUpParticipantModel]
+    let totalAmount: Int?
+    let participantCount: Int
+    let chatRoomMembers: [SettleUpParticipantModel]
     let locationName: String
     let meetAt, createdAt, updatedAt: String
 }

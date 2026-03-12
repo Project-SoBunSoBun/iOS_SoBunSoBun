@@ -32,7 +32,7 @@ class SettleUp2ndStepView: UIViewController {
     }
     
     private let disposeBag = DisposeBag()
-
+    
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "SettleUp2ndStep.View"
@@ -151,7 +151,7 @@ class SettleUp2ndStepView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [topNavigationBar, scrollView].forEach {
+        [topNavigationBar, scrollView, registerButton].forEach {
             view.addSubview($0)
         }
         
@@ -169,11 +169,12 @@ class SettleUp2ndStepView: UIViewController {
         scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.horizontalEdges.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(16)
             make.width.equalToSuperview()
         }
         
-        [stepLabel, titleLabel, subtitleBackground, calculationStackView, registerButton].forEach {
+        [stepLabel, titleLabel, subtitleBackground, calculationStackView].forEach {
             contentView.addSubview($0)
         }
         
@@ -201,12 +202,12 @@ class SettleUp2ndStepView: UIViewController {
         calculationStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(subtitleBackground.snp.bottom).offset(8)
+            make.bottom.equalToSuperview()
         }
         
         registerButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(calculationStackView.snp.bottom).offset(16)
-            make.bottom.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
     }
     
@@ -214,7 +215,7 @@ class SettleUp2ndStepView: UIViewController {
         calculationStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
         guard let myUserIdString = KeyChain.shared.get(key: "USER_ID"),
-        let myId = Int(myUserIdString) else { return }
+              let myId = Int(myUserIdString) else { return }
         
         let localizedMe = String(localized: "Me", table: "SettleUp")
         
@@ -224,8 +225,7 @@ class SettleUp2ndStepView: UIViewController {
             }
             
             return participant.nickname
-        }
-        .sorted { $0.hasSuffix(localizedMe) && !$1.hasSuffix(localizedMe) }
+        }.sorted { $0.hasSuffix(localizedMe) && !$1.hasSuffix(localizedMe) }
         
         products.forEach { product in
             let guestView = CalculationGuest(product: product)

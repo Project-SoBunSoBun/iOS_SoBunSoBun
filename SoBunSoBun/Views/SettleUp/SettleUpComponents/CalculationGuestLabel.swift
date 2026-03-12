@@ -31,14 +31,11 @@ class CalculationGuestLabel: UILabel {
     }
     
     private func configure() {
-        self.font = title14.font
-        self.textColor = .primary300
         self.backgroundColor = .backgroundWhite
         self.layer.cornerRadius = 14
         self.clipsToBounds = true
         self.layer.borderWidth = 1
         self.layer.borderColor = UIColor.primary100.cgColor
-        self.textAlignment = .center
         self.isUserInteractionEnabled = true
         
         self.setContentCompressionResistancePriority(.required, for: .horizontal)

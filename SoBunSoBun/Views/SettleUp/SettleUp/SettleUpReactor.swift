@@ -113,7 +113,7 @@ class SettleUpReactor: Reactor {
                             title: content.groupPostTitle,
                             location: content.locationName,
                             meetingDate: content.meetAt,
-                            participants: content.participants
+                            participants: content.chatRoomMembers
                         )
                     }
                     

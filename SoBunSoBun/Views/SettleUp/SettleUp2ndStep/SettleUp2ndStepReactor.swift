@@ -55,7 +55,7 @@ class SettleUp2ndStepReactor: Reactor {
                 return Observable.just(.setValidationError("ValidationError"))
             }
             
-            let model = buildNextStepModel(selections: selections)
+            let model = transformNextStepModel(selections: selections)
             
             return Observable.just(.setNextStepData(model))
         }
@@ -76,7 +76,7 @@ class SettleUp2ndStepReactor: Reactor {
     }
     
     // selections → SettleUp3rdStepModel 변환 (참여자별 금액 정산)
-    private func buildNextStepModel(selections: [SettleUpProductSelectionModel]) -> SettleUp3rdStepDataModel {
+    private func transformNextStepModel(selections: [SettleUpProductSelectionModel]) -> SettleUp3rdStepDataModel {
         // nickname → userId 매핑
         let nicknameToUserId: [String: Int] = Dictionary(
             uniqueKeysWithValues: currentState.participants.map { ($0.nickname, $0.userId) }
