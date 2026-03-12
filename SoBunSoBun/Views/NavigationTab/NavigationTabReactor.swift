@@ -21,7 +21,7 @@ class NavigationTabReactor: Reactor {
     let initialState = State()
     
     private let chatRoomListWebSocketManager = ChatRoomListWebSocketManager()
-    private let commonNetworkManaer = CommonNetworkManager()
+    private let commonNetworkManager = CommonNetworkManager()
     private let networkManager = NavigationTabNetworkManager()
     
     private let logger = Logger(
@@ -106,7 +106,7 @@ class NavigationTabReactor: Reactor {
             return Observable.empty()
         }
             
-        return commonNetworkManaer.myProfile()
+        return commonNetworkManager.myProfile()
             .asObservable()
             .flatMap { userInfo -> Observable<Mutation> in
                 KeyChain.shared.set(key: "USER_ID", value: String(userInfo.id))
