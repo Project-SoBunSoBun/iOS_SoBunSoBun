@@ -12,10 +12,7 @@ import RxCocoa
 import OSLog
 
 class CalculationGuest: UIView {
-    private let logger = Logger(
-        subsystem: "SoBunSoBun",
-        category: "SettleUpComponents.CalculationGuest"
-    )
+    private let product: ListedProductModel
     
     init(frame: CGRect = .zero, product: ListedProductModel
     ) {
@@ -29,10 +26,13 @@ class CalculationGuest: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SettleUpComponents.CalculationGuest"
+    )
+    
     private let disposeBag = DisposeBag()
     private var labelsDisposeBag = DisposeBag()
-    
-    private let product: ListedProductModel
     
     private var availableParticipants: [String] = [] {
         didSet {

@@ -11,10 +11,7 @@ import OSLog
 
 
 class SettleUp3rdStepView: UIViewController {
-    private let logger = Logger(
-        subsystem: "SoBunSoBun",
-        category: "SettleUp.SettleUp3rdStep.View"
-    )
+    let model: SettleUp3rdStepDataModel
     
     init(model: SettleUp3rdStepDataModel) {
         self.model = model
@@ -26,7 +23,10 @@ class SettleUp3rdStepView: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    let model: SettleUp3rdStepDataModel
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SettleUp.SettleUp3rdStep.View"
+    )
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바

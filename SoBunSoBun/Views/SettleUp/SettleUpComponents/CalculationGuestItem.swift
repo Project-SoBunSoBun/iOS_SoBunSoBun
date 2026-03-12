@@ -12,6 +12,9 @@ import RxCocoa
 import RxGesture
 
 class CalculationGuestItem: UIView {
+    let nickname: String
+    private let product: ListedProductModel
+    
     init(nickname: String, product: ListedProductModel) {
         self.nickname = nickname
         self.product = product
@@ -25,8 +28,6 @@ class CalculationGuestItem: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let product: ListedProductModel
-    let nickname: String
     private let disposeBag = DisposeBag()
     
     let nicknameTapped = PublishRelay<Void>()
