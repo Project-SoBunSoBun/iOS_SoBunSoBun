@@ -9,7 +9,6 @@ import UIKit
 import SnapKit
 import OSLog
 
-
 class SettleUp3rdStepView: UIViewController {
     let model: SettleUp3rdStepDataModel
     
@@ -86,5 +85,4 @@ class SettleUp3rdStepView: UIViewController {
             make.width.equalToSuperview()
         }  
     }
-
 }
