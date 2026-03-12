@@ -14,8 +14,7 @@ import OSLog
 class CalculationGuest: UIView {
     private let product: ListedProductModel
     
-    init(frame: CGRect = .zero, product: ListedProductModel
-    ) {
+    init(frame: CGRect = .zero, product: ListedProductModel) {
         self.product = product
         super.init(frame: frame)
         
