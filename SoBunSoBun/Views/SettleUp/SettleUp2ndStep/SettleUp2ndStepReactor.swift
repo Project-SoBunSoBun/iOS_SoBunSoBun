@@ -44,7 +44,7 @@ class SettleUp2ndStepReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .registerButtonTapped(let selections):
-            //수량 검증
+            // 수량 검증
             let hasInvalid = selections.contains { product in
                 let inputTotal = product.selections.map { $0.value }.reduce(0, +)
                 
