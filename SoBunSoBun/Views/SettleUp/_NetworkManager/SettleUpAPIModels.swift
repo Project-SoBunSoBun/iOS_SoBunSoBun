@@ -59,3 +59,22 @@ struct SettleUpMyRequestModel: Encodable {
     let status: String
     let page, size: Int
 }
+
+// 정산 등록
+struct SettlementCompleteRequestModel: Encodable {
+    let totalAmount: Int
+    let participants: [SettlementCompleteParticipantModel]
+}
+
+struct SettlementCompleteParticipantModel: Encodable {
+    let userId: Int
+    let assignedAmount: Int
+    let items: [SettlementCompleteItemModel]
+}
+
+struct SettlementCompleteItemModel: Encodable {
+    let itemName: String
+    let quantity: Int
+    let unit: String
+    let amount: Int
+}
