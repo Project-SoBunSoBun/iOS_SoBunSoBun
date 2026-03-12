@@ -10,40 +10,35 @@ import ReactorKit
 class SettleUp1stStepReactor: Reactor {
     let initialState = State()
     
-    private let disposeBag = DisposeBag()
-    
     enum Action {
-        case backButtonTapped // 뒤로가기 버튼 클릭
         case unitButtonTapped(Int) // 단위 버튼 클릭 (1: 수량, 2: 중량)
         case registerButtonTapped(name: String, count: String, amount: String) // 등록하기 버튼 클릭
         case productDeleted(Int) // 상품 삭제하기
         case productEdited(Int) // 상품 수정하기
+        case SettleUpButtonTapped // 정산하기 버튼 클릭
     }
     
     enum Mutation {
-        case setBackButtonTapped
         case setSelectedUnit(Int)
         case addProduct(ListedProductModel)
         case deleteProduct(Int)
         case setTotalPrice(Int)
         case setEditProduct(Int)
         case setEditing(Bool)
+        case setShouldNavigateToNextStep([ListedProductModel])
     }
     
     struct State {
-        @Pulse var shouldPopViewController: Void?
         var selectedUnitIndex: Int = 1
         var products: [ListedProductModel] = [] // productStackView에 들어갈 데이터들
         var totalPrice: Int = 0
         var editingProduct: ListedProductModel? = nil // 수정할 상품 정보
         var isEditing: Bool = false // 등록하기 버튼 텍스트 제어용
+        @Pulse var shouldNavigateToNextStep: [ListedProductModel]?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .backButtonTapped:
-            return Observable.just(.setBackButtonTapped)
-            
         case .unitButtonTapped(let index):
             return Observable.just(.setSelectedUnit(index))
             
@@ -72,9 +67,16 @@ class SettleUp1stStepReactor: Reactor {
             
         case .productDeleted(let index):
             return Observable.just(.deleteProduct(index))
-        
+            
         case .productEdited(let index):
             return Observable.just(.setEditProduct(index))
+            
+        case .SettleUpButtonTapped:
+            guard !currentState.products.isEmpty else {
+                return Observable.empty()
+            }
+            
+            return Observable.just(.setShouldNavigateToNextStep(currentState.products))
         }
     }
     
@@ -82,12 +84,9 @@ class SettleUp1stStepReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case .setBackButtonTapped:
-            newState.shouldPopViewController = ()
-            
         case .setSelectedUnit(let index):
             newState.selectedUnitIndex = index
-              
+            
         case .addProduct(let product):
             newState.products.append(product)
             
@@ -101,7 +100,7 @@ class SettleUp1stStepReactor: Reactor {
             
         case .setTotalPrice(let total):
             newState.totalPrice = total
-        
+            
         case .setEditProduct(let index):
             newState.editingProduct = nil
             
@@ -118,6 +117,9 @@ class SettleUp1stStepReactor: Reactor {
             
         case .setEditing(let isEditing):
             newState.isEditing = isEditing
+            
+        case .setShouldNavigateToNextStep(let products):
+            newState.shouldNavigateToNextStep = products
         }
         
         return newState

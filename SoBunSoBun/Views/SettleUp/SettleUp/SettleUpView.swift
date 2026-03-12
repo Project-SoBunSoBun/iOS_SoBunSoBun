@@ -236,24 +236,50 @@ extension SettleUpView {
         
         // TableView 데이터 바인딩
         reactor.state.map { $0.items }
-            .bind(to: tableView.rx.items(cellIdentifier: "SettleUpTableViewCell", cellType: SettleUpTableViewCell.self)) { [weak self] index, item, cell in
+            .bind(to: tableView.rx.items(cellIdentifier: SettleUpTableViewCell.identifier, cellType: SettleUpTableViewCell.self)) { [weak self] _, item, cell in
                 guard let self = self else { return }
                 
                 cell.selectionStyle = .none
-                cell.configure(with: item) {
-                    self.logger.debug("삭제 버튼 탭: id=\(item.id)")
-                    self.showDeleteAlert(id: item.id)
-                } onSettleUpButtonTapped: {
-                    self.logger.debug("정산하기 버튼 탭: id=\(item.id)")
-                    let vc = SettleUp1stStepView(id: item.id)
-                    self.navigationController?.pushViewController(vc, animated: true)
-                } onStatementCheckButtonTapped: {
-                    self.logger.debug("정산서 확인 버튼 탭: id=\(item.id)")
-                    // TODO: 정산서 화면으로 이동
-                } onShareButtonTapped: {
-                    self.logger.debug("공유 버튼 탭: id=\(item.id)")
-                    // TODO: 공유 기능 구현하기
-                }
+                
+                cell.configure(with: item)
+                
+                cell.deleteTrigger
+                    .subscribe(onNext: { [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.logger.debug("삭제 버튼 탭: id=\(item.settlementId)")
+                        self.showDeleteAlert(id: item.settlementId)
+                    })
+                    .disposed(by: cell.disposeBag)
+                
+                cell.settleUpTrigger
+                    .subscribe(onNext: { [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.logger.debug("정산하기 버튼 탭: id=\(item.settlementId)")
+                        
+                        let vc = SettleUp1stStepView(settlementId: item.settlementId, authorId: item.authorId, participants: item.participants)
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    })
+                    .disposed(by: cell.disposeBag)
+                
+                cell.statementCheckTrigger
+                    .subscribe(onNext: { [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.logger.debug("정산서 확인 버튼 탭: id=\(item.settlementId)")
+                        // TODO: 정산서 이동 로직
+                    })
+                    .disposed(by: cell.disposeBag)
+                
+                cell.shareTrigger
+                    .subscribe(onNext: { [weak self] in
+                        guard let self = self else { return }
+                        
+                        self.logger.debug("공유 버튼 탭: id=\(item.settlementId)")
+                        // TODO: 공유 기능 로직
+                    })
+                    .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
         

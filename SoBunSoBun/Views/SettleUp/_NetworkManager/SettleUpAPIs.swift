@@ -10,7 +10,7 @@ import Moya
 
 enum SettleUpAPIs {
     // 정산
-    case mySettleUps(activeOnly: Int, page: Int, size: Int)
+    case mySettleUps(status: String, page: Int, size: Int)
     case deleteSettleUp(id: Int)
 }
 
@@ -27,10 +27,10 @@ extension SettleUpAPIs: TargetType {
     var path: String {
         switch self {
         case .mySettleUps:
-            return "/api/settleups/my"
+            return "/api/v1/settlements/my"
             
         case .deleteSettleUp(let id):
-            return "/api/settleups/\(id)"
+            return "/api/v1/settlements/\(id)"
         }
     }
     
@@ -48,8 +48,8 @@ extension SettleUpAPIs: TargetType {
     
     var task: Moya.Task {
         switch self {
-        case .mySettleUps(let activeOnly, let page, let size):
-            let parameters = SettleUpMyRequestModel(activeOnly: activeOnly, page: page, size: size)
+        case .mySettleUps(let status, let page, let size):
+            let parameters = SettleUpMyRequestModel(status: status, page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             

@@ -16,12 +16,12 @@ class SettleUpNetworkManager {
     
     // MARK: - 정산
     // 서버에서 유저별 정산 목록을 받아오는 메서드
-    func mySettleUps(activeOnly: Int, page: Int, size: Int) -> Single<SettleUpModel> {
+    func mySettleUps(status: String, page: Int, size: Int) -> Single<SettleUpResponseModel> {
         return authProvider.rx.request(
-            MultiTarget(SettleUpAPIs.mySettleUps(activeOnly: activeOnly, page: page, size: size))
+            MultiTarget(SettleUpAPIs.mySettleUps(status: status, page: page, size: size))
         )
         .filterSuccessfulStatusCodes()
-        .map(SettleUpModel.self)
+        .tryMap(SettleUpResponseModel.self)
     }
     
     // 정산 삭제 메서드

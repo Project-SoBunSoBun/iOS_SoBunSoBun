@@ -8,6 +8,15 @@
 import Foundation
 
 // MARK: - 정산
+struct SettleUpResponseModel: Decodable {
+    let success: Bool
+    let statusCode: Int
+    let message: String?
+    let data: SettleUpModel
+    let errorCode: String?
+    let timestamp: String
+}
+
 struct SettleUpModel: Decodable {
     let content: [SettleUpContentModel]
     let pageable: SettleUpPageableModel
@@ -20,13 +29,19 @@ struct SettleUpModel: Decodable {
 }
 
 struct SettleUpContentModel: Decodable {
-    let id, groupPostId: Int
+    let id, authorId, groupPostId: Int
     let groupPostTitle: String
-    let settledById: Int
-    let settledByNickname: String?
-    let status: Int
-    let title, locationName: String
+    let status: String
+    let totalAmount: Int?
+    let participantCount: Int
+    let chatRoomMembers: [SettleUpParticipantModel]
+    let locationName: String
     let meetAt, createdAt, updatedAt: String
+}
+
+struct SettleUpParticipantModel: Decodable {
+    let userId: Int
+    let nickname: String
 }
 
 struct SettleUpPageableModel: Decodable {
@@ -41,5 +56,6 @@ struct SettleUpSortModel: Decodable {
 }
 
 struct SettleUpMyRequestModel: Encodable {
-    let activeOnly, page, size: Int
+    let status: String
+    let page, size: Int
 }

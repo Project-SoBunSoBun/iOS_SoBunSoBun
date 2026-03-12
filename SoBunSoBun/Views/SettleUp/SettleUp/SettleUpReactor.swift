@@ -85,33 +85,35 @@ class SettleUpReactor: Reactor {
     
     private func loadItems(for category: SettleUpCategory? = nil) -> Observable<Mutation> {
         let selectedCategory = category ?? currentState.selectedCategory
-        let activeOnly: Int
+        let status: String
         
         switch selectedCategory {
         case .all:
-            activeOnly = 0
+            status = "ALL"
             
         case .incomplete:
-            activeOnly = 1
+            status = "PENDING"
             
         case .complete:
-            activeOnly = 2
+            status = "COMPLETED"
         }
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
-            networkManager.mySettleUps(activeOnly: activeOnly, page: 0, size: 20)
+            networkManager.mySettleUps(status: status, page: 0, size: 20)
                 .asObservable()
                 .flatMap { SettleUpModel -> Observable<Mutation> in
-                    let items: [SettleUpItemModel] = SettleUpModel.content.map { content in
-                        let isCompleted = content.status == 2
+                    let items: [SettleUpItemModel] = SettleUpModel.data.content.map { content in
+                        let isCompleted = (content.status == "COMPLETED")
                         
                         return SettleUpItemModel(
-                            id: content.id,
-                            settleUpStatus: isCompleted,
+                            settlementId: content.id,
+                            authorId: content.authorId,
+                            settlementStatus: isCompleted,
                             title: content.groupPostTitle,
                             location: content.locationName,
-                            meetingDate: content.meetAt
+                            meetingDate: content.meetAt,
+                            participants: content.chatRoomMembers
                         )
                     }
                     

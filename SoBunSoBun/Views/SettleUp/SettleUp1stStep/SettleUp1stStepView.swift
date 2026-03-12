@@ -10,46 +10,40 @@ import SnapKit
 import OSLog
 import RxSwift
 import RxCocoa
-import ReactorKit
 
-class SettleUp1stStepView: UIViewController {
-    init(id: Int) {
-        self.id = id
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    typealias Reactor = SettleUp1stStepReactor
-    private let reactor = SettleUp1stStepReactor()
-    
-    private let disposeBag = DisposeBag()
-    private let id: Int
-    
+class SettleUp1stStepView: UIViewController{
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "SettleUp1stStep.View"
+        category: "SettleUp.SettleUp1stStep.View"
     )
+    
+    private let settlementId, authorId: Int?
+    private let participants: [SettleUpParticipantModel]?
+    
+    init(settlementId: Int, authorId: Int, participants: [SettleUpParticipantModel]) {
+        self.settlementId = settlementId
+        self.authorId = authorId
+        self.participants = participants
+        
+        super.init(nibName: nil, bundle: nil)
+    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+
+    private let disposeBag = DisposeBag()
+    
+    typealias Reactor = SettleUp1stStepReactor
+    private let reactor = SettleUp1stStepReactor()
     
     // MARK: - 디자인 요소
-    // 뒤로 가기 버튼
-    private let backButton: UIButton = {
-        let button = UIButton()
-        var config = UIButton.Configuration.plain()
+    // 상단 네비게이션 바
+    private lazy var topNavigationBar: TopNavigationBar = {
+        let tnb = TopNavigationBar()
+        tnb.parentViewController = self
         
-        config.contentInsets = NSDirectionalEdgeInsets(
-            top: 0,
-            leading: 0,
-            bottom: 0,
-            trailing: 0)
-        config.image = .blackLeft
-        config.preferredSymbolConfigurationForImage = .init(pointSize: 24)
-        
-        button.configuration = config
-        
-        return button
+        return tnb
     }()
     
     // 전체 스크롤 뷰
@@ -352,13 +346,18 @@ class SettleUp1stStepView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [backButton, scrollView].forEach {
+        [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
+        }
+         
+        topNavigationBar.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
-            make.top.equalTo(backButton.snp.bottom)
+            make.top.equalTo(topNavigationBar.snp.bottom)
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
@@ -387,12 +386,6 @@ class SettleUp1stStepView: UIViewController {
         
         [totalLabel, totalPriceLabel].forEach {
             totalLabelStackView.addArrangedSubview($0)
-        }
-        
-        backButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(4)
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.size.equalTo(48)
         }
         
         stepLabel.snp.makeConstraints { make in
@@ -665,12 +658,6 @@ extension SettleUp1stStepView {
     }
     
     private func bindAction(reactor: SettleUp1stStepReactor) {
-        // Back 버튼 탭
-        backButton.rx.tap
-            .map { Reactor.Action.backButtonTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
         // 수량 버튼 탭
         quantityButton.rx.tap
             .map { Reactor.Action.unitButtonTapped(1) }
@@ -708,19 +695,14 @@ extension SettleUp1stStepView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        // 정산하기 버튼 탭
+        settleUpButton.rx.tap
+            .map { Reactor.Action.SettleUpButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: SettleUp1stStepReactor) {
-        // Back  버튼 탭
-        reactor.pulse(\.$shouldPopViewController)
-            .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                self.navigationController?.popViewController(animated: true)
-            })
-            .disposed(by: disposeBag)
-        
         // 선택된 단위에 따라 UI 업데이트
         reactor.state.map { $0.selectedUnitIndex }
             .distinctUntilChanged()
@@ -814,6 +796,20 @@ extension SettleUp1stStepView {
                 self.registerButton.changeTitle(title: title)
             })
             .disposed(by: disposeBag)
+        
+        // 정산하기 버튼 클릭
+        reactor.pulse(\.$shouldNavigateToNextStep)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] products in
+                guard let self = self,
+                let settlementId = self.settlementId,
+                let participants = self.participants,
+                let authorId = self.authorId else { return }
+                
+                let nextVC = SettleUp2ndStepView(settlementId: settlementId, participants: participants, products: products, authorId: authorId)
+                self.navigationController?.pushViewController(nextVC, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
     
     private func updateUnitSelection(selectedIndex: Int) {
@@ -840,16 +836,3 @@ extension SettleUp1stStepView {
         itemCountTextField.text = ""
     }
 }
-
-// 미리보기
-#if DEBUG
-import SwiftUI
-
-struct SettleUp1stStepViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            SettleUp1stStepView(id: 1)
-        }
-    }
-}
-#endif
