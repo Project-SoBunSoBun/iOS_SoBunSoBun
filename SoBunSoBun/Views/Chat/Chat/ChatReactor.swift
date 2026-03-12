@@ -139,7 +139,7 @@ class ChatReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-        var messages = currentState.messages
+        var messages = state.messages
         
         switch mutation {
         case .setDetailInfo(let model):
@@ -203,14 +203,18 @@ class ChatReactor: Reactor {
     // webSocketManager publish mutation 연결 및 변환
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
         let didReceiveMessage = webSocketManager.didReceiveMessage
-            .do {
+            .do { [weak self] in
+                guard let self = self else { return }
+                
                 self.databaseManager.insertMessage($0)
             }
             .map { Mutation.addNewMessage($0) }
         
         let didReceiveSettlement = webSocketManager.didReceiveSettlement
             .compactMap { $0 }
-            .flatMap { _ -> Observable<Mutation> in
+            .flatMap { [weak self] _ -> Observable<Mutation> in
+                guard let self = self else { return Observable.empty() }
+                
                 return self.getDetailInfo()
             }
         
@@ -322,7 +326,7 @@ class ChatReactor: Reactor {
             return
         }
         
-        webSocketManager.sendMessage(message: message)
+        webSocketManager.sendMessage(message: cleanedMessage)
     }
     
     // 이미지 전송

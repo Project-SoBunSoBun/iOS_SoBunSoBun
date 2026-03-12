@@ -407,7 +407,9 @@ extension ChatView {
         
         // 채팅 페이지네이션
         tableView.rx.willDisplayCell
-            .filter { _, indexPath -> Bool in
+            .filter { [weak self] _, indexPath -> Bool in
+                guard let self = self else { return false }
+                
                 let lastRow = self.tableView.numberOfRows(inSection: 0) - 1
                 return self.tableView.isDragging && indexPath.row >= lastRow - 10
             }
