@@ -11,6 +11,8 @@ import RxSwift
 import RxRelay
 
 class SettleUpTableViewCell: UITableViewCell {
+    static let identifier = "SettleUpTableViewCell"
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
