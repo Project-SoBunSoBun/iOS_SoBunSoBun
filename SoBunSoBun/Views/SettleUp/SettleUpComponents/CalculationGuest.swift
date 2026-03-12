@@ -360,7 +360,7 @@ class CalculationGuest: UIView {
         let selections = selectedGuestsStackView.arrangedSubviews
             .compactMap { $0 as? CalculationGuestItem }
             .map { item in
-                ParticipantSelectionModel(userNickname: item.getNickname(), value: item.getCount())
+                ParticipantSelectionModel(userNickname: item.nickname, value: item.getCount())
             }
         
         return SettleUpProductSelectionModel(

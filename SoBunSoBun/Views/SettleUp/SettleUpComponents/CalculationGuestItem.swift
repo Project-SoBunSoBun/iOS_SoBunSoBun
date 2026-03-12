@@ -26,7 +26,7 @@ class CalculationGuestItem: UIView {
     }
     
     private let product: ListedProductModel
-    private let nickname: String
+    let nickname: String
     private let disposeBag = DisposeBag()
     
     let nicknameTapped = PublishRelay<Void>()
@@ -110,9 +110,5 @@ class CalculationGuestItem: UIView {
         guard let count = Int(countTextField.text ?? "0") else { return 0 }
         
         return count
-    }
-    
-    func getNickname() -> String {
-        return self.nickname
     }
 }
