@@ -198,6 +198,8 @@ class ChatView: UIViewController {
         
         chatTextView.textView.inputView = nil
         reactor.webSocketManager.disconnect()
+        
+        NotificationCenter.default.post(name: .init("RefreshChatRoomList"), object: nil)
     }
     
     // MARK: - 레이아웃 설정
@@ -263,9 +265,6 @@ extension ChatView {
         // 채팅방 나가기
         willLeave
             .compactMap { $0 }
-            .do(onNext: { _ in
-                NotificationCenter.default.post(name: .init("RefreshChatRoomList"), object: nil)
-            })
             .map { Reactor.Action.leaveChatRoom }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
