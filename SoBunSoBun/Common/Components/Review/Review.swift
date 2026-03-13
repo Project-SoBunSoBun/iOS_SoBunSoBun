@@ -76,6 +76,7 @@ class Review: UIButton {
         self.layer.shadowOpacity = 1
         self.layer.shadowRadius = 16
         
+        self.translatesAutoresizingMaskIntoConstraints = false
         self.clipsToBounds = false
         
         [emojiView, label].forEach {
@@ -84,7 +85,6 @@ class Review: UIButton {
         
         emojiView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(EDGES_INSET)
-            make.verticalEdges.equalToSuperview().inset(EDGES_INSET)
             make.centerY.equalToSuperview()
             make.size.equalTo(16)
         }
@@ -93,7 +93,6 @@ class Review: UIButton {
             make.leading.equalTo(emojiView.snp.trailing).offset(8)
             make.trailing.equalToSuperview().inset(EDGES_INSET)
             make.verticalEdges.equalToSuperview().inset(EDGES_INSET)
-            make.centerY.equalToSuperview()
         }
     }
     
@@ -146,11 +145,7 @@ class Review: UIButton {
             attributes[.foregroundColor] = UIColor.neutral900
         }
         
-        let localizedString = NSLocalizedString(
-            String(format: "Review%03d", number),
-            tableName: "Review",
-            comment: ""
-        )
+        let localizedString = NSLocalizedString(String(format: "Review\(number)"), tableName: "Review", comment: "")
         let attributedText = NSAttributedString(
             string: localizedString,
             attributes: attributes

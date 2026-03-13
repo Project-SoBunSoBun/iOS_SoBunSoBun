@@ -98,7 +98,7 @@ class TopNavigationBar: UIView {
     }
     
     private func setBackButton() {
-        backButton.isHidden = parentViewController == nil && onBackButtonTapped != nil
+        backButton.isHidden = parentViewController == nil && onBackButtonTapped == nil
     }
     
     private func setTitle(_ title: String) {

@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
+import OSLog
 
 class ChatRateMannerView: UIViewController {
     private let groupPostId: Int
@@ -31,6 +32,11 @@ class ChatRateMannerView: UIViewController {
     }
     
     private let disposeBag = DisposeBag()
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Chat.ChatRateManner.View"
+    )
     
     typealias Reactor = ChatRateMannerReactor
     private lazy var reactor = ChatRateMannerReactor(groupPostId: groupPostId)
@@ -143,6 +149,9 @@ extension ChatRateMannerView {
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
+                let manners = self.getRatedManners()
+                self.logger.debug("매너 평가 목록: \(manners)")
+                
                 let alert = CustomAlertView(
                     title: String(localized: "ConfirmRateMannersAlertTitle", table: "Chat"),
                     subTitle: String(localized: "ConfirmRateMannersAlertSubTitle", table: "Chat"),
@@ -151,7 +160,6 @@ extension ChatRateMannerView {
                 )
                 
                 alert.onPrimaryTapped = {
-                    let manners = self.getRatedManners()
                     reactor.action.onNext(.rateMannersButtonTapped(manners))
                 }
                 
@@ -170,17 +178,17 @@ extension ChatRateMannerView {
             .subscribe(onNext: { [weak self] members in
                 guard let self = self else { return }
                 
-                guard let url = Bundle.main.url(forResource: "Chat", withExtension: "xcstrings"),
-                         let data = try? Data(contentsOf: url),
-                         let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                         let reviews = json["strings"] as? [String: Any] else {
-                       return
-                   }
+                let bundle = Bundle.main
+                guard let path = bundle.path(forResource: "Review", ofType: "strings"),
+                      let reviews = NSDictionary(contentsOfFile: path) as? [String: String] else {
+                    logger.fault("Chat의 xcstring 파일은 불러오는 중 문제가 생김")
+                    return
+                }
                 
                 members.forEach {
                     let view = ChatMannerAccordionView(model: $0)
                     
-                    let reviewViews = reviews.keys.map {
+                    let reviewViews = reviews.keys.sorted { $0 > $1 }.map {
                         let reviewView = Review(number: String($0.suffix(3)))
                         reviewView.isUserInteractionEnabled = true
                         

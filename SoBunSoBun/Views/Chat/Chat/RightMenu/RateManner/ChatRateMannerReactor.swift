@@ -64,10 +64,10 @@ class ChatRateMannerReactor: Reactor {
         
         switch mutation {
         case .setMembers(let members):
-            if let myIdString = KeyChain.shared.get(key: "USER_ID"),
-               let myId = Int(myIdString) {
-                newState.members = members.filter { $0.userId != myId }
-            }
+            let members = members.filter { $0.isOwner == false }
+            logger.debug("매너 평가 멤버 목록: \(members)")
+            
+            newState.members = members
             
         case .setIsDone:
             newState.shouldPop = ()

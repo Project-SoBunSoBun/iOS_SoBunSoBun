@@ -80,12 +80,16 @@ class ChatMannerAccordionView: UIView {
     
     private let contentView: UIView = {
         let view = UIView()
-        view.clipsToBounds = true
         
         return view
     }()
     
-    let reviewsView: HorizontalWrappingView = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
+    let reviewsView: HorizontalWrappingView = {
+        let view = HorizontalWrappingView(horizontalSpacing: 8, verticalSpacing: 8)
+        view.isHidden = true
+        
+        return view
+    }()
     
     // MARK: - 레이아웃 설정
     private func configureUI(model: ChatRoomDetailMemberModel) {
@@ -186,13 +190,11 @@ extension ChatMannerAccordionView {
             .blackUp.resize(.init(width: 24, height: 24)) :
             .blackDown.resize(.init(width: 24, height: 24))
         
+        reviewsView.isHidden = !isExpanded
         contentHeightConstraint?.update(offset: isExpanded ? reviewsView.intrinsicContentSize.height + 16 : 0)
         
         // 높이 애니메이션은 상위 뷰의 layoutIfNeeded에 따라 달라짐
-        // 확실하게 하려면 window.layoutIfNeeded를 사용한다.
+        // 확실하게 하려면 window?.layoutIfNeeded를 사용한다.
         // 또는 self.superview?.superview?.layoutIfNeeded()를 써도 해결이 된다.
-        UIView.animate(withDuration: 0.3) {
-            self.superview?.superview?.layoutIfNeeded()
-        }
     }
 }
