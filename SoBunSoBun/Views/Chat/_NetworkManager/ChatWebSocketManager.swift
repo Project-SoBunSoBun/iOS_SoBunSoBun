@@ -44,7 +44,7 @@ class ChatWebSocketManager {
         subscribeUrl = "/topic/chat/room/\(chatRoomId)"
         swiftStomp?.subscribe(to: subscribeUrl)
         
-        logger.debug("채팅방 구독: \(self.subscribeUrl)")
+        logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Websocket 구독: \(self.subscribeUrl)")
     }
     
     func sendMessage(message: String) {
@@ -58,8 +58,7 @@ class ChatWebSocketManager {
     
     func disconnect() {
         swiftStomp?.disconnect()
-        currentChatRoomId = nil
-        logger.debug("연결 종료")
+        logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Websocket 연결 종료")
     }
     
     private func handleUnauthorized() {
@@ -90,7 +89,7 @@ class ChatWebSocketManager {
             return
         }
         
-        logger.debug("재연결 시작")
+        logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Websocket 재연결 시작")
         disconnect()
         connect(chatRoomId: chatRoomId)
     }
@@ -98,7 +97,12 @@ class ChatWebSocketManager {
 
 extension ChatWebSocketManager: SwiftStompDelegate {
     func onConnect(swiftStomp: SwiftStomp, connectType: StompConnectType) {
-        logger.debug("STOMP 연결 성공")
+        switch connectType {
+        case .toSocketEndpoint:
+            logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Socket 연결 성공")
+        case .toStomp:
+            logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Stomp 연결 성공")
+        }
         
         if let currentChatRoomId {
             subscribe(chatRoomId: currentChatRoomId)
@@ -108,27 +112,27 @@ extension ChatWebSocketManager: SwiftStompDelegate {
     func onDisconnect(swiftStomp: SwiftStomp, disconnectType: StompDisconnectType) {
         switch disconnectType {
         case .fromSocket:
-            logger.error("Socket에서 연결 끊김")
+            logger.error("채팅방 \(self.currentChatRoomId ?? -1) Socket에서 연결 끊김")
         case .fromStomp:
-            logger.error("Stomp에서 구독 \(self.subscribeUrl) 끊김")
+            logger.error("채팅방 Stomp에서 구독 \(self.subscribeUrl) 끊김")
         }
     }
     
     func onMessageReceived(swiftStomp: SwiftStomp, message: Any?, messageId: String, destination: String, headers: [String : String]) {
-        logger.debug("메시지 수신\ndestination: \(destination)\nmessageId: \(messageId)")
+        logger.debug("[채팅방 \(self.currentChatRoomId ?? -1) 메시지 수신]\n\ndestination: \(destination)\nmessageId: \(messageId)")
         
         guard let messageString = message as? String else {
-            logger.fault("메시지를 String으로 변환 중 실패")
+            logger.fault("채팅방 \(self.currentChatRoomId ?? -1) Websocket 메시지를 String으로 변환 중 실패")
             return
         }
         
         guard let data = messageString.data(using: .utf8) else {
-            logger.fault("\(destination) 메시지를 Data로 변환 중 실패: \(messageString)")
+            logger.fault("Websocket \(destination) 메시지를 Data로 변환 중 실패: \(messageString)")
             return
         }
         
         do {
-            logger.debug("\(destination) 수신 내용: \(messageString)")
+            logger.debug("Websocket \(destination) 수신 내용: \(messageString)")
             
             let decoder = JSONDecoder()
             
@@ -144,16 +148,27 @@ extension ChatWebSocketManager: SwiftStompDelegate {
     }
     
     func onReceipt(swiftStomp: SwiftStomp, receiptId: String) {
-        logger.debug("수신 확인: \(receiptId)")
+        var log: String = "[채팅방 \(self.currentChatRoomId ?? -1) 수신 확인]\n\n"
+        log += "receiptId: \(String(describing: receiptId))"
+        
+        logger.debug("\(log)")
     }
     
     func onError(swiftStomp: SwiftStomp, briefDescription: String, fullDescription: String?, receiptId: String?, type: StompErrorType) {
+        var log: String = ""
+        
         switch type {
         case .fromSocket:
-            logger.fault("Socket 오류(\(String(describing: receiptId))): \(briefDescription) | \(String(describing: fullDescription))")
+            log += "[채팅방 \(self.currentChatRoomId ?? -1) Socket 오류]\n\n"
         case .fromStomp:
-            logger.critical("Stomp 오류(\(String(describing: receiptId))): \(briefDescription) | \(String(describing: fullDescription))")
+            log += "[채팅방 \(self.currentChatRoomId ?? -1) Stomp 오류]\n\n"
         }
+        
+        log += "receiptId: \(String(describing: receiptId))\n"
+        log += "briefDescription: \(briefDescription)\n"
+        log += "fullDescription: \(String(describing: fullDescription))"
+        
+        logger.critical("\(log)")
         
         if fullDescription?.contains("401") == true ||
             fullDescription?.contains("Unauthorized") == true {

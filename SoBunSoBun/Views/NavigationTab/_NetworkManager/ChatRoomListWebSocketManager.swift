@@ -43,12 +43,12 @@ class ChatRoomListWebSocketManager {
         subscribeUrl = "/sub/users/\(myIdString)/chat-rooms"
         swiftStomp?.subscribe(to: subscribeUrl)
         
-        logger.debug("채팅방 목록 구독: \(self.subscribeUrl)")
+        logger.debug("채팅방 목록 Websocket 구독: \(self.subscribeUrl)")
     }
     
     func disconnect() {
         swiftStomp?.disconnect()
-        logger.debug("연결 종료")
+        logger.debug("채팅방 목록 Websocket 연결 종료")
     }
     
     private func handleUnauthorized() {
@@ -75,7 +75,7 @@ class ChatRoomListWebSocketManager {
     }
     
     private func reconnect(token: String) {
-        logger.debug("재연결 시작")
+        logger.debug("채팅방 목록 WebSocket 재연결 시작")
         disconnect()
         connect()
     }
@@ -85,9 +85,9 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
     func onConnect(swiftStomp: SwiftStomp, connectType: StompConnectType) {
         switch connectType {
         case .toSocketEndpoint:
-            logger.debug("Socket에서 연결 성공")
+            logger.debug("채팅방 목록 Socket 연결 성공")
         case .toStomp:
-            logger.debug("Stomp에서 연결 성공")
+            logger.debug("채팅방 목록 Stomp 연결 성공")
         }
         
         subscribe()
@@ -96,27 +96,27 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
     func onDisconnect(swiftStomp: SwiftStomp, disconnectType: StompDisconnectType) {
         switch disconnectType {
         case .fromSocket:
-            logger.error("Socket에서 연결 끊김")
+            logger.error("채팅방 목록 Socket에서 연결 끊김")
         case .fromStomp:
-            logger.error("Stomp에서 구독 \(self.subscribeUrl) 끊김")
+            logger.error("채팅방 목록 Stomp에서 구독 \(self.subscribeUrl) 끊김")
         }
     }
     
     func onMessageReceived(swiftStomp: SwiftStomp, message: Any?, messageId: String, destination: String, headers: [String : String]) {
-        logger.debug("메시지 수신\ndestination: \(destination)\nmessageId: \(messageId)")
+        logger.debug("[채팅방 목록 메시지 수신]\n\ndestination: \(destination)\nmessageId: \(messageId)")
         
         guard let messageString = message as? String else {
-            logger.fault("메시지를 String으로 변환 중 실패")
+            logger.fault("채팅방 목록 Websocket 메시지를 String으로 변환 중 실패")
             return
         }
         
         guard let data = messageString.data(using: .utf8) else {
-            logger.fault("\(destination) 메시지를 Data로 변환 중 실패: \(messageString)")
+            logger.fault("Websocket \(destination) 메시지를 Data로 변환 중 실패: \(messageString)")
             return
         }
         
         do {
-            logger.debug("\(destination) 수신 내용: \(messageString)")
+            logger.debug("Websocket \(destination) 수신 내용: \(messageString)")
             
             let decoder = JSONDecoder()
             
@@ -128,16 +128,27 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
     }
     
     func onReceipt(swiftStomp: SwiftStomp, receiptId: String) {
-        logger.debug("수신 확인: \(receiptId)")
+        var log: String = "[채팅방 목록 수신 확인]\n\n"
+        log += "receiptId: \(String(describing: receiptId))"
+        
+        logger.debug("\(log)")
     }
     
     func onError(swiftStomp: SwiftStomp, briefDescription: String, fullDescription: String?, receiptId: String?, type: StompErrorType) {
+        var log: String = ""
+        
         switch type {
         case .fromSocket:
-            logger.fault("Socket 오류(\(String(describing: receiptId))): \(briefDescription) | \(String(describing: fullDescription))")
+            log += "[채팅방 목록 Socket 오류]\n\n"
         case .fromStomp:
-            logger.critical("Stomp 오류(\(String(describing: receiptId))): \(briefDescription) | \(String(describing: fullDescription))")
+            log += "[채팅방 목록 Stomp 오류]\n\n"
         }
+        
+        log += "receiptId: \(String(describing: receiptId))\n"
+        log += "briefDescription: \(briefDescription)\n"
+        log += "fullDescription: \(String(describing: fullDescription))"
+        
+        logger.critical("\(log)")
         
         if fullDescription?.contains("401") == true ||
             fullDescription?.contains("Unauthorized") == true {
