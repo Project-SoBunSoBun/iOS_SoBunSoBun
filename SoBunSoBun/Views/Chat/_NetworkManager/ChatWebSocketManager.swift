@@ -25,6 +25,8 @@ class ChatWebSocketManager {
     let didReceiveMessage = PublishRelay<ChatMessageModel>()
     let didReceiveSettlement = PublishRelay<Void?>()
     
+    private var subscribeUrl: String = ""
+    
     func connect(chatRoomId: Int) {
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
             logger.error("액세스 토큰 오류")
@@ -40,8 +42,9 @@ class ChatWebSocketManager {
     
     func subscribe(chatRoomId: Int) {
         swiftStomp?.subscribe(to: "/topic/chat/room/\(chatRoomId)")
+        subscribeUrl = "/topic/chat/room/\(chatRoomId)"
         
-        logger.debug("채팅방 구독: /topic/chat/room/\(chatRoomId)")
+        logger.debug("채팅방 구독: \(self.subscribeUrl)")
     }
     
     func sendMessage(message: String) {
@@ -107,7 +110,7 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         case .fromSocket:
             logger.error("Socket에서 연결 끊김")
         case .fromStomp:
-            logger.error("Stomp에서 연결 끊김")
+            logger.error("Stomp에서 구독 \(self.subscribeUrl) 끊김")
         }
     }
     
