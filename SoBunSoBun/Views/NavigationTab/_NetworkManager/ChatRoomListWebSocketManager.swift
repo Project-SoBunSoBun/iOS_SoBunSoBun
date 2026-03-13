@@ -40,8 +40,8 @@ class ChatRoomListWebSocketManager {
     func subscribe() {
         guard let myIdString = KeyChain.shared.get(key: "USER_ID") else { return }
         
-        swiftStomp?.subscribe(to: "/sub/users/\(myIdString)/chat-rooms")
         subscribeUrl = "/sub/users/\(myIdString)/chat-rooms"
+        swiftStomp?.subscribe(to: subscribeUrl)
         
         logger.debug("채팅방 목록 구독: \(self.subscribeUrl)")
     }
@@ -105,13 +105,19 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
     func onMessageReceived(swiftStomp: SwiftStomp, message: Any?, messageId: String, destination: String, headers: [String : String]) {
         logger.debug("메시지 수신\ndestination: \(destination)\nmessageId: \(messageId)")
         
-        guard let messageString = message as? String,
-              let data = messageString.data(using: .utf8) else {
-            logger.fault("메시지를 String, Data로 변환 중 실패")
+        guard let messageString = message as? String else {
+            logger.fault("메시지를 String으로 변환 중 실패")
+            return
+        }
+        
+        guard let data = messageString.data(using: .utf8) else {
+            logger.fault("\(destination) 메시지를 Data로 변환 중 실패: \(messageString)")
             return
         }
         
         do {
+            logger.debug("\(destination) 수신 내용: \(messageString)")
+            
             let decoder = JSONDecoder()
             
             let model = try decoder.decode(ChatRoomListResponseDataModel.self, from: data)

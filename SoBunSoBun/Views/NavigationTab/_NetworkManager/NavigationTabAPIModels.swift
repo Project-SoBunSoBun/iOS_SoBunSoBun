@@ -15,10 +15,9 @@ struct ChatRoomListResponseModel: Decodable, Equatable {
 }
 
 struct ChatRoomListResponseDataModel: Decodable, Equatable {
-    let roomId: Int
+    let roomId, unReadCount: Int
     let roomName: String
     let profileImageUrl: String?
     let lastMessage: ChatMessageModel?
-    let unreadCount: Int
     let roomType: ChatRoomType
 }

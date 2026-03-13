@@ -194,7 +194,7 @@ class ChatRoomListCellView: UIView {
         
         lastMessageLabel.attributedText = NSAttributedString(string: lastMessageString, attributes: lastMeesageAttributes)
         
-        unreadCountLabel.text = "\(model.unreadCount)"
-        unreadCountLabel.isHidden = model.unreadCount <= 0
+        unreadCountLabel.text = "\(model.unReadCount)"
+        unreadCountLabel.isHidden = model.unReadCount <= 0
     }
 }

@@ -41,8 +41,8 @@ class ChatWebSocketManager {
     }
     
     func subscribe(chatRoomId: Int) {
-        swiftStomp?.subscribe(to: "/topic/chat/room/\(chatRoomId)")
         subscribeUrl = "/topic/chat/room/\(chatRoomId)"
+        swiftStomp?.subscribe(to: subscribeUrl)
         
         logger.debug("채팅방 구독: \(self.subscribeUrl)")
     }
@@ -117,13 +117,19 @@ extension ChatWebSocketManager: SwiftStompDelegate {
     func onMessageReceived(swiftStomp: SwiftStomp, message: Any?, messageId: String, destination: String, headers: [String : String]) {
         logger.debug("메시지 수신\ndestination: \(destination)\nmessageId: \(messageId)")
         
-        guard let messageString = message as? String,
-              let data = messageString.data(using: .utf8) else {
-            logger.fault("메시지를 String, Data로 변환 중 실패")
+        guard let messageString = message as? String else {
+            logger.fault("메시지를 String으로 변환 중 실패")
+            return
+        }
+        
+        guard let data = messageString.data(using: .utf8) else {
+            logger.fault("\(destination) 메시지를 Data로 변환 중 실패: \(messageString)")
             return
         }
         
         do {
+            logger.debug("\(destination) 수신 내용: \(messageString)")
+            
             let decoder = JSONDecoder()
             
             let model = try decoder.decode(ChatMessageModel.self, from: data)
