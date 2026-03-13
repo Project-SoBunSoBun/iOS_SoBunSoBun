@@ -161,7 +161,7 @@ class ChatRightMenuView: UIViewController {
         kickCard.removeFromSuperview()
         memberCountCard.removeFromSuperview()
         
-        let isOwner: Bool = type == .GROUP && members.contains(where: { $0.userId == myId })
+        let isOwner: Bool = type == .GROUP && members.contains(where: { $0.userId == myId && $0.isOwner })
         
         if isOwner {
             contentView.addSubview(kickCard)
@@ -255,7 +255,6 @@ extension ChatRightMenuView {
         
         reactor.pulse(\.$shouldNavigateToPostDetailId)
             .compactMap { $0 }
-            .debug()
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 

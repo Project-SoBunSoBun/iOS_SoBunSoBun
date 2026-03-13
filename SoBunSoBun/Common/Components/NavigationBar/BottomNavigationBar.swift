@@ -17,7 +17,7 @@ class BottomNavigationBar: UIView {
     static let SHADOW_WIDTH: CGFloat = 344
     static let SHADOW_HEIGHT: CGFloat = 68
     
-    private let buttons: [TabBarButton]
+    var buttons: [TabBarButton]
     
     /// 외부 뷰에 이벤트 전달
     let didChangeIndex = PublishSubject<Int>()
@@ -190,8 +190,6 @@ class BottomNavigationBar: UIView {
         buttons.enumerated().forEach { i, btn in
             btn.isSelected = (i == index)
         }
-        
-        didChangeIndex.onNext(index)
     }
 }
 
@@ -200,7 +198,7 @@ class TabBarButton: UIButton {
     private var isFirst: Bool = true
     
     // 비활성화, 활성화 순서
-    private let icons: [UIImage]
+    private var icons: [UIImage]
     
     override var isSelected: Bool {
         didSet {
@@ -287,5 +285,11 @@ class TabBarButton: UIButton {
         self.label.textColor = self.isSelected ? .primary400 : .neutral500
         
         isFirst = false
+    }
+    
+    // 아이콘 교체
+    func updateIcons(_ icons: [UIImage]) {
+        self.icons = icons
+        icon.image = isSelected ? icons[1] : icons[0]
     }
 }

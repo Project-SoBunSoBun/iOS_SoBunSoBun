@@ -272,7 +272,7 @@ class HomeReactor: Reactor {
     
     // 지오코더 API 호출
     private func getAddressFromGeocoder(longitude: Double, latitude: Double) -> Observable<Mutation> {
-        return networkManager.getAddresFromGeocoder(longitude: longitude, latitude: latitude)
+        return networkManager.getAddressFromGeocoder(longitude: longitude, latitude: latitude)
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 let structure = model.response.result[0].structure

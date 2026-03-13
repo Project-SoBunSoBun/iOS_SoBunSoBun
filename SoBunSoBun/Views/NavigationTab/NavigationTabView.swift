@@ -18,11 +18,11 @@ class NavigationTabView: UIViewController {
     private let disposeBag = DisposeBag()
     
     private let homeView = HomeView()
-    private let chatListView = ChatListView()
+    private let chatRoomListView = ChatRoomListView()
     private let settleUpView = SettleUpView()
     private let myPageView = MypageView()
     
-    private lazy var viewControllers: [UIViewController] = [homeView, chatListView, settleUpView, myPageView]
+    private lazy var viewControllers: [UIViewController] = [homeView, chatRoomListView, settleUpView, myPageView]
     
     private let buttons: [TabBarButton] = [
         TabBarButton(icons: [.greyFilledHome, .blueFilledHome], title: String(localized: "Home", table: "Common")),
@@ -34,7 +34,7 @@ class NavigationTabView: UIViewController {
     private var currentVC: UIViewController? = nil
     
     // MARK: - 디자인 요소
-    lazy var bottomNavigationBar = BottomNavigationBar(buttons: buttons)
+    private lazy var bottomNavigationBar = BottomNavigationBar(buttons: buttons)
     
     private let containerView: UIView = {
         let view = UIView()
@@ -133,6 +133,25 @@ extension NavigationTabView {
             })
             .disposed(by: disposeBag)
         
+        reactor.state.map { $0.chatRoomList }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] models in
+                guard let self = self else { return }
+                
+                let totalUnreadCount = models.reduce(0) { $0 + $1.unreadCount }
+                
+                let chatButton = bottomNavigationBar.buttons[1]
+                chatButton.updateIcons(
+                    totalUnreadCount > 0 ?
+                    [.newGreyFilledMessage, .newBlueFilledMessage] :
+                    [.greyFilledMessage, .blueFilledMessage]
+                )
+                
+                chatRoomListView.reactor.action.onNext(.receivedChatRoomList(models))
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state.map { $0.errorMessage }
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] message in
@@ -151,7 +170,8 @@ extension NavigationTabView {
     
     private func showLocationSettingAlert() {
         let alert = CustomAlertView(
-            title: String(localized: "LocationSettingTitle", table: "Common"),
+            title: String(localized: "Error", table: "Common"),
+            subTitle: String(localized: "LocationSettingTitle", table: "Common"),
             primaryTitleKey: String(localized: "GoToSetting", table: "Common")
         )
         
@@ -163,6 +183,10 @@ extension NavigationTabView {
         }
         
         alert.show(on: self)
+    }
+    
+    func changeTabViewIndex(index: Int) {
+        reactor.action.onNext(.selectIndex(index))
     }
 }
 
