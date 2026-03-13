@@ -28,6 +28,7 @@ class ChatRoomListWebSocketManager {
     func connect() {
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
             logger.error("액세스 토큰 오류")
+            
             return
         }
         
@@ -37,9 +38,7 @@ class ChatRoomListWebSocketManager {
     }
     
     func subscribe() {
-        guard let myIdString = KeyChain.shared.get(key: "USER_ID") else {
-            return
-        }
+        guard let myIdString = KeyChain.shared.get(key: "USER_ID") else { return }
         
         swiftStomp?.subscribe(to: "/sub/users/\(myIdString)/chat-rooms")
         subscribeUrl = "/sub/users/\(myIdString)/chat-rooms"
@@ -55,6 +54,7 @@ class ChatRoomListWebSocketManager {
     private func handleUnauthorized() {
         guard !isRefreshing else {
             logger.debug("이미 토큰 갱신 중")
+            
             return
         }
         

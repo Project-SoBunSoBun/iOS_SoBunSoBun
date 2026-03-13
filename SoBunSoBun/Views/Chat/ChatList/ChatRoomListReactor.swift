@@ -21,7 +21,6 @@ class ChatRoomListReactor: Reactor {
     let initialState: State = State()
     
     enum Action {
-        case viewDidLoad
         case tabButtonTapped(Int)
         case receivedChatRoomList([ChatRoomListResponseDataModel])
     }
@@ -39,9 +38,6 @@ class ChatRoomListReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .viewDidLoad:
-            return Observable.empty()
-            
         case .tabButtonTapped(let index):
             return Observable.just(.setTabIndex(index))
             

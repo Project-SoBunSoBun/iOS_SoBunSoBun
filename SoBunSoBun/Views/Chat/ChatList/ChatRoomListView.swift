@@ -83,8 +83,8 @@ class ChatRoomListView: UIViewController {
         return tv
     }()
     
-    private let groupChatTableView: UITableView = {
-        let tv = UITableView()
+    private let groupChatTableView: BaseTableView = {
+        let tv = BaseTableView()
         tv.register(ChatRoomListCellTableViewCell.self, forCellReuseIdentifier: ChatRoomListCellTableViewCell.identifier)
         tv.backgroundColor = .clear
         tv.separatorStyle = .none
@@ -167,8 +167,6 @@ extension ChatRoomListView {
     }
     
     private func bindAction(reactor: Reactor) {
-        reactor.action.onNext(.viewDidLoad)
-        
         [privateChatButton, groupChatButton].enumerated().forEach { index, button in
             button.rx.tap
                 .map { Reactor.Action.tabButtonTapped(index) }
@@ -212,7 +210,7 @@ extension ChatRoomListView {
         reactor.state.map { $0.privateChatRoomList }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .bind(to: privateChatTableView.rx.items(cellIdentifier: ChatRoomListCellTableViewCell.identifier, cellType: ChatRoomListCellTableViewCell.self)) { index, model, cell in
+            .bind(to: privateChatTableView.rx.items(cellIdentifier: ChatRoomListCellTableViewCell.identifier, cellType: ChatRoomListCellTableViewCell.self)) { _, model, cell in
                 cell.configureUI(model: model)
             }
             .disposed(by: disposeBag)
@@ -220,7 +218,7 @@ extension ChatRoomListView {
         reactor.state.map { $0.groupChatRoomList }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
-            .bind(to: groupChatTableView.rx.items(cellIdentifier: ChatRoomListCellTableViewCell.identifier, cellType: ChatRoomListCellTableViewCell.self)) { index, model, cell in
+            .bind(to: groupChatTableView.rx.items(cellIdentifier: ChatRoomListCellTableViewCell.identifier, cellType: ChatRoomListCellTableViewCell.self)) { _, model, cell in
                 cell.configureUI(model: model)
             }
             .disposed(by: disposeBag)

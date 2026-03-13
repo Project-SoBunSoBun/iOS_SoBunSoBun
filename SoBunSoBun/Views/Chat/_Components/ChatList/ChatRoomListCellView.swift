@@ -13,11 +13,6 @@ import Kingfisher
 import OSLog
 
 class ChatRoomListCellView: UIView {
-    private let logger = Logger(
-        subsystem: "SoBunSoBun",
-        category: "Chat.ChatListCellView"
-    )
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -27,6 +22,11 @@ class ChatRoomListCellView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "Chat.ChatListCellView"
+    )
     
     // MARK: - 디자인 요소
     private let imageView: UIImageView = {
