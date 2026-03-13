@@ -182,6 +182,7 @@ extension ChatRateMannerView {
                 guard let path = bundle.path(forResource: "Review", ofType: "strings"),
                       let reviews = NSDictionary(contentsOfFile: path) as? [String: String] else {
                     logger.fault("Chat의 xcstring 파일은 불러오는 중 문제가 생김")
+                    
                     return
                 }
                 

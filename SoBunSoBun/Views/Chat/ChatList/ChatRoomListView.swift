@@ -62,8 +62,8 @@ class ChatRoomListView: UIViewController {
         return btn
     }()
     
-    private let privateChatTableView: UITableView = {
-        let tv = UITableView()
+    private let privateChatTableView: BaseTableView = {
+        let tv = BaseTableView()
         tv.register(ChatRoomListCellTableViewCell.self, forCellReuseIdentifier: ChatRoomListCellTableViewCell.identifier)
         tv.backgroundColor = .clear
         tv.separatorStyle = .none
