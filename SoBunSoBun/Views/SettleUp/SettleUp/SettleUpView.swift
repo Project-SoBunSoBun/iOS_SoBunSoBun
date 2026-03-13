@@ -236,6 +236,7 @@ extension SettleUpView {
         
         // TableView 데이터 바인딩
         reactor.state.map { $0.items }
+            .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(cellIdentifier: SettleUpTableViewCell.identifier, cellType: SettleUpTableViewCell.self)) { [weak self] _, item, cell in
                 guard let self = self else { return }
                 
