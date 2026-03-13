@@ -1,8 +1,8 @@
 //
-//  ChatWebSocketManager.swift
+//  ChatRoomListWebSocketManager.swift
 //  SoBunSoBun
 //
-//  Created by 김태은 on 2/21/26.
+//  Created by 김태은 on 3/10/26.
 //
 
 import Foundation
@@ -11,60 +11,50 @@ import UIKit
 import RxCocoa
 import OSLog
 
-class ChatWebSocketManager {
+class ChatRoomListWebSocketManager {
     private var swiftStomp: SwiftStomp?
     private let WEBSOCKET_URL: String = Bundle.main.object(forInfoDictionaryKey: "WEBSOCKET_URL") as! String
-    private var currentChatRoomId: Int?
     private var isRefreshing: Bool = false
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "ChatWebSocketManager"
+        category: "ChatRoomListWebSocketManager"
     )
     
-    let didReceiveMessage = PublishRelay<ChatMessageModel>()
-    let didReceiveSettlement = PublishRelay<Void?>()
+    let didReceiveChatRoom = PublishRelay<ChatRoomListResponseDataModel>()
     
     private var subscribeUrl: String = ""
     
-    func connect(chatRoomId: Int) {
+    func connect() {
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
             logger.error("액세스 토큰 오류")
+            
             return
         }
-        
-        currentChatRoomId = chatRoomId
         
         swiftStomp = SwiftStomp(host: URL(string: WEBSOCKET_URL)!, headers: ["Authorization": "Bearer \(accessToken)"])
         swiftStomp?.delegate = self
         swiftStomp?.connect()
     }
     
-    func subscribe(chatRoomId: Int) {
-        swiftStomp?.subscribe(to: "/topic/chat/room/\(chatRoomId)")
-        subscribeUrl = "/topic/chat/room/\(chatRoomId)"
+    func subscribe() {
+        guard let myIdString = KeyChain.shared.get(key: "USER_ID") else { return }
         
-        logger.debug("채팅방 구독: \(self.subscribeUrl)")
-    }
-    
-    func sendMessage(message: String) {
-        guard let currentChatRoomId else { return }
+        swiftStomp?.subscribe(to: "/sub/users/\(myIdString)/chat-rooms")
+        subscribeUrl = "/sub/users/\(myIdString)/chat-rooms"
         
-        let model = ChatSendMessageModel(roomId: currentChatRoomId, type: .TEXT, content: message)
-        
-        swiftStomp?.send(body: model, to: "/app/chat/send")
-        logger.debug("메시지 전송")
+        logger.debug("채팅방 목록 구독: \(self.subscribeUrl)")
     }
     
     func disconnect() {
         swiftStomp?.disconnect()
-        currentChatRoomId = nil
         logger.debug("연결 종료")
     }
     
     private func handleUnauthorized() {
         guard !isRefreshing else {
             logger.debug("이미 토큰 갱신 중")
+            
             return
         }
         
@@ -85,24 +75,22 @@ class ChatWebSocketManager {
     }
     
     private func reconnect(token: String) {
-        guard let chatRoomId = currentChatRoomId else {
-            logger.fault("currentChatRoomId가 없어 재연결을 할 수 없습니다.")
-            return
-        }
-        
         logger.debug("재연결 시작")
         disconnect()
-        connect(chatRoomId: chatRoomId)
+        connect()
     }
 }
 
-extension ChatWebSocketManager: SwiftStompDelegate {
+extension ChatRoomListWebSocketManager: SwiftStompDelegate {
     func onConnect(swiftStomp: SwiftStomp, connectType: StompConnectType) {
-        logger.debug("STOMP 연결 성공")
-        
-        if let currentChatRoomId {
-            subscribe(chatRoomId: currentChatRoomId)
+        switch connectType {
+        case .toSocketEndpoint:
+            logger.debug("Socket에서 연결 성공")
+        case .toStomp:
+            logger.debug("Stomp에서 연결 성공")
         }
+        
+        subscribe()
     }
     
     func onDisconnect(swiftStomp: SwiftStomp, disconnectType: StompDisconnectType) {
@@ -126,14 +114,10 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         do {
             let decoder = JSONDecoder()
             
-            let model = try decoder.decode(ChatMessageModel.self, from: data)
-            didReceiveMessage.accept(model)
-            
-            if model.type == .SETTLEMENT_CARD {
-                didReceiveSettlement.accept(())
-            }
+            let model = try decoder.decode(ChatRoomListResponseDataModel.self, from: data)
+            didReceiveChatRoom.accept(model)
         } catch {
-            logger.fault("ChatMessageModel 디코딩 실패: \(error.localizedDescription)")
+            logger.fault("ChatRoomListResponseDataModel 디코딩 실패: \(error.localizedDescription)")
         }
     }
     

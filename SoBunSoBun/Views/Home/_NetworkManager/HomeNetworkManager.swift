@@ -25,7 +25,7 @@ class HomeNetworkManager {
     }
     
     // 좌표를 통해 주소 변환
-    func getAddresFromGeocoder(longitude: Double, latitude: Double) -> Single<GeocoderResponseModel> {
+    func getAddressFromGeocoder(longitude: Double, latitude: Double) -> Single<GeocoderResponseModel> {
         let point: String = "\(longitude),\(latitude)"
         
         return provider.rx.request(

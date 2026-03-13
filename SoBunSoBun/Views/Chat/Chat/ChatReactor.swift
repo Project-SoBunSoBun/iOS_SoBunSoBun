@@ -30,7 +30,7 @@ class ChatReactor: Reactor {
     private let MESSAGE_LIMIT_COUNT: Int = 50
     
     private let disposeBag = DisposeBag()
-    private let webSocketManager = ChatWebSocketManager()
+    let webSocketManager = ChatWebSocketManager()
     private let databaseManager = ChatDataBaseManager()
     private let networkManager = ChatNetworkManager()
     
@@ -139,7 +139,7 @@ class ChatReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
-        var messages = currentState.messages
+        var messages = state.messages
         
         switch mutation {
         case .setDetailInfo(let model):
@@ -203,14 +203,18 @@ class ChatReactor: Reactor {
     // webSocketManager publish mutation 연결 및 변환
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
         let didReceiveMessage = webSocketManager.didReceiveMessage
-            .do {
+            .do { [weak self] in
+                guard let self = self else { return }
+                
                 self.databaseManager.insertMessage($0)
             }
             .map { Mutation.addNewMessage($0) }
         
         let didReceiveSettlement = webSocketManager.didReceiveSettlement
             .compactMap { $0 }
-            .flatMap { _ -> Observable<Mutation> in
+            .flatMap { [weak self] _ -> Observable<Mutation> in
+                guard let self = self else { return Observable.empty() }
+                
                 return self.getDetailInfo()
             }
         
@@ -316,9 +320,13 @@ class ChatReactor: Reactor {
     
     // 메시지 전송
     private func sendMessage(message: String) {
-        if !message.isEmpty {
-            webSocketManager.sendMessage(message: message)
+        let cleanedMessage = message.limitNewLines(limit: 2).trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        guard !cleanedMessage.isEmpty else {
+            return
         }
+        
+        webSocketManager.sendMessage(message: cleanedMessage)
     }
     
     // 이미지 전송
@@ -347,8 +355,15 @@ class ChatReactor: Reactor {
     // 그룹 채팅방 초대장 전송
     private func sendInviteCard() -> Observable<Mutation> {
         guard let myIdString = KeyChain.shared.get(key: "USER_ID"),
-              let myId = Int(myIdString),
-              let inviteeId: Int = currentState.detailInfoModel?.data.members.first(where: { $0.userId != myId })?.userId else {
+              let myId = Int(myIdString) else {
+            self.logger.critical("내 USER_ID를 불러오는 중 오류 발생")
+            
+            return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
+        }
+        
+        guard let inviteeId: Int = currentState.detailInfoModel?.data.members.first(where: { $0.userId != myId })?.userId else {
+            self.logger.critical("초대할 상대가 없어 오류 발생")
+            
             return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
         }
         

@@ -193,6 +193,13 @@ class ChatView: UIViewController {
         bottomMenuView.frame.size.height = 258 + view.safeAreaInsets.bottom
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        chatTextView.textView.inputView = nil
+        reactor.webSocketManager.disconnect()
+    }
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
@@ -400,7 +407,9 @@ extension ChatView {
         
         // 채팅 페이지네이션
         tableView.rx.willDisplayCell
-            .filter { _, indexPath -> Bool in
+            .filter { [weak self] _, indexPath -> Bool in
+                guard let self = self else { return false }
+                
                 let lastRow = self.tableView.numberOfRows(inSection: 0) - 1
                 return self.tableView.isDragging && indexPath.row >= lastRow - 10
             }
@@ -538,7 +547,7 @@ extension ChatView {
                 }
                 
                 // 방장만 정산 후 자동 매너 평가 뷰 이동
-                if model.data.ownerId == myId && model.data.isSettled && !model.data.isReviewed {
+                if model.data.ownerId == myId && model.data.isSettled && model.data.isReviewed == false {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         self.navigationController?.pushViewController(
                             ChatRateMannerView(
@@ -870,7 +879,7 @@ extension ChatView {
                 return
             }
             
-            navigationTabView.showViewController(index: 2)
+            navigationTabView.changeTabViewIndex(index: 2)
             navController.popToViewController(navigationTabView, animated: true)
         }
         

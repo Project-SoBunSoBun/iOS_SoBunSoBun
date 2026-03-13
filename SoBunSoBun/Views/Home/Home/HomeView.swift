@@ -146,6 +146,9 @@ class HomeView: UIViewController {
             left: 0,
             bottom: 8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8,
             right: 0)
+        tv.minimumZoomScale = 1.0
+        tv.maximumZoomScale = 1.0
+        tv.pinchGestureRecognizer?.isEnabled = false
         
         return tv
     }()
@@ -286,7 +289,7 @@ class HomeView: UIViewController {
         tableView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(categoriesScrollView.snp.bottom).offset(8)
-            make.bottom.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
             make.width.equalToSuperview()
         }
         
