@@ -125,11 +125,13 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         
         guard let messageString = message as? String else {
             logger.fault("채팅방 \(self.currentChatRoomId ?? -1) Websocket 메시지를 String으로 변환 중 실패")
+            
             return
         }
         
         guard let data = messageString.data(using: .utf8) else {
             logger.fault("Websocket \(destination) 메시지를 Data로 변환 중 실패: \(messageString)")
+            
             return
         }
         
