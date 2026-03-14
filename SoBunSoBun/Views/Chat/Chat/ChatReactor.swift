@@ -189,7 +189,7 @@ class ChatReactor: Reactor {
             
         case .setShouldNavigateToBack:
             newState.shouldNavigateToBack = ()
-        
+            
         case .setError(let message):
             newState.errorMessage = message
             
@@ -233,7 +233,9 @@ class ChatReactor: Reactor {
             .flatMap { model -> Observable<Mutation> in
                 return Observable.just(.setDetailInfo(model))
             }
-            .catch { error in
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
                 self.logger.critical("채팅방 정보 불러오기 실패: \(error.localizedDescription)")
                 
                 return Observable.just(.setCriticalError(String(localized: "ErrorGetChatRoomDetail", table: "Chat")))
@@ -243,7 +245,9 @@ class ChatReactor: Reactor {
     // 메시지 불러오기
     private func getMessages() -> Observable<Mutation> {
         // deferred로 감싸지 않으면 action 발생 시점의 currentState가 아닌 이전 상태를 참조함
-        return Observable.deferred { // 백그라운드에서 수행
+        return Observable.deferred { [weak self] in // 백그라운드에서 수행
+            guard let self = self else { return Observable.empty() }
+            
             if self.currentState.isDBMessageEmpty {
                 return Observable.empty()
             } else if self.currentState.isServerMessageEmpty {
@@ -260,7 +264,9 @@ class ChatReactor: Reactor {
     // 캐싱된 메시지 불러오기
     private func getMessagesFromDatabase() -> Observable<Mutation> {
         // 메인 스레드에서 동기로 실행되어 UI 업데이트를 블로킹하기 때문에 백그라운드에서 수행함
-        return Observable.deferred { // 백그라운드에서 수행
+        return Observable.deferred { [weak self] in // 백그라운드에서 수행
+            guard let self = self else { return Observable.empty() }
+            
             let members = self.currentState.detailInfoModel?.data.members
             let messages = self.databaseManager.getMessages(
                 roomId: self.chatRoomId,
@@ -296,7 +302,9 @@ class ChatReactor: Reactor {
             size: MESSAGE_LIMIT_COUNT
         )
         .asObservable()
-        .flatMap { models -> Observable<Mutation> in
+        .flatMap { [weak self] models -> Observable<Mutation> in
+            guard let self = self else { return Observable.empty() }
+            
             self.logger.debug(
                 """
                 \(models.message ?? "서버로부터 받은 메시지가 없습니다.")\n
@@ -311,7 +319,9 @@ class ChatReactor: Reactor {
                 Observable.just(.setIsServerMessageEmpty(self.MESSAGE_LIMIT_COUNT > models.data.count))
             ])
         }
-        .catch { error in
+        .catch { [weak self] error in
+            guard let self = self else { return Observable.empty() }
+            
             self.logger.critical("채팅방 메시지 불러오기 실패: \(error.localizedDescription)")
             
             return Observable.empty()
@@ -334,12 +344,16 @@ class ChatReactor: Reactor {
         if let imageData = image.jpegData(compressionQuality: 0.3) {
             return networkManager.uploadChatImage(id: chatRoomId, message: nil, image: imageData)
                 .asObservable()
-                .flatMap { _ -> Observable<Mutation> in
+                .flatMap { [weak self] _ -> Observable<Mutation> in
+                    guard let self = self else { return Observable.empty() }
+                    
                     self.logger.debug("이미지 보내기 성공")
                     
                     return Observable.just(.setBottomOpenMenu(false))
                 }
-                .catch { error in
+                .catch { [weak self] error in
+                    guard let self = self else { return Observable.empty() }
+                    
                     self.logger.critical("채팅 이미지 보내기 실패: \(error.localizedDescription)")
                     
                     return Observable.concat([
@@ -356,25 +370,27 @@ class ChatReactor: Reactor {
     private func sendInviteCard() -> Observable<Mutation> {
         guard let myIdString = KeyChain.shared.get(key: "USER_ID"),
               let myId = Int(myIdString) else {
-            self.logger.critical("내 USER_ID를 불러오는 중 오류 발생")
+            logger.critical("내 USER_ID를 불러오는 중 오류 발생")
             
             return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
         }
         
         guard let inviteeId: Int = currentState.detailInfoModel?.data.members.first(where: { $0.userId != myId })?.userId else {
-            self.logger.critical("초대할 상대가 없어 오류 발생")
+            logger.critical("초대할 상대가 없어 오류 발생")
             
             return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
         }
         
         return networkManager.sendInviteCard(chatRoomId: chatRoomId, inviteeId: inviteeId)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                self.logger.debug("초대장 전송 성공")
+            .flatMap { [weak self] _ -> Observable<Mutation> in
+                self?.logger.debug("초대장 전송 성공")
                 
                 return Observable.empty()
             }
-            .catch { error in
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
                 self.logger.critical("초대장 전송 실패: \(error.localizedDescription)")
                 
                 return Observable.just(.setError(String(localized: "ErrorSendInviteCardMessage", table: "Chat")))
@@ -385,12 +401,15 @@ class ChatReactor: Reactor {
     private func acceptInvitationGroupChatRoom(inviteId: Int) -> Observable<Mutation> {
         return networkManager.acceptInvitation(inviteId: inviteId)
             .asObservable()
-            .flatMap { model -> Observable<Mutation> in
+            .flatMap { [weak self] model -> Observable<Mutation> in
+                guard let self = self else { return Observable.empty() }
                 self.logger.debug("초대장 수락 성공")
                 
                 return Observable.just(.setShouldNavigateToGroupChat(model.data.chatRoomId))
             }
-            .catch { error in
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
                 self.logger.critical("초대장 수락 실패: \(error.localizedDescription)")
                 
                 return Observable.just(.setError(String(localized: "ErrorAcceptGroupChatRoomMessage", table: "Chat")))
@@ -401,12 +420,14 @@ class ChatReactor: Reactor {
     private func sendSettlementCard(settlementId: Int) -> Observable<Mutation> {
         return networkManager.sendSettlementCard(chatRoomId: chatRoomId, settlementId: settlementId)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                self.logger.debug("정산서 전송 성공")
+            .flatMap { [weak self] _ -> Observable<Mutation> in
+                self?.logger.debug("정산서 전송 성공")
                 
                 return Observable.empty()
             }
-            .catch { error in
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
                 self.logger.critical("정산서 전송 실패: \(error.localizedDescription)")
                 
                 return Observable.just(.setError(String(localized: "ErrorSendSettlementCardMessage", table: "Chat")))
@@ -417,13 +438,17 @@ class ChatReactor: Reactor {
     private func leaveChatRoom() -> Observable<Mutation> {
         return networkManager.leaveChatRoom(id: chatRoomId)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
+            .flatMap { [weak self] _ -> Observable<Mutation> in
+                guard let self = self else { return Observable.empty() }
+                
                 self.logger.debug("채팅방 나가기 성공")
                 
                 self.databaseManager.deleteMessages(roomId: self.chatRoomId)
                 return Observable.just(.setShouldNavigateToBack)
             }
-            .catch { error in
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
                 self.logger.critical("채팅방 나가기 실패: \(error.localizedDescription)")
                 
                 return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
