@@ -14,6 +14,7 @@ import RxCocoa
 class Incomplete: UIView {
     init(frame: CGRect = .zero,
          SettleUpStatus: Bool,
+         isAuthor: Bool,
          title: String,
          location: String,
          meetingDate: String // ISO 8601 문자열
@@ -21,6 +22,7 @@ class Incomplete: UIView {
         super.init(frame: frame)
         
         configureUI(SettleUpStatus: SettleUpStatus,
+                    isAuthor: isAuthor,
                     title: title,
                     location: location,
                     meetingDate: meetingDate)
@@ -196,6 +198,7 @@ class Incomplete: UIView {
     // MARK: - 레이아웃 설정
     private func configureUI(
         SettleUpStatus: Bool,
+        isAuthor: Bool,
         title: String,
         location: String,
         meetingDate: String) {
@@ -224,11 +227,12 @@ class Incomplete: UIView {
                 statusLabel.textColor = .review2
                 settleUpButton.isHidden = true
                 statementCheckButton.isHidden = false
-                shareButton.isHidden = false
-                deleteButton.isHidden = false
+                shareButton.isHidden = !isAuthor
+                deleteButton.isHidden = !isAuthor
             } else {
                 statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpIncomplete", table: "SettleUp"), attributes: title12.attributes())
                 statusLabel.textColor = .errorRed
+                settleUpButton.isHidden = !isAuthor
                 statementCheckButton.isHidden = true
                 shareButton.isHidden = true
                 deleteButton.isHidden = true

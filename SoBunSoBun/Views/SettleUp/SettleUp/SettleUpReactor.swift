@@ -103,12 +103,16 @@ class SettleUpReactor: Reactor {
             networkManager.mySettleUps(status: status, page: 0, size: 20)
                 .asObservable()
                 .flatMap { SettleUpModel -> Observable<Mutation> in
+                    guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
+                    let currentUserId = Int(userId)
+                            
                     let items: [SettleUpItemModel] = SettleUpModel.data.content.map { content in
                         let isCompleted = (content.status == "COMPLETED")
                         
                         return SettleUpItemModel(
                             settlementId: content.id,
                             authorId: content.authorId,
+                            isAuthor: content.authorId == currentUserId,
                             settlementStatus: isCompleted,
                             title: content.groupPostTitle,
                             location: content.locationName,
