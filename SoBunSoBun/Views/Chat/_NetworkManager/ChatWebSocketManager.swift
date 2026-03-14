@@ -25,6 +25,7 @@ class ChatWebSocketManager {
     let didReceiveMessage = PublishRelay<ChatMessageModel>()
     let didReceiveSettlement = PublishRelay<Void?>()
     
+    private var tryCount: Int = 0
     private var subscribeUrl: String = ""
     
     func connect(chatRoomId: Int) {
@@ -89,6 +90,7 @@ class ChatWebSocketManager {
             return
         }
         
+        tryCount = 0
         logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Websocket 재연결 시작")
         disconnect()
         connect(chatRoomId: chatRoomId)
@@ -170,9 +172,11 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         
         logger.critical("\(log)")
         
-        if fullDescription?.contains("401") == true ||
-            fullDescription?.contains("Unauthorized") == true {
+        if tryCount < 2 {
+            tryCount += 1
             handleUnauthorized()
+        } else {
+            logger.fault("채팅방 \(self.currentChatRoomId ?? -1) Websocket 연결 재시도 3회 실패")
         }
     }
 }

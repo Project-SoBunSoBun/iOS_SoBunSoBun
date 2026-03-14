@@ -23,6 +23,7 @@ class ChatRoomListWebSocketManager {
     
     let didReceiveChatRoom = PublishRelay<ChatRoomListResponseDataModel>()
     
+    private var tryCount: Int = 0
     private var subscribeUrl: String = ""
     
     func connect() {
@@ -75,6 +76,7 @@ class ChatRoomListWebSocketManager {
     }
     
     private func reconnect(token: String) {
+        tryCount = 0
         logger.debug("채팅방 목록 WebSocket 재연결 시작")
         disconnect()
         connect()
@@ -150,9 +152,11 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         
         logger.critical("\(log)")
         
-        if fullDescription?.contains("401") == true ||
-            fullDescription?.contains("Unauthorized") == true {
+        if tryCount < 2 {
+            tryCount += 1
             handleUnauthorized()
+        } else {
+            logger.fault("채팅방 목록 Websocket 연결 재시도 3회 실패")
         }
     }
 }
