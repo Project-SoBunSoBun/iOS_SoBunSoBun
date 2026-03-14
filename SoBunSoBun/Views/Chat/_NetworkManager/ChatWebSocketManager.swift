@@ -31,6 +31,7 @@ class ChatWebSocketManager {
     func connect(chatRoomId: Int) {
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
             logger.error("액세스 토큰 오류")
+            
             return
         }
         
@@ -65,6 +66,7 @@ class ChatWebSocketManager {
     private func handleUnauthorized() {
         guard !isRefreshing else {
             logger.debug("이미 토큰 갱신 중")
+            
             return
         }
         
@@ -87,6 +89,7 @@ class ChatWebSocketManager {
     private func reconnect(token: String) {
         guard let chatRoomId = currentChatRoomId else {
             logger.fault("currentChatRoomId가 없어 재연결을 할 수 없습니다.")
+            
             return
         }
         
@@ -102,6 +105,7 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         switch connectType {
         case .toSocketEndpoint:
             logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Socket 연결 성공")
+            
         case .toStomp:
             logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Stomp 연결 성공")
         }
@@ -115,6 +119,7 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         switch disconnectType {
         case .fromSocket:
             logger.error("채팅방 \(self.currentChatRoomId ?? -1) Socket에서 연결 끊김")
+            
         case .fromStomp:
             logger.error("채팅방 Stomp에서 구독 \(self.subscribeUrl) 끊김")
         }
@@ -164,6 +169,7 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         switch type {
         case .fromSocket:
             log += "[채팅방 \(self.currentChatRoomId ?? -1) Socket 오류]\n\n"
+            
         case .fromStomp:
             log += "[채팅방 \(self.currentChatRoomId ?? -1) Stomp 오류]\n\n"
         }

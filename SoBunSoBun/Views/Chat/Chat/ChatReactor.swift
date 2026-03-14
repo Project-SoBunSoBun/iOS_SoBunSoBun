@@ -403,6 +403,7 @@ class ChatReactor: Reactor {
             .asObservable()
             .flatMap { [weak self] model -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
+                
                 self.logger.debug("초대장 수락 성공")
                 
                 return Observable.just(.setShouldNavigateToGroupChat(model.data.chatRoomId))
@@ -444,6 +445,7 @@ class ChatReactor: Reactor {
                 self.logger.debug("채팅방 나가기 성공")
                 
                 self.databaseManager.deleteMessages(roomId: self.chatRoomId)
+                
                 return Observable.just(.setShouldNavigateToBack)
             }
             .catch { [weak self] error in

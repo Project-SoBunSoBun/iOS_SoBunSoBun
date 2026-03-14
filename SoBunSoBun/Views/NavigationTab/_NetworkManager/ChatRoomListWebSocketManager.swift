@@ -88,6 +88,7 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         switch connectType {
         case .toSocketEndpoint:
             logger.debug("채팅방 목록 Socket 연결 성공")
+            
         case .toStomp:
             logger.debug("채팅방 목록 Stomp 연결 성공")
         }
@@ -99,6 +100,7 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         switch disconnectType {
         case .fromSocket:
             logger.error("채팅방 목록 Socket에서 연결 끊김")
+            
         case .fromStomp:
             logger.error("채팅방 목록 Stomp에서 구독 \(self.subscribeUrl) 끊김")
         }
@@ -144,6 +146,7 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         switch type {
         case .fromSocket:
             log += "[채팅방 목록 Socket 오류]\n\n"
+            
         case .fromStomp:
             log += "[채팅방 목록 Stomp 오류]\n\n"
         }
