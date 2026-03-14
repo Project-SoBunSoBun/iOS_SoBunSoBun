@@ -189,7 +189,7 @@ extension ChatRateMannerView {
                 members.forEach {
                     let view = ChatMannerAccordionView(model: $0)
                     
-                    let reviewViews = reviews.keys.sorted { $0 > $1 }.map {
+                    let reviewViews = reviews.keys.sorted { $0 < $1 }.map {
                         let reviewView = Review(number: String($0.suffix(3)))
                         reviewView.isUserInteractionEnabled = true
                         

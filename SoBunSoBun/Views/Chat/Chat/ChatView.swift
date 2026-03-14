@@ -198,6 +198,8 @@ class ChatView: UIViewController {
         
         chatTextView.textView.inputView = nil
         reactor.webSocketManager.disconnect()
+        
+        NotificationCenter.default.post(name: .init("RefreshChatRoomList"), object: nil)
     }
     
     // MARK: - 레이아웃 설정

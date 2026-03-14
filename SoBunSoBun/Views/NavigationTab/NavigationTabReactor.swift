@@ -11,7 +11,7 @@ import OSLog
 
 class NavigationTabReactor: Reactor {
     init() {
-        self.action.onNext(.onInit)
+        chatRoomListWebSocketManager.connect()
     }
     
     deinit {
@@ -30,8 +30,8 @@ class NavigationTabReactor: Reactor {
     )
     
     enum Action {
-        case onInit
         case viewDidLoad
+        case getChatRoomListData
         case selectIndex(Int)
     }
     
@@ -50,11 +50,14 @@ class NavigationTabReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .onInit:
-            return getChatRoomList()
-            
         case .viewDidLoad:
-            return getMyData()
+            return Observable.concat([
+                getChatRoomList(),
+                getMyData()
+            ])
+            
+        case .getChatRoomListData:
+            return getChatRoomList()
             
         case .selectIndex(let index):
             return Observable.just(.setSelectedIndex(index))
@@ -126,7 +129,6 @@ class NavigationTabReactor: Reactor {
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 self.logger.debug("채팅방 목록 불러옴")
-                self.chatRoomListWebSocketManager.connect()
                 
                 return Observable.just(.setChatRoomList(model.data))
             }

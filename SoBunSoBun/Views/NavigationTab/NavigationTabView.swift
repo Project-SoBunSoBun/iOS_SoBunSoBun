@@ -117,6 +117,12 @@ extension NavigationTabView {
             .map { Reactor.Action.selectIndex($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        NotificationCenter.default.rx
+            .notification(.init("RefreshChatRoomList"))
+            .map { _ in Reactor.Action.getChatRoomListData }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: NavigationTabReactor) {
@@ -139,7 +145,7 @@ extension NavigationTabView {
             .subscribe(onNext: { [weak self] models in
                 guard let self = self else { return }
                 
-                let totalUnreadCount = models.reduce(0) { $0 + $1.unreadCount }
+                let totalUnreadCount = models.reduce(0) { $0 + $1.unReadCount }
                 
                 let chatButton = bottomNavigationBar.buttons[1]
                 chatButton.updateIcons(
