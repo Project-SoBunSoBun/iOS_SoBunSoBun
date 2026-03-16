@@ -46,6 +46,7 @@ class SettleUp3rdStepReactor: Reactor {
                 if lhsIsAuthor != rhsIsAuthor {
                     return lhsIsAuthor
                 }
+                
                 return false
             }
         }
