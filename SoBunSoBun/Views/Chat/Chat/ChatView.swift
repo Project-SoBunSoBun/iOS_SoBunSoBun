@@ -780,7 +780,7 @@ extension ChatView {
             .disposed(by: disposeBag)
         
         // 이미지 피커 표시
-        reactor.pulse(\.$shouldShowIamgePicker)
+        reactor.pulse(\.$shouldShowImagePicker)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in

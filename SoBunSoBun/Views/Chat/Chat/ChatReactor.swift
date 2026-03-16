@@ -82,7 +82,7 @@ class ChatReactor: Reactor {
         var isChatCellMenuOpen: Bool = false
         var selectedChatMessageModel: ChatMessageModel?
         @Pulse var shouldNavigateToRightMenu: Void?
-        @Pulse var shouldShowIamgePicker: Void?
+        @Pulse var shouldShowImagePicker: Void?
         @Pulse var shouldNavigateToGroupChatRoom: Int?
         @Pulse var shouldNavigateToBack: Void?
         @Pulse var errorMessage: String?
@@ -185,7 +185,7 @@ class ChatReactor: Reactor {
             newState.isOpenBottomMenu = isOpen
             
         case .setShouldShowImagePicker:
-            newState.shouldShowIamgePicker = ()
+            newState.shouldShowImagePicker = ()
             
         case .setIsChatCellMenuOpen(let isMenuOpen):
             newState.isChatCellMenuOpen = isMenuOpen
