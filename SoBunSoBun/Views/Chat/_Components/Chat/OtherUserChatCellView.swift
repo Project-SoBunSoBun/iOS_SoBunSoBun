@@ -1,5 +1,5 @@
 //
-//  OtherChatCellView.swift
+//  OtherUserChatCellView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 2/15/26.
@@ -13,7 +13,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class OtherChatCellView: UIView {
+class OtherUserChatCellView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -211,7 +211,7 @@ class OtherChatCellView: UIView {
         
         profileImageView.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
-            make.size.equalTo(OtherChatCellView.PROFILE_IMAGE_SIZE)
+            make.size.equalTo(OtherUserChatCellView.PROFILE_IMAGE_SIZE)
         }
         
         nicknameLabel.snp.makeConstraints { make in
@@ -398,7 +398,7 @@ class OtherChatCellView: UIView {
     }
 }
 
-extension OtherChatCellView {
+extension OtherUserChatCellView {
     func bind(model: ChatMessageModel) {
         profileImageView.rx
             .tapGesture()

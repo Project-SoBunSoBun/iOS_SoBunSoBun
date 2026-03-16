@@ -96,7 +96,7 @@ class ChatTableViewCell: UITableViewCell {
             return
         }
         
-        chatCellView = isMine ? MyChatCellView() : OtherChatCellView()
+        chatCellView = isMine ? MyChatCellView() : OtherUserChatCellView()
         
         contentView.addSubview(chatCellView)
         
@@ -125,7 +125,7 @@ class ChatTableViewCell: UITableViewCell {
                 .map { _ in myView.chatImageView.image }
                 .bind(to: didImageTapped)
                 .disposed(by: disposeBag)
-        } else if let otherView = chatCellView as? OtherChatCellView {
+        } else if let otherView = chatCellView as? OtherUserChatCellView {
             otherView.configureUI(model: model)
             otherView.bind(model: model)
             
