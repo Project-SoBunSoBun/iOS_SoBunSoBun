@@ -384,7 +384,7 @@ extension SettleUpView {
             self.reactor.action.onNext(.deleteSettleUpTapped(id: id))
         }
         
-        alert.onCancelTapped = {[weak self] in
+        alert.onCancelTapped = { [weak self] in
             guard let self = self else { return }
             
             self.logger.debug("취소됨")
