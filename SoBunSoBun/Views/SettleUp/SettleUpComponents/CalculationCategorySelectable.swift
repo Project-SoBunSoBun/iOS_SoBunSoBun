@@ -8,7 +8,6 @@
 import UIKit
 import SnapKit
 import RxSwift
-import RxGesture
 
 class CalculationCategorySelectable: UILabel {
     private let disposeBag = DisposeBag()
@@ -40,15 +39,6 @@ class CalculationCategorySelectable: UILabel {
         
         self.setContentCompressionResistancePriority(.required, for: .horizontal)
         self.setContentHuggingPriority(.required, for: .horizontal)
-        
-        self.rx
-            .tapGesture()
-            .when(.recognized)
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                isChecked.toggle()
-            })
-            .disposed(by: disposeBag)
     }
     
     private func toggleStyle() {

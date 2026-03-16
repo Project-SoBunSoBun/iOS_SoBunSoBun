@@ -84,12 +84,17 @@ class NavigationTabView: UIViewController {
         guard currentVC != newVC else { return }
         
         currentVC?.view.removeFromSuperview()
+        currentVC?.beginAppearanceTransition(false, animated: false)
+        currentVC?.endAppearanceTransition()
         
         containerView.addSubview(newVC.view)
         
         newVC.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+        
+        newVC.beginAppearanceTransition(true, animated: false)
+        newVC.endAppearanceTransition()
         
         currentVC = newVC
     }

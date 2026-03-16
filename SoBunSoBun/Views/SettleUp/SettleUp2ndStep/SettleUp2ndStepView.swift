@@ -10,7 +10,6 @@ import SnapKit
 import OSLog
 import RxSwift
 import RxCocoa
-import ReactorKit
 
 class SettleUp2ndStepView: UIViewController {
     typealias Reactor = SettleUp2ndStepReactor
@@ -99,7 +98,7 @@ class SettleUp2ndStepView: UIViewController {
         return lb
     }()
     
-    // 등록된 상품 수량 라벨 배경 뷰
+    // 참여자별 정산 안내 라벨 배경
     private let subtitleBackground: UIView = {
         let v = UIView()
         v.backgroundColor = .primary50
@@ -109,7 +108,7 @@ class SettleUp2ndStepView: UIViewController {
         return v
     }()
     
-    // 등록된 상품 수량 라벨
+    // 참여자별 정산 안내 라벨
     private let subtitleLabel: UILabel = {
         var attributes = body14.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.neutral800
@@ -266,7 +265,7 @@ extension SettleUp2ndStepView {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                let nextVC = SettleUp3rdStepView(model: model)
+                let nextVC = SettleUp3rdStepView(model: model, authorId: reactor.currentState.authorId)
                 self.navigationController?.pushViewController(nextVC, animated: true)
             })
             .disposed(by: disposeBag)

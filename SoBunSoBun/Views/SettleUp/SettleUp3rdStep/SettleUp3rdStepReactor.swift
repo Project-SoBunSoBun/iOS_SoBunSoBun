@@ -6,25 +6,60 @@
 //
 
 import ReactorKit
+import RxSwift
+import OSLog
 
 class SettleUp3rdStepReactor: Reactor {
-    let initialState = State()
+    let initialState: State
+    
+    init(model: SettleUp3rdStepDataModel, authorId: Int) {
+        self.initialState = State(model: model, authorId: authorId)
+    }
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "SettleUp.SettleUp3rdStep.Reactor"
+    )
+    
+    private let networkManager = SettleUpNetworkManager()
+    private let disposeBag = DisposeBag()
     
     enum Action {
-        
+        case saveButtonTapped
     }
     
     enum Mutation {
-        
+        case setLoading(Bool)
+        case setNavigateToSettleUpView
+        case setError
     }
     
     struct State {
+        let model: SettleUp3rdStepDataModel
+        let authorId: Int
         
+        var sortedParticipants: [SettleUp3rdStepParticipantModel] {
+            model.participants.sorted { lhs, rhs in
+                let lhsIsAuthor = lhs.userId == authorId
+                let rhsIsAuthor = rhs.userId == authorId
+                
+                if lhsIsAuthor != rhsIsAuthor {
+                    return lhsIsAuthor
+                }
+                
+                return false
+            }
+        }
+        var isLoading: Bool = false
+        
+        @Pulse var shouldNavigateToSettleUpView: Void? = nil
+        @Pulse var errorMessage: Void? = nil
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-            
+        case .saveButtonTapped:
+            return putSettlementComplete(model: currentState.model)
         }
     }
     
@@ -32,9 +67,37 @@ class SettleUp3rdStepReactor: Reactor {
         var newState = state
         
         switch mutation {
+        case .setLoading(let isLoading):
+            newState.isLoading = isLoading
             
+        case .setNavigateToSettleUpView:
+            newState.shouldNavigateToSettleUpView = ()
+            
+        case .setError:
+            newState.errorMessage = ()
         }
         
         return newState
+    }
+    
+    private func putSettlementComplete(model: SettleUp3rdStepDataModel) -> Observable<Mutation> {
+        return Observable.concat([
+            Observable.just(.setLoading(true)),
+            networkManager.putSettlementComplete(model: model)
+                .asObservable()
+                .flatMap { [weak self] _ -> Observable<Mutation> in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.debug("정산 등록 성공")
+                    return Observable.just(.setNavigateToSettleUpView)
+                }
+                .catch { [weak self] error in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.error("정산 등록 실패: \(error.localizedDescription)")
+                    return Observable.just(.setError)
+                },
+            Observable.just(.setLoading(false))
+        ])
     }
 }

@@ -113,12 +113,25 @@ class SettleUpView: UIViewController {
         return view
     }()
     
+    private let refreshControl: BlueMeatballsRefreshController = {
+        let rc = BlueMeatballsRefreshController()
+        
+        return rc
+    }()
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureUI()
         bind(reactor: reactor)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // viewWillAppear시 액션 전달
+        reactor.action.onNext(.viewWillAppear)
     }
     
     override func viewDidLayoutSubviews() {
@@ -189,6 +202,8 @@ class SettleUpView: UIViewController {
             make.top.equalTo(categoryStackView.snp.bottom).offset(8)
             make.bottom.equalToSuperview()
         }
+        
+        tableView.refreshControl = refreshControl
     }
 }
 
@@ -199,9 +214,6 @@ extension SettleUpView {
     }
     
     func bindAction(reactor: SettleUpReactor) {
-        // viewDidLoad시 액션 전달
-        reactor.action.onNext(.viewDidLoad)
-        
         // 전체 카테고리 선택
         allCategories.rx.tapGesture()
             .when(.recognized)
@@ -222,6 +234,27 @@ extension SettleUpView {
             .map { _ in Reactor.Action.categorySelected(.complete) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        // 새로고침
+        refreshControl.rx.controlEvent(.valueChanged)
+            .map { Reactor.Action.refresh }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 페이지네이션
+        tableView.rx.willDisplayCell
+            .filter { [weak self] cell, indexPath -> Bool in
+                guard let self = self else { return false }
+                
+                let totalCount = self.tableView.numberOfRows(inSection: 0)
+                let triggerCount = 3
+                
+                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
+            }
+            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
+            .map { _ in Reactor.Action.loadMore }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     func bindState(reactor: SettleUpReactor) {
@@ -236,6 +269,7 @@ extension SettleUpView {
         
         // TableView 데이터 바인딩
         reactor.state.map { $0.items }
+            .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(cellIdentifier: SettleUpTableViewCell.identifier, cellType: SettleUpTableViewCell.self)) { [weak self] _, item, cell in
                 guard let self = self else { return }
                 
@@ -320,6 +354,13 @@ extension SettleUpView {
             }
         })
         .disposed(by: disposeBag)
+        
+        // 새로고침
+        reactor.state.map { $0.isRefreshing }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind(to: refreshControl.rx.isRefreshing)
+            .disposed(by: disposeBag)
     }
     
     private func updateCategorySelection(_ category: SettleUpCategory) {
@@ -337,11 +378,15 @@ extension SettleUpView {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.onPrimaryTapped = { [weak self] in
+            guard let self = self else { return }
+            
             self.reactor.action.onNext(.deleteSettleUpTapped(id: id))
         }
         
-        alert.onCancelTapped = {
+        alert.onCancelTapped = { [weak self] in
+            guard let self = self else { return }
+            
             self.logger.debug("취소됨")
         }
         

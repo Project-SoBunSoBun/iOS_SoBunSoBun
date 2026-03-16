@@ -47,6 +47,7 @@ class SettleUpTableViewCell: UITableViewCell {
         
         let newIncompleteView = Incomplete(
             SettleUpStatus: item.settlementStatus,
+            isAuthor: item.isAuthor,
             title: item.title,
             location: item.location,
             meetingDate: item.meetingDate

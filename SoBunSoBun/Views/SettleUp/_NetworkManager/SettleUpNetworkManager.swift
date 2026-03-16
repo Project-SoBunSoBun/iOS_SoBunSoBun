@@ -32,4 +32,13 @@ class SettleUpNetworkManager {
         .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
+    
+    // 정산 완료 등록 메서드
+    func putSettlementComplete(model: SettleUp3rdStepDataModel) -> Single<Void> {
+        return authProvider.rx.request(
+            MultiTarget(SettleUpAPIs.putSettlementComplete(model: model))
+        )
+        .filterSuccessfulStatusCodes()
+        .map { _ in () }
+    }
 }

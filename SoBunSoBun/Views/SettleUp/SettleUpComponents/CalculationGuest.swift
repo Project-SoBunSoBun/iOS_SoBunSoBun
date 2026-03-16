@@ -242,11 +242,15 @@ class CalculationGuest: UIView {
         
         selectedGuestsStackView.snp.remakeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
-
-            let topAnchor = divider.superview != nil ? divider.snp.bottom : participantLabelsView.snp.bottom
-            let offset = divider.superview != nil ? 16 : 0
             
-            make.top.equalTo(topAnchor).offset(offset)
+            if divider.superview != nil {
+                make.top.equalTo(divider.snp.bottom).offset(16)
+            } else if participantLabelsView.superview != nil {
+                make.top.equalTo(participantLabelsView.snp.bottom)
+            } else {
+                make.top.equalTo(productLabel.snp.bottom)
+            }
+            
             make.bottom.equalToSuperview().inset(16).priority(.high)
         }
         
@@ -259,7 +263,7 @@ class CalculationGuest: UIView {
         
         // 선택된 참여자 Set에 추가
         selectedParticipants.insert(nickname)
-
+        
         // 구분선 표시
         if divider.superview == nil {
             showDivider()
@@ -330,7 +334,13 @@ class CalculationGuest: UIView {
         
         selectedGuestsStackView.snp.remakeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16).priority(.high)
-            make.top.equalTo(dividerTopAnchor)
+            
+            if participantLabelsView.superview != nil {
+                make.top.equalTo(participantLabelsView.snp.bottom)
+            } else {
+                make.top.equalTo(productLabel.snp.bottom)
+            }
+            
             make.bottom.equalToSuperview().inset(16).priority(.high)
         }
     }
