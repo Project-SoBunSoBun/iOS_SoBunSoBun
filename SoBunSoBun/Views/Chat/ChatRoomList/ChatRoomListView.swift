@@ -176,11 +176,8 @@ extension ChatRoomListView {
         
         privateChatTableView.rx.modelSelected(ChatRoomListResponseDataModel.self)
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] model in
-                guard let self = self else { return }
-                
-                self.navigationController?.pushViewController(ChatView(chatRoomId: model.roomId), animated: true)
-            })
+            .map { Reactor.Action.chatRoomTapped($0) }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         groupChatTableView.rx.modelSelected(ChatRoomListResponseDataModel.self)
@@ -221,6 +218,16 @@ extension ChatRoomListView {
             .bind(to: groupChatTableView.rx.items(cellIdentifier: ChatRoomListCellTableViewCell.identifier, cellType: ChatRoomListCellTableViewCell.self)) { _, model, cell in
                 cell.configureUI(model: model)
             }
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldPushChatView)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(ChatView(chatRoomId: model.roomId), animated: true)
+            })
             .disposed(by: disposeBag)
     }
 }

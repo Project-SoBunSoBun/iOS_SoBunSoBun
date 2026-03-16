@@ -23,17 +23,20 @@ class ChatRoomListReactor: Reactor {
     enum Action {
         case tabButtonTapped(Int)
         case receivedChatRoomList([ChatRoomListResponseDataModel])
+        case chatRoomTapped(ChatRoomListResponseDataModel)
     }
     
     enum Mutation {
         case setTabIndex(Int)
         case setChatRoomList([ChatRoomListResponseDataModel])
+        case setShouldPushChatView(ChatRoomListResponseDataModel)
     }
     
     struct State {
         var tabIndex: Int = 0
         var privateChatRoomList: [ChatRoomListResponseDataModel] = []
         var groupChatRoomList: [ChatRoomListResponseDataModel] = []
+        @Pulse var shouldPushChatView: ChatRoomListResponseDataModel?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -43,6 +46,9 @@ class ChatRoomListReactor: Reactor {
             
         case .receivedChatRoomList(let models):
             return Observable.just(.setChatRoomList(models))
+            
+        case .chatRoomTapped(let model):
+            return Observable.just(.setShouldPushChatView(model))
         }
     }
     
@@ -56,6 +62,9 @@ class ChatRoomListReactor: Reactor {
         case .setChatRoomList(let models):
             newState.privateChatRoomList = models.filter { $0.roomType == .ONE_TO_ONE }
             newState.groupChatRoomList = models.filter { $0.roomType == .GROUP }
+            
+        case .setShouldPushChatView(let model):
+            newState.shouldPushChatView = model
         }
         
         return newState

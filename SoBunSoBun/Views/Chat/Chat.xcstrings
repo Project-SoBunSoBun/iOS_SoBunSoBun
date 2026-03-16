@@ -121,6 +121,17 @@
         }
       }
     },
+    "CreatedChatRoom" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님과 대화해보세요!"
+          }
+        }
+      }
+    },
     "ErrorAcceptGroupChatRoomMessage" : {
       "extractionState" : "manual",
       "localizations" : {

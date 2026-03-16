@@ -182,6 +182,8 @@ class ChatRoomListCellView: UIView {
             case .LEAVE:
                 lastMessageString = String(format: String(localized: "UserMessageLeft", table: "Chat"), nickname)
             }
+        } else {
+            lastMessageString = String(format: String(localized: "CreatedChatRoom", table: "Chat"), model.roomName)
         }
         
         var lastSentAtString: String = ""
