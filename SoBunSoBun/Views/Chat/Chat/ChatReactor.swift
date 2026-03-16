@@ -294,7 +294,6 @@ class ChatReactor: Reactor {
                 return message
             }
             
-            
             if currentState.messages.isEmpty, let latestMessageId = messages.first?.id {
                 webSocketManager.read(lastMessageId: latestMessageId)
             }
