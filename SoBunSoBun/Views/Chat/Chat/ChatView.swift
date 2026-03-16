@@ -188,6 +188,12 @@ class ChatView: UIViewController {
         navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        reactor.action.onNext(.viewWillAppear)
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -259,8 +265,6 @@ extension ChatView {
     }
     
     private func bindAction(reactor: ChatReactor) {
-        reactor.action.onNext(.viewDidLoad)
-        
         // 오른쪽 메뉴 버튼
         rightMenuButton.rx.tap
             .map { Reactor.Action.rightMenuButtonTapped }

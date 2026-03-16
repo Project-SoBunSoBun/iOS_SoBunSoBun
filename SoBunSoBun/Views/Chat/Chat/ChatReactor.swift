@@ -37,7 +37,7 @@ class ChatReactor: Reactor {
     let initialState: State = State()
     
     enum Action {
-        case viewDidLoad
+        case viewWillAppear
         case getMoreMessages // 과거 채팅 더 불러오기
         case sendMessage(String) // 텍스트 전송
         case rightMenuButtonTapped // 오른쪽 메뉴 버튼 누름
@@ -91,7 +91,7 @@ class ChatReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .viewDidLoad:
+        case .viewWillAppear:
             connectWebSocket()
             return Observable.concat([
                 getDetailInfo(),
