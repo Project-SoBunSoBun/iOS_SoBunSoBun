@@ -44,6 +44,15 @@ class SettleUp2ndStepReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .registerButtonTapped(let selections):
+            // 음수 입력 검증
+            let hasNegative = selections.contains { product in
+                product.selections.contains { $0.value < 0 }
+            }
+            
+            if hasNegative {
+                return Observable.just(.setValidationError("ValidationNagativeError"))
+            }
+            
             // 수량 검증
             let hasInvalid = selections.contains { product in
                 let inputTotal = product.selections.map { $0.value }.reduce(0, +)
@@ -52,7 +61,7 @@ class SettleUp2ndStepReactor: Reactor {
             }
             
             if hasInvalid {
-                return Observable.just(.setValidationError("ValidationError"))
+                return Observable.just(.setValidationError("ValidationCheckQuantity"))
             }
             
             let model = transformNextStepModel(selections: selections)

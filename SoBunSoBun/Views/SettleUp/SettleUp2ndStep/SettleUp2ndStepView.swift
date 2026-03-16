@@ -270,23 +270,23 @@ extension SettleUp2ndStepView {
             })
             .disposed(by: disposeBag)
         
-        // 수량 불일치 알림
+        // 검증 오류 알림
         reactor.pulse(\.$validationError)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.validationErrorAlert(title: message)
+                self.validationErrorAlert(subtitle: message)
             })
             .disposed(by: disposeBag)
     }
     
-    // 수량 불일치 알러트
-    private func validationErrorAlert(title: String) {
+    // 검증 오류 알러트
+    private func validationErrorAlert(subtitle: String) {
         let alert = CustomAlertView(
-            title: NSLocalizedString(title, tableName: "SettleUp", comment: ""),
-            subTitle: String(localized: "ValidationCheckQuantity", table: "SettleUp"),
+            title: String(localized: "ValidationError", table: "SettleUp"),
+            subTitle: NSLocalizedString(subtitle, tableName: "SettleUp", comment: ""),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
