@@ -128,6 +128,8 @@ class OtherChatCellView: UIView {
         sv.addArrangedSubview(iv)
         
         let title = UILabel()
+        title.numberOfLines = 0
+        
         var titleAttributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
         titleAttributes[.foregroundColor] = UIColor.primary400
         title.attributedText = NSAttributedString(string: String(localized: "InvitationCardReceivedTitle", table: "Chat"), attributes: titleAttributes)
@@ -135,6 +137,8 @@ class OtherChatCellView: UIView {
         sv.addArrangedSubview(title)
         
         let subTitle = UILabel()
+        subTitle.numberOfLines = 0
+        
         var subTitleAttributes: [NSAttributedString.Key: Any] = body14.attributes(alignment: .center)
         subTitleAttributes[.foregroundColor] = UIColor.neutral600
         subTitle.attributedText = NSAttributedString(string: String(localized: "InvitationCardReceivedSubTitle", table: "Chat"), attributes: subTitleAttributes)
@@ -164,6 +168,8 @@ class OtherChatCellView: UIView {
         sv.addArrangedSubview(iv)
         
         let title = UILabel()
+        title.numberOfLines = 0
+        
         var titleAttributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
         titleAttributes[.foregroundColor] = UIColor.primary400
         title.attributedText = NSAttributedString(string: String(localized: "SettlementReceivedTitle", table: "Chat"), attributes: titleAttributes)
@@ -171,6 +177,8 @@ class OtherChatCellView: UIView {
         sv.addArrangedSubview(title)
         
         let subTitle = UILabel()
+        subTitle.numberOfLines = 0
+        
         var subTitleAttributes: [NSAttributedString.Key: Any] = body14.attributes(alignment: .center)
         subTitleAttributes[.foregroundColor] = UIColor.neutral600
         subTitle.attributedText = NSAttributedString(string: String(localized: "SettlementReceivedSubTitle", table: "Chat"), attributes: subTitleAttributes)

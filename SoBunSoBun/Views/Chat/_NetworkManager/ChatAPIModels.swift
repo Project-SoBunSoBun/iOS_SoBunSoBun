@@ -42,6 +42,11 @@ struct ChatSendMessageModel: Encodable, Equatable {
     let cardPayload: String? = nil
 }
 
+struct ChatReadMessageModel: Encodable {
+    let roomId: Int
+    let lastReadMessageId: String
+}
+
 // 과거 메시지 불러오기 모델
 struct ChatMessageHistoryModel: Decodable, Equatable {
     let status: String

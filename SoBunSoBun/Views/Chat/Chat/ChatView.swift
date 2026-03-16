@@ -197,9 +197,7 @@ class ChatView: UIViewController {
         super.viewDidDisappear(animated)
         
         chatTextView.textView.inputView = nil
-        reactor.webSocketManager.disconnect()
-        
-        NotificationCenter.default.post(name: .init("RefreshChatRoomList"), object: nil)
+        reactor.action.onNext(.viewDidDisappear)
     }
     
     // MARK: - 레이아웃 설정

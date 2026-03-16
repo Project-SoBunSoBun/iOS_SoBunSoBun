@@ -85,6 +85,8 @@ class MyChatCellView: UIView {
         sv.addArrangedSubview(iv)
         
         let lb = UILabel()
+        lb.numberOfLines = 0
+        
         var attributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary400
         lb.attributedText = NSAttributedString(string: String(localized: "InvitationCardSentTitle", table: "Chat"), attributes: attributes)
@@ -112,6 +114,8 @@ class MyChatCellView: UIView {
         sv.addArrangedSubview(iv)
         
         let lb = UILabel()
+        lb.numberOfLines = 0
+        
         var attributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary400
         lb.attributedText = NSAttributedString(string: String(localized: "SettlementSentTitle", table: "Chat"), attributes: attributes)

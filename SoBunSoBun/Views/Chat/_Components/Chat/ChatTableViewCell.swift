@@ -81,9 +81,16 @@ class ChatTableViewCell: UITableViewCell {
             contentView.addSubview(chatView)
             
             chatView.snp.makeConstraints { make in
-                make.verticalEdges.equalToSuperview()
                 make.width.greaterThanOrEqualTo(UIScreen.main.bounds.width * 0.5867)
                 make.centerX.equalToSuperview()
+                
+                if isFirstChatOfDay {
+                    make.top.equalTo(dateView.snp.bottom).offset(16)
+                } else {
+                    make.top.equalToSuperview()
+                }
+                
+                make.bottom.equalToSuperview().inset(16).priority(.high)
             }
             
             return
@@ -155,13 +162,14 @@ class ChatTableViewCell: UITableViewCell {
         }
         
         chatCellView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            
             if isFirstChatOfDay {
                 make.top.equalTo(dateView.snp.bottom).offset(16)
             } else {
                 make.top.equalToSuperview()
             }
             
-            make.horizontalEdges.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().inset(16).priority(.high)
         }
     }
