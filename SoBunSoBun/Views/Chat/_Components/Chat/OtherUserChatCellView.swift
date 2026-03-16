@@ -231,7 +231,15 @@ class OtherUserChatCellView: UIView {
         
         invitationCardView.addArrangedSubview(invitationAcceptButton)
         
+        invitationAcceptButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+        }
+        
         settlementCardView.addArrangedSubview(settlementConfirmButton)
+        
+        settlementConfirmButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+        }
         
         timeLabel.snp.makeConstraints { make in
             make.leading.equalTo(chatBubbleView.snp.trailing).offset(4)
