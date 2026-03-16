@@ -81,15 +81,22 @@ class ChatTableViewCell: UITableViewCell {
             contentView.addSubview(chatView)
             
             chatView.snp.makeConstraints { make in
-                make.verticalEdges.equalToSuperview()
                 make.width.greaterThanOrEqualTo(UIScreen.main.bounds.width * 0.5867)
                 make.centerX.equalToSuperview()
+                
+                if isFirstChatOfDay {
+                    make.top.equalTo(dateView.snp.bottom).offset(16)
+                } else {
+                    make.top.equalToSuperview()
+                }
+                
+                make.bottom.equalToSuperview().inset(16).priority(.high)
             }
             
             return
         }
         
-        chatCellView = isMine ? MyChatCellView() : OtherChatCellView()
+        chatCellView = isMine ? MyChatCellView() : OtherUserChatCellView()
         
         contentView.addSubview(chatCellView)
         
@@ -118,7 +125,7 @@ class ChatTableViewCell: UITableViewCell {
                 .map { _ in myView.chatImageView.image }
                 .bind(to: didImageTapped)
                 .disposed(by: disposeBag)
-        } else if let otherView = chatCellView as? OtherChatCellView {
+        } else if let otherView = chatCellView as? OtherUserChatCellView {
             otherView.configureUI(model: model)
             otherView.bind(model: model)
             
@@ -155,13 +162,14 @@ class ChatTableViewCell: UITableViewCell {
         }
         
         chatCellView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            
             if isFirstChatOfDay {
                 make.top.equalTo(dateView.snp.bottom).offset(16)
             } else {
                 make.top.equalToSuperview()
             }
             
-            make.horizontalEdges.equalToSuperview().inset(16)
             make.bottom.equalToSuperview().inset(16).priority(.high)
         }
     }

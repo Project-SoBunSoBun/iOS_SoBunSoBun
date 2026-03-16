@@ -19,7 +19,7 @@ class ChatReactor: Reactor {
     }
     
     deinit {
-        webSocketManager.disconnect()
+        _ = disappearChatRoom()
     }
     
     private let logger = Logger(
@@ -37,7 +37,7 @@ class ChatReactor: Reactor {
     let initialState: State = State()
     
     enum Action {
-        case viewDidLoad
+        case viewWillAppear
         case getMoreMessages // 과거 채팅 더 불러오기
         case sendMessage(String) // 텍스트 전송
         case rightMenuButtonTapped // 오른쪽 메뉴 버튼 누름
@@ -51,10 +51,12 @@ class ChatReactor: Reactor {
         case acceptGroupChatRoom(Int) // 그룹 채팅방 초대 수락(개인 채팅 전용)
         case sendSettlementCard(Int) // 정산서 보내기
         case leaveChatRoom // 채팅방 나가기
+        case viewDidDisappear // 채팅방 navigate pop
     }
     
     enum Mutation {
         case setDetailInfo(ChatRoomDetailModel) // 채팅방 상세 정보 설정
+        case setHasLoadedFromServer(Bool) // 서버에서 메시지 불러옴
         case updateMessages([ChatMessageModel]) // 메시지 데이터 업데이트
         case addNewMessage(ChatMessageModel) // 메시지 추가
         case setIsServerMessageEmpty(Bool) // 서버의 과거 메시지가 캐싱된 메시지보다 부족할 때
@@ -73,13 +75,14 @@ class ChatReactor: Reactor {
     struct State {
         var detailInfoModel: ChatRoomDetailModel?
         var messages: [ChatMessageModel] = []
+        var hasLoadedFromServer: Bool = false
         var isServerMessageEmpty: Bool = false
         var isDBMessageEmpty: Bool = false
         var isOpenBottomMenu: Bool = false
         var isChatCellMenuOpen: Bool = false
         var selectedChatMessageModel: ChatMessageModel?
         @Pulse var shouldNavigateToRightMenu: Void?
-        @Pulse var shouldShowIamgePicker: Void?
+        @Pulse var shouldShowImagePicker: Void?
         @Pulse var shouldNavigateToGroupChatRoom: Int?
         @Pulse var shouldNavigateToBack: Void?
         @Pulse var errorMessage: String?
@@ -88,7 +91,7 @@ class ChatReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .viewDidLoad:
+        case .viewWillAppear:
             connectWebSocket()
             return Observable.concat([
                 getDetailInfo(),
@@ -134,6 +137,9 @@ class ChatReactor: Reactor {
             
         case .leaveChatRoom:
             return leaveChatRoom()
+            
+        case .viewDidDisappear:
+            return disappearChatRoom()
         }
     }
     
@@ -144,6 +150,9 @@ class ChatReactor: Reactor {
         switch mutation {
         case .setDetailInfo(let model):
             newState.detailInfoModel = model
+            
+        case .setHasLoadedFromServer(let hasLoaded):
+            newState.hasLoadedFromServer = hasLoaded
             
         case .updateMessages(let models):
             var dict = Dictionary(uniqueKeysWithValues: currentState.messages.map { ($0.id, $0) })
@@ -176,7 +185,7 @@ class ChatReactor: Reactor {
             newState.isOpenBottomMenu = isOpen
             
         case .setShouldShowImagePicker:
-            newState.shouldShowIamgePicker = ()
+            newState.shouldShowImagePicker = ()
             
         case .setIsChatCellMenuOpen(let isMenuOpen):
             newState.isChatCellMenuOpen = isMenuOpen
@@ -285,6 +294,10 @@ class ChatReactor: Reactor {
                 return message
             }
             
+            if currentState.messages.isEmpty, let latestMessageId = messages.first?.id {
+                webSocketManager.read(lastMessageId: latestMessageId)
+            }
+            
             return Observable.concat([
                 Observable.just(Mutation.updateMessages(updatedMessages)),
                 Observable.just(.setIsDBMessageEmpty(self.MESSAGE_LIMIT_COUNT > messages.count))
@@ -314,7 +327,12 @@ class ChatReactor: Reactor {
             
             self.databaseManager.insertMessages(models.data)
             
+            if !currentState.hasLoadedFromServer, let latestMessageId = models.data.first?.id {
+                webSocketManager.read(lastMessageId: latestMessageId)
+            }
+            
             return Observable.concat([
+                Observable.just(.setHasLoadedFromServer(true)),
                 Observable.just(.updateMessages(models.data)),
                 Observable.just(.setIsServerMessageEmpty(self.MESSAGE_LIMIT_COUNT > models.data.count))
             ])
@@ -455,5 +473,16 @@ class ChatReactor: Reactor {
                 
                 return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
             }
+    }
+    
+    // 채팅방 navigate pop
+    private func disappearChatRoom() -> Observable<Mutation> {
+        if let latestMessageId = currentState.messages.first?.id {
+            webSocketManager.read(lastMessageId: latestMessageId)
+        }
+        
+        webSocketManager.disconnect()
+        
+        return Observable.empty()
     }
 }

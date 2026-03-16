@@ -1,5 +1,5 @@
 //
-//  OtherChatCellView.swift
+//  OtherUserChatCellView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 2/15/26.
@@ -13,7 +13,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class OtherChatCellView: UIView {
+class OtherUserChatCellView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -128,6 +128,8 @@ class OtherChatCellView: UIView {
         sv.addArrangedSubview(iv)
         
         let title = UILabel()
+        title.numberOfLines = 0
+        
         var titleAttributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
         titleAttributes[.foregroundColor] = UIColor.primary400
         title.attributedText = NSAttributedString(string: String(localized: "InvitationCardReceivedTitle", table: "Chat"), attributes: titleAttributes)
@@ -135,6 +137,8 @@ class OtherChatCellView: UIView {
         sv.addArrangedSubview(title)
         
         let subTitle = UILabel()
+        subTitle.numberOfLines = 0
+        
         var subTitleAttributes: [NSAttributedString.Key: Any] = body14.attributes(alignment: .center)
         subTitleAttributes[.foregroundColor] = UIColor.neutral600
         subTitle.attributedText = NSAttributedString(string: String(localized: "InvitationCardReceivedSubTitle", table: "Chat"), attributes: subTitleAttributes)
@@ -164,6 +168,8 @@ class OtherChatCellView: UIView {
         sv.addArrangedSubview(iv)
         
         let title = UILabel()
+        title.numberOfLines = 0
+        
         var titleAttributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
         titleAttributes[.foregroundColor] = UIColor.primary400
         title.attributedText = NSAttributedString(string: String(localized: "SettlementReceivedTitle", table: "Chat"), attributes: titleAttributes)
@@ -171,6 +177,8 @@ class OtherChatCellView: UIView {
         sv.addArrangedSubview(title)
         
         let subTitle = UILabel()
+        subTitle.numberOfLines = 0
+        
         var subTitleAttributes: [NSAttributedString.Key: Any] = body14.attributes(alignment: .center)
         subTitleAttributes[.foregroundColor] = UIColor.neutral600
         subTitle.attributedText = NSAttributedString(string: String(localized: "SettlementReceivedSubTitle", table: "Chat"), attributes: subTitleAttributes)
@@ -203,7 +211,7 @@ class OtherChatCellView: UIView {
         
         profileImageView.snp.makeConstraints { make in
             make.top.leading.equalToSuperview()
-            make.size.equalTo(OtherChatCellView.PROFILE_IMAGE_SIZE)
+            make.size.equalTo(OtherUserChatCellView.PROFILE_IMAGE_SIZE)
         }
         
         nicknameLabel.snp.makeConstraints { make in
@@ -390,7 +398,7 @@ class OtherChatCellView: UIView {
     }
 }
 
-extension OtherChatCellView {
+extension OtherUserChatCellView {
     func bind(model: ChatMessageModel) {
         profileImageView.rx
             .tapGesture()

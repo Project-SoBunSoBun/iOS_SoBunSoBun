@@ -8,6 +8,7 @@
 import Foundation
 import SwiftStomp
 import UIKit
+import RxSwift
 import RxCocoa
 import OSLog
 
@@ -25,6 +26,8 @@ class ChatRoomListWebSocketManager {
     
     private var tryCount: Int = 0
     private var subscribeUrl: String = ""
+    
+    private let disposeBag = DisposeBag()
     
     func connect() {
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
@@ -62,20 +65,37 @@ class ChatRoomListWebSocketManager {
         isRefreshing = true
         logger.debug("401 에러 감지 - 토큰 갱신 시작")
         
-        AuthInterceptor.shared.refreshAccessToken { [weak self] isSuccess in
-            guard let self = self else { return }
+        guard let refreshToken = KeyChain.shared.get(key: "REFRESH_TOKEN") else {
+            AuthManager.shared.logout()
+            logger.fault("리프레시 토큰 없음")
             
-            self.isRefreshing = false
-            
-            if isSuccess, let newToken = KeyChain.shared.get(key: "ACCESS_TOKEN") {
-                self.reconnect(token: newToken)
-            } else {
-                AuthManager.shared.logout()
-            }
+            return
         }
+        
+        let networkManager = CommonNetworkManager()
+        
+        networkManager.refreshAccessToken(refreshToken: refreshToken)
+            .asObservable()
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                KeyChain.shared.set(key: "ACCESS_TOKEN", value: model.accessToken)
+                KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: model.accessTokenExpiresAtKst)
+                
+                self.isRefreshing = false
+                reconnect()
+                
+                logger.debug("[재발급한 ACCESS_TOKEN]\n\n\(model.accessToken)")
+            }, onError: { [weak self] error in
+                guard let self = self else { return }
+                
+                self.isRefreshing = false
+                logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
     
-    private func reconnect(token: String) {
+    private func reconnect() {
         tryCount = 0
         logger.debug("채팅방 목록 WebSocket 재연결 시작")
         disconnect()

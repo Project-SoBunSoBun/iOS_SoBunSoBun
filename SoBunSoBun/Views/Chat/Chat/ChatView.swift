@@ -43,7 +43,14 @@ class ChatView: UIViewController {
     
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
-        tnb.parentViewController = self
+        tnb.onBackButtonTapped = {
+            guard let navController = self.navigationController,
+                  let navigationTabView = navController.viewControllers.first(where: { $0 is NavigationTabView }) as? NavigationTabView else {
+                return
+            }
+            
+            navController.popToViewController(navigationTabView, animated: true)
+        }
         tnb.backgroundColor = .backgroundWhite.withAlphaComponent(0.95)
         
         return tnb
@@ -181,6 +188,12 @@ class ChatView: UIViewController {
         navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        reactor.action.onNext(.viewWillAppear)
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
@@ -197,9 +210,7 @@ class ChatView: UIViewController {
         super.viewDidDisappear(animated)
         
         chatTextView.textView.inputView = nil
-        reactor.webSocketManager.disconnect()
-        
-        NotificationCenter.default.post(name: .init("RefreshChatRoomList"), object: nil)
+        reactor.action.onNext(.viewDidDisappear)
     }
     
     // MARK: - 레이아웃 설정
@@ -254,8 +265,6 @@ extension ChatView {
     }
     
     private func bindAction(reactor: ChatReactor) {
-        reactor.action.onNext(.viewDidLoad)
-        
         // 오른쪽 메뉴 버튼
         rightMenuButton.rx.tap
             .map { Reactor.Action.rightMenuButtonTapped }
@@ -771,7 +780,7 @@ extension ChatView {
             .disposed(by: disposeBag)
         
         // 이미지 피커 표시
-        reactor.pulse(\.$shouldShowIamgePicker)
+        reactor.pulse(\.$shouldShowImagePicker)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
@@ -881,7 +890,6 @@ extension ChatView {
                 return
             }
             
-            navigationTabView.changeTabViewIndex(index: 2)
             navController.popToViewController(navigationTabView, animated: true)
         }
         
