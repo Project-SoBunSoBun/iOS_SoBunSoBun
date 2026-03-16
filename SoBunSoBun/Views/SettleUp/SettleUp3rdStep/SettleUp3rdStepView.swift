@@ -12,15 +12,12 @@ import RxSwift
 import RxCocoa
 
 class SettleUp3rdStepView: UIViewController {
-    typealias Reactor = SettleUp3rdStepReactor
-    private let reactor: SettleUp3rdStepReactor
-        
-    private let authodId: Int
+    private let authorId: Int
     
     init(model: SettleUp3rdStepDataModel, authorId: Int) {
         reactor = SettleUp3rdStepReactor(model: model, authorId: authorId)
         
-        self.authodId = authorId
+        self.authorId = authorId
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -28,6 +25,9 @@ class SettleUp3rdStepView: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    typealias Reactor = SettleUp3rdStepReactor
+    private let reactor: SettleUp3rdStepReactor
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
@@ -157,7 +157,7 @@ class SettleUp3rdStepView: UIViewController {
         tableView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(subtitleBackground.snp.bottom).offset(16)
-            make.bottom.equalTo(saveButton.snp.top).offset(-16)
+            make.bottom.equalTo(saveButton.snp.top).inset(16)
         }
         
         saveButton.snp.makeConstraints { make in
@@ -210,9 +210,11 @@ extension SettleUp3rdStepView {
         // subtitle 바인딩
         reactor.state.map { $0.model.totalAmount }
             .distinctUntilChanged()
-            .bind(with: self) { owner, totalAmount in
-                owner.setSubtitleLabel(totalAmount: totalAmount)
-            }
+            .subscribe(onNext: { [weak self] totalAmount in
+                guard let self = self else { return }
+                
+                self.setSubtitleLabel(totalAmount: totalAmount)
+            })
             .disposed(by: disposeBag)
         
         // TableView 데이터 바인딩
@@ -225,7 +227,7 @@ extension SettleUp3rdStepView {
                 
                 cell.selectionStyle = .none
                 
-                cell.configureUI(model: item, authorId: self.authodId)
+                cell.configureUI(model: item, authorId: self.authorId)
             }
             .disposed(by: disposeBag)
         
@@ -269,7 +271,9 @@ extension SettleUp3rdStepView {
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.onPrimaryTapped = { [weak self] in
+            guard let self = self else { return }
+            
             self.logger.debug("확인 버튼 클릭")
         }
         

@@ -39,8 +39,14 @@ class SettleUp3rdStepReactor: Reactor {
         let authorId: Int
         
         var sortedParticipants: [SettleUp3rdStepParticipantModel] {
-            model.participants.sorted { lhs, _ in
-                lhs.userId == authorId
+            model.participants.sorted { lhs, rhs in
+                let lhsIsAuthor = lhs.userId == authorId
+                let rhsIsAuthor = rhs.userId == authorId
+                
+                if lhsIsAuthor != rhsIsAuthor {
+                    return lhsIsAuthor
+                }
+                return false
             }
         }
         var isLoading: Bool = false
@@ -87,7 +93,7 @@ class SettleUp3rdStepReactor: Reactor {
                 .catch { [weak self] error in
                     guard let self = self else { return Observable.empty() }
                     
-                    self.logger.error("정산 삭제 실패: \(error.localizedDescription)")
+                    self.logger.error("정산 등록 실패: \(error.localizedDescription)")
                     return Observable.just(.setError)
                 },
             Observable.just(.setLoading(false))

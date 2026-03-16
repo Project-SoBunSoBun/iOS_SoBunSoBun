@@ -73,7 +73,7 @@ extension SettleUpAPIs: TargetType {
                             SettlementCompleteItemModel(
                                 itemName: item.itemName,
                                 quantity: item.quantity,
-                                unit: item.unitIndex == 1 ? "개" : "g",
+                                unit: item.unitIndex == 1 ? String(localized: "Count", table: "SettleUp") : "g",
                                 amount: item.amount
                             )
                     }

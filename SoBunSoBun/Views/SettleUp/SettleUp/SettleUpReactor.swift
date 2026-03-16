@@ -40,6 +40,7 @@ class SettleUpReactor: Reactor {
         case setSelectedCategory(SettleUpCategory)
         case setItems([SettleUpItemModel])
         case setLoading(Bool)
+        case appendItems([SettleUpItemModel])
         case setPage(Int)
         case setHasMore(Bool)
         case setRefreshing(Bool)
@@ -60,7 +61,7 @@ class SettleUpReactor: Reactor {
         switch action {
             
         case .viewWillAppear:
-            return loadItems(page: currentState.page, size: pageSize)
+            return loadItems(page: 0, size: pageSize)
             
         case .refresh:
             return Observable.concat([
@@ -105,6 +106,9 @@ class SettleUpReactor: Reactor {
             
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
+            
+        case .appendItems(let items):
+            newState.items.append(contentsOf: items)
             
         case .setPage(let page):
             newState.page = page

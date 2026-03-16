@@ -378,11 +378,15 @@ extension SettleUpView {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.onPrimaryTapped = { [weak self] in
+            guard let self = self else { return }
+            
             self.reactor.action.onNext(.deleteSettleUpTapped(id: id))
         }
         
-        alert.onCancelTapped = {
+        alert.onCancelTapped = {[weak self] in
+            guard let self = self else { return }
+            
             self.logger.debug("취소됨")
         }
         
