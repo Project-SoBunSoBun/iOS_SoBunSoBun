@@ -43,7 +43,14 @@ class ChatView: UIViewController {
     
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
-        tnb.parentViewController = self
+        tnb.onBackButtonTapped = {
+            guard let navController = self.navigationController,
+                  let navigationTabView = navController.viewControllers.first(where: { $0 is NavigationTabView }) as? NavigationTabView else {
+                return
+            }
+            
+            navController.popToViewController(navigationTabView, animated: true)
+        }
         tnb.backgroundColor = .backgroundWhite.withAlphaComponent(0.95)
         
         return tnb
@@ -879,7 +886,6 @@ extension ChatView {
                 return
             }
             
-            navigationTabView.changeTabViewIndex(index: 2)
             navController.popToViewController(navigationTabView, animated: true)
         }
         
