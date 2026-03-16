@@ -8,7 +8,6 @@
 import UIKit
 import SnapKit
 import RxSwift
-import RxGesture
 
 class CalculationCategorySelectable: UILabel {
     private let disposeBag = DisposeBag()
