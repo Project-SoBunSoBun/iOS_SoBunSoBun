@@ -371,6 +371,18 @@
         }
       }
     },
+    "TryAgain" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
     "UnavailableNickname" : {
       "comment" : "Common",
       "extractionState" : "manual",
