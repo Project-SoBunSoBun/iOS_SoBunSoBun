@@ -302,7 +302,9 @@ extension SettleUpView {
                         guard let self = self else { return }
                         
                         self.logger.debug("정산서 확인 버튼 탭: id=\(item.settlementId)")
-                        // TODO: 정산서 이동 로직
+                        
+                        let vc = SettlementConfirmView(settlementId: item.settlementId)
+                        self.navigationController?.pushViewController(vc, animated: true)
                     })
                     .disposed(by: cell.disposeBag)
                 
