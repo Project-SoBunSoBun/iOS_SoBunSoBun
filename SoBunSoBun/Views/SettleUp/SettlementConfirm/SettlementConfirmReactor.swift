@@ -1,5 +1,5 @@
 //
-//  SettlementConfirmRecator.swift
+//  SettlementConfirmReactor.swift
 //  SoBunSoBun
 //
 //  Created by 허성필 on 3/17/26.
@@ -64,7 +64,10 @@ class SettlementConfirmReactor: Reactor {
     }
     
     private func loadItems(settlementId: Int) -> Observable<Mutation> {
-        let currentUserId = KeyChain.shared.get(key: "USER_ID").flatMap { Int($0) } ?? -1
+        guard let userIdString = KeyChain.shared.get(key: "USER_ID"),
+              let currentUserId = Int(userIdString) else {
+            return Observable.empty()
+        }
         
         return networkManager.getSettlement(settlementId: settlementId)
             .asObservable()
@@ -92,7 +95,7 @@ class SettlementConfirmReactor: Reactor {
                 
                 self.logger.critical("정산 상세 데이터 조회 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setError("정산 상세 데이터 조회 실패"))
+                return .just(.setError("GetSettlementFailed"))
             }
     }
 }

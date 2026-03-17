@@ -161,7 +161,8 @@ extension SettlementConfirmView {
             )) { _, item, cell in
                 cell.selectionStyle = .none
                 
-                let currentUserId = KeyChain.shared.get(key: "USER_ID").flatMap { Int($0) } ?? -1
+                guard let userIdString = KeyChain.shared.get(key: "USER_ID"),
+                      let currentUserId = Int(userIdString) else { return }
                 
                 cell.configureUI(model: item, currentUserId: currentUserId)
             }
@@ -171,17 +172,17 @@ extension SettlementConfirmView {
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert()
+                self.errorAlert(title: message)
             })
             .disposed(by: disposeBag)
     }
     
-    private func errorAlert() {
+    private func errorAlert(title: String) {
         let alert = CustomAlertView(
-            title: String(localized: "GetSettlementFailed", table: "SettleUp"),
+            title: NSLocalizedString(title, tableName: "SettleUp", comment: ""),
             subTitle: String(localized: "ErrorMessage", table: "Common"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
