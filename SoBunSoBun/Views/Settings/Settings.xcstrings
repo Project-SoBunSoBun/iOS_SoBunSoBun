@@ -337,6 +337,18 @@
         }
       }
     },
+    "FailToLoadSavedPosts" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장 목록을 불러오는데 실패했습니다."
+          }
+        }
+      }
+    },
     "GroupBuyingRecord" : {
       "comment" : "Settings",
       "extractionState" : "manual",
