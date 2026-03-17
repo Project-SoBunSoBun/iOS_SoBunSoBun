@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 import OSLog
 
 class DeepLinkManager {
@@ -21,28 +22,30 @@ class DeepLinkManager {
     func handle(url: URL) {
         logger.debug("딥링크 감지됨: \(url)")
         
-        DispatchQueue.main.async {
-            guard let currentWindow else { return }
-            
-            let path = url.path
-            // let components = URLComponents(url: url, resolvingAgainstBaseURL: true)
-            // let queryItems = components?.queryItems
-            
-            // 게시글
-            if path.hasPrefix("/post/") {
-                let postIdString = path.replacingOccurrences(of: "/post/", with: "")
-                if let postId = Int(postIdString) {
-                    let vc = PostDetailView(postId: postId)
-                    currentWindow.rootViewController?.navigationController?.pushViewController(vc, animated: true)
-                }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self,
+                  let currentWindow,
+                  let nav = currentWindow.rootViewController as? UINavigationController else {
+                return
             }
             
-            // 프로필
-            if path.hasPrefix("/profile/") {
-                let profileIdString = path.replacingOccurrences(of: "/profile/", with: "")
-                if let profileId = Int(profileIdString) {
-                    
+            switch url.host {
+            case "post": // 게시글
+                if let postIdString = url.pathComponents.last,
+                   let postId = Int(postIdString) {
+                    let vc = PostDetailView(postId: postId)
+                    nav.pushViewController(vc, animated: true)
                 }
+                
+            case "profile": // 프로필
+                if let userIdString = url.pathComponents.last,
+                   let userId = Int(userIdString) {
+                    let vc = ProfileView(userId: userId)
+                    nav.pushViewController(vc, animated: true)
+                }
+                
+            default:
+                logger.fault("알 수 없는 딥링크 host: \(url.host ?? "nil")")
             }
         }
     }

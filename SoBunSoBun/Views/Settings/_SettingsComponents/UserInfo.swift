@@ -65,7 +65,7 @@ class UserInfo: UIView {
     
     private lazy var mannerStackView = makeStackView()
     
-    private lazy var mannerLabel = makeLabel(string: String(localized: "MannerScore", table: "Settings"))
+    private lazy var activityLabel = makeLabel(string: String(localized: "ActivityScore", table: "Settings"))
     
     private let mannerCountLabel = UILabel()
     
@@ -136,7 +136,7 @@ class UserInfo: UIView {
             allStackView.addArrangedSubview($0)
         }
         
-        [mannerLabel, mannerCountLabel].forEach {
+        [activityLabel, mannerCountLabel].forEach {
             mannerStackView.addArrangedSubview($0)
         }
         
@@ -149,17 +149,13 @@ class UserInfo: UIView {
         }
     }
     
-    func updateUI(_ profile: MyProfileModel) {
-        let mannerScore = Double(profile.data.mannerScore)
-        let participationCount = profile.data.participationCount
-        let hostCount = profile.data.hostCount
-        
+    func updateUI(activityScore: Int, participationCount: Int, hostCount: Int) {
         // 라벨의 attributes
         var attributes = title16.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary300
         
         // 매너점수 세팅
-        setMannerScore(mannerScore, attributes)
+        setActivityScore(activityScore, attributes)
         
         // 참여 횟수 세팅
         setParticipationCount(participationCount, attributes)
@@ -168,9 +164,9 @@ class UserInfo: UIView {
         setHostCount(hostCount, attributes)
     }
     
-    private func setMannerScore(_ mannerScore: Double, _ attributes: [NSAttributedString.Key: Any]) {
+    private func setActivityScore(_ activityScore: Int, _ attributes: [NSAttributedString.Key: Any]) {
         let mannerText = NSAttributedString(
-            string: String(format: "%.1f", mannerScore) + "/5.0",
+            string: String(activityScore),
             attributes: attributes
         )
         

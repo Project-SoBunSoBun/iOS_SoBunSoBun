@@ -17,8 +17,7 @@ struct MyProfileModel: Decodable {
 struct MyProfileDataModel: Decodable, Equatable {
     let userId: Int
     let nickname, profileImageUrl: String?
-    let mannerScore: Float16
-    let participationCount, hostCount: Int
+    let activityScore, participationCount, hostCount: Int
     let mannerTags: [MannerTagModel]?
 }
 

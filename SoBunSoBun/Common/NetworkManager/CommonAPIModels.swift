@@ -16,26 +16,31 @@ struct UserInfoModel: Decodable {
     let role: String
 }
 
-struct PostListResponseModel: Decodable {
+struct PostListResponseModel: Decodable, Equatable {
     let posts: [PostModel]
     let pageInfo: PostPageInfo
 }
 
-struct PostModel: Decodable {
+struct PostModel: Decodable, Equatable {
     let id, minMembers, maxMembers, joinedMembers: Int
     let owner: PostOwnerModel
     let title, categoryCode, itemsText, notesText, locationName, meetAt, deadlineAt, status, createdAt, updatedAt: String
     let content: String?
 }
 
-struct PostOwnerModel: Decodable {
+struct PostOwnerModel: Decodable, Equatable {
     let id: Int
     let nickname, profileImageUrl, address: String?
 }
 
-struct PostPageInfo: Decodable {
+struct PostPageInfo: Decodable, Equatable {
     let currentPage, pageSize, totalElements, totalPages: Int
     let last: Bool
+}
+
+struct PlainResponseModel: Decodable {
+    let success: Bool
+    let error: ErrorModel?
 }
 
 struct ErrorModel: Decodable {

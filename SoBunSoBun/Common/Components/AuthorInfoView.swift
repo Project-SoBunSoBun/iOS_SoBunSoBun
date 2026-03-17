@@ -13,14 +13,9 @@ import RxGesture
 import OSLog
 
 class AuthorInfoView: UIStackView {
-    var id: Int? {
-        didSet {
-            bind()
-        }
-    }
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         configureUI()
     }
     
@@ -159,8 +154,8 @@ class AuthorInfoView: UIStackView {
 }
 
 extension AuthorInfoView {
-    private func bind() {
-        Observable.combineLatest([
+    func bind(userId: Int) {
+        Observable.merge([
             profileImageView
                 .rx
                 .tapGesture()
@@ -171,7 +166,7 @@ extension AuthorInfoView {
                 .when(.recognized)
         ])
         .subscribe(onNext: { _ in
-            // TODO: 프로필 이동 구현
+            DeepLinkManager.shared.handle(url: URL(string: "sobunsobun://profile/\(userId)")!)
         })
         .disposed(by: disposeBag)
     }

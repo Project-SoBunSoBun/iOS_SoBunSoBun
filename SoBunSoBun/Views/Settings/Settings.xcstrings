@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "ActivityScore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "활동 점수"
+          }
+        }
+      }
+    },
     "AgreeInquiries" : {
       "comment" : "Settings",
       "extractionState" : "manual",

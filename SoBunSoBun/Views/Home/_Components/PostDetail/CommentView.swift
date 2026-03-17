@@ -52,11 +52,15 @@ class CommentView: UIView {
         return btn
     }()
     
-    private let commentLabel: UILabel = {
-        let lb = UILabel()
-        lb.numberOfLines = 0
+    private let commentLabel: UITextView = {
+        let tv = UITextView()
+        tv.isEditable = false
+        tv.isScrollEnabled = false
+        tv.backgroundColor = .clear
+        tv.textContainerInset = .zero
+        tv.textContainer.lineFragmentPadding = 0
         
-        return lb
+        return tv
     }()
     
     // MARK: - 댓글 AttributedText 변환
@@ -166,6 +170,7 @@ class CommentView: UIView {
         }
         
         // 댓글
+        commentLabel.delegate = self
         addSubview(commentLabel)
         
         commentLabel.snp.makeConstraints { make in
@@ -184,6 +189,7 @@ class CommentView: UIView {
             createdAt: model.createdAt,
             verifyLocation: model.userAddress
         )
+        authorInfoView.bind(userId: model.userId)
         
         // 댓글
         commentLabel.attributedText = CommentView.convertComment(
@@ -204,5 +210,11 @@ extension CommentView {
                 menuTap.accept(self.menuButton)
             })
             .disposed(by: disposeBag)
+    }
+}
+
+extension CommentView: UITextViewDelegate {
+    func textView(_ textView: UITextView, editMenuForTextIn range: NSRange, suggestedActions: [UIMenuElement]) -> UIMenu? {
+        return nil
     }
 }
