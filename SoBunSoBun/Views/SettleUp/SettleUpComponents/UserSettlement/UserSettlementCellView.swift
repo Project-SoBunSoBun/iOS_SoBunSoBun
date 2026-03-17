@@ -24,6 +24,13 @@ class UserSettlementCellView: UIStackView {
     private let productsLabel = UILabel()
     private let amountLabel = UILabel()
     
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+       
+        return formatter
+    }()
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         self.axis = .vertical
@@ -39,48 +46,55 @@ class UserSettlementCellView: UIStackView {
         }
     }
     
-    func configureUI(model: SettleUp3rdStepParticipantModel, authorId: Int) {
-        let isAuthor = (model.userId == authorId)
-        let backgroundColor: UIColor = isAuthor ? .primary400 : .primary50
-        let textColor: UIColor = isAuthor ? .backgroundWhite : .neutral600
+    // 공통 렌더링 메서드
+    func commonRender(nickname: String, itemNames: [String], assignedAmount: Int, isCurrentUser: Bool) {
+        let backgroundColor: UIColor = isCurrentUser ? .primary400 : .primary50
+        let textColor: UIColor = isCurrentUser ? .backgroundWhite : .neutral600
         
         self.backgroundColor = backgroundColor
         
-        // 닉네임 설정
+        // 닉네임
         let localizedMe = String(localized: "Me", table: "SettleUp")
-        let displayNickname = isAuthor ? "\(model.nickname)\(localizedMe)" : model.nickname
+        let displayNickname = isCurrentUser ? "\(nickname)\(localizedMe)" : nickname
         
         var nicknameAttributes = title16.attributes(alignment: .left)
         nicknameAttributes[.foregroundColor] = textColor
         
-        nicknameLabel.attributedText = NSAttributedString(
-            string: displayNickname,
-            attributes: nicknameAttributes
-        )
+        nicknameLabel.attributedText = NSAttributedString(string: displayNickname, attributes: nicknameAttributes)
         
-        // 상품명 설정
-        let productNames = model.items.map { $0.itemName }.joined(separator: ", ")
-        
+        // 상품명
         var productsAttributes = body14.attributes(alignment: .left)
         productsAttributes[.foregroundColor] = textColor
         
-        productsLabel.attributedText = NSAttributedString(
-            string: productNames,
-            attributes: productsAttributes
-        )
+        productsLabel.attributedText = NSAttributedString(string: itemNames.joined(separator: ", "), attributes: productsAttributes)
         
-        // 금액 설정
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        let formattedAmount = formatter.string(from: NSNumber(value: model.assignedAmount)) ?? "0"
+        // 금액
+        let formattedAmount = numberFormatter.string(from: NSNumber(value: assignedAmount)) ?? "0"
         let unit = String(localized: "KRW", table: "SettleUp")
         
         var amountAttributes = title16.attributes(alignment: .right)
         amountAttributes[.foregroundColor] = textColor
         
-        amountLabel.attributedText = NSAttributedString(
-            string: "\(formattedAmount)\(unit)",
-            attributes: amountAttributes
+        amountLabel.attributedText = NSAttributedString(string: "\(formattedAmount)\(unit)", attributes: amountAttributes)
+    }
+    
+    // 3단계 정산용
+    func configureUI(model: SettleUp3rdStepParticipantModel, authorId: Int) {
+        commonRender(
+            nickname: model.nickname,
+            itemNames: model.items.map { $0.itemName },
+            assignedAmount: model.assignedAmount,
+            isCurrentUser: model.userId == authorId
+        )
+    }
+    
+    // 정산 상세 조회용
+    func configureUI(model: SettlementParticipantModel, currentUserId: Int) {
+        commonRender(
+            nickname: model.userNickname,
+            itemNames: model.items.map { $0.itemName },
+            assignedAmount: model.assignedAmount,
+            isCurrentUser: model.userId == currentUserId
         )
     }
 }

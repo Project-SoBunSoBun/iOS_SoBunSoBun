@@ -112,6 +112,13 @@ class SettleUp3rdStepView: UIViewController {
         return view
     }()
     
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        
+        return formatter
+    }()
+    
     // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -172,10 +179,7 @@ class SettleUp3rdStepView: UIViewController {
     
     // model에서 받은 총 금액을 subtitleLabel에 표시
     private func setSubtitleLabel(totalAmount: Int) {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        
-        let formattedAmount = formatter.string(from: NSNumber(value: totalAmount)) ?? "0"
+        let formattedAmount = numberFormatter.string(from: NSNumber(value: totalAmount)) ?? "0"
         
         let subtitleText = String.localizedStringWithFormat(
             String(localized: "TotalSettlementAmountFormat", table: "SettleUp"),
@@ -224,8 +228,6 @@ extension SettleUp3rdStepView {
                 cellType: UserSettlementTableViewCell.self
             )) { [weak self] _, item, cell in
                 guard let self = self else { return }
-                
-                cell.selectionStyle = .none
                 
                 cell.configureUI(model: item, authorId: self.authorId)
             }

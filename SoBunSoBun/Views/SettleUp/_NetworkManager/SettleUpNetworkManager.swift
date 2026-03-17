@@ -41,4 +41,13 @@ class SettleUpNetworkManager {
         .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
+    
+    // 정산 상세 조회 메서드
+    func getSettlement(settlementId: Int) -> Single<SettlementResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettleUpAPIs.getSettlement(settlementId: settlementId))
+        )
+        .filterSuccessfulStatusCodes()
+        .tryMap(SettlementResponseModel.self)
+    }
 }

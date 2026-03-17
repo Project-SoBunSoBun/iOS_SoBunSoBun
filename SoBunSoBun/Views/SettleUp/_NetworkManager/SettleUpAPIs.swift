@@ -13,6 +13,7 @@ enum SettleUpAPIs {
     case mySettleUps(status: String, page: Int, size: Int)
     case deleteSettleUp(id: Int)
     case putSettlementComplete(model: SettleUp3rdStepDataModel)
+    case getSettlement(settlementId: Int)
 }
 
 extension SettleUpAPIs: TargetType {
@@ -35,13 +36,17 @@ extension SettleUpAPIs: TargetType {
             
         case .putSettlementComplete(let model):
             return "/api/v1/settlements/\(model.settlementId)/complete"
+            
+        case .getSettlement(let settlementId):
+            return "/api/v1/settlements/\(settlementId)"
         }
     }
     
     var method: Moya.Method {
         switch self {
         case // GET
-                .mySettleUps:
+                .mySettleUps,
+                .getSettlement:
             return .get
             
         case // PUT
@@ -86,6 +91,9 @@ extension SettleUpAPIs: TargetType {
             )
             
             return .requestJSONEncodable(body)
+            
+        case .getSettlement:
+            return .requestPlain
         }
     }
     

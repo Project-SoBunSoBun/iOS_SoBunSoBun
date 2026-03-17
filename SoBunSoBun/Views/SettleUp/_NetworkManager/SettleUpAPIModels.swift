@@ -66,15 +66,40 @@ struct SettlementCompleteRequestModel: Encodable {
     let participants: [SettlementCompleteParticipantModel]
 }
 
-struct SettlementCompleteParticipantModel: Encodable {
+struct SettlementCompleteParticipantModel: Codable {
     let userId: Int
     let assignedAmount: Int
     let items: [SettlementCompleteItemModel]
 }
 
-struct SettlementCompleteItemModel: Encodable {
+struct SettlementCompleteItemModel: Codable {
     let itemName: String
     let quantity: Int
     let unit: String
     let amount: Int
+}
+
+// 정산 상세 조회
+struct SettlementResponseModel: Decodable {
+    let success: Bool
+    let statusCode: Int
+    let message: String?
+    let data: SettlementModel
+    let errorCode: String?
+    let timestamp: String
+}
+
+struct SettlementModel: Decodable {
+    let id, groupPostId: Int
+    let groupPostTitle: String
+    let status: String
+    let totalAmount: Int
+    let participants: [SettlementParticipantModel]
+}
+
+struct SettlementParticipantModel: Decodable {
+    let userId: Int
+    let userNickname: String
+    let assignedAmount: Int
+    let items: [SettlementCompleteItemModel]
 }

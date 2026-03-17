@@ -13,6 +13,18 @@
         }
       }
     },
+    "GetSettlementFailed" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 상세 조회에 실패했습니다."
+          }
+        }
+      }
+    },
     "KRW" : {
       "comment" : "SettleUp",
       "extractionState" : "manual",

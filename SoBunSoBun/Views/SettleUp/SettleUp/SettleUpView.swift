@@ -273,8 +273,6 @@ extension SettleUpView {
             .bind(to: tableView.rx.items(cellIdentifier: SettleUpTableViewCell.identifier, cellType: SettleUpTableViewCell.self)) { [weak self] _, item, cell in
                 guard let self = self else { return }
                 
-                cell.selectionStyle = .none
-                
                 cell.configure(with: item)
                 
                 cell.deleteTrigger
@@ -302,7 +300,9 @@ extension SettleUpView {
                         guard let self = self else { return }
                         
                         self.logger.debug("정산서 확인 버튼 탭: id=\(item.settlementId)")
-                        // TODO: 정산서 이동 로직
+                        
+                        let vc = SettlementConfirmView(settlementId: item.settlementId)
+                        self.navigationController?.pushViewController(vc, animated: true)
                     })
                     .disposed(by: cell.disposeBag)
                 
