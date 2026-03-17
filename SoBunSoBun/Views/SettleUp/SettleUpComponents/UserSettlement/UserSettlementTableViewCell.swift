@@ -54,4 +54,8 @@ class UserSettlementTableViewCell: UITableViewCell {
     func configureUI(model: SettleUp3rdStepParticipantModel, authorId: Int) {
         view.configureUI(model: model, authorId: authorId)
     }
+    
+    func configureUI(model: SettlementParticipantModel, currentUserId: Int) {
+        view.configureUI(model: model, currentUserId: currentUserId)
+    }
 }
