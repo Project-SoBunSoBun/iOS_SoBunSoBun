@@ -159,8 +159,6 @@ extension SettlementConfirmView {
                 cellIdentifier: UserSettlementTableViewCell.identifier,
                 cellType: UserSettlementTableViewCell.self
             )) { _, item, cell in
-                cell.selectionStyle = .none
-                
                 guard let userIdString = KeyChain.shared.get(key: "USER_ID"),
                       let currentUserId = Int(userIdString) else { return }
                 
@@ -183,7 +181,7 @@ extension SettlementConfirmView {
     private func errorAlert(title: String) {
         let alert = CustomAlertView(
             title: NSLocalizedString(title, tableName: "SettleUp", comment: ""),
-            subTitle: String(localized: "ErrorMessage", table: "Common"),
+            subTitle: String(localized: "TryAgain", table: "Common"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         

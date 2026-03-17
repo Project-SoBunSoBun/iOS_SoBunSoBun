@@ -273,8 +273,6 @@ extension SettleUpView {
             .bind(to: tableView.rx.items(cellIdentifier: SettleUpTableViewCell.identifier, cellType: SettleUpTableViewCell.self)) { [weak self] _, item, cell in
                 guard let self = self else { return }
                 
-                cell.selectionStyle = .none
-                
                 cell.configure(with: item)
                 
                 cell.deleteTrigger

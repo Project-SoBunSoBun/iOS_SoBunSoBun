@@ -229,8 +229,6 @@ extension SettleUp3rdStepView {
             )) { [weak self] _, item, cell in
                 guard let self = self else { return }
                 
-                cell.selectionStyle = .none
-                
                 cell.configureUI(model: item, authorId: self.authorId)
             }
             .disposed(by: disposeBag)

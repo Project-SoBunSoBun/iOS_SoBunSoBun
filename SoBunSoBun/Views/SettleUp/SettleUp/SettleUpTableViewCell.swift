@@ -41,6 +41,7 @@ class SettleUpTableViewCell: UITableViewCell {
     
     func configure(with item: SettleUpItemModel) {
         self.backgroundColor = .clear
+        self.selectionStyle = .none
         self.contentView.backgroundColor = .clear
         
         incompleteView?.removeFromSuperview()
