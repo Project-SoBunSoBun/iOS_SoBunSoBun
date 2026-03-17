@@ -36,7 +36,6 @@ class SettlementConfirmReactor: Reactor {
         let settlementId: Int
         var item: SettlementModel?
         var sortedParticipants: [SettlementParticipantModel] = []
-        
         @Pulse var errorMessage: String?
     }
     
@@ -79,6 +78,7 @@ class SettlementConfirmReactor: Reactor {
                     if lhsIsCurrentUser != rhsIsCurrentUser {
                         return lhsIsCurrentUser
                     }
+                    
                     return false
                 }
                 
@@ -91,6 +91,7 @@ class SettlementConfirmReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 self.logger.critical("정산 상세 데이터 조회 실패: \(error.localizedDescription)")
+                
                 return Observable.just(.setError("정산 상세 데이터 조회 실패"))
             }
     }
