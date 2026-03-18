@@ -182,16 +182,28 @@ class ProfileReactor: Reactor {
                 self.networkManager.getProfilePostList(userId: self.userId, page: page, size: self.PAGE_SIZE)
                     .asObservable()
                     .flatMap { response -> Observable<Mutation> in
-                        let mutations: Observable<Mutation> = isFirst ?
-                        Observable.concat([
-                            Observable.just(.setUserInfo(response.data)),
-                            Observable.just(.setPosts(response.data.posts.posts))
-                        ]) : Observable.just(.appendPosts(response.data.posts.posts))
-                        
-                        return Observable.concat([
-                            mutations,
-                            Observable.just(.setHasMore(!response.data.posts.pageInfo.last))
-                        ])
+                        if let data = response.data {
+                            let mutations: Observable<Mutation> = isFirst ?
+                            Observable.concat([
+                                Observable.just(.setUserInfo(data)),
+                                Observable.just(.setPosts(data.posts.posts))
+                            ]) : Observable.just(.appendPosts(data.posts.posts))
+                            
+                            return Observable.concat([
+                                mutations,
+                                Observable.just(.setHasMore(!data.posts.pageInfo.last))
+                            ])
+                        } else {
+                            if let error = response.error {
+                                self.logger.critical("게시글 목록 조회 중 오류: \(error.message)")
+                                
+                                return Observable.empty()
+                            } else {
+                                self.logger.critical("게시글 목록 조회 중 오류")
+                                
+                                return Observable.empty()
+                            }
+                        }
                     }
                     .catch { error in
                         self.logger.critical("게시글 목록 불러오기 실패: \(error.localizedDescription)")

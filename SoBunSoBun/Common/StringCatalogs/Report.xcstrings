@@ -1,13 +1,13 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
-    "COPYRIGHT" : {
+    "ABUSE" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "저작권 침해"
+            "value" : "욕설/비방"
           }
         }
       }
@@ -18,40 +18,29 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "사기"
-          }
-        }
-      }
-    },
-    "HATE_SPEECH" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "욕설/혐오 발언"
-          }
-        }
-      }
-    },
-    "ILLEGAL_CONTENT" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "불법 컨텐츠"
-          }
-        }
-      }
-    },
-    "IMPERSONATION" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
             "value" : "사칭"
+          }
+        }
+      }
+    },
+    "HARMFUL" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유해 컨텐츠"
+          }
+        }
+      }
+    },
+    "INAPPROPRIATE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "부적절한 내용"
           }
         }
       }
@@ -67,24 +56,13 @@
         }
       }
     },
-    "MISINFORMATION" : {
+    "OTHER" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "허위 사실"
-          }
-        }
-      }
-    },
-    "PRIVACY_VIOLATION" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "개인정보 침해"
+            "value" : "기타"
           }
         }
       }
@@ -144,6 +122,17 @@
         }
       }
     },
+    "SCAM" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사기"
+          }
+        }
+      }
+    },
     "SelectReportType" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -155,17 +144,6 @@
         }
       }
     },
-    "SEXUAL" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "성적 컨텐츠"
-          }
-        }
-      }
-    },
     "SPAM" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -173,17 +151,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "스팸"
-          }
-        }
-      }
-    },
-    "WRONG_CATEGORY" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "카테고리 부적합"
           }
         }
       }

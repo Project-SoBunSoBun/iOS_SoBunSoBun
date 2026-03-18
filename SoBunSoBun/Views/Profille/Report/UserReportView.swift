@@ -58,7 +58,7 @@ class UserReportView: UIViewController {
     private let reportTypeDropDownView: SettingDropDownView = {
         let ddv = SettingDropDownView(tableName: "Report", isHeightLimited: false)
         ddv.textAlignment = .center
-        ddv.items = ["SPAM", "HATE_SPEECH", "SEXUAL", "IMPERSONATION", "PRIVACY_VIOLATION", "ILLEGAL_CONTENT"]
+        ddv.items = ["SPAM", "INAPPROPRIATE", "SCAM", "HARMFUL", "ABUSE", "FRAUD", "OTHER"]
         ddv.animationAnchor = .topCenter
         
         return ddv
@@ -77,6 +77,9 @@ class UserReportView: UIViewController {
         
         return ahtv
     }()
+    
+    // 신고 제출 동의 체크박스
+    private let agreeCheckBox = TermsCheckBoxView()
     
     // 신고하기 버튼
     private let reportButton = Button(title: String(localized: "Report", table: "Report"))
@@ -101,7 +104,7 @@ class UserReportView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [topNavigationBar, reportButton, scrollView, reportTypeDropDownView, loadingView].forEach {
+        [topNavigationBar, reportButton, agreeCheckBox, scrollView, reportTypeDropDownView, loadingView].forEach {
             view.addSubview($0)
         }
         
@@ -117,12 +120,21 @@ class UserReportView: UIViewController {
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
+        // 체크박스 설정
+        agreeCheckBox.configure(title: String(localized: "AgreeReport", table: "Settings"), hasDetail: false, font: body16.font, textColor: .neutral900)
+        
+        // 신고 제출 동의 체크박스
+        agreeCheckBox.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalTo(reportButton.snp.top).offset(-16)
+        }
+        
         scrollView.addSubview(contentView)
         
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(topNavigationBar.snp.bottom)
-            make.bottom.equalTo(reportButton.snp.top).inset(-16)
+            make.bottom.equalTo(agreeCheckBox.snp.top).inset(-16)
         }
         
         [reportTypeBox, detailTextView].forEach {
@@ -225,6 +237,12 @@ extension UserReportView {
                 let localizedString = NSLocalizedString(type, tableName: "Report", comment: "")
                 reportTypeBox.updateSelectedText(text: localizedString)
             })
+            .disposed(by: disposeBag)
+        
+        // 제출 동의
+        agreeCheckBox.isChecked
+            .map { Reactor.Action.agreeCheckBoxTapped($0) }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         // 버튼 활성화 상태

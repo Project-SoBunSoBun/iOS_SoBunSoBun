@@ -31,6 +31,8 @@ class UserReportReactor: Reactor {
         case dropDownCellTapped(String)
         // 문의 내용 변경시
         case detailChanged(String)
+        // 동의 체크박스 선택시
+        case agreeCheckBoxTapped(Bool)
         // 신고하기 버튼 선택시
         case reportButtonTapped
     }
@@ -42,6 +44,8 @@ class UserReportReactor: Reactor {
         case setReportType(String)
         // 문의 내용 변경시
         case setDetail(String)
+        // 동의 체크박스 선택시
+        case setIsAgree(Bool)
         // 로딩 상태
         case setLoading(Bool)
         // 신고하기 전송 성공
@@ -54,6 +58,7 @@ class UserReportReactor: Reactor {
         var isMenuOpen: Bool = false
         var reportType: String?
         var detailString: String?
+        var isAgree: Bool = false
         
         var isLoading: Bool = false
         @Pulse var reportCompleted: Void?
@@ -64,7 +69,7 @@ class UserReportReactor: Reactor {
             let isTypeSelected = reportType != nil
             let isDetailInputted = !(detailString?.isEmpty ?? true)
             
-            return isTypeSelected && isDetailInputted && !isLoading
+            return isTypeSelected && isAgree && isDetailInputted && !isLoading
         }
     }
     
@@ -78,6 +83,9 @@ class UserReportReactor: Reactor {
             
         case .detailChanged(let detail):
             return Observable.just(.setDetail(detail))
+            
+        case .agreeCheckBoxTapped(let isAgree):
+            return Observable.just(.setIsAgree(isAgree))
             
         case .reportButtonTapped:
             return Observable.concat([
@@ -100,6 +108,9 @@ class UserReportReactor: Reactor {
         
         case .setDetail(let detail):
             newState.detailString = detail
+            
+        case .setIsAgree(let isAgree):
+            newState.isAgree = isAgree
         
         case .setLoading(let isLoading):
             newState.isLoading = isLoading

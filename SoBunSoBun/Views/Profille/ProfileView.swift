@@ -505,7 +505,6 @@ extension ProfileView {
         // 받은 매너 평가 설정
         setReviewBox(receivedManner)
         
-        // mannerWrappingViews 교체로 인해 레이아웃 깨짐 방지
         contentView.layoutIfNeeded()
         tableView.tableHeaderView = contentView
         tableView.layoutIfNeeded()

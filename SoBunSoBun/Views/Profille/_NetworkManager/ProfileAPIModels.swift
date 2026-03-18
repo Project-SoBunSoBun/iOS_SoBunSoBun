@@ -9,7 +9,7 @@ import Foundation
 
 struct ProfileUserInfoResponseModel: Decodable {
     let success: Bool
-    let data: ProfileUserInfoResponseDataModel
+    let data: ProfileUserInfoResponseDataModel?
     let error: ErrorModel?
 }
 
