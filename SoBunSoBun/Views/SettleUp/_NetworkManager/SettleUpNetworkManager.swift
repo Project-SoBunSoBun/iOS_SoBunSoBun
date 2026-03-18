@@ -24,15 +24,6 @@ class SettleUpNetworkManager {
         .tryMap(SettleUpResponseModel.self)
     }
     
-    // 정산 삭제 메서드
-    func deleteSettleUp(id: Int) -> Single<Void> {
-        return authProvider.rx.request(
-            MultiTarget(SettleUpAPIs.deleteSettleUp(id: id))
-        )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
-    }
-    
     // 정산 완료 등록 메서드
     func putSettlementComplete(model: SettleUp3rdStepDataModel) -> Single<Void> {
         return authProvider.rx.request(

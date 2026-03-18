@@ -11,7 +11,6 @@ import Moya
 enum SettleUpAPIs {
     // 정산
     case mySettleUps(status: String, page: Int, size: Int)
-    case deleteSettleUp(id: Int)
     case putSettlementComplete(model: SettleUp3rdStepDataModel)
     case getSettlement(settlementId: Int)
 }
@@ -31,9 +30,6 @@ extension SettleUpAPIs: TargetType {
         case .mySettleUps:
             return "/api/v1/settlements/my"
             
-        case .deleteSettleUp(let id):
-            return "/api/v1/settlements/\(id)"
-            
         case .putSettlementComplete(let model):
             return "/api/v1/settlements/\(model.settlementId)/complete"
             
@@ -52,10 +48,6 @@ extension SettleUpAPIs: TargetType {
         case // PUT
                 .putSettlementComplete:
             return .put
-            
-        case // DELETE
-                .deleteSettleUp:
-            return .delete
         }
     }
     
@@ -66,21 +58,18 @@ extension SettleUpAPIs: TargetType {
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
-        case .deleteSettleUp:
-            return .requestPlain
-            
         case .putSettlementComplete(let model):
             let participants = model.participants.map { participant in
                 SettlementCompleteParticipantModel(
                     userId: participant.userId,
                     assignedAmount: participant.assignedAmount,
                     items: participant.items.map { item in
-                            SettlementCompleteItemModel(
-                                itemName: item.itemName,
-                                quantity: item.quantity,
-                                unit: item.unitIndex == 1 ? String(localized: "Count", table: "SettleUp") : "g",
-                                amount: item.amount
-                            )
+                        SettlementCompleteItemModel(
+                            itemName: item.itemName,
+                            quantity: item.quantity,
+                            unit: item.unitIndex == 1 ? String(localized: "Count", table: "SettleUp") : "g",
+                            amount: item.amount
+                        )
                     }
                 )
             }
