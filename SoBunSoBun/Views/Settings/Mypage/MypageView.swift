@@ -143,9 +143,6 @@ class MypageView: UIViewController {
     // 나의 공동 구매 라벨
     private lazy var myGroupBuyingLabel = makeLabel(string: String(localized: "MyGroupBuying", table: "Settings"))
     
-    // 공동 구매 기록
-    private let groupBuyingRecord = SettingCardCell(title: String(localized: "GroupBuyingRecord", table: "Settings"), type: .button)
-    
     // 내가 게시한 글
     private let myPost = SettingCardCell(title: String(localized: "MyPost", table: "Settings"), type: .button)
     
@@ -153,7 +150,7 @@ class MypageView: UIViewController {
     private let saveList = SettingCardCell(title: String(localized: "SaveList", table: "Settings"), type: .button)
     
     // 나의 공동 구매 세팅 카드
-    private lazy var myGroupBuyingSettingCard = SettingCard(cells: [groupBuyingRecord, myPost, saveList])
+    private lazy var myGroupBuyingSettingCard = SettingCard(cells: [myPost, saveList])
     
     // 설정 라벨
     private lazy var settingLabel = makeLabel(string: String(localized: "Setting", table: "Settings"))
@@ -304,7 +301,7 @@ class MypageView: UIViewController {
             make.top.equalTo(myGroupBuyingLabel.snp.bottom).offset(16)
         }
         
-        [groupBuyingRecord, myPost, saveList].forEach {
+        [myPost, saveList].forEach {
             $0.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview()
             }
@@ -348,12 +345,6 @@ extension MypageView {
         // 프로필 수정 버튼 클릭
         editProfileButton.rx.tap
             .map { Reactor.Action.editProfileButtonTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        // 공동 구매 기록 클릭
-        groupBuyingRecord.didTap
-            .map { Reactor.Action.groupBuyingRecordTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         

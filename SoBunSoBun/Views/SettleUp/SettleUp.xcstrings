@@ -74,12 +74,36 @@
       }
     },
     "SettlementFailed" : {
+      "comment" : "SettleUp",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "정산 등록 실패"
+          }
+        }
+      }
+    },
+    "SettlementSaveCheckSubtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서를 저장하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SettlementSaveCheckTitle" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장 이후에는 \n정산을 수정할 수 없습니다."
           }
         }
       }

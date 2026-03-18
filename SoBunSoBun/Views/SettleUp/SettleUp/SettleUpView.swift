@@ -275,15 +275,6 @@ extension SettleUpView {
                 
                 cell.configure(with: item)
                 
-                cell.deleteTrigger
-                    .subscribe(onNext: { [weak self] in
-                        guard let self = self else { return }
-                        
-                        self.logger.debug("삭제 버튼 탭: id=\(item.settlementId)")
-                        self.showDeleteAlert(id: item.settlementId)
-                    })
-                    .disposed(by: cell.disposeBag)
-                
                 cell.settleUpTrigger
                     .subscribe(onNext: { [weak self] in
                         guard let self = self else { return }
@@ -315,17 +306,6 @@ extension SettleUpView {
                     })
                     .disposed(by: cell.disposeBag)
             }
-            .disposed(by: disposeBag)
-        
-        // 로딩 상태
-        reactor.state.map { $0.isLoading }
-            .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isLoading in
-                guard let self = self else { return }
-                
-                self.logger.debug("로딩 중: \(isLoading)")
-            })
             .disposed(by: disposeBag)
         
         // 선택된 카테고리에 따른 EmptyLabel 분기
@@ -367,30 +347,6 @@ extension SettleUpView {
         allCategories.isChecked = (category == .all)
         incompleteCategories.isChecked = (category == .incomplete)
         completeCategories.isChecked = (category == .complete)
-    }
-    
-    // 삭제 알림창
-    private func showDeleteAlert(id: Int) {
-        let alert = CustomAlertView(
-            title: String(localized: "SettleUpDeleteMessage1st", table: "SettleUp"),
-            subTitle: String(localized: "SettleUpDeleteMessage2nd", table: "SettleUp"),
-            primaryTitleKey: String(localized: "Delete", table: "Common"),
-            cancelTitleKey: String(localized: "Cancel", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = { [weak self] in
-            guard let self = self else { return }
-            
-            self.reactor.action.onNext(.deleteSettleUpTapped(id: id))
-        }
-        
-        alert.onCancelTapped = { [weak self] in
-            guard let self = self else { return }
-            
-            self.logger.debug("취소됨")
-        }
-        
-        alert.show(on: self)
     }
 }
 

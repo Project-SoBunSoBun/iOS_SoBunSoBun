@@ -26,10 +26,12 @@ class SettleUp3rdStepReactor: Reactor {
     
     enum Action {
         case saveButtonTapped
+        case alertButtonTapped
     }
     
     enum Mutation {
         case setLoading(Bool)
+        case setShouldShowSaveAlert
         case setNavigateToSettleUpView
         case setError
     }
@@ -52,6 +54,7 @@ class SettleUp3rdStepReactor: Reactor {
         }
         var isLoading: Bool = false
         
+        @Pulse var shouldShowSaveAlert: Void? = nil
         @Pulse var shouldNavigateToSettleUpView: Void? = nil
         @Pulse var errorMessage: Void? = nil
     }
@@ -59,6 +62,9 @@ class SettleUp3rdStepReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .saveButtonTapped:
+            return Observable.just(.setShouldShowSaveAlert)
+            
+        case .alertButtonTapped:
             return putSettlementComplete(model: currentState.model)
         }
     }
@@ -69,6 +75,9 @@ class SettleUp3rdStepReactor: Reactor {
         switch mutation {
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
+            
+        case .setShouldShowSaveAlert:
+            newState.shouldShowSaveAlert = ()
             
         case .setNavigateToSettleUpView:
             newState.shouldNavigateToSettleUpView = ()
