@@ -55,8 +55,7 @@ class SettleUpReactor: Reactor {
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
-        switch action {
-            
+        switch action {   
         case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setPage(0)),
@@ -140,6 +139,7 @@ class SettleUpReactor: Reactor {
             .asObservable()
             .flatMap { SettleUpModel -> Observable<Mutation> in
                 guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
+                
                 let currentUserId = Int(userId)
                 
                 let items: [SettleUpItemModel] = SettleUpModel.data.content.map { content in
@@ -170,6 +170,7 @@ class SettleUpReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
+                
                 return Observable.concat([
                     isFirst ? Observable.just(.setItems([])) : Observable.empty(),
                     Observable.just(.setError("정산 목록을 불러오는데 실패했습니다.")),
