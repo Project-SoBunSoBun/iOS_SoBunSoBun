@@ -35,12 +35,15 @@ enum HomeAPIs {
     case deletePostComment(id: Int)
     case reportPostComment(id: Int)
     case createChatRoomId(userId: Int, groupPostId: Int)
+    
+    // 마이페이지
+    case getMyProfile(tab: String, page: Int, size: Int)
 }
 
 extension HomeAPIs: TargetType {
     // interceptor retry 활성화
     var validationType: ValidationType {
-        return .successCodes
+        return .customCodes(Array(200...299) + [400] + Array(402...499))
     }
     
     var baseURL: URL {
@@ -108,6 +111,9 @@ extension HomeAPIs: TargetType {
             
         case .createChatRoomId:
             return "/api/v1/chat/rooms/private"
+            
+        case .getMyProfile:
+            return "/api/v1/users/me/profile"
         }
     }
     
@@ -123,7 +129,8 @@ extension HomeAPIs: TargetType {
                 .getPost,
                 .checkPostSaved,
                 .getPostCommentsCount,
-                .getPostComments:
+                .getPostComments,
+                .getMyProfile:
             return .get
             
         case // POST
@@ -234,6 +241,11 @@ extension HomeAPIs: TargetType {
             let body: [String: Int] = ["otherUserId": userId, "groupPostId": groupPostId]
             
             return .requestJSONEncodable(body)
+            
+        case .getMyProfile(let tab, let page, let size):
+            let parameters = MyProfileRequestModel(tab: tab, page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
         }
     }
     

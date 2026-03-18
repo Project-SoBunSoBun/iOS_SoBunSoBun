@@ -113,3 +113,22 @@ struct CreateChatRoomResponseDataModel: Decodable {
     let roomName: String?
     let roomType: ChatRoomType
 }
+
+struct MyProfileRequestModel: Encodable {
+    let tab: String
+    let page, size: Int
+}
+
+struct MyProfileResponseModel: Decodable {
+    let success: Bool
+    let data: MyProfileResponseDataModel?
+    let error: ErrorModel?
+}
+
+struct MyProfileResponseDataModel: Decodable, Equatable {
+    let userId, activityScore, hostCount, participationCount: Int
+    let nickname, profileImageUrl: String?
+    let mannerTags: [MannerTagModel]?
+    let tab: String
+    let posts: PostListResponseModel
+}

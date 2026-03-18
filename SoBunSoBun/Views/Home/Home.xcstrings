@@ -599,6 +599,39 @@
         }
       }
     },
+    "TabCommented" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "댓글단 글"
+          }
+        }
+      }
+    },
+    "TabPosts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "작성한 글"
+          }
+        }
+      }
+    },
+    "TabSaved" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장한 글"
+          }
+        }
+      }
+    },
     "Time" : {
       "comment" : "Home",
       "extractionState" : "manual",

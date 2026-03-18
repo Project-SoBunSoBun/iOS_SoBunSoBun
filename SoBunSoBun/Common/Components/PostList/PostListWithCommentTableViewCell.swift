@@ -1,22 +1,23 @@
 //
-//  UserPagePostListTableViewCell.swift
+//  PostListWithCommentTableViewCell.swift
 //  SoBunSoBun
 //
-//  Created by 김태은 on 11/2/26.
+//  Created by 김태은 on 11/30/25.
 //
 
 import UIKit
 import SnapKit
 import RxSwift
 
-class UserPagePostListTableViewCell: UITableViewCell {
-    static let identifier = "UserPagePostListTableViewCell"
+class PostListWithCommentTableViewCell: UITableViewCell {
+    static let identifier = "PostListWithCommentTableViewCell"
     
-    private let view = UserPagePostListCellView()
+    private let view = PostListWithCommentCellView()
     private var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
         configureUI()
     }
     
@@ -31,6 +32,7 @@ class UserPagePostListTableViewCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        
         disposeBag = DisposeBag()
     }
     
@@ -48,19 +50,20 @@ class UserPagePostListTableViewCell: UITableViewCell {
         contentView.addSubview(view)
         
         view.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalToSuperview()
+            make.horizontalEdges.top.equalToSuperview()
             make.bottom.equalToSuperview().priority(.high)
         }
     }
     
-    func configureUI(model: PostModel, bottomEdgeInset: CGFloat) {
+    func configureUI(model: PostModel, horizontalEdgesInset: CGFloat = 0) {
         view.configureUI(model: model)
         
-        view.snp.remakeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalToSuperview()
-            make.bottom.equalToSuperview().inset(bottomEdgeInset).priority(.high)
+        if horizontalEdgesInset != 0 {
+            view.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(horizontalEdgesInset)
+                make.top.equalToSuperview()
+                make.bottom.equalToSuperview().priority(.high)
+            }
         }
         
         view.layoutIfNeeded()

@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "ko",
   "strings" : {
+    "ActivityScore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "활동 점수"
+          }
+        }
+      }
+    },
     "AgreeInquiries" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -753,6 +764,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "저장 목록"
+          }
+        }
+      }
+    },
+    "ScoreFormat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d점"
           }
         }
       }

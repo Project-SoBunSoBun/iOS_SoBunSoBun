@@ -412,7 +412,7 @@ extension MypageView {
     }
     
     private func updateUI(_ profile: MyProfileModel) {
-        let nickname = profile.data.nickname ?? String(localized: "UnknownNickname")
+        let nickname = profile.data.nickname ?? String(localized: "UnknownNickname", table: "Settings")
         let profileImageUrl = profile.data.profileImageUrl
         let receivedManner = profile.data.mannerTags
         
@@ -423,7 +423,11 @@ extension MypageView {
         setNickname(nickname)
         
         // 매너 점수, 참여 횟수, 방장 횟수 설정
-        userInfoView.updateUI(profile)
+        userInfoView.updateUI(
+            activityScore: profile.data.activityScore,
+            participationCount: profile.data.participationCount,
+            hostCount: profile.data.hostCount
+        )
         
         // 받은 매너 평가 설정
         setReviewBox(receivedManner)

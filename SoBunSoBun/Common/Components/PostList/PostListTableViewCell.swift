@@ -53,8 +53,17 @@ class PostListTableViewCell: UITableViewCell {
         }
     }
     
-    func configureUI(model: PostModel) {
+    func configureUI(model: PostModel, horizontalEdgesInset: CGFloat = 0) {
         view.configureUI(model: model)
+        
+        if horizontalEdgesInset != 0 {
+            view.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview().inset(horizontalEdgesInset)
+                make.top.equalToSuperview()
+                make.bottom.equalToSuperview().priority(.high)
+            }
+        }
+        
         view.layoutIfNeeded()
     }
 }
