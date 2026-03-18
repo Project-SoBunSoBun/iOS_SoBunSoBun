@@ -1,5 +1,5 @@
 //
-//  PostListTableViewCell.swift
+//  PostListWithCommentTableViewCell.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 11/30/25.
@@ -9,10 +9,10 @@ import UIKit
 import SnapKit
 import RxSwift
 
-class PostListTableViewCell: UITableViewCell {
-    static let identifier = "PostListTableViewCell"
+class PostListWithCommentTableViewCell: UITableViewCell {
+    static let identifier = "PostListWithCommentTableViewCell"
     
-    private let view = PostListCellView()
+    private let view = PostListWithCommentCellView()
     private var disposeBag = DisposeBag()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

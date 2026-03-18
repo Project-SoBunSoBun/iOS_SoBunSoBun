@@ -26,6 +26,7 @@ struct PostModel: Decodable, Equatable {
     let owner: PostOwnerModel
     let title, categoryCode, itemsText, notesText, locationName, meetAt, deadlineAt, status, createdAt, updatedAt: String
     let content: String?
+    let latestComment: SimpleCommentModel?
 }
 
 struct PostOwnerModel: Decodable, Equatable {
@@ -36,6 +37,11 @@ struct PostOwnerModel: Decodable, Equatable {
 struct PostPageInfo: Decodable, Equatable {
     let currentPage, pageSize, totalElements, totalPages: Int
     let last: Bool
+}
+
+struct SimpleCommentModel: Decodable, Equatable {
+    let id: Int
+    let content, createdAt: String
 }
 
 struct PlainResponseModel: Decodable {

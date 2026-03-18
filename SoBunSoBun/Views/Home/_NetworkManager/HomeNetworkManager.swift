@@ -20,8 +20,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getLocationVerification)
         )
-        .filterSuccessfulStatusCodes()
-        .map(LocationVerificationModel.self)
+        .tryMap(LocationVerificationModel.self)
     }
     
     // 좌표를 통해 주소 변환
@@ -31,8 +30,7 @@ class HomeNetworkManager {
         return provider.rx.request(
             MultiTarget(HomeAPIs.getAddress(point: point))
         )
-        .filterSuccessfulStatusCodes()
-        .map(GeocoderResponseModel.self)
+        .tryMap(GeocoderResponseModel.self)
     }
     
     // 사용자 위치 인증
@@ -40,8 +38,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.patchLocationVerification(address: address))
         )
-        .filterSuccessfulStatusCodes()
-        .map(LocationVerificationModel.self)
+        .tryMap(LocationVerificationModel.self)
     }
     
     // 홈 게시글 목록 불러오기
@@ -49,8 +46,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getHomeList(page: page, size: size))
         )
-        .filterSuccessfulStatusCodes()
-        .map(PostListResponseModel.self)
+        .tryMap(PostListResponseModel.self)
     }
     
     // 카테고리 선택 후 홈 게시글 목록 불러오기
@@ -58,8 +54,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getHomeListByCategories(category: categories, page: page, size: size))
         )
-        .filterSuccessfulStatusCodes()
-        .map(PostListResponseModel.self)
+        .tryMap(PostListResponseModel.self)
     }
     
     // 글 등록
@@ -67,8 +62,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.registerPost(model: model))
         )
-        .filterSuccessfulStatusCodes()
-        .map(PostModel.self)
+        .tryMap(PostModel.self)
     }
     
     // MARK: - 검색
@@ -78,7 +72,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(AuthorizedAPI.getSuggestions)
         )
-        .filterSuccessfulStatusCodes()
         .map(SuggestionSearchKeywordsModel.self)
     }
     */
@@ -88,8 +81,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getSearchList(keyword: keyword, sortBy: sortBy, page: page, size: size))
         )
-        .filterSuccessfulStatusCodes()
-        .map(PostListResponseModel.self)
+        .tryMap(PostListResponseModel.self)
     }
     
     // MARK: - 게시글 상세
@@ -98,8 +90,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getPost(id: id))
         )
-        .filterSuccessfulStatusCodes()
-        .map(PostModel.self)
+        .tryMap(PostModel.self)
     }
     
     // 게시글 저장 유무 불러오기
@@ -107,8 +98,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.checkPostSaved(id: id))
         )
-        .filterSuccessfulStatusCodes()
-        .map(Bool.self)
+        .tryMap(Bool.self)
     }
     
     // 게시글 댓글 개수 불러오기
@@ -116,8 +106,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getPostCommentsCount(id: id))
         )
-        .filterSuccessfulStatusCodes()
-        .map(CommentCountModel.self)
+        .tryMap(CommentCountModel.self)
     }
     
     // 게시글 댓글 불러오기
@@ -125,8 +114,7 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getPostComments(id: id))
         )
-        .filterSuccessfulStatusCodes()
-        .map([CommentModel].self)
+        .tryMap([CommentModel].self)
     }
     
     // 게시글 저장
@@ -134,7 +122,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.savePost(id: id))
         )
-        .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
     
@@ -143,7 +130,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.cancelSavePost(id: id))
         )
-        .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
     
@@ -152,7 +138,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.reportPost(id: id))
         )
-        .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
     
@@ -161,7 +146,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.deletePost(id: id))
         )
-        .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
     
@@ -170,7 +154,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.createPostComment(postId: postId, content: content))
         )
-        .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
     
@@ -179,7 +162,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.patchPostComment(id: id, content: content))
         )
-        .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
     
@@ -188,7 +170,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.deletePostComment(id: id))
         )
-        .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
     
@@ -197,7 +178,6 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.reportPostComment(id: id))
         )
-        .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
     
@@ -206,7 +186,14 @@ class HomeNetworkManager {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.createChatRoomId(userId: userId, groupPostId: groupPostId))
         )
-        .filterSuccessfulStatusCodes()
-        .map(CreateChatRoomResponseModel.self)
+        .tryMap(CreateChatRoomResponseModel.self)
+    }
+    
+    // MARK: - 마이페이지
+    func getMyProfile(tab: String, page: Int, size: Int) -> Single<MyProfileResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(HomeAPIs.getMyProfile(tab: tab, page: page, size: size))
+        )
+        .tryMap(MyProfileResponseModel.self)
     }
 }

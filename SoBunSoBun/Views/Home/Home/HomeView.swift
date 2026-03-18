@@ -386,7 +386,7 @@ extension HomeView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                // TODO: 내 프로필 뷰 이동 기능 추가
+                self.navigationController?.pushViewController(MyProfileView(), animated: true)
             })
             .disposed(by: disposeBag)
         
