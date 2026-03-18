@@ -33,7 +33,6 @@ class SettleUpReactor: Reactor {
         case refresh // 새로고침
         case loadMore // 페이지네이션
         case categorySelected(SettleUpCategory)
-        case deleteSettleUpTapped(id: Int)
     }
     
     enum Mutation {
@@ -88,9 +87,6 @@ class SettleUpReactor: Reactor {
                 Observable.just(.setPage(0)),
                 loadItems(for: category, page: 0, size: pageSize)
             ])
-            
-        case .deleteSettleUpTapped(id: let id):
-            return deleteSettleUp(id: id)
         }
     }
     
@@ -170,28 +166,6 @@ class SettleUpReactor: Reactor {
                     
                     self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
                     return Observable.just(.setError("정산 목록을 불러오는데 실패했습니다."))
-                },
-            Observable.just(.setLoading(false))
-        ])
-    }
-    
-    private func deleteSettleUp(id: Int) -> Observable<Mutation> {
-        return Observable.concat([
-            Observable.just(.setLoading(true)),
-            networkManager.deleteSettleUp(id: id)
-                .asObservable()
-                .flatMap { [weak self] _ -> Observable<Mutation> in
-                    guard let self = self else { return Observable.empty() }
-                    
-                    self.logger.debug("정산 삭제 성공 id: \(id)")
-                    // 삭제 성공 후 목록 다시 로드
-                    return self.loadItems(page: 0, size: pageSize)
-                }
-                .catch { [weak self] error in
-                    guard let self = self else { return Observable.empty() }
-                    
-                    self.logger.critical("정산 삭제 실패: \(error.localizedDescription)")
-                    return Observable.just(.setError("정산을 삭제하지 못했습니다."))
                 },
             Observable.just(.setLoading(false))
         ])

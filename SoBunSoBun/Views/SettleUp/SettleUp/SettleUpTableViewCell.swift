@@ -25,7 +25,6 @@ class SettleUpTableViewCell: UITableViewCell {
     
     var disposeBag = DisposeBag()
     
-    let deleteTrigger = PublishRelay<Void>()
     let settleUpTrigger = PublishRelay<Void>()
     let statementCheckTrigger = PublishRelay<Void>()
     let shareTrigger = PublishRelay<Void>()
@@ -62,10 +61,6 @@ class SettleUpTableViewCell: UITableViewCell {
             make.top.equalToSuperview().offset(8)
             make.bottom.equalToSuperview().inset(8)
         }
-        
-        newIncompleteView.deleteTrigger
-            .bind(to: deleteTrigger)
-            .disposed(by: disposeBag)
         
         newIncompleteView.settleUpTrigger
             .bind(to: settleUpTrigger)
