@@ -40,7 +40,6 @@ class Incomplete: UIView {
     
     private let disposeBag = DisposeBag()
     
-    let deleteTrigger = PublishRelay<Void>() // 삭제 버튼 클릭
     let settleUpTrigger = PublishRelay<Void>() // 정산하기 버튼 클릭
     let statementTrigger = PublishRelay<Void>() // 정산서 버튼 클릭
     let shareTrigger = PublishRelay<Void>() // 공유하기 버튼 클릭
@@ -173,22 +172,6 @@ class Incomplete: UIView {
         return bt
     }()
     
-    // 삭제 버튼
-    private let deleteButton: UIButton = {
-        var config = UIButton.Configuration.plain()
-        config.image = .greyClose
-        config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
-        
-        let btn = UIButton(configuration: config)
-        btn.showsMenuAsPrimaryAction = true
-        
-        btn.snp.makeConstraints { make in
-            make.size.equalTo(24)
-        }
-        
-        return btn
-    }()
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -217,7 +200,7 @@ class Incomplete: UIView {
             
             self.clipsToBounds = false
             
-            [statusLabel, titleLabel, locationStackView, dateStackView, settleUpButton, statementCheckButton, shareButton, deleteButton].forEach {
+            [statusLabel, titleLabel, locationStackView, dateStackView, settleUpButton, statementCheckButton, shareButton].forEach {
                 self.addSubview($0)
             }
             
@@ -228,14 +211,12 @@ class Incomplete: UIView {
                 settleUpButton.isHidden = true
                 statementCheckButton.isHidden = false
                 shareButton.isHidden = !isAuthor
-                deleteButton.isHidden = !isAuthor
             } else {
                 statusLabel.attributedText = NSAttributedString(string: String(localized: "SettleUpIncomplete", table: "SettleUp"), attributes: title12.attributes())
                 statusLabel.textColor = .errorRed
                 settleUpButton.isHidden = !isAuthor
                 statementCheckButton.isHidden = true
                 shareButton.isHidden = true
-                deleteButton.isHidden = true
             }
             
             // 정산 여부 Label
@@ -283,33 +264,22 @@ class Incomplete: UIView {
                 make.bottom.equalToSuperview().inset(16)
             }
             
-            //TODO: 공유하기 버튼은 방장만 가능하므로, 백엔드와 상의 후 if문으로 레이아웃 처리하기
-            // 공유하기 버튼
-            shareButton.snp.makeConstraints { make in
-                make.trailing.equalToSuperview().inset(16)
-                make.top.equalTo(dateStackView.snp.bottom).offset(8)
-                make.bottom.equalToSuperview().inset(16)
-            }
-            
             // 정산서 확인 버튼
             statementCheckButton.snp.makeConstraints { make in
-                make.trailing.equalTo(shareButton.snp.leading).offset(-8)
+                make.trailing.equalToSuperview().inset(16)
                 make.top.equalTo(dateStackView.snp.bottom).offset(8)
                 make.bottom.equalToSuperview().inset(16)
             }
             
-            // 메뉴 버튼
-            deleteButton.snp.makeConstraints { make in
-                make.trailing.equalToSuperview().inset(16)
-                make.top.equalTo(statusLabel.snp.top)
+            // 공유하기 버튼
+            shareButton.snp.makeConstraints { make in
+                make.trailing.equalTo(statementCheckButton.snp.leading).offset(-8)
+                make.top.equalTo(dateStackView.snp.bottom).offset(8)
+                make.bottom.equalToSuperview().inset(16)
             }
         }
     
     private func bind() {
-        deleteButton.rx.tap
-            .bind(to: deleteTrigger)
-            .disposed(by: disposeBag)
-        
         settleUpButton.rx.tap
             .bind(to: settleUpTrigger)
             .disposed(by: disposeBag)
