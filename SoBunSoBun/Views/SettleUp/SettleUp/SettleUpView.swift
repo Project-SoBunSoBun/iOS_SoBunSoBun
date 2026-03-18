@@ -308,17 +308,6 @@ extension SettleUpView {
             }
             .disposed(by: disposeBag)
         
-        // 로딩 상태
-        reactor.state.map { $0.isLoading }
-            .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] isLoading in
-                guard let self = self else { return }
-                
-                self.logger.debug("로딩 중: \(isLoading)")
-            })
-            .disposed(by: disposeBag)
-        
         // 선택된 카테고리에 따른 EmptyLabel 분기
         Observable.combineLatest(
             reactor.state.map { $0.items.isEmpty }.distinctUntilChanged(),

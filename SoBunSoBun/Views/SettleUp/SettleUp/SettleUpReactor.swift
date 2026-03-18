@@ -38,7 +38,6 @@ class SettleUpReactor: Reactor {
     enum Mutation {
         case setSelectedCategory(SettleUpCategory)
         case setItems([SettleUpItemModel])
-        case setLoading(Bool)
         case appendItems([SettleUpItemModel])
         case setPage(Int)
         case setHasMore(Bool)
@@ -49,7 +48,6 @@ class SettleUpReactor: Reactor {
     struct State {
         var selectedCategory: SettleUpCategory = .all
         var items: [SettleUpItemModel] = []
-        var isLoading: Bool = false
         var page: Int = 0 // 페이지네이션 페이지 번호
         var hasMore: Bool = true // 새로고침 여부
         var isRefreshing: Bool = false // 새로고침 여부
@@ -60,32 +58,37 @@ class SettleUpReactor: Reactor {
         switch action {
             
         case .viewWillAppear:
-            return loadItems(page: 0, size: pageSize)
+            return Observable.concat([
+                Observable.just(.setPage(0)),
+                loadItems(page: 0, size: pageSize, isFirst: true),
+            ])
+            
             
         case .refresh:
             return Observable.concat([
                 Observable.just(.setRefreshing(true)),
                 Observable.just(.setPage(0)),
-                loadItems(page: 0, size: pageSize),
+                loadItems(page: 0, size: pageSize, isFirst: true),
                 Observable.just(.setRefreshing(false))
             ])
             
         case .loadMore:
-            guard !currentState.isLoading &&
-                    currentState.hasMore else { return Observable.empty() }
+            guard currentState.hasMore else {
+                return Observable.empty()
+            }
             
             let nextPage = currentState.page + 1
             
             return Observable.concat([
                 Observable.just(.setPage(nextPage)),
-                loadItems(page: nextPage, size: pageSize)
+                loadItems(page: nextPage, size: pageSize, isFirst: false)
             ])
             
         case .categorySelected(let category):
             return Observable.concat([
                 Observable.just(.setSelectedCategory(category)),
                 Observable.just(.setPage(0)),
-                loadItems(for: category, page: 0, size: pageSize)
+                loadItems(for: category, page: 0, size: pageSize, isFirst: true)
             ])
         }
     }
@@ -99,9 +102,6 @@ class SettleUpReactor: Reactor {
             
         case .setItems(let items):
             newState.items = items
-            
-        case .setLoading(let isLoading):
-            newState.isLoading = isLoading
             
         case .appendItems(let items):
             newState.items.append(contentsOf: items)
@@ -121,7 +121,7 @@ class SettleUpReactor: Reactor {
         return newState
     }
     
-    private func loadItems(for category: SettleUpCategory? = nil, page: Int, size: Int) -> Observable<Mutation> {
+    private func loadItems(for category: SettleUpCategory? = nil, page: Int, size: Int, isFirst: Bool) -> Observable<Mutation> {
         let selectedCategory = category ?? currentState.selectedCategory
         let status: String
         
@@ -136,38 +136,45 @@ class SettleUpReactor: Reactor {
             status = "COMPLETED"
         }
         
-        return Observable.concat([
-            Observable.just(.setLoading(true)),
-            networkManager.mySettleUps(status: status, page: page, size: size)
-                .asObservable()
-                .flatMap { SettleUpModel -> Observable<Mutation> in
-                    guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
-                    let currentUserId = Int(userId)
-                            
-                    let items: [SettleUpItemModel] = SettleUpModel.data.content.map { content in
-                        let isCompleted = (content.status == "COMPLETED")
-                        
-                        return SettleUpItemModel(
-                            settlementId: content.id,
-                            authorId: content.authorId,
-                            isAuthor: content.authorId == currentUserId,
-                            settlementStatus: isCompleted,
-                            title: content.groupPostTitle,
-                            location: content.locationName,
-                            meetingDate: content.meetAt,
-                            participants: content.chatRoomMembers
-                        )
-                    }
+        return networkManager.mySettleUps(status: status, page: page, size: size)
+            .asObservable()
+            .flatMap { SettleUpModel -> Observable<Mutation> in
+                guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
+                let currentUserId = Int(userId)
+                
+                let items: [SettleUpItemModel] = SettleUpModel.data.content.map { content in
+                    let isCompleted = (content.status == "COMPLETED")
                     
-                    return Observable.just(.setItems(items))
+                    return SettleUpItemModel(
+                        settlementId: content.id,
+                        authorId: content.authorId,
+                        isAuthor: content.authorId == currentUserId,
+                        settlementStatus: isCompleted,
+                        title: content.groupPostTitle,
+                        location: content.locationName,
+                        meetingDate: content.meetAt,
+                        participants: content.chatRoomMembers
+                    )
                 }
-                .catch { [weak self] error in
-                    guard let self = self else { return Observable.empty() }
-                    
-                    self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
-                    return Observable.just(.setError("정산 목록을 불러오는데 실패했습니다."))
-                },
-            Observable.just(.setLoading(false))
-        ])
+                
+                let mutation: Observable<Mutation> = isFirst
+                ? Observable.just(.setItems(items))
+                : Observable.just(.appendItems(items))
+                
+                return Observable.concat([
+                    mutation,
+                    Observable.just(.setHasMore(!SettleUpModel.data.last))
+                ])
+            }
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
+                self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
+                return Observable.concat([
+                    isFirst ? Observable.just(.setItems([])) : Observable.empty(),
+                    Observable.just(.setError("정산 목록을 불러오는데 실패했습니다.")),
+                    Observable.just(.setHasMore(false))
+                ])
+            }
     }
 }
