@@ -15,6 +15,8 @@ enum SettingAPIs {
     case patchNickname(nickname: String)
     // 내 게시글
     case getMyPosts(page: Int, size: Int)
+    // 저장된 게시글 목록
+    case getSavedPosts(page: Int, size: Int)
     // 공지사항
     case getAnnouncement(page: Int, size: Int)
     case getAnnouncementDetail(id: Int)
@@ -50,6 +52,9 @@ extension SettingAPIs: TargetType {
         case .getMyPosts:
             return "/api/posts/my"
             
+        case .getSavedPosts:
+            return "/api/v1/posts/saved/my/list"
+            
         case .getAnnouncement:
             return "api/announcements"
             
@@ -72,6 +77,7 @@ extension SettingAPIs: TargetType {
         case // GET
                 .getMeProfile,
                 .getMyPosts,
+                .getSavedPosts,
                 .getAnnouncement,
                 .getAnnouncementDetail:
             return .get
@@ -113,6 +119,11 @@ extension SettingAPIs: TargetType {
             return .requestJSONEncodable(body)
             
         case .getMyPosts(page: let page, size: let size):
+            let parameters = MyPostRequestModel(page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            
+        case .getSavedPosts(let page, let size):
             let parameters = MyPostRequestModel(page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)

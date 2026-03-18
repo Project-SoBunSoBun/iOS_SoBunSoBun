@@ -54,6 +54,16 @@ class SettingNetworkManager {
         .map(PostListResponseModel.self)
     }
     
+    // MARK: - 저장 목록
+    // 내가 저장한 게시글 조회
+    func getSavePosts(page: Int, size: Int) -> Single<PostListResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.getSavedPosts(page: page, size: size))
+        )
+        .filterSuccessfulStatusCodes()
+        .tryMap(PostListResponseModel.self)
+    }
+    
     // MARK: - 공지사항
     // 공지사항 목록 조회
     func getAnnouncements(page: Int, size: Int) -> Single<AnnouncementModel> {
