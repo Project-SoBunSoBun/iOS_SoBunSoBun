@@ -768,6 +768,17 @@
         }
       }
     },
+    "ScoreFormat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d점"
+          }
+        }
+      }
+    },
     "SelectBugLocation" : {
       "comment" : "Settings",
       "extractionState" : "manual",

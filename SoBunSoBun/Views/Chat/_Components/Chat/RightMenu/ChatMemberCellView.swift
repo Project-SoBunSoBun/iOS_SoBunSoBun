@@ -106,7 +106,7 @@ extension ChatMemberCellView {
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                DeepLinkManager.shared.handle(url: URL(string: "sobunsobun://profile/\(model.userId)")!)
+                DeepLinkManager.shared.handle(url: URL(string: "sobunsobun://profile_managable/\(model.userId)")!)
             })
             .disposed(by: disposeBag)
     }

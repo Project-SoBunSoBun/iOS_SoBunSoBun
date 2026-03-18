@@ -44,6 +44,13 @@ class DeepLinkManager {
                     nav.pushViewController(vc, animated: true)
                 }
                 
+            case "profile_managable": // 프로필 차단 및 신고 가능
+                if let userIdString = url.pathComponents.last,
+                   let userId = Int(userIdString) {
+                    let vc = ProfileManagableView(userId: userId)
+                    nav.pushViewController(vc, animated: true)
+                }
+                
             default:
                 logger.fault("알 수 없는 딥링크 host: \(url.host ?? "nil")")
             }

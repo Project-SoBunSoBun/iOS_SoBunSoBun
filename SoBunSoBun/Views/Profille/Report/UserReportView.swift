@@ -207,13 +207,6 @@ extension UserReportView {
             .map { Reactor.Action.reportButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
-        view.rx
-            .tapGesture()
-            .when(.recognized)
-            .map { _ in Reactor.Action.menuBoxTapped(false) }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: Reactor) {

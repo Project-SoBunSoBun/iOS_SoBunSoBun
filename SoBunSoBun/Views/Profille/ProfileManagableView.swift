@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import OSLog
 
-class ProfileView: UIViewController {
+class ProfileManagableView: UIViewController {
     private let userId: Int
     
     init(userId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
@@ -24,11 +24,11 @@ class ProfileView: UIViewController {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Profile.View"
+        category: "ProfileManagable.View"
     )
     
-    typealias Reactor = ProfileReactor
-    private lazy var reactor = ProfileReactor(userId: userId)
+    typealias Reactor = ProfileManagableReactor
+    private lazy var reactor = ProfileManagableReactor(userId: userId)
     
     private let disposeBag = DisposeBag()
     
@@ -41,24 +41,7 @@ class ProfileView: UIViewController {
         return tnb
     }()
     
-    private let refreshControl: BlueMeatballsRefreshController = {
-        let rc = BlueMeatballsRefreshController()
-        
-        return rc
-    }()
-    
-    private let tableView: BaseTableView = {
-        let tv = BaseTableView()
-        tv.register(UserPagePostListTableViewCell.self, forCellReuseIdentifier: UserPagePostListTableViewCell.identifier)
-        tv.estimatedRowHeight = 142
-        tv.contentInset = .init(
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0)
-        
-        return tv
-    }()
+    private let scrollView: UIScrollView = UIScrollView()
     
     private let contentView: UIView = {
         let view = UIView()
@@ -133,8 +116,22 @@ class ProfileView: UIViewController {
         return lb
     }()
     
-    // 작성한 글 라벨
-    private lazy var myPostsLabel = makeLabel(string: String(localized: "MyPosts", table: "Common"))
+    private let buttonsStackView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 8
+        sv.alignment = .fill
+        sv.distribution = .fill
+        sv.isHidden = true
+        
+        return sv
+    }()
+    
+    // 신고하기
+    private let reportButton = Button(title: String(localized: "Report", table: "Common"))
+    
+    // 차단하기
+    private let blockButton = Button(title: String(localized: "Block", table: "Common"))
     
     // MARK: - 생명주기
     override func viewDidLoad() {
@@ -154,7 +151,7 @@ class ProfileView: UIViewController {
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [topNavigationBar, tableView].forEach {
+        [topNavigationBar, buttonsStackView, scrollView, contentView].forEach {
             view.addSubview($0)
         }
         
@@ -163,52 +160,40 @@ class ProfileView: UIViewController {
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
-        tableView.tableHeaderView = contentView
-        tableView.refreshControl = refreshControl
+        buttonsStackView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
         
-        tableView.snp.makeConstraints { make in
+        scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(topNavigationBar.snp.bottom)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
         
+        scrollView.addSubview(contentView)
+        
         contentView.snp.makeConstraints { make in
-            make.width.equalTo(tableView)
+            make.edges.equalToSuperview()
+            make.width.equalToSuperview()
         }
     }
 }
 
-extension ProfileView {
+extension ProfileManagableView {
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
     private func bindAction(reactor: Reactor) {
-        // 새로고침
-        refreshControl.rx.controlEvent(.valueChanged)
-            .map { Reactor.Action.refresh }
+        reportButton.rx.tap
+            .map { Reactor.Action.reportButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // 셀을 눌렀을 때
-        tableView.rx.modelSelected(PostModel.self)
-            .map { Reactor.Action.postTapped($0) }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        // 페이지네이션
-        tableView.rx.willDisplayCell
-            .filter { [weak self] cell, indexPath -> Bool in
-                guard let self = self else { return false }
-                
-                let totalCount = self.tableView.numberOfRows(inSection: 0)
-                let triggerCount = 3
-                
-                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
-            }
-            .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
-            .map { _ in Reactor.Action.loadMorePosts }
+        blockButton.rx.tap
+            .map { Reactor.Action.blockButtonTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
@@ -227,28 +212,109 @@ extension ProfileView {
             })
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.posts }
-            .observe(on: MainScheduler.instance)
-            .bind(to: tableView.rx.items(
-                cellIdentifier: UserPagePostListTableViewCell.identifier,
-                cellType: UserPagePostListTableViewCell.self
-            )) { index, model, cell in
-                cell.configureUI(model: model)
-            }
-            .disposed(by: disposeBag)
-        
-        reactor.state.map { $0.isRefreshing }
+        reactor.state.map { $0.userInfo }
             .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .bind(to: refreshControl.rx.isRefreshing)
-            .disposed(by: disposeBag)
-        
-        reactor.pulse(\.$shouldPushPostDetailView)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                self.navigationController?.pushViewController(PostDetailView(postId: model.id, showBackButton: true, showChatButton: false), animated: true)
+                setBlockButtonTitle(isBlocked: model.isBlocked)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldPushUserReportView)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(UserReportView(userId: userId), animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldShowBlockAlert)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "BlockAlertTitle", table: "Common"),
+                    subTitle: String(localized: "BlockAlertSubTitle", table: "Common"),
+                    primaryTitleKey: String(localized: "Block", table: "Common"),
+                    cancelTitleKey: String(localized: "Cancel", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = {
+                    reactor.action.onNext(.blockUser)
+                }
+                
+                alert.onCancelTapped = {
+                    
+                }
+                
+                alert.show(on: self)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldShowBlockDoneAlert)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "Notice", table: "Common"),
+                    subTitle: String(localized: "BlockDoneAlertSubTitle", table: "Common"),
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = {
+                    
+                }
+                
+                alert.show(on: self)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldShowUnBlockAlert)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "UnBlockAlertTitle", table: "Common"),
+                    subTitle: String(localized: "UnBlockAlertSubTitle", table: "Common"),
+                    primaryTitleKey: String(localized: "UnBlock", table: "Common"),
+                    cancelTitleKey: String(localized: "Cancel", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = {
+                    reactor.action.onNext(.unBlockUser)
+                }
+                
+                alert.onCancelTapped = {
+                    
+                }
+                
+                alert.show(on: self)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldShowUnBlockDoneAlert)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "Notice", table: "Common"),
+                    subTitle: String(localized: "UnBlockDoneAlertSubTitle", table: "Common"),
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = {
+                    
+                }
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         
@@ -273,7 +339,12 @@ extension ProfileView {
     }
     
     private func configureContentView(model: ProfileUserInfoResponseDataModel) {
-        [profileImageView, nicknameLabel, userInfoView, receivedMannerLabel, emptyMannerView, myPostsLabel].forEach {
+        guard let myIdString = KeyChain.shared.get(key: "USER_ID"),
+              let myId = Int(myIdString) else {
+            return
+        }
+        
+        [profileImageView, nicknameLabel, userInfoView, receivedMannerLabel, emptyMannerView].forEach {
             contentView.addSubview($0)
         }
         
@@ -317,11 +388,21 @@ extension ProfileView {
             make.centerY.equalToSuperview()
         }
         
-        // 나의 공동 구매 라벨
-        myPostsLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(emptyMannerView.snp.bottom).offset(24)
-            make.bottom.equalToSuperview().inset(16).priority(.high)
+        if model.userId != myId {
+            buttonsStackView.isHidden = false
+            
+            [reportButton, blockButton].forEach {
+                buttonsStackView.addArrangedSubview($0)
+                $0.snp.makeConstraints { make in
+                    make.horizontalEdges.equalToSuperview()
+                }
+            }
+            
+            scrollView.snp.remakeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
+                make.top.equalTo(topNavigationBar.snp.bottom)
+                make.bottom.equalTo(buttonsStackView.snp.top).inset(-8)
+            }
         }
     }
     
@@ -345,10 +426,6 @@ extension ProfileView {
         
         // 받은 매너 평가 설정
         setReviewBox(receivedManner)
-        
-        contentView.layoutIfNeeded()
-        tableView.tableHeaderView = contentView
-        tableView.layoutIfNeeded()
     }
     
     private func setProfileImage(_ profileImageUrl: String?) {
@@ -408,13 +485,11 @@ extension ProfileView {
         mannerWrappingViews.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(receivedMannerLabel.snp.bottom).offset(16)
+            make.bottom.equalToSuperview().inset(16)
         }
-        
-        // 작성한 글 구매 라벨
-        myPostsLabel.snp.remakeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(mannerWrappingViews.snp.bottom).offset(24)
-            make.bottom.equalToSuperview().inset(16).priority(.high)
-        }
+    }
+    
+    private func setBlockButtonTitle(isBlocked: Bool) {
+        blockButton.changeTitle(title: NSLocalizedString(isBlocked ? "UnBlock" : "Block", tableName: "Common" , comment: ""))
     }
 }

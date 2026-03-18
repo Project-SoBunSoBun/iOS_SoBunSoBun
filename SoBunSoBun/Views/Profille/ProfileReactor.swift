@@ -33,10 +33,6 @@ class ProfileReactor: Reactor {
         case loadMorePosts
         case refresh // 새로고침
         case postTapped(PostModel) // 게시글 tap
-        case reportButtonTapped
-        case blockButtonTapped
-        case blockUser
-        case unBlockUser
     }
     
     enum Mutation {
@@ -48,11 +44,6 @@ class ProfileReactor: Reactor {
         case setRefreshing(Bool)
         case setHasMore(Bool) // 페이지네이션 추가 가능 여부 설정
         case setShouldPushPostDetailView(PostModel)
-        case setShouldPushUserReportView
-        case setShouldShowBlockAlert
-        case setShouldShowBlockDoneAlert
-        case setShouldShowUnBlockAlert
-        case setShouldShowUnBlockDoneAlert
         case setErrorMessage(String)
     }
     
@@ -64,11 +55,6 @@ class ProfileReactor: Reactor {
         var hasMore: Bool = true // 페이지네이션 추가 가능 여부
         var isRefreshing: Bool = false
         @Pulse var shouldPushPostDetailView: PostModel?
-        @Pulse var shouldPushUserReportView: Void?
-        @Pulse var shouldShowBlockAlert: Void?
-        @Pulse var shouldShowBlockDoneAlert: Void?
-        @Pulse var shouldShowUnBlockAlert: Void?
-        @Pulse var shouldShowUnBlockDoneAlert: Void?
         @Pulse var errorMessage: String?
     }
     
@@ -101,26 +87,6 @@ class ProfileReactor: Reactor {
             
         case .postTapped(let model):
             return Observable.just(.setShouldPushPostDetailView(model))
-            
-        case .reportButtonTapped:
-            return Observable.just(.setShouldPushUserReportView)
-            
-        case .blockButtonTapped:
-            guard let userInfo = currentState.userInfo else {
-                return Observable.empty()
-            }
-            
-            if userInfo.isBlocked {
-                return Observable.just(.setShouldShowUnBlockAlert)
-            } else {
-                return Observable.just(.setShouldShowBlockAlert)
-            }
-            
-        case .blockUser:
-            return blockUser()
-            
-        case .unBlockUser:
-            return unBlockUser()
         }
     }
     
@@ -151,21 +117,6 @@ class ProfileReactor: Reactor {
             
         case .setShouldPushPostDetailView(let model):
             newState.shouldPushPostDetailView = model
-            
-        case .setShouldPushUserReportView:
-            newState.shouldPushUserReportView = ()
-            
-        case .setShouldShowBlockAlert:
-            newState.shouldShowBlockAlert = ()
-            
-        case .setShouldShowBlockDoneAlert:
-            newState.shouldShowBlockDoneAlert = ()
-            
-        case .setShouldShowUnBlockAlert:
-            newState.shouldShowUnBlockAlert = ()
-            
-        case .setShouldShowUnBlockDoneAlert:
-            newState.shouldShowUnBlockDoneAlert = ()
             
         case .setErrorMessage(let message):
             newState.errorMessage = message
@@ -217,93 +168,5 @@ class ProfileReactor: Reactor {
                 Observable.just(.setLoading(false))
             ])
         }
-    }
-    
-    private func blockUser() -> Observable<Mutation> {
-        let userInfo = currentState.userInfo
-        
-        return networkManager.blockUser(userId: userId)
-            .asObservable()
-            .flatMap { [weak self] model -> Observable<Mutation> in
-                guard let self = self else { return Observable.empty() }
-                
-                if model.success {
-                    if var info = userInfo {
-                        info.isBlocked.toggle()
-                        
-                        self.logger.debug("차단 완료")
-                        
-                        return Observable.concat([
-                            Observable.just(.setUserInfo(info)),
-                            Observable.just(.setShouldShowBlockDoneAlert)
-                        ])
-                    } else {
-                        self.logger.fault("차단 중 userInfo가 없음")
-                        
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
-                    }
-                } else {
-                    if let error = model.error {
-                        self.logger.critical("차단 중 오류: \(error.message)")
-                        
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), error.code)))
-                    } else {
-                        self.logger.critical("차단 중 오류")
-                        
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
-                    }
-                }
-            }
-            .catch { [weak self] error -> Observable<Mutation> in
-                guard let self = self else { return Observable.empty() }
-                
-                self.logger.critical("차단 중 오류: \(error.localizedDescription)")
-                
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
-            }
-    }
-    
-    private func unBlockUser() -> Observable<Mutation> {
-        let userInfo = currentState.userInfo
-        
-        return networkManager.unBlockUser(userId: userId)
-            .asObservable()
-            .flatMap { [weak self] model -> Observable<Mutation> in
-                guard let self = self else { return Observable.empty() }
-                
-                if model.success {
-                    if var info = userInfo {
-                        info.isBlocked.toggle()
-                        
-                        self.logger.debug("차단 해제 완료")
-                        
-                        return Observable.concat([
-                            Observable.just(.setUserInfo(info)),
-                            Observable.just(.setShouldShowUnBlockDoneAlert)
-                        ])
-                    } else {
-                        self.logger.fault("차단 해제 중 userInfo가 없음")
-                        
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
-                    }
-                } else {
-                    if let error = model.error {
-                        self.logger.critical("차단 해제 중 오류: \(error.message)")
-                        
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), error.code)))
-                    } else {
-                        self.logger.critical("차단 해제 중 오류")
-                        
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
-                    }
-                }
-            }
-            .catch { [weak self] error -> Observable<Mutation> in
-                guard let self = self else { return Observable.empty() }
-                
-                self.logger.critical("차단 해제 중 오류: \(error.localizedDescription)")
-                
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
-            }
     }
 }

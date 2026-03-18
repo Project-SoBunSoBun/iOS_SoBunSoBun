@@ -67,7 +67,7 @@ class UserInfo: UIView {
     
     private lazy var activityLabel = makeLabel(string: String(localized: "ActivityScore", table: "Settings"))
     
-    private let mannerCountLabel = UILabel()
+    private let activityScoreLabel = UILabel()
     
     private lazy var firstDivider = makeDivider()
     
@@ -136,7 +136,7 @@ class UserInfo: UIView {
             allStackView.addArrangedSubview($0)
         }
         
-        [activityLabel, mannerCountLabel].forEach {
+        [activityLabel, activityScoreLabel].forEach {
             mannerStackView.addArrangedSubview($0)
         }
         
@@ -165,12 +165,17 @@ class UserInfo: UIView {
     }
     
     private func setActivityScore(_ activityScore: Int, _ attributes: [NSAttributedString.Key: Any]) {
-        let mannerText = NSAttributedString(
-            string: String(activityScore),
+        let scoreString = String(
+            format: String(localized: "ScoreFormat", table: "Settings"),
+            activityScore
+        )
+        
+        let scoreText = NSAttributedString(
+            string: String(scoreString),
             attributes: attributes
         )
         
-        mannerCountLabel.attributedText = mannerText
+        activityScoreLabel.attributedText = scoreText
     }
     
     private func setParticipationCount(_ participationCount: Int, _ attributes: [NSAttributedString.Key: Any]) {
