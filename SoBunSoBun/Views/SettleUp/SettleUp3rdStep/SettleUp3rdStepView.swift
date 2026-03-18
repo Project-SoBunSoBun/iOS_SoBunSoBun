@@ -254,6 +254,17 @@ extension SettleUp3rdStepView {
             })
             .disposed(by: disposeBag)
         
+        // 저장 확인 알러트
+        reactor.pulse(\.$shouldShowSaveAlert)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.saveCheckAlert()
+            })
+            .disposed(by: disposeBag)
+        
         // 실패 시 알러트
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
@@ -264,6 +275,29 @@ extension SettleUp3rdStepView {
                 self.errorAlert()
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func saveCheckAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "SettlementSaveCheckTitle", table: "SettleUp"),
+            subTitle: String(localized: "SettlementSaveCheckSubtitle", table: "SettleUp"),
+            primaryTitleKey: String(localized: "Confirm", table: "Common"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = { [weak self] in
+            guard let self = self else { return }
+            
+            self.reactor.action.onNext(.alertButtonTapped)
+        }
+        
+        alert.onCancelTapped = { [weak self] in
+            guard let self = self else { return }
+            
+            self.logger.debug("취소 버튼 클릭")
+        }
+        
+        alert.show(on: self)
     }
     
     private func errorAlert() {
