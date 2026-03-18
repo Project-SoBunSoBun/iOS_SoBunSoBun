@@ -11,6 +11,7 @@ import SnapKit
 class PostListWithCommentCellView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         configureUI()
     }
     
@@ -39,14 +40,6 @@ class PostListWithCommentCellView: UIView {
         
         return lb
     }()
-    
-    // 설명(장소 및 시간) attributes 컴포넌트
-    private func descAttributes() -> [NSAttributedString.Key: Any] {
-        var attributes: [NSAttributedString.Key: Any] = body14.attributes()
-        attributes[.foregroundColor] = UIColor.neutral500
-        
-        return attributes
-    }
     
     private let dateLabel: UILabel = {
         let lb = UILabel()
@@ -112,10 +105,9 @@ class PostListWithCommentCellView: UIView {
         commentLabel.attributedText = NSAttributedString(string: comment ?? "", attributes: commentAttributes)
         
         // 시간 및 인원 표시
-        dateLabel.attributedText = NSAttributedString(string: ISO8601ToLocalizedDateTimeString(model.meetAt), attributes: descAttributes())
-        
-        var joinedAttributes: [NSAttributedString.Key: Any] = title12.attributes(alignment: .right)
-        joinedAttributes[.foregroundColor] = model.joinedMembers + 1 >= model.maxMembers ? UIColor.primary400 : UIColor.neutral300
+        var dateAttributes: [NSAttributedString.Key: Any] = body14.attributes()
+        dateAttributes[.foregroundColor] = UIColor.neutral500
+        dateLabel.attributedText = NSAttributedString(string: ISO8601ToLocalizedDateTimeString(model.meetAt), attributes: dateAttributes)
     }
     
     // 구분선 표시 변경 함수

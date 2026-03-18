@@ -30,11 +30,11 @@ extension ProfileAPIs: TargetType {
         case .getPostList(let userId, _, _):
             return "/api/v1/users/\(userId)/profile"
             
-        case
-                .blockUser(let userId),
-                .unBlockUser(let userId):
+        case .blockUser(let userId):
             return "/api/v1/blocks/\(userId)"
             
+        case .unBlockUser(let userId):
+            return "/api/v1/blocks/\(userId)"
             
         case .reportUser(let userId, _, _):
             return "/api/v1/users/\(userId)/report"
@@ -65,9 +65,10 @@ extension ProfileAPIs: TargetType {
             
             return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
             
-        case
-                .blockUser,
-                .unBlockUser:
+        case .blockUser:
+            return .requestPlain
+            
+        case .unBlockUser:
             return .requestPlain
             
         case .reportUser(_, let reason, let description):

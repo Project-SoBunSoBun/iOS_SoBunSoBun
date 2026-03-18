@@ -138,6 +138,7 @@ class UserReportReactor: Reactor {
         .asObservable()
         .flatMap { model -> Observable<Mutation> in
             self.logger.debug("신고 완료")
+            
             if model.success {
                 return Observable.just(.setReportCompleted)
             } else {

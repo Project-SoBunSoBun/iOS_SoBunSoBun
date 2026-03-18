@@ -15,6 +15,7 @@ class ProfileView: UIViewController {
     
     init(userId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
         self.userId = userId
+        
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -51,20 +52,12 @@ class ProfileView: UIViewController {
         let tv = BaseTableView()
         tv.register(UserPagePostListTableViewCell.self, forCellReuseIdentifier: UserPagePostListTableViewCell.identifier)
         tv.estimatedRowHeight = 142
-        tv.contentInset = .init(
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0)
+        tv.contentInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         
         return tv
     }()
     
-    private let contentView: UIView = {
-        let view = UIView()
-        
-        return view
-    }()
+    private let contentView: UIView = UIView()
     
     // 프로필 이미지 뷰
     private let profileImageView: UIImageView = {
@@ -262,10 +255,6 @@ extension ProfileView {
                     subTitle: message,
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
-                
-                alert.onPrimaryTapped = {
-                    
-                }
                 
                 alert.show(on: self)
             })

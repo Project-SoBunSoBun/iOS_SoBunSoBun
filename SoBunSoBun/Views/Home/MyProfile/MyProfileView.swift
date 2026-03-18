@@ -18,7 +18,7 @@ class MyProfileView: UIViewController {
     )
     
     typealias Reactor = MyProfileReactor
-    private lazy var reactor = MyProfileReactor()
+    private let reactor = MyProfileReactor()
     
     private let disposeBag = DisposeBag()
     
@@ -58,11 +58,7 @@ class MyProfileView: UIViewController {
         return tv
     }()
     
-    private let contentView: UIView = {
-        let view = UIView()
-        
-        return view
-    }()
+    private let contentView: UIView = UIView()
     
     // 프로필 이미지 뷰
     private let profileImageView: UIImageView = {
@@ -215,6 +211,7 @@ extension MyProfileView {
                 guard let self = self else { return nil }
                 
                 let model = self.reactor.currentState.posts[indexPath.row]
+                
                 return Reactor.Action.postTapped(model)
             }
             .bind(to: reactor.action)

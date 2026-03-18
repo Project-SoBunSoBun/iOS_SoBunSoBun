@@ -88,6 +88,7 @@ class MyProfileReactor: Reactor {
             }
             
             let nextPage = currentState.page + 1
+            
             return Observable.concat([
                 Observable.just(.setPage(nextPage)),
                 loadPosts(page: nextPage, isFirst: false)

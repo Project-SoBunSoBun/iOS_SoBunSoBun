@@ -43,11 +43,7 @@ class ProfileManagableView: UIViewController {
     
     private let scrollView: UIScrollView = UIScrollView()
     
-    private let contentView: UIView = {
-        let view = UIView()
-        
-        return view
-    }()
+    private let contentView: UIView = UIView()
     
     // 프로필 이미지 뷰
     private let profileImageView: UIImageView = {
@@ -248,10 +244,6 @@ extension ProfileManagableView {
                     reactor.action.onNext(.blockUser)
                 }
                 
-                alert.onCancelTapped = {
-                    
-                }
-                
                 alert.show(on: self)
             })
             .disposed(by: disposeBag)
@@ -266,10 +258,6 @@ extension ProfileManagableView {
                     subTitle: String(localized: "BlockDoneAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
-                
-                alert.onPrimaryTapped = {
-                    
-                }
                 
                 alert.show(on: self)
             })
@@ -291,10 +279,6 @@ extension ProfileManagableView {
                     reactor.action.onNext(.unBlockUser)
                 }
                 
-                alert.onCancelTapped = {
-                    
-                }
-                
                 alert.show(on: self)
             })
             .disposed(by: disposeBag)
@@ -310,10 +294,6 @@ extension ProfileManagableView {
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
-                    
-                }
-                
                 alert.show(on: self)
             })
             .disposed(by: disposeBag)
@@ -328,10 +308,6 @@ extension ProfileManagableView {
                     subTitle: message,
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
-                
-                alert.onPrimaryTapped = {
-                    
-                }
                 
                 alert.show(on: self)
             })
