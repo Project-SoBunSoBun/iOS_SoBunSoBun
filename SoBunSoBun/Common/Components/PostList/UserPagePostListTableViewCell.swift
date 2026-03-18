@@ -50,12 +50,19 @@ class UserPagePostListTableViewCell: UITableViewCell {
         view.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalToSuperview()
-            make.bottom.equalToSuperview().inset(24).priority(.high)
+            make.bottom.equalToSuperview().priority(.high)
         }
     }
     
-    func configureUI(model: PostModel) {
+    func configureUI(model: PostModel, bottomEdgeInset: CGFloat) {
         view.configureUI(model: model)
+        
+        view.snp.remakeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview().inset(bottomEdgeInset).priority(.high)
+        }
+        
         view.layoutIfNeeded()
     }
 }

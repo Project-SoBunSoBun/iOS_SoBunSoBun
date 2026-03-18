@@ -233,7 +233,7 @@ extension ProfileView {
                 cellIdentifier: UserPagePostListTableViewCell.identifier,
                 cellType: UserPagePostListTableViewCell.self
             )) { index, model, cell in
-                cell.configureUI(model: model)
+                cell.configureUI(model: model, bottomEdgeInset: 8)
             }
             .disposed(by: disposeBag)
         

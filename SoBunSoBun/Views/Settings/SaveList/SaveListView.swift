@@ -140,7 +140,7 @@ extension SaveListView {
                 cellIdentifier: UserPagePostListTableViewCell.identifier,
                 cellType: UserPagePostListTableViewCell.self
             )) { _, model, cell in
-                cell.configureUI(model: model)
+                cell.configureUI(model: model, bottomEdgeInset: 24)
             }
             .disposed(by: disposeBag)
         
