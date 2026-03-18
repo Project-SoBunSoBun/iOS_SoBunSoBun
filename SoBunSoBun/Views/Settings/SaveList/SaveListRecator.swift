@@ -30,7 +30,7 @@ class SaveListRecator: Reactor {
     enum Mutation {
         case setSavedPosts([PostModel]) // 초기 저장 목록 로딩
         case setLoading(Bool)
-        case setAppendSavedPosts([PostModel]) // 추가 저장 목록 로딩
+        case appendSavedPosts([PostModel]) // 추가 저장 목록 로딩
         case setPage(Int)
         case setHasMore(Bool)
         case setRefreshing(Bool)
@@ -92,7 +92,7 @@ class SaveListRecator: Reactor {
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
             
-        case .setAppendSavedPosts(let savedPosts):
+        case .appendSavedPosts(let savedPosts):
             newState.savedPosts.append(contentsOf: savedPosts)
             
         case .setPage(let page):
@@ -122,7 +122,7 @@ class SaveListRecator: Reactor {
                 
                 let mutations: Observable<Mutation> = isFirst
                 ? Observable.just(.setSavedPosts(response.posts))
-                : Observable.just(.setAppendSavedPosts(response.posts))
+                : Observable.just(.appendSavedPosts(response.posts))
                 
                 return Observable.concat([
                     mutations,
