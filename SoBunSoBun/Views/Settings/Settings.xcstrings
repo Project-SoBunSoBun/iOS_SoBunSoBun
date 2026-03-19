@@ -355,7 +355,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "위치기반서비스 이용 약관을 불러오는데 실패했습니다."
+            "value" : "위치기반서비스 이용약관을 불러오는데 실패했습니다."
           }
         }
       }
@@ -523,7 +523,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "위치기반서비스 이용 약관"
+            "value" : "위치기반서비스 이용약관"
           }
         }
       }

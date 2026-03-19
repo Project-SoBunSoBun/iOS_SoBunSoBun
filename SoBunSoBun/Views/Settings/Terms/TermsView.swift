@@ -39,7 +39,7 @@ class TermsView: UIViewController {
     // 개인정보처리방침
     private let privacyPolicy = SettingCardCell(title: String(localized: "PrivacyPolicy", table: "Settings"), type: .button)
     
-    // 위치기반서비스 이용 약관
+    // 위치기반서비스 이용약관
     private let locationBasedService = SettingCardCell(title: String(localized: "LocationBasedService", table: "Settings"), type: .button)
     
     // 약관 및 정책 세팅 카드
@@ -94,13 +94,13 @@ extension TermsView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // 개인정보처리 방침 클릭
+        // 개인정보처리방침 클릭
         privacyPolicy.didTap
             .map { Reactor.Action.privacyPolicyTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // 위치기반서비스 이용 약관 클릭
+        // 위치기반서비스 이용약관 클릭
         locationBasedService.didTap
             .map { Reactor.Action.locationBasedServiceTapped }
             .bind(to: reactor.action)

@@ -28,7 +28,7 @@ class TermsDetailReactor: Reactor {
     
     enum Mutation {
         case setContent(String)
-        case setError(String)
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -51,7 +51,7 @@ class TermsDetailReactor: Reactor {
         case .setContent(let content):
             newState.content = content
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
         }
         return newState
@@ -87,7 +87,8 @@ class TermsDetailReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 self.logger.critical("\(errorLogMessage): \(error.localizedDescription)")
-                return Observable.just(.setError(String(localized: String.LocalizationValue(errorKey), table: "Settings")))
+                
+                return Observable.just(.setErrorMessage(String(localized: String.LocalizationValue(errorKey), table: "Settings")))
             }
     }
 }
