@@ -33,8 +33,8 @@ class NotificationSettingView: UIViewController {
         return tnb
     }()
     
-    // 소분소분에서 보내는 소식
-    private lazy var notificationSetting = SettingCardCell(title: String(localized: "NewsFromSobunSobun", table: "Settings"), type: .button)
+    // 소분해요에서 보내는 소식
+    private lazy var notificationSetting = SettingCardCell(title: String(localized: "NewsFromSobunHaeYo", table: "Settings"), type: .button)
     
     // 업데이트, 댓글, 채팅 알림 라벨
     private let subTitleLabel: UILabel = {
