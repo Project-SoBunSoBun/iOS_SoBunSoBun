@@ -39,7 +39,7 @@ class HomeView: UIViewController {
     
     private let letterLogoImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .sobunSobunText.resize(.init(width: 65, height: 22))
+        iv.image = .soBunHaeYoText.resize(.init(width: 65, height: 22))
         iv.contentMode = .scaleAspectFit
         
         return iv

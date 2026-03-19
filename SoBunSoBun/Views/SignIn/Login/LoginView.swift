@@ -37,7 +37,7 @@ class LoginView: UIViewController {
     // 앱 로고 Text - 소분소분
     private let appLogoText: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = .sobunSobunText
+        imageView.image = .soBunHaeYoText
         imageView.contentMode = .scaleAspectFit
         
         return imageView
