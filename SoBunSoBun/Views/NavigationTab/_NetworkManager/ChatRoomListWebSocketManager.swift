@@ -59,16 +59,19 @@ class ChatRoomListWebSocketManager {
     private func handleUnauthorized() {
         guard !AuthInterceptor.shared.isRefreshing else {
             logger.debug("이미 토큰 갱신 중")
+            
             reconnect()
             
             return
         }
         
         AuthInterceptor.shared.isRefreshing = true
+        
         logger.debug("401 에러 감지 - 토큰 갱신 시작")
         
         guard let refreshToken = KeyChain.shared.get(key: "REFRESH_TOKEN") else {
             AuthManager.shared.logout()
+            
             logger.fault("리프레시 토큰 없음")
             
             return
@@ -92,6 +95,7 @@ class ChatRoomListWebSocketManager {
                 guard let self = self else { return }
                 
                 AuthInterceptor.shared.isRefreshing = false
+                
                 logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
@@ -183,6 +187,7 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         
         guard tryCount < maxRetryCount else {
             logger.fault("채팅방 목록 Websocket 연결 재시도 \(self.maxRetryCount)회 실패")
+            
             return
         }
         

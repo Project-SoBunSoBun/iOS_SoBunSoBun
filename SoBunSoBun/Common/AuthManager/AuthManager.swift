@@ -93,6 +93,7 @@ class AuthManager {
     
     func showLogOutAlert() {
         guard !isShowingLogOutAlert else { return }
+        
         isShowingLogOutAlert = true
         
         DispatchQueue.main.async { [weak self] in
