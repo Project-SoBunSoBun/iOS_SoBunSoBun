@@ -320,9 +320,9 @@
 				DEVELOPMENT_TEAM = U73C5KBSMA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SoBunSoBun/Info.plist;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "$(NSLocationWhenInUseUsageDescription)";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "$(NSPhotoLibraryAddUsageDescription)";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(NSPhotoLibraryUsageDescription)";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -356,9 +356,9 @@
 				DEVELOPMENT_TEAM = U73C5KBSMA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = SoBunSoBun/Info.plist;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "$(NSLocationWhenInUseUsageDescription)";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "$(NSPhotoLibraryAddUsageDescription)";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "$(NSPhotoLibraryUsageDescription)";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;

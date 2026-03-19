@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import OSLog
 
-class LocationManager: NSObject {
+final class LocationManager: NSObject {
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "LocationManager"

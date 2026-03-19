@@ -64,3 +64,10 @@ struct RefreshResponseModel: Decodable {
     let accessTokenExpiresAtKst: String
     let expiresIn: Int
 }
+
+// MARK: - FCM 토큰
+struct RegisterFCMTokenRequestBodyModel: Encodable {
+    let deviceId: String
+    let fcmToken: String
+    let platform: String = "IOS"
+}

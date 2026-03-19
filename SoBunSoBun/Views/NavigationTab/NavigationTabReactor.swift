@@ -51,6 +51,8 @@ class NavigationTabReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .viewDidLoad:
+            checkFCMToken()
+            
             return Observable.concat([
                 getChatRoomList(),
                 getMyData()
@@ -108,7 +110,7 @@ class NavigationTabReactor: Reactor {
            KeyChain.shared.get(key: "EMAIL") != nil {
             return Observable.empty()
         }
-            
+        
         return commonNetworkManager.myProfile()
             .asObservable()
             .flatMap { userInfo -> Observable<Mutation> in
@@ -137,5 +139,30 @@ class NavigationTabReactor: Reactor {
                 
                 return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
             }
+    }
+    
+    private func checkFCMToken() {
+        let hasLaunchedBefore = UserDefaults.standard.bool(forKey: "hasLaunchedBefore")
+        
+        if !hasLaunchedBefore {
+            self.logger.debug("앱 첫 실행, 알림 권한 요청")
+            
+            UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+            
+            NotificationManager.shared.requestAuthorization { granted in
+                self.logger.debug("알림 권한 결과: \(granted)")
+                
+                guard granted else {
+                    self.logger.error("알림 권한 거부함")
+                    return
+                }
+                
+                NotificationManager.shared.registerFCMToken()
+            }
+        } else {
+            self.logger.debug("앱 재실행, FCM 토큰 등록")
+            
+            NotificationManager.shared.registerFCMToken()
+        }
     }
 }

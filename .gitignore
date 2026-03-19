@@ -137,5 +137,7 @@ iOSInjectionProject/
 *.ttf
 *.otf
 
+GoogleService-Info.plist
+
 TestView.swift
 TestReactor.swift

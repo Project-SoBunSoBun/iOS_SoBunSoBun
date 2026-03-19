@@ -417,8 +417,7 @@ extension WithdrawView {
         )
         
         alert.onPrimaryTapped = {
-            AuthManager.shared.removeTokens()
-            AuthManager.shared.switchToLoginView()
+            AuthManager.shared.logout()
         }
         
         alert.show(on: self)
