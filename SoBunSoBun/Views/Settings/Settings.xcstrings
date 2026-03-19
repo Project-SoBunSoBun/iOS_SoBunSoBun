@@ -367,7 +367,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "개인정보처리 방침을 불러오는데 실패했습니다."
+            "value" : "개인정보처리방침을 불러오는데 실패했습니다."
           }
         }
       }
@@ -763,7 +763,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "개인정보처리 방침"
+            "value" : "개인정보처리방침"
           }
         }
       }
