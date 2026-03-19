@@ -10,6 +10,7 @@ import SnapKit
 import ReactorKit
 import RxSwift
 import RxCocoa
+import WebKit
 
 class LocationTermView: UIViewController {
     typealias Reactor = LocationTermReactor
@@ -17,46 +18,50 @@ class LocationTermView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    // 뒤로 가기 버튼
-    private let backButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "BlackLeft"), for: .normal)
+    // 상단 네비게이션 바
+    private lazy var topNavigationBar: TopNavigationBar = {
+        let tnb = TopNavigationBar()
+        tnb.parentViewController = self
+        tnb.title = String(localized: "LocationBasedService", table: "Settings")
         
-        return button
+        return tnb
     }()
 
-    // 임시 타이틀
-    private let titleLabel: UILabel = {
-        let title = UILabel()
-        title.text = "Location 약관 화면"
-        title.textColor = .neutral900
-        title.textAlignment = .center
+    // 웹 뷰
+    private let webView: WKWebView = {
+        let wv = WKWebView()
+        wv.backgroundColor = .backgroundWhite
+        wv.scrollView.showsVerticalScrollIndicator = false
         
-        return title
+        return wv
     }()
-
+    
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         configureUI()
         bind(reactor: reactor)
     }
     
+    // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        [backButton, titleLabel].forEach {
+        [topNavigationBar, webView].forEach {
             view.addSubview($0)
         }
         
-        backButton.snp.makeConstraints { make in
-            make.size.equalTo(48)
-            make.leading.equalToSuperview().offset(4)
+        // 탑 네비게이션 바
+        topNavigationBar.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
-        titleLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+        webView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(topNavigationBar.snp.bottom).offset(16)
+            make.bottom.equalToSuperview()
         }
     }
 }
@@ -69,20 +74,41 @@ extension LocationTermView {
     }
     
     private func bindAction(reactor: LocationTermReactor) {
-        // Back 버튼 탭
-        backButton.rx.tap
-            .map { Reactor.Action.backButtonTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
+        reactor.action.onNext(.viewDidLoad)
     }
     
     private func bindState(reactor: LocationTermReactor) {
-        // 뒤로 가기 버튼
-        reactor.pulse(\.$shouldPopViewController)
-            .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
+        // HTML 콘텐츠 바인딩
+        reactor.state.map { $0.content }
+            .filter { !$0.isEmpty }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] content in
+                guard let self = self else { return }
+                
+                self.webView.loadHTMLString(content, baseURL: nil)
             })
             .disposed(by: disposeBag)
+        
+        // 에러 알림
+        reactor.pulse(\.$errorMessage)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] message in
+                guard let self = self else { return }
+                
+                self.errorAlert(message: message)
+            })
+            .disposed(by: disposeBag)
+    }
+    
+    private func errorAlert(message: String) {
+        let alert = CustomAlertView(
+            title: message,
+            subTitle: String(localized: "ErrorMessage", table: "Common"),
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.show(on: self)
     }
 }
