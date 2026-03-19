@@ -36,14 +36,14 @@ class TermsView: UIViewController {
     // 서비스 이용 약관
     private let serviceTerm = SettingCardCell(title: String(localized: "ServiceTerm", table: "Settings"), type: .button)
     
-    // 개인정보처리 방침
+    // 개인정보처리방침
     private let privacyPolicy = SettingCardCell(title: String(localized: "PrivacyPolicy", table: "Settings"), type: .button)
     
     // 위치기반서비스 이용 약관
-    private let locationBasedServie = SettingCardCell(title: String(localized: "LocationBasedService", table: "Settings"), type: .button)
+    private let locationBasedService = SettingCardCell(title: String(localized: "LocationBasedService", table: "Settings"), type: .button)
     
     // 약관 및 정책 세팅 카드
-    private lazy var termsSettingCard = SettingCard(cells: [serviceTerm, privacyPolicy, locationBasedServie])
+    private lazy var termsSettingCard = SettingCard(cells: [serviceTerm, privacyPolicy, locationBasedService])
     
     // MARK: - 생명주기
     override func viewDidLoad() {
@@ -73,7 +73,7 @@ class TermsView: UIViewController {
             make.top.equalTo(topNavigationBar.snp.bottom).offset(16)
         }
         
-        [serviceTerm, privacyPolicy, locationBasedServie].forEach {
+        [serviceTerm, privacyPolicy, locationBasedService].forEach {
             $0.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview()
             }
@@ -101,8 +101,8 @@ extension TermsView {
             .disposed(by: disposeBag)
         
         // 위치기반서비스 이용 약관 클릭
-        locationBasedServie.didTap
-            .map { Reactor.Action.locationBasedServieTapped }
+        locationBasedService.didTap
+            .map { Reactor.Action.locationBasedServiceTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
@@ -115,19 +115,20 @@ extension TermsView {
             .subscribe(onNext: { [weak self] viewType in
                 guard let self = self else { return }
                 
-                let view: UIViewController
+                let termsTpye: String
                 
                 switch viewType {
                 case .serviceTerm:
-                    view = ServiceTermView()
+                    termsTpye = "service"
                     
                 case .privacyPolicy:
-                    view = PrivacyTermView()
+                    termsTpye = "privacy"
                     
                 case .locationBasedServie:
-                    view = LocationTermView()
+                    termsTpye = "location"
                 }
                 
+                let view = TermsDetailView(termsType: termsTpye)
                 self.navigationController?.pushViewController(view, animated: true)
             })
             .disposed(by: disposeBag)
