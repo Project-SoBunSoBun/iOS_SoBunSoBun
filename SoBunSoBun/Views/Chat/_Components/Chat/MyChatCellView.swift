@@ -33,6 +33,8 @@ class MyChatCellView: UIView {
     let didSettlementCardButtonTapped = PublishRelay<Int>()
     
     private let UNKNOWN_STRING = String(localized: "Unknown", table: "Common")
+    private let BUBBLE_VIEW_MAX_WIDTH = UIScreen.main.bounds.width * 0.56
+    private let IMAGE_VIEW_MAX_WIDTH = UIScreen.main.bounds.width * 0.5 - (10 * 2)
     
     // MARK: - 디자인 요소
     let chatBubbleView: UIView = {
@@ -146,7 +148,7 @@ class MyChatCellView: UIView {
         
         chatBubbleView.snp.makeConstraints { make in
             make.trailing.verticalEdges.equalToSuperview()
-            make.width.lessThanOrEqualTo(UIScreen.main.bounds.width * 0.56)
+            make.width.lessThanOrEqualTo(BUBBLE_VIEW_MAX_WIDTH)
         }
         
         chatBubbleView.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -205,7 +207,7 @@ class MyChatCellView: UIView {
         
         chatImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(10)
-            make.size.equalTo(UIScreen.main.bounds.width * 0.5)
+            make.size.equalTo(IMAGE_VIEW_MAX_WIDTH)
         }
         
         if let imageUrl = model.imageUrl {
@@ -250,7 +252,7 @@ class MyChatCellView: UIView {
         invitationCardView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.verticalEdges.equalToSuperview().inset(20)
-            make.width.equalTo(UIScreen.main.bounds.width * 0.5)
+            make.width.equalTo(BUBBLE_VIEW_MAX_WIDTH - (16 * 2))
         }
     }
     
@@ -265,18 +267,17 @@ class MyChatCellView: UIView {
         settlementCardView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.verticalEdges.equalToSuperview().inset(20)
-            make.width.equalTo(UIScreen.main.bounds.width * 0.5)
+            make.width.equalTo(BUBBLE_VIEW_MAX_WIDTH - (16 * 2))
         }
     }
     
     private func calculateImageSize(image: UIImage) -> CGSize {
-        let maxWidth = UIScreen.main.bounds.width * 0.5
         let maxHeight: CGFloat = 300
         
         let ratio = image.size.width / image.size.height
         
-        var targetWidth = maxWidth
-        var targetHeight = maxWidth / ratio
+        var targetWidth = IMAGE_VIEW_MAX_WIDTH
+        var targetHeight = IMAGE_VIEW_MAX_WIDTH / ratio
         
         if targetHeight > maxHeight {
             targetHeight = maxHeight
