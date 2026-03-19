@@ -120,4 +120,29 @@ class SettingNetworkManager {
         .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
+    
+    // MARK: - 약관 조회
+    // 서비스 이용 약관 조회
+    func getTermsService() -> Single<TermsResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.getTermsService)
+        )
+        .tryMap(TermsResponseModel.self)
+    }
+    
+    // 개인정보처리방침 조회
+    func getTermsPrivacy() -> Single<TermsResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.getTermsPrivacy)
+        )
+        .tryMap(TermsResponseModel.self)
+    }
+    
+    // 위치기반서비스 이용 약관 조회
+    func getTermsLocation() -> Single<TermsResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.getTermsLocation)
+        )
+        .tryMap(TermsResponseModel.self)
+    }
 }

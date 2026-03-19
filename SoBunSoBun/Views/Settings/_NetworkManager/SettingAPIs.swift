@@ -26,6 +26,13 @@ enum SettingAPIs {
     case postInquiries(typeCode: String, content: String, replyEmail: String, selectedImages: [Data]?)
     // 버그 신고
     case postBugReport(typeCode: String, content: String, deviceInfo: String, selectedImages: [Data]?)
+    // MARK: - 약관 조회
+    // 서비스 이용 약관 조회
+    case getTermsService
+    // 개인정보처리방침 조회
+    case getTermsPrivacy
+    // 위치기반서비스 이용 약관 조회
+    case getTermsLocation
 }
 
 extension SettingAPIs: TargetType {
@@ -69,6 +76,15 @@ extension SettingAPIs: TargetType {
         
         case .postBugReport:
             return "/api/support/bug-report"
+            
+        case .getTermsService:
+            return "/api/terms/service"
+            
+        case .getTermsPrivacy:
+            return "/api/terms/privacy"
+            
+        case .getTermsLocation:
+            return "/api/terms/location"
         }
     }
     
@@ -79,7 +95,10 @@ extension SettingAPIs: TargetType {
                 .getMyPosts,
                 .getSavedPosts,
                 .getAnnouncement,
-                .getAnnouncementDetail:
+                .getAnnouncementDetail,
+                .getTermsService,
+                .getTermsPrivacy,
+                .getTermsLocation:
             return .get
             
         case // POST
@@ -200,6 +219,9 @@ extension SettingAPIs: TargetType {
             ]
             
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
+        
+        case .getTermsService, .getTermsPrivacy, .getTermsLocation:
+            return .requestPlain
         }
     }
     
