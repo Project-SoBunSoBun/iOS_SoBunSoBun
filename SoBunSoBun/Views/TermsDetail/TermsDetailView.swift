@@ -1,32 +1,65 @@
 //
-//  LocationTermView.swift
+//  TermsView.swift
 //  SoBunSoBun
 //
-//  Created by 허성필 on 10/23/25.
+//  Created by 허성필 on 3/20/26.
 //
 
 import UIKit
 import SnapKit
-import ReactorKit
 import RxSwift
 import RxCocoa
+import ReactorKit
+import OSLog
 import WebKit
 
-class LocationTermView: UIViewController {
-    typealias Reactor = LocationTermReactor
-    private let reactor = LocationTermReactor()
+class TermsDetailView: UIViewController {
+    let termsType: String
+    
+    init(termsType: String) {
+        self.termsType = termsType
+        reactor = TermsDetailReactor(termsType: termsType)
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private let logger = Logger(
+        subsystem: "SoBunSoBun",
+        category: "TermsDetail.View"
+    )
+    
+    typealias Reactor = TermsDetailReactor
+    private let reactor: TermsDetailReactor
     
     private let disposeBag = DisposeBag()
     
+    // MARK: - 디자인 요소
     // 상단 네비게이션 바
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
         tnb.parentViewController = self
-        tnb.title = String(localized: "LocationBasedService", table: "Settings")
+        
+        switch termsType {
+        case "service":
+            tnb.title = String(localized: "ServiceTerm", table: "Settings")
+            
+        case "privacy":
+            tnb.title = String(localized: "PrivacyPolicy", table: "Settings")
+            
+        case "location":
+            tnb.title = String(localized: "LocationBasedService", table: "Settings")
+            
+        default:
+            break
+        }
         
         return tnb
     }()
-
+    
     // 웹 뷰
     private let webView: WKWebView = {
         let wv = WKWebView()
@@ -66,22 +99,22 @@ class LocationTermView: UIViewController {
     }
 }
 
-extension LocationTermView {
+extension TermsDetailView {
     // reactor와 view 연결
-    private func bind(reactor: LocationTermReactor) {
+    private func bind(reactor: TermsDetailReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: LocationTermReactor) {
+    private func bindAction(reactor: TermsDetailReactor) {
         reactor.action.onNext(.viewDidLoad)
     }
     
-    private func bindState(reactor: LocationTermReactor) {
+    private func bindState(reactor: TermsDetailReactor) {
         // HTML 콘텐츠 바인딩
         reactor.state.map { $0.content }
-            .filter { !$0.isEmpty }
             .distinctUntilChanged()
+            .filter { !$0.isEmpty }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] content in
                 guard let self = self else { return }
