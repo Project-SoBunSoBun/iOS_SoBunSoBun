@@ -58,23 +58,19 @@ class TermsDetailReactor: Reactor {
     }
     
     private func loadTerms() -> Observable<Mutation> {
-        let request: Single<TermsResponseModel>
         let errorLogMessage: String
         let errorKey: String
         
         switch currentState.termsType {
         case "service":
-            request = networkManager.getTermsService()
             errorLogMessage = "서비스 이용약관 조회 실패"
             errorKey = "FailToLoadServiceTerm"
             
         case "privacy":
-            request = networkManager.getTermsPrivacy()
             errorLogMessage = "개인정보처리방침 조회 실패"
             errorKey = "FailToLoadPrivacyTerm"
             
         case "location":
-            request = networkManager.getTermsLocation()
             errorLogMessage = "위치기반서비스 이용약관 조회 실패"
             errorKey = "FailToLoadLocationTerm"
             
@@ -82,7 +78,7 @@ class TermsDetailReactor: Reactor {
             return Observable.empty()
         }
         
-        return request
+        return networkManager.getTermsDetail(termsType: currentState.termsType)
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 return Observable.just(.setContent(model.data.content))
