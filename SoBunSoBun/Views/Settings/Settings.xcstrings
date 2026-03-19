@@ -624,14 +624,14 @@
         }
       }
     },
-    "NewsFromSobunSobun" : {
+    "NewsFromSobunHaeYo" : {
       "comment" : "Settings",
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "소분소분에서 보내는 소식"
+            "value" : "소분해요에서 보내는 소식"
           }
         }
       }
