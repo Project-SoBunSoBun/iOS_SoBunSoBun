@@ -36,11 +36,14 @@ class TermsView: UIViewController {
     // 서비스 이용 약관
     private let serviceTerm = SettingCardCell(title: String(localized: "ServiceTerm", table: "Settings"), type: .button)
     
-    // 개인정보처리방침
+    // 개인정보처리 방침
     private let privacyPolicy = SettingCardCell(title: String(localized: "PrivacyPolicy", table: "Settings"), type: .button)
     
+    // 위치기반서비스 이용 약관
+    private let locationBasedServie = SettingCardCell(title: String(localized: "LocationBasedService", table: "Settings"), type: .button)
+    
     // 약관 및 정책 세팅 카드
-    private lazy var termsSettingCard = SettingCard(cells: [serviceTerm, privacyPolicy])
+    private lazy var termsSettingCard = SettingCard(cells: [serviceTerm, privacyPolicy, locationBasedServie])
     
     // MARK: - 생명주기
     override func viewDidLoad() {
@@ -70,7 +73,7 @@ class TermsView: UIViewController {
             make.top.equalTo(topNavigationBar.snp.bottom).offset(16)
         }
         
-        [serviceTerm, privacyPolicy].forEach {
+        [serviceTerm, privacyPolicy, locationBasedServie].forEach {
             $0.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview()
             }
@@ -91,9 +94,15 @@ extension TermsView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // 개인정보처리방침 클릭
+        // 개인정보처리 방침 클릭
         privacyPolicy.didTap
             .map { Reactor.Action.privacyPolicyTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 위치기반서비스 이용 약관 클릭
+        locationBasedServie.didTap
+            .map { Reactor.Action.locationBasedServieTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
@@ -114,6 +123,9 @@ extension TermsView {
                     
                 case .privacyPolicy:
                     view = PrivacyTermView()
+                    
+                case .locationBasedServie:
+                    view = LocationTermView()
                 }
                 
                 self.navigationController?.pushViewController(view, animated: true)
