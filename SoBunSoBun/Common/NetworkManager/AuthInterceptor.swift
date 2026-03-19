@@ -12,7 +12,7 @@ import OSLog
 
 final class AuthInterceptor: RequestInterceptor {
     nonisolated(unsafe) private let disposeBag = DisposeBag()
-    nonisolated(unsafe) private var isRefreshing: Bool = false
+    nonisolated(unsafe) var isRefreshing: Bool = false
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",

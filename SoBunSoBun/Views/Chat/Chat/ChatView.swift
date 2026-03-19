@@ -399,17 +399,13 @@ extension ChatView {
                 guard let self = self else { return }
                 
                 if let settlementId = model.data.settlementId {
-                    // TODO: 정산 구현 후 정산서 확인 기능 구현
+                    self.navigationController?.pushViewController(SettlementConfirmView(settlementId: settlementId), animated: true)
                 } else {
                     let alert = CustomAlertView(
                         title: String(localized: "NotSettledYetForMemberAlertTitle", table: "Chat"),
                         subTitle: String(localized: "NotSettledYetForMemberAlertSubTitle", table: "Chat"),
                         primaryTitleKey: String(localized: "Confirm", table: "Common")
                     )
-                    
-                    alert.onPrimaryTapped = {
-                        
-                    }
                     
                     alert.show(on: self)
                 }
@@ -676,10 +672,6 @@ extension ChatView {
                             reactor.action.onNext(.acceptGroupChatRoom(inviteId))
                         }
                         
-                        alert.onCancelTapped = {
-                            
-                        }
-                        
                         alert.show(on: self)
                     })
                     .disposed(by: cell.disposeBag)
@@ -687,10 +679,10 @@ extension ChatView {
                 // 정산서 확인 버튼 누름
                 cell.didSettlementCardButtonTapped
                     .observe(on: MainScheduler.instance)
-                    .subscribe(onNext: { [weak self] groupChatRoomId in
+                    .subscribe(onNext: { [weak self] settlementId in
                         guard let self = self else { return }
                         
-                        // TODO: 정산 구현 후 정산서 확인 기능 구현
+                        self.navigationController?.pushViewController(SettlementConfirmView(settlementId: settlementId), animated: true)
                     })
                     .disposed(by: cell.disposeBag)
             }

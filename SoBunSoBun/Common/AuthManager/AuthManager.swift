@@ -23,6 +23,8 @@ class AuthManager {
     
     private let disposeBag = DisposeBag()
     
+    private var isShowingLogOutAlert = false
+    
     private let loginType = KeyChain.shared.get(key: "LOGIN_TYPE")
     
     private init() {}
@@ -90,6 +92,10 @@ class AuthManager {
     }
     
     func showLogOutAlert() {
+        guard !isShowingLogOutAlert else { return }
+        
+        isShowingLogOutAlert = true
+        
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
