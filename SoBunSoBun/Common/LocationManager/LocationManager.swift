@@ -12,12 +12,23 @@ import RxCocoa
 import OSLog
 
 final class LocationManager: NSObject {
+    static let shared = LocationManager()
+    
+    private override init() {
+        super.init()
+        
+        locationManager.delegate = self
+        
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        
+        // 초기 상태 설정
+        authorizationStatus.accept(locationManager.authorizationStatus)
+    }
+    
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "LocationManager"
     )
-    
-    static let shared = LocationManager()
     
     private let locationManager = CLLocationManager()
     
@@ -29,16 +40,6 @@ final class LocationManager: NSObject {
     private let currentLocationRelay = BehaviorRelay<CLLocationCoordinate2D?>(value: nil)
     var currentLocation: Observable<CLLocationCoordinate2D?> {
         return currentLocationRelay.asObservable()
-    }
-    
-    private override init() {
-        super.init()
-        locationManager.delegate = self
-        
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        
-        // 초기 상태 설정
-        authorizationStatus.accept(locationManager.authorizationStatus)
     }
     
     // 권한 요청하기
