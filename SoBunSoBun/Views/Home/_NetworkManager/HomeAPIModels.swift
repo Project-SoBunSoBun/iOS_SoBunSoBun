@@ -141,7 +141,7 @@ struct UnreadNotificationCountResponseDataModel: Decodable {
 }
 
 enum NotificationType: String, Decodable {
-    case COMMENT, PARTICIPATION, POST_UPDATE, SETTLEMENT
+    case COMMENT, COMMENT_MENTIONED, PARTICIPATION, POST_UPDATE, SETTLEMENT
     case unknown
     
     init(from decoder: Decoder) throws {

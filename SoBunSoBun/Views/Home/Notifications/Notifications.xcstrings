@@ -12,6 +12,17 @@
         }
       }
     },
+    "COMMENT_MENTIONED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 내 댓글에 답글을 남겼어요."
+          }
+        }
+      }
+    },
     "FetchErrorMessage" : {
       "extractionState" : "manual",
       "localizations" : {

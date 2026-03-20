@@ -146,6 +146,9 @@ extension NotificationsView {
                 case .COMMENT:
                     message = String(format: String(localized: "COMMENT", table: "Notifications"), model.nickname ?? String(localized: "Unknown", table: "Common"))
                     
+                case .COMMENT_MENTIONED:
+                    message = String(format: String(localized: "COMMENT_MENTIONED", table: "Notifications"), model.nickname ?? String(localized: "Unknown", table: "Common"))
+                    
                 case .PARTICIPATION:
                     message = String(format: String(localized: "PARTICIPATION", table: "Notifications"), model.nickname ?? String(localized: "Unknown", table: "Common"))
                     
@@ -170,9 +173,9 @@ extension NotificationsView {
                 guard let self = self else { return }
                 
                 switch model.type {
-                case .COMMENT:
+                case .COMMENT, .COMMENT_MENTIONED, .POST_UPDATE:
                     guard let postId = model.postId else {
-                        self.logger.fault("COMMENT의 postId가 없음")
+                        self.logger.fault("\(model.type.rawValue)의 postId가 없음")
                         
                         return
                     }
@@ -187,15 +190,6 @@ extension NotificationsView {
                     }
                     
                     self.navigationController?.pushViewController(ChatView(chatRoomId: chatRoomId), animated: true)
-                    
-                case .POST_UPDATE:
-                    guard let postId = model.postId else {
-                        self.logger.fault("POST_UPDATE의 postId가 없음")
-                        
-                        return
-                    }
-                    
-                    self.navigationController?.pushViewController(PostDetailView(postId: postId), animated: true)
                     
                 case .SETTLEMENT:
                     guard let settlementId = model.settlementId else {
