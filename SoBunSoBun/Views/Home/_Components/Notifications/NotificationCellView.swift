@@ -40,6 +40,13 @@ class NotificationCellView: UIView {
         return view
     }()
     
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy.MM.dd"
+        
+        return formatter
+    }()
+    
     private func configureUI() {
         [messageLabel, dateLabel, divider].forEach {
             addSubview($0)
@@ -80,9 +87,7 @@ class NotificationCellView: UIView {
             return
         }
         
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy.MM.dd"
-        let dateString = formatter.string(from: date)
+        let dateString = NotificationCellView.dateFormatter.string(from: date)
         
         dateLabel.attributedText = NSAttributedString(string: dateString, attributes: dateAttributes)
     }

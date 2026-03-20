@@ -154,6 +154,7 @@ class NavigationTabReactor: Reactor {
                 
                 guard granted else {
                     self.logger.error("알림 권한 거부함")
+                    
                     return
                 }
                 

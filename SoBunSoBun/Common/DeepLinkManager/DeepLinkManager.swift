@@ -9,15 +9,15 @@ import Foundation
 import UIKit
 import OSLog
 
-class DeepLinkManager {
+final class DeepLinkManager {
+    static let shared = DeepLinkManager()
+    
+    private init() {}
+    
     private let logger = Logger(
         subsystem: "SoBunSoBun",
         category: "DeepLinkManager"
     )
-    
-    static let shared = DeepLinkManager()
-    
-    private init() {}
     
     func handle(url: URL) {
         logger.debug("딥링크 감지됨: \(url)")

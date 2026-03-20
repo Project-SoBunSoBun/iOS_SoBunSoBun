@@ -48,7 +48,7 @@ class NotificationsReactor: Reactor {
         var hasMore: Bool = true
         var isRefreshing: Bool = false
         
-        @Pulse var shouldPushView: NotificationModel? // 해당 게시글로 이동
+        @Pulse var shouldPushView: NotificationModel?
         @Pulse var errorMessage: String?
     }
     

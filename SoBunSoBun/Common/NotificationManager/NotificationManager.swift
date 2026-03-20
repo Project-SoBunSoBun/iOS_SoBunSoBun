@@ -13,6 +13,8 @@ import RxSwift
 import OSLog
 
 final class NotificationManager: NSObject {
+    private override init() {}
+    
     static let shared = NotificationManager()
     
     private let logger = Logger(
@@ -66,14 +68,15 @@ final class NotificationManager: NSObject {
         guard let uuid = UIDevice.current.identifierForVendor?.uuidString else { return }
         
         Messaging.messaging().token { [weak self] token, error in
+            guard let self else { return }
+            
             if let error = error {
-                self?.logger.fault("Error fetching FCM registration token: \(error)")
+                self.logger.fault("Error fetching FCM registration token: \(error)")
             }
             
-            guard let self = self,
-                  let token = token,
+            guard let token = token,
                   KeyChain.shared.get(key: "FCM_TOKEN") != token else {
-                self?.logger.debug("FCM 토큰을 서버에 전송하지 않음")
+                self.logger.debug("FCM 토큰을 서버에 전송하지 않음")
                 
                 return
             }
