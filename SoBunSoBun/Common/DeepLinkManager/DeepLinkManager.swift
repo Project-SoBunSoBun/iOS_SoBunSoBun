@@ -51,6 +51,24 @@ class DeepLinkManager {
                     nav.pushViewController(vc, animated: true)
                 }
                 
+            case "settlement": // 정산
+                if let settlementIdString = url.pathComponents.last,
+                   let settlementId = Int(settlementIdString) {
+                    let vc = SettlementConfirmView(settlementId: settlementId)
+                    nav.pushViewController(vc, animated: true)
+                }
+                
+            case "chat": // 채팅
+                if let chatRoomIdString = url.pathComponents.last,
+                   let chatRoomId = Int(chatRoomIdString) {
+                    let vc = ChatView(chatRoomId: chatRoomId)
+                    nav.pushViewController(vc, animated: true)
+                }
+                
+            case "notifications": // 알림
+                let vc = NotificationsView()
+                nav.pushViewController(vc, animated: true)
+                
             default:
                 logger.fault("알 수 없는 딥링크 host: \(url.host ?? "nil")")
             }

@@ -64,7 +64,36 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     // 푸시 알림 클릭
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        let userInfo = response.notification.request.content.userInfo
+        let type = userInfo["type"] as? String
         
+        DispatchQueue.main.async {
+            var urlString: String?
+            
+            switch type {
+            case "COMMENT", "COMMENT_MENTIONED", "POST_UPDATE":
+                if let postIdString = userInfo["postId"] as? String {
+                    urlString = "sobunsobun://post/\(postIdString)"
+                }
+                
+            case "SETTLEMENT":
+                if let settlementIdString = userInfo["settlementId"] as? String {
+                    urlString = "sobunsobun://settlement/\(settlementIdString)"
+                }
+                
+            case "CHAT":
+                if let chatRoomIdString = userInfo["chatRoomId"] as? String {
+                    urlString = "sobunsobun://chat/\(chatRoomIdString)"
+                }
+                
+            default:
+                urlString = "sobunsobun://notifications"
+            }
+            
+            if let urlString, let url = URL(string: urlString) {
+                DeepLinkManager.shared.handle(url: url)
+            }
+        }
     }
     
     // 앱 화면 보고있는 중 푸시 알림 받음

@@ -1,0 +1,83 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새 알림이 도착했어요."
+          }
+        }
+      }
+    },
+    "COMMENT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 내 글에 댓글을 남겼어요."
+          }
+        }
+      }
+    },
+    "COMMENT_MENTIONED" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 내 댓글에 답글을 남겼어요."
+          }
+        }
+      }
+    },
+    "imageCHAT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지를 보냈어요."
+          }
+        }
+      }
+    },
+    "PARTICIPATION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 단체 채팅방에 초대하셨어요."
+          }
+        }
+      }
+    },
+    "POST_UPDATE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내가 저장한 글에 취소된 인원이 있어 참여가 가능해졌어요. 모임장에게 채팅을 남겨보세요!"
+          }
+        }
+      }
+    },
+    "SETTLEMENT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여한 모임의 정산서가 발행되었어요."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}
