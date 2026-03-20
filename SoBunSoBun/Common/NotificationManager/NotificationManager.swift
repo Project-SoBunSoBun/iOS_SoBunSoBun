@@ -13,9 +13,9 @@ import RxSwift
 import OSLog
 
 final class NotificationManager: NSObject {
-    private override init() {}
-    
     static let shared = NotificationManager()
+    
+    private override init() {}
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",

@@ -10,9 +10,9 @@ import UIKit
 import OSLog
 
 final class DeepLinkManager {
-    static let shared = DeepLinkManager()
-    
     private init() {}
+    
+    static let shared = DeepLinkManager()
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
