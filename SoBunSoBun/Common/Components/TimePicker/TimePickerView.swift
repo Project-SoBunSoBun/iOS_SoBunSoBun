@@ -25,11 +25,14 @@ class TimePickerView: UIViewController {
     private let minutePicker: CustomWheelPicker
     private let periodPicker: CustomWheelPicker
     
+    private let safeAreaBottom: CGFloat
+    
     init(
         title: String,
         selectedHour: String?,
         selectedMinute: String?,
-        selectedPeriod: String?
+        selectedPeriod: String?,
+        safeAreaBottom: CGFloat
     ) {
         reactor = TimePickerReactor(
             selectedHour: selectedHour,
@@ -85,6 +88,8 @@ class TimePickerView: UIViewController {
             isInfiniteScroll: false,
             initialIndex: 0
         )
+        
+        self.safeAreaBottom = safeAreaBottom
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -169,7 +174,7 @@ class TimePickerView: UIViewController {
         button.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(pickerStackView.snp.bottom).offset(40)
-            make.bottom.equalToSuperview().inset(safeareaBottom)
+            make.bottom.equalToSuperview().inset(safeAreaBottom)
         }
     }
 }
@@ -220,21 +225,3 @@ extension TimePickerView {
             .disposed(by: disposeBag)
     }
 }
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct TimePickerViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            TimePickerView(
-                title: String(localized: "RegisterPostTimePickerTitle", table: "Home"),
-                selectedHour: nil,
-                selectedMinute: nil,
-                selectedPeriod: nil
-            )
-        }
-    }
-}
-#endif

@@ -17,11 +17,20 @@ class CalendarPickerView: UIViewController {
     let dateFormat: String
     let selectedDateRelay = PublishRelay<String?>()
     
-    init(selectedDate: String? = nil, format: String = "yyyy - MM - dd") {
+    private let safeAreaBottom: CGFloat
+    
+    init(
+        selectedDate: String? = nil,
+        format: String = "yyyy - MM - dd",
+        safeAreaBottom: CGFloat
+    ) {
         let date = stringToDate(string: selectedDate ?? "", format: format)
         
         self.reactor = CalendarPickerReactor(selectedDate: date)
         self.dateFormat = format
+        
+        self.safeAreaBottom = safeAreaBottom
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -200,7 +209,7 @@ class CalendarPickerView: UIViewController {
         button.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(calendarCollectionView.snp.bottom).offset(16)
-            make.bottom.equalToSuperview().inset(safeareaBottom)
+            make.bottom.equalToSuperview().inset(safeAreaBottom)
         }
     }
 }
@@ -330,16 +339,3 @@ extension CalendarPickerView: UICollectionViewDelegateFlowLayout {
         return CGSize(width: width, height: 40)
     }
 }
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct CalendarPickerViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            CalendarPickerView()
-        }
-    }
-}
-#endif
