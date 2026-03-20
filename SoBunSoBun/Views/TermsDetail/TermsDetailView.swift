@@ -64,7 +64,7 @@ class TermsDetailView: UIViewController {
     private let webView: WKWebView = {
         let wv = WKWebView()
         wv.backgroundColor = .backgroundWhite
-        wv.scrollView.showsVerticalScrollIndicator = false
+        wv.scrollView.showsVerticalScrollIndicator = true
         
         return wv
     }()
