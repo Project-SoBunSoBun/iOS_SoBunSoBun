@@ -120,4 +120,13 @@ class SettingNetworkManager {
         .filterSuccessfulStatusCodes()
         .map { _ in () }
     }
+    
+    // MARK: - 약관 조회
+    // 약관 조회
+    func getTermsDetail(termsType: String) -> Single<TermsResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.getTermsDetail(termsType: termsType))
+        )
+        .tryMap(TermsResponseModel.self)
+    }
 }

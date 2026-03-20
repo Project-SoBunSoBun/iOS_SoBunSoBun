@@ -277,19 +277,9 @@ extension SignUpView {
             .subscribe(onNext: { [weak self] termsId in
                 guard let self = self else { return }
                 
-                let detailVC: UIViewController
-                switch termsId {
-                case "service":
-                    detailVC = ServiceTermView()
-                case "privacy":
-                    detailVC = PrivacyTermView()
-                case "location":
-                    detailVC = LocationTermView()
-                default:
-                    return
-                }
+                let view = TermsDetailView(termsType: termsId)
                 
-                self.navigationController?.pushViewController(detailVC, animated: true)
+                self.navigationController?.pushViewController(view, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -320,6 +310,7 @@ extension SignUpView {
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
+                
                 // 닉네임 설정 화면으로 이동
                 let nickNameVC = NicknameSettingView()
                 self.navigationController?.pushViewController(nickNameVC, animated: true)
@@ -330,7 +321,9 @@ extension SignUpView {
         reactor.pulse(\.$signUpErrorMessage)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] message in
-                self?.showErrorAlert(message: message)
+                guard let self = self else { return }
+                
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

@@ -99,3 +99,15 @@ struct BugReportPostModel: Encodable {
     let content: String
     let deviceInfo: String
 }
+
+// MARK: - 약관 조회
+struct TermsResponseModel: Decodable {
+    let success: Bool
+    let data: TermsDataModel
+    let error: ErrorModel?
+}
+
+struct TermsDataModel: Decodable {
+    let id: Int
+    let type, version, title, content: String
+}

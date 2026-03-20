@@ -26,6 +26,8 @@ enum SettingAPIs {
     case postInquiries(typeCode: String, content: String, replyEmail: String, selectedImages: [Data]?)
     // 버그 신고
     case postBugReport(typeCode: String, content: String, deviceInfo: String, selectedImages: [Data]?)
+    // 약관 조회
+    case getTermsDetail(termsType: String)
 }
 
 extension SettingAPIs: TargetType {
@@ -69,6 +71,9 @@ extension SettingAPIs: TargetType {
         
         case .postBugReport:
             return "/api/support/bug-report"
+            
+        case .getTermsDetail(termsType: let termsType):
+            return "/api/terms/\(termsType)"
         }
     }
     
@@ -79,7 +84,8 @@ extension SettingAPIs: TargetType {
                 .getMyPosts,
                 .getSavedPosts,
                 .getAnnouncement,
-                .getAnnouncementDetail:
+                .getAnnouncementDetail,
+                .getTermsDetail:
             return .get
             
         case // POST
@@ -200,6 +206,9 @@ extension SettingAPIs: TargetType {
             ]
             
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
+            
+        case .getTermsDetail:
+            return .requestPlain
         }
     }
     

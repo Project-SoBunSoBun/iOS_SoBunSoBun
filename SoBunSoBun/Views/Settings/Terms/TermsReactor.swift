@@ -19,11 +19,13 @@ class TermsReactor: Reactor {
     enum ViewType {
         case serviceTerm
         case privacyPolicy
+        case locationBasedService
     }
     
     enum Action {
         case serviceTermTapped
         case privacyPolicyTapped
+        case locationBasedServiceTapped
     }
     
     enum Mutation {
@@ -41,6 +43,9 @@ class TermsReactor: Reactor {
             
         case .privacyPolicyTapped:
             return Observable.just(.setNavigate(.privacyPolicy))
+            
+        case .locationBasedServiceTapped:
+            return Observable.just(.setNavigate(.locationBasedService))
         }
     }
     

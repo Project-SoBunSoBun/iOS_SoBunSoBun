@@ -348,6 +348,30 @@
         }
       }
     },
+    "FailToLoadLocationTerm" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치기반서비스 이용약관을 불러오는 데 실패했습니다."
+          }
+        }
+      }
+    },
+    "FailToLoadPrivacyTerm" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보처리방침을 불러오는 데 실패했습니다."
+          }
+        }
+      }
+    },
     "FailToLoadSavedPosts" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -355,7 +379,19 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "저장 목록을 불러오는데 실패했습니다."
+            "value" : "저장 목록을 불러오는 데 실패했습니다."
+          }
+        }
+      }
+    },
+    "FailToLoadServiceTerm" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서비스 이용 약관을 불러오는 데 실패했습니다."
           }
         }
       }
@@ -476,6 +512,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "잘못된 이메일 형식입니다."
+          }
+        }
+      }
+    },
+    "LocationBasedService" : {
+      "comment" : "Settings",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치기반서비스 이용약관"
           }
         }
       }
