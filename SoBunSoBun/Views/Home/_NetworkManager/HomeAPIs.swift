@@ -38,6 +38,11 @@ enum HomeAPIs {
     
     // 마이페이지
     case getMyProfile(tab: String, page: Int, size: Int)
+    
+    // 알림
+    case getUnreadNotificationCount
+    case getNotifications(page: Int, size: Int)
+    case readNotification(id: Int)
 }
 
 extension HomeAPIs: TargetType {
@@ -114,6 +119,15 @@ extension HomeAPIs: TargetType {
             
         case .getMyProfile:
             return "/api/v1/users/me/profile"
+            
+        case .getUnreadNotificationCount:
+            return "/api/me/notifications/unread-count"
+            
+        case .getNotifications:
+            return "/api/me/notifications"
+            
+        case .readNotification(let id):
+            return "/api/me/notifications/\(id)/read"
         }
     }
     
@@ -130,7 +144,9 @@ extension HomeAPIs: TargetType {
                 .checkPostSaved,
                 .getPostCommentsCount,
                 .getPostComments,
-                .getMyProfile:
+                .getMyProfile,
+                .getUnreadNotificationCount,
+                .getNotifications:
             return .get
             
         case // POST
@@ -144,7 +160,8 @@ extension HomeAPIs: TargetType {
             
         case // PATCH
                 .patchLocationVerification,
-                .patchPostComment:
+                .patchPostComment,
+                .readNotification:
             return .patch
             
         case // DELETE
@@ -166,12 +183,12 @@ extension HomeAPIs: TargetType {
             return .requestJSONEncodable(body)
             
         case .getHomeList(let page, let size):
-            let parameters = HomeListRequestModel(page: page, size: size)
+            let parameters = PagenationRequestModel(page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
         case .getHomeListByCategories(category: _, let page, let size):
-            let parameters = HomeListRequestModel(page: page, size: size)
+            let parameters = PagenationRequestModel(page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
@@ -246,6 +263,17 @@ extension HomeAPIs: TargetType {
             let parameters = MyProfileRequestModel(tab: tab, page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            
+        case .getUnreadNotificationCount:
+            return .requestPlain
+            
+        case .getNotifications(let page, let size):
+            let parameters = PagenationRequestModel(page: page, size: size)
+            
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            
+        case .readNotification:
+            return .requestPlain
         }
     }
     

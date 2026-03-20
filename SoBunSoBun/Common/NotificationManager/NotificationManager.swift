@@ -25,6 +25,7 @@ final class NotificationManager: NSObject {
     
     // 알림 권한 요청
     func requestAuthorization(completion: @escaping (Bool) -> Void) {
+        // Firebase에 APNs를 등록하지 않으면 허용을 해도 항상 false로 return됨
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if let error = error {
                 self.logger.fault("권한 요청 에러: \(error)")
@@ -38,6 +39,7 @@ final class NotificationManager: NSObject {
     
     // 알림 권한 상태 확인
     func checkAuthorizationStatus(completion: @escaping (UNAuthorizationStatus) -> Void) {
+        // Firebase에 APNs를 등록하지 않으면 허용을 해도 항상 false로 return됨
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             self.logger.debug("알림 권한 상태: \(settings.authorizationStatus.rawValue)")
             
@@ -71,7 +73,7 @@ final class NotificationManager: NSObject {
             guard let self = self,
                   let token = token,
                   KeyChain.shared.get(key: "FCM_TOKEN") != token else {
-                self?.logger.fault("FCM 토큰을 서버에 전송하지 않음")
+                self?.logger.debug("FCM 토큰을 서버에 전송하지 않음")
                 
                 return
             }

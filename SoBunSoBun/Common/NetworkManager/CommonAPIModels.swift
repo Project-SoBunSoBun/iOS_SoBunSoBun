@@ -18,7 +18,7 @@ struct UserInfoModel: Decodable {
 
 struct PostListResponseModel: Decodable, Equatable {
     let posts: [PostModel]
-    let pageInfo: PostPageInfo
+    let pageInfo: PageInfoModel
 }
 
 struct PostModel: Decodable, Equatable {
@@ -34,8 +34,7 @@ struct PostOwnerModel: Decodable, Equatable {
     let nickname, profileImageUrl, address: String?
 }
 
-struct PostPageInfo: Decodable, Equatable {
-    let currentPage, pageSize, totalElements, totalPages: Int
+struct PageInfoModel: Decodable, Equatable {
     let last: Bool
 }
 
@@ -51,6 +50,10 @@ struct PlainResponseModel: Decodable {
 
 struct ErrorModel: Decodable {
     let code, message: String
+}
+
+struct PagenationRequestModel: Encodable {
+    let page, size: Int
 }
 
 // MARK: - 리프레시

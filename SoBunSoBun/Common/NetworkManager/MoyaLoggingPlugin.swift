@@ -31,7 +31,7 @@ final class MoyaLoggingPlugin: PluginType {
         let url = httpRequest.description
         let method = httpRequest.httpMethod ?? "unknown method"
         
-        var log: String = "[요청 시작]\n"
+        var log: String = "[⚙️ 요청 시작]\n"
         log.append("\n")
         log.append("URL: \(url)\n")
         log.append("METHOD: \(method)\n")
@@ -73,7 +73,7 @@ final class MoyaLoggingPlugin: PluginType {
         let url = request?.url?.absoluteString ?? "nil"
         let statusCode = response.statusCode
         
-        var log = "[통신 성공]\n"
+        var log = "[✅ 통신 성공]\n"
         log.append("\n")
         log.append("URL: \(url)\n")
         log.append("STATUS CODE: \(statusCode)\n")
@@ -115,7 +115,7 @@ final class MoyaLoggingPlugin: PluginType {
             return
         }
         
-        var log = "[통신 오류]\n"
+        var log = "[🔴 통신 오류]\n"
         log.append("\n")
         log.append("\(error.errorCode) \(target)\n")
         log.append("\(error.failureReason ?? error.errorDescription ?? "unknown error")\n")

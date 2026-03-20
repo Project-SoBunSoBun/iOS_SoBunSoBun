@@ -289,14 +289,14 @@ class HomeView: UIViewController {
         tableView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(categoriesScrollView.snp.bottom).offset(8)
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+            make.bottom.equalToSuperview()
             make.width.equalToSuperview()
         }
         
         // 글쓰기 버튼
         registerPostButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().inset(safeareaBottom + 8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8)
         }
     }
 }
@@ -367,9 +367,27 @@ extension HomeView {
     }
     
     private func bindState(reactor: HomeReactor) {
+        reactor.pulse(\.$shouldShowLocationSettingAlert)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                shouldShowLocationSettingAlert.accept(())
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state
             .map { $0.verifiedLocation }
             .bind(to: locationLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.unreadNotificationCount }
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] count in
+                guard let self = self else { return }
+                
+                notificationButton.configuration?.image = count > 0 ? .newGlassBell.resize(.init(width: 24, height: 24)) : .glassBell.resize(.init(width: 24, height: 24))
+            })
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$shouldPushNotificationsView)
@@ -377,7 +395,7 @@ extension HomeView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                // TODO: 알림 뷰 이동 기능 추가
+                self.navigationController?.pushViewController(NotificationsView(), animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -418,13 +436,20 @@ extension HomeView {
             })
             .disposed(by: disposeBag)
         
-        reactor.pulse(\.$shouldShowLocationSettingAlert)
-            .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                shouldShowLocationSettingAlert.accept(())
-            })
+        reactor.state.map { $0.posts }
+            .observe(on: MainScheduler.instance)
+            .bind(to: tableView.rx.items(
+                cellIdentifier: PostListTableViewCell.identifier,
+                cellType: PostListTableViewCell.self
+            )) { index, model, cell in
+                cell.configureUI(model: model)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isRefreshing }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind(to: refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         
         reactor.pulse(\.$shouldPushRegisterPostView)
@@ -443,22 +468,6 @@ extension HomeView {
                 
                 self.navigationController?.pushViewController(PostDetailView(postId: model.id), animated: true)
             })
-            .disposed(by: disposeBag)
-        
-        reactor.state.map { $0.posts }
-            .observe(on: MainScheduler.instance)
-            .bind(to: tableView.rx.items(
-                cellIdentifier: PostListTableViewCell.identifier,
-                cellType: PostListTableViewCell.self
-            )) { index, model, cell in
-                cell.configureUI(model: model)
-            }
-            .disposed(by: disposeBag)
-        
-        reactor.state.map { $0.isRefreshing }
-            .distinctUntilChanged()
-            .observe(on: MainScheduler.instance)
-            .bind(to: refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
     }
     
@@ -506,16 +515,3 @@ extension HomeView {
         present(bottomSheet, animated: true)
     }
 }
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct HomeViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            HomeView()
-        }
-    }
-}
-#endif

@@ -102,7 +102,7 @@ class AuthManager {
                 guard let self = self else { return }
                 
                 if let error = model.error {
-                    self.logger.debug("FCM 토큰 삭제 및 해지 실패: \(error.code)")
+                    self.logger.critical("FCM 토큰 삭제 및 해지 실패: \(error.code)")
                 } else {
                     self.logger.debug("FCM 토큰 삭제 및 해지 완료")
                     

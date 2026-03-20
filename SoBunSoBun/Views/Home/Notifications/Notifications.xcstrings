@@ -1,0 +1,83 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "COMMENT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 내 글에 댓글을 남겼어요."
+          }
+        }
+      }
+    },
+    "FetchErrorMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림 목록 불러오는 중 오류가 발생했습니다."
+          }
+        }
+      }
+    },
+    "Notifications" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림"
+          }
+        }
+      }
+    },
+    "PARTICIPATION" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 단체 채팅방에 초대하셨어요."
+          }
+        }
+      }
+    },
+    "POST_UPDATE" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내가 저장한 글에 취소된 인원이 있어 참여가 가능해졌어요. 모임장에게 채팅을 남겨보세요!"
+          }
+        }
+      }
+    },
+    "SETTLEMENT" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여한 모임의 정산서가 발행되었어요."
+          }
+        }
+      }
+    },
+    "UNKNOWN" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최신 버전으로 업데이트가 필요합니다."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

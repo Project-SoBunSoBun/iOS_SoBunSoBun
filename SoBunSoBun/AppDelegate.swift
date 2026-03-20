@@ -70,7 +70,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     // 앱 화면 보고있는 중 푸시 알림 받음
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         
-        return [.sound, .banner, .list]
+        return []
     }
     
     // Error
