@@ -21,8 +21,7 @@ class CommonNetworkManager {
         return authProvider.rx.request(
             MultiTarget(CommonAPIs.me)
         )
-        .filterSuccessfulStatusCodes()
-        .map(UserInfoModel.self)
+        .tryMap(UserInfoModel.self)
     }
     
     // 액세스 토큰 재발급
@@ -30,7 +29,22 @@ class CommonNetworkManager {
         return provider.rx.request(
             MultiTarget(CommonAPIs.refreshAccessToken(refreshToken: refreshToken))
         )
-        .filterSuccessfulStatusCodes()
-        .map(RefreshResponseModel.self)
+        .tryMap(RefreshResponseModel.self)
+    }
+    
+    // FCM 토큰 전송
+    func registerFCMToken(deviceId: String, token: String) -> Single<PlainResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(CommonAPIs.registerFCMToken(deviceId: deviceId, token: token))
+        )
+        .tryMap(PlainResponseModel.self)
+    }
+    
+    // FCM 토큰 삭제
+    func deleteFCMToken(deviceId: String) -> Single<PlainResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(CommonAPIs.deleteFCMToken(deviceId: deviceId))
+        )
+        .tryMap(PlainResponseModel.self)
     }
 }

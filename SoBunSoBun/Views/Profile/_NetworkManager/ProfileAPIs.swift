@@ -61,9 +61,9 @@ extension ProfileAPIs: TargetType {
     var task: Moya.Task {
         switch self {
         case .getPostList(_, let page, let size):
-            let parameters: [String: Int] = ["page": page, "size": size]
+            let parameters = PagenationRequestModel(page: page, size: size)
             
-            return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
+            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
         case .blockUser:
             return .requestPlain

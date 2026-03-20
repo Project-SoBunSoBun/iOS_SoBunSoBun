@@ -20,11 +20,6 @@ var currentWindow: UIWindow? {
     return windowScene?.windows.first { $0.isKeyWindow }
 }
 
-// TODO: 불안정한 전역 변수, 삭제 예정
-// safearea
-var safeareaTop: CGFloat { currentWindow?.safeAreaInsets.top ?? 0 }
-var safeareaBottom: CGFloat { currentWindow?.safeAreaInsets.bottom ?? 0 }
-
 // API URL
 let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
 

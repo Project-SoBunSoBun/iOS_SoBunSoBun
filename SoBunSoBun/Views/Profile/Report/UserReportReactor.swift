@@ -142,8 +142,8 @@ class UserReportReactor: Reactor {
             if model.success {
                 return Observable.just(.setReportCompleted)
             } else {
-                if let error = model.error {
-                    return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), error.code)))
+                if let errorCode = model.errorCode {
+                    return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), errorCode)))
                 } else {
                     return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
                 }

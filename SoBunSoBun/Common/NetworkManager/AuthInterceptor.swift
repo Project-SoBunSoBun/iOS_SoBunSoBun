@@ -24,11 +24,15 @@ final class AuthInterceptor: RequestInterceptor {
     private init() {}
     
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
-        // 저장된 액세스 토큰과 액세스 토큰 만료 시간을 가져오기
+        // 저장된 액세스 토큰 가져오기
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
-            AuthManager.shared.logout()
-            logger.debug("ACCESS_TOKEN과 ACCESS_TOKEN_EXPIRE_AT_KST가 Keychain에 존재하지 않습니다.")
+            AuthManager.shared.removeTokens()
+            AuthManager.shared.switchToLoginView()
+            
+            logger.debug("ACCESS_TOKEN이 Keychain에 존재하지 않습니다.")
             logger.fault("API 요청 중 오류가 발생했습니다. 요청을 중단하고 로그아웃 처리됩니다.")
+            
+            completion(.failure(NSError(domain: "SobunHaeyo", code: -1, userInfo: [NSLocalizedDescriptionKey: "액세스 토큰이 없습니다."])))
             
             return
         }

@@ -18,7 +18,7 @@ struct UserInfoModel: Decodable {
 
 struct PostListResponseModel: Decodable, Equatable {
     let posts: [PostModel]
-    let pageInfo: PostPageInfo
+    let pageInfo: PageInfoModel
 }
 
 struct PostModel: Decodable, Equatable {
@@ -34,8 +34,7 @@ struct PostOwnerModel: Decodable, Equatable {
     let nickname, profileImageUrl, address: String?
 }
 
-struct PostPageInfo: Decodable, Equatable {
-    let currentPage, pageSize, totalElements, totalPages: Int
+struct PageInfoModel: Decodable, Equatable {
     let last: Bool
 }
 
@@ -46,11 +45,11 @@ struct SimpleCommentModel: Decodable, Equatable {
 
 struct PlainResponseModel: Decodable {
     let success: Bool
-    let error: ErrorModel?
+    let errorCode, message: String?
 }
 
-struct ErrorModel: Decodable {
-    let code, message: String
+struct PagenationRequestModel: Encodable {
+    let page, size: Int
 }
 
 // MARK: - 리프레시
@@ -63,4 +62,11 @@ struct RefreshResponseModel: Decodable {
     let accessToken: String
     let accessTokenExpiresAtKst: String
     let expiresIn: Int
+}
+
+// MARK: - FCM 토큰
+struct RegisterFCMTokenRequestBodyModel: Encodable {
+    let deviceId: String
+    let fcmToken: String
+    let platform: String = "IOS"
 }

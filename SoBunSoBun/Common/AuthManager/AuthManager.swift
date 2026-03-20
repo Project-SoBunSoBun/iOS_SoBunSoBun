@@ -19,7 +19,8 @@ class AuthManager {
     
     static let shared = AuthManager()
     private let appleLoginManager = AppleLoginManager()
-    private let networkManager = SignInNetworkManager()
+    private let commonNetworkManager = CommonNetworkManager()
+    private let signInNetworkManager = SignInNetworkManager()
     
     private let disposeBag = DisposeBag()
     
@@ -59,6 +60,7 @@ class AuthManager {
             kakaoLogout()
         }
         
+        deleteFCMToken()
         removeTokens()
         showLogOutAlert()
         
@@ -72,6 +74,7 @@ class AuthManager {
             appleRevoke()
         }
         
+        deleteFCMToken()
         removeTokens()
         switchToLoginView()
     }
@@ -83,12 +86,34 @@ class AuthManager {
         KeyChain.shared.remove(key: "REFRESH_TOKEN_EXPIRE_AT_KST")
         KeyChain.shared.remove(key: "LOGIN_TOKEN")
         KeyChain.shared.remove(key: "USER_ID")
-        KeyChain.shared.remove(key: "FCM_TOKEN")
         KeyChain.shared.remove(key: "EMAIL")
         KeyChain.shared.remove(key: "LOGIN_TYPE")
         KeyChain.shared.remove(key: "APPLE_USER_ID")
         
         logger.debug("모든 keychain 내 토큰 제거")
+    }
+    
+    func deleteFCMToken() {
+        guard let uuid = UIDevice.current.identifierForVendor?.uuidString else { return }
+        
+        commonNetworkManager.deleteFCMToken(deviceId: uuid)
+            .asObservable()
+            .subscribe(onNext: { [weak self] model in
+                guard let self = self else { return }
+                
+                if let errorCode = model.errorCode {
+                    self.logger.critical("FCM 토큰 삭제 및 해지 실패: \(errorCode)")
+                } else {
+                    self.logger.debug("FCM 토큰 삭제 및 해지 완료")
+                    
+                    KeyChain.shared.remove(key: "FCM_TOKEN")
+                }
+            }, onError: { [weak self] error in
+                guard let self = self else { return }
+                
+                self.logger.critical("FCM 토큰 삭제 및 해지 실패: \(error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
     }
     
     func showLogOutAlert() {
@@ -148,7 +173,7 @@ class AuthManager {
     
     private func appleRevoke() {
         // 서버에 authorizationCode를 보내 애플 Revoke API 진행
-        networkManager.fetchAuthRevokeApple()
+        signInNetworkManager.fetchAuthRevokeApple()
             .subscribe(onSuccess: { [weak self] in
                 guard let self = self else { return }
                 

@@ -643,7 +643,10 @@ extension RegisterPostView {
     
     // 날짜 설정
     private func showCalenderPickerBottomSheet() {
-        let sheetView = CalendarPickerView(selectedDate: reactor.currentState.selectedDate)
+        let sheetView = CalendarPickerView(
+            selectedDate: reactor.currentState.selectedDate,
+            safeAreaBottom: view.safeAreaInsets.bottom
+        )
         
         sheetView.view.layoutIfNeeded()
         
@@ -653,7 +656,8 @@ extension RegisterPostView {
         let bottomSheet = BottomSheetView(
             contentViewController: sheetView,
             height: contentViewHeight,
-            cornerRadius: 24)
+            cornerRadius: 24
+        )
         
         present(bottomSheet, animated: true)
         
@@ -681,7 +685,8 @@ extension RegisterPostView {
             title: String(localized: "RegisterPostTimePickerTitle", table: "Home"),
             selectedHour: hourString,
             selectedMinute: minuteString,
-            selectedPeriod: periodString
+            selectedPeriod: periodString,
+            safeAreaBottom: view.safeAreaInsets.bottom
         )
         
         sheetView.view.layoutIfNeeded()
@@ -692,7 +697,8 @@ extension RegisterPostView {
         let bottomSheet = BottomSheetView(
             contentViewController: sheetView,
             height: contentViewHeight,
-            cornerRadius: 24)
+            cornerRadius: 24
+        )
         
         present(bottomSheet, animated: true)
         

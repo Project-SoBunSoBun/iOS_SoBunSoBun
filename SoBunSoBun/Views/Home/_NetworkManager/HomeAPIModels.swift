@@ -18,10 +18,6 @@ struct LocationVerificationBodyModel: Encodable {
     let address: String
 }
 
-struct HomeListRequestModel: Encodable {
-    let page, size: Int
-}
-
 struct HomeListCategoryRequestModel: Encodable {
     let categories: [String]
     let page, size: Int
@@ -114,6 +110,7 @@ struct CreateChatRoomResponseDataModel: Decodable {
     let roomType: ChatRoomType
 }
 
+// MARK: - 마이 프로필
 struct MyProfileRequestModel: Encodable {
     let tab: String
     let page, size: Int
@@ -122,7 +119,7 @@ struct MyProfileRequestModel: Encodable {
 struct MyProfileResponseModel: Decodable {
     let success: Bool
     let data: MyProfileResponseDataModel?
-    let error: ErrorModel?
+    let message: String?
 }
 
 struct MyProfileResponseDataModel: Decodable, Equatable {
@@ -131,4 +128,43 @@ struct MyProfileResponseDataModel: Decodable, Equatable {
     let mannerTags: [MannerTagModel]?
     let tab: String
     let posts: PostListResponseModel
+}
+
+// MARK: - 알림
+struct UnreadNotificationCountResponseModel: Decodable {
+    let success: Bool
+    let data: UnreadNotificationCountResponseDataModel
+}
+
+struct UnreadNotificationCountResponseDataModel: Decodable {
+    let unreadCount: Int
+}
+
+enum NotificationType: String, Decodable {
+    case COMMENT, COMMENT_MENTIONED, PARTICIPATION, POST_UPDATE, SETTLEMENT
+    case unknown
+    
+    init(from decoder: Decoder) throws {
+        let value = try decoder.singleValueContainer().decode(String.self)
+        self = NotificationType(rawValue: value) ?? .unknown
+    }
+}
+
+struct NotificationModel: Decodable {
+    let id: Int
+    let type: NotificationType
+    let nickname: String?
+    let postId, settlementId, chatRoomId: Int?
+    let isRead: Bool
+    let createdAt: String
+}
+
+struct NotificationResponseModel: Decodable {
+    let success: Bool
+    let data: NotificationResponseDataModel
+}
+
+struct NotificationResponseDataModel: Decodable {
+    let content: [NotificationModel]
+    let page: PageInfoModel
 }

@@ -13,12 +13,16 @@ enum CommonAPIs {
     case me
     // 액세스 토큰 재발급
     case refreshAccessToken(refreshToken: String)
+    // FCM 토큰 전송
+    case registerFCMToken(deviceId: String, token: String)
+    // FCM 토큰 삭제
+    case deleteFCMToken(deviceId: String)
 }
 
 extension CommonAPIs: TargetType {
     // interceptor retry 활성화
     var validationType: ValidationType {
-        return .successCodes
+        return .customCodes(Array(200...299) + [400] + Array(402...499))
     }
     
     var baseURL: URL {
@@ -32,16 +36,29 @@ extension CommonAPIs: TargetType {
             
         case .refreshAccessToken:
             return "/auth/token/refresh"
+            
+        case .registerFCMToken:
+            return "/api/me/devices"
+            
+        case .deleteFCMToken(let deviceId):
+            return "/api/me/devices/\(deviceId)"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .me:
+        case // GET
+                .me:
             return .get
             
-        case .refreshAccessToken:
+        case // POST
+                .refreshAccessToken,
+                .registerFCMToken:
             return .post
+            
+        case // DELETE
+                .deleteFCMToken:
+            return .delete
         }
     }
     
@@ -54,6 +71,14 @@ extension CommonAPIs: TargetType {
             let body = RefreshBodyModel(refreshToken: refreshToken)
             
             return .requestJSONEncodable(body)
+            
+        case .registerFCMToken(let deviceId, let token):
+            let body = RegisterFCMTokenRequestBodyModel(deviceId: deviceId, fcmToken: token)
+            
+            return .requestJSONEncodable(body)
+            
+        case .deleteFCMToken:
+            return .requestPlain
         }
     }
     

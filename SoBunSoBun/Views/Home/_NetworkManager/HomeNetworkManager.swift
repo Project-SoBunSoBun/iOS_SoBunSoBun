@@ -189,11 +189,33 @@ class HomeNetworkManager {
         .tryMap(CreateChatRoomResponseModel.self)
     }
     
-    // MARK: - 마이페이지
+    // MARK: - 내 프로필
     func getMyProfile(tab: String, page: Int, size: Int) -> Single<MyProfileResponseModel> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getMyProfile(tab: tab, page: page, size: size))
         )
         .tryMap(MyProfileResponseModel.self)
+    }
+    
+    // MARK: - 알림
+    func getUnreadNotificationCount() -> Single<UnreadNotificationCountResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(HomeAPIs.getUnreadNotificationCount)
+        )
+        .tryMap(UnreadNotificationCountResponseModel.self)
+    }
+    
+    func getNotifications(page: Int, size: Int) -> Single<NotificationResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(HomeAPIs.getNotifications(page: page, size: size))
+        )
+        .tryMap(NotificationResponseModel.self)
+    }
+    
+    func readNotification(id: Int) -> Single<PlainResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(HomeAPIs.readNotification(id: id))
+        )
+        .tryMap(PlainResponseModel.self)
     }
 }

@@ -17,7 +17,7 @@ class SaveListRecator: Reactor {
     
     let initialState = State()
     
-    private let networkManger = SettingNetworkManager()
+    private let networkManager = SettingNetworkManager()
     private let pageSize: Int = 20
     
     enum Action {
@@ -115,7 +115,7 @@ class SaveListRecator: Reactor {
     }
     
     private func loadSavedPosts(page: Int, size: Int, isFirst: Bool) -> Observable<Mutation> {
-        return networkManger.getSavePosts(page: page, size: size)
+        return networkManager.getSavePosts(page: page, size: size)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
                 self.logger.debug("저장 목록 조회 성공")
