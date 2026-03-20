@@ -124,7 +124,7 @@ extension TermsView {
                 case .privacyPolicy:
                     termsTpye = "privacy"
                     
-                case .locationBasedServie:
+                case .locationBasedService:
                     termsTpye = "location"
                 }
                 
