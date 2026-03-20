@@ -355,7 +355,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "위치기반서비스 이용약관을 불러오는데 실패했습니다."
+            "value" : "위치기반서비스 이용약관을 불러오는 데 실패했습니다."
           }
         }
       }
@@ -367,7 +367,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "개인정보처리방침을 불러오는데 실패했습니다."
+            "value" : "개인정보처리방침을 불러오는 데 실패했습니다."
           }
         }
       }
@@ -379,7 +379,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "저장 목록을 불러오는데 실패했습니다."
+            "value" : "저장 목록을 불러오는 데 실패했습니다."
           }
         }
       }
@@ -391,7 +391,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "서비스 이용 약관을 불러오는데 실패했습니다."
+            "value" : "서비스 이용 약관을 불러오는 데 실패했습니다."
           }
         }
       }
