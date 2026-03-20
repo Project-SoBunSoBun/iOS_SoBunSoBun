@@ -155,7 +155,7 @@ class NotificationsReactor: Reactor {
                 guard let self else { return }
                 
                 if let errorCode = model.errorCode {
-                    self.logger.critical("알림 읽음 실패: \(model.message ?? "")")
+                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(model.message ?? "")")
                 } else {
                     self.logger.debug("알림 읽음 완료")
                 }

@@ -82,7 +82,7 @@ final class NotificationManager: NSObject {
                 .asObservable()
                 .subscribe(onNext: { model in
                     if let errorCode = model.errorCode {
-                        self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생: \(model.message ?? "")")
+                        self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생(\(errorCode)): \(model.message ?? "")")
                     } else {
                         self.logger.debug("FCM 토큰 서버 전송 완료\nDevice Id: \(uuid)\nFCM Token: \(token)")
                     }
