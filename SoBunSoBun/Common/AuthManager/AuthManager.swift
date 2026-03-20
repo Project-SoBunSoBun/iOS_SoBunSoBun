@@ -101,8 +101,8 @@ class AuthManager {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
-                if let error = model.error {
-                    self.logger.critical("FCM 토큰 삭제 및 해지 실패: \(error.code)")
+                if let errorCode = model.errorCode {
+                    self.logger.critical("FCM 토큰 삭제 및 해지 실패: \(errorCode)")
                 } else {
                     self.logger.debug("FCM 토큰 삭제 및 해지 완료")
                     

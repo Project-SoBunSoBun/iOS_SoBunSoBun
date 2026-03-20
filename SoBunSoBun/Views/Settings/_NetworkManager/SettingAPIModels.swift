@@ -11,7 +11,7 @@ import Foundation
 struct MyProfileModel: Decodable {
     let success: Bool
     let data: MyProfileDataModel
-    let error: ErrorModel?
+    let message: String?
 }
 
 struct MyProfileDataModel: Decodable, Equatable {
@@ -41,7 +41,7 @@ struct AnnouncementRequestModel: Encodable {
 struct AnnouncementModel: Decodable {
     let success: Bool
     let data: AnnouncementDataModel
-    let error: ErrorModel?
+    let message: String?
 }
 
 struct AnnouncementDataModel: Decodable {
@@ -68,7 +68,7 @@ struct AnnouncementDetailRequestModel: Encodable {
 struct AnnouncementDetailModel: Decodable {
     let success: Bool
     let data: AnnouncementDetailDataModel
-    let error: ErrorModel?
+    let message: String?
 }
 
 struct AnnouncementDetailDataModel: Decodable, Equatable {
@@ -104,7 +104,7 @@ struct BugReportPostModel: Encodable {
 struct TermsResponseModel: Decodable {
     let success: Bool
     let data: TermsDataModel
-    let error: ErrorModel?
+    let message: String?
 }
 
 struct TermsDataModel: Decodable {

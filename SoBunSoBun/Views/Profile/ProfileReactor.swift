@@ -146,8 +146,8 @@ class ProfileReactor: Reactor {
                                 Observable.just(.setHasMore(!data.posts.pageInfo.last))
                             ])
                         } else {
-                            if let error = response.error {
-                                self.logger.critical("게시글 목록 조회 중 오류: \(error.message)")
+                            if let errorMessage = response.message {
+                                self.logger.critical("게시글 목록 조회 중 오류: \(errorMessage)")
                                 
                                 return Observable.empty()
                             } else {

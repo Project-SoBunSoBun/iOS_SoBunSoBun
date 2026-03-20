@@ -119,7 +119,7 @@ struct MyProfileRequestModel: Encodable {
 struct MyProfileResponseModel: Decodable {
     let success: Bool
     let data: MyProfileResponseDataModel?
-    let error: ErrorModel?
+    let message: String?
 }
 
 struct MyProfileResponseDataModel: Decodable, Equatable {

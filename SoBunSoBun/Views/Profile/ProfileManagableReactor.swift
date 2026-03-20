@@ -126,15 +126,9 @@ class ProfileManagableReactor: Reactor {
                 if let data = response.data {
                     return Observable.just(.setUserInfo(data))
                 } else {
-                    if let error = response.error {
-                        self.logger.critical("게시글 목록 조회 중 오류: \(error.message)")
-                        
-                        return Observable.empty()
-                    } else {
-                        self.logger.critical("게시글 목록 조회 중 오류")
-                        
-                        return Observable.empty()
-                    }
+                    self.logger.critical("게시글 목록 조회 중 오류")
+                    
+                    return Observable.empty()
                 }
             }
             .catch { error in
@@ -168,10 +162,10 @@ class ProfileManagableReactor: Reactor {
                         return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
                     }
                 } else {
-                    if let error = model.error {
-                        self.logger.critical("차단 중 오류: \(error.message)")
+                    if let errorCode = model.errorCode {
+                        self.logger.critical("차단 중 오류: \(model.message ?? "")")
                         
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), error.code)))
+                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), errorCode)))
                     } else {
                         self.logger.critical("차단 중 오류")
                         
@@ -212,10 +206,10 @@ class ProfileManagableReactor: Reactor {
                         return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
                     }
                 } else {
-                    if let error = model.error {
-                        self.logger.critical("차단 해제 중 오류: \(error.message)")
+                    if let errorCode = model.errorCode {
+                        self.logger.critical("차단 해제 중 오류: \(model.message ?? "")")
                         
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), error.code)))
+                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), errorCode)))
                     } else {
                         self.logger.critical("차단 해제 중 오류")
                         

@@ -154,8 +154,8 @@ class NotificationsReactor: Reactor {
             .subscribe(onNext: { [weak self] model in
                 guard let self else { return }
                 
-                if let error = model.error {
-                    self.logger.critical("알림 읽음 실패: \(error.code)")
+                if let errorCode = model.errorCode {
+                    self.logger.critical("알림 읽음 실패: \(model.message ?? "")")
                 } else {
                     self.logger.debug("알림 읽음 완료")
                 }

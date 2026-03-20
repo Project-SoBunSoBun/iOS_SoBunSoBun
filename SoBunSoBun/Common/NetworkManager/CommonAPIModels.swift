@@ -45,11 +45,7 @@ struct SimpleCommentModel: Decodable, Equatable {
 
 struct PlainResponseModel: Decodable {
     let success: Bool
-    let error: ErrorModel?
-}
-
-struct ErrorModel: Decodable {
-    let code, message: String
+    let errorCode, message: String?
 }
 
 struct PagenationRequestModel: Encodable {
