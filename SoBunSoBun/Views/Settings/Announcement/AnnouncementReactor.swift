@@ -133,6 +133,7 @@ class AnnouncementReactor: Reactor {
                     }
                     .catch { error in
                         self.logger.fault("공지사항 조회 실패: \(error.localizedDescription)")
+                        
                         return Observable.concat([
                             Observable.just(.setError(error.localizedDescription))
                         ])
