@@ -330,7 +330,7 @@ class PostDetailView: UIViewController {
     }()
     
     // 이용 규칙 카드
-    private let ruleCard = RuleCard(title: String(localized: "SobunSobunRuleTitle", table: "Home"), desc: "\(String(localized: "SobunSobunRule01", table: "Home"))|\(String(localized: "SobunSobunRule02", table: "Home"))")
+    private let ruleCard = RuleCard(title: String(localized: "SobunHaeyoRuleTitle", table: "Home"), desc: "\(String(localized: "SobunHaeyoRule01", table: "Home"))|\(String(localized: "SobunHaeyoRule02", table: "Home"))")
     
     // 컨텐트 뷰 구분선
     private let contentDividerView: UIView = {
