@@ -12,8 +12,8 @@ enum HomeAPIs {
     // 피드
     case getLocationVerification
     case patchLocationVerification(address: String)
-    case getHomeList(page: Int, size: Int)
-    case getHomeListByCategories(category: [String], page: Int, size: Int)
+    case getHomeList(sortBy: String, page: Int, size: Int)
+    case getHomeListByCategories(category: [String], sortBy: String, page: Int, size: Int)
     case getAddress(point: String) // 좌표를 통해 주소 가져오기
     case registerPost(model: RegisterPostBodyModel)
     
@@ -72,7 +72,7 @@ extension HomeAPIs: TargetType {
         case .getHomeList:
             return "/api/posts"
             
-        case .getHomeListByCategories(let category, page: _, size: _):
+        case .getHomeListByCategories(let category, _, _, _):
             return "/api/posts/categories/\(category.joined(separator: ","))"
             
         case .getAddress:
@@ -182,15 +182,15 @@ extension HomeAPIs: TargetType {
             
             return .requestJSONEncodable(body)
             
-        case .getHomeList(let page, let size):
-            let parameters = PagenationRequestModel(page: page, size: size)
+        case .getHomeList(let sortBy, let page, let size):
+            let parameters: [String: Any] = ["sortBy": sortBy, "page": page, "size": size]
             
-            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
             
-        case .getHomeListByCategories(category: _, let page, let size):
-            let parameters = PagenationRequestModel(page: page, size: size)
+        case .getHomeListByCategories(_, let sortBy, let page, let size):
+            let parameters: [String: Any] = ["sortBy": sortBy, "page": page, "size": size]
             
-            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
             
         case .getAddress(point: let point):
             let key = Bundle.main.object(forInfoDictionaryKey: "VWORLD_CERT_KEY") as! String

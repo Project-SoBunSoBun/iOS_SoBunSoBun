@@ -533,7 +533,7 @@
         }
       }
     },
-    "SobunSobunRule01" : {
+    "SobunHaeyoRule01" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -543,7 +543,7 @@
         }
       }
     },
-    "SobunSobunRule02" : {
+    "SobunHaeyoRule02" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
@@ -553,12 +553,12 @@
         }
       }
     },
-    "SobunSobunRuleTitle" : {
+    "SobunHaeyoRuleTitle" : {
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "소분소분 서비스 이용 규칙"
+            "value" : "소분해요 서비스 이용 규칙"
           }
         }
       }

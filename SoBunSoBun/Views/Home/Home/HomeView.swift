@@ -97,19 +97,61 @@ class HomeView: UIViewController {
         return view
     }()
     
-    private let categoriesScrollView: UIScrollView = {
+    private let sortLocalizableKeys: [String] = ["SortByLatest", "SortByDeadline"]
+    
+    private let sortSelectView: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 0
+        sv.alignment = .center
+        sv.isLayoutMarginsRelativeArrangement = true
+        sv.layoutMargins = .init(top: 5.5, left: 10, bottom: 5.5, right: 10)
+        sv.layer.cornerRadius = 12
+        sv.clipsToBounds = true
+        sv.backgroundColor = .neutral800
+        
+        return sv
+    }()
+    
+    private let filtersScrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.showsHorizontalScrollIndicator = false
         
         return sv
     }()
     
-    private let categoriesStackView: UIStackView = {
+    private let filtersStackView: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 8
         
         return sv
+    }()
+    
+    private let sortLabelAttributes: [NSAttributedString.Key: Any] = {
+        var attributes: [NSAttributedString.Key: Any] = title14.attributes(alignment: .right)
+        attributes[.foregroundColor] = UIColor.backgroundWhite
+        
+        return attributes
+    }()
+    
+    private lazy var sortLabel: UILabel = {
+        let lb = UILabel()
+        
+        lb.attributedText = NSAttributedString(
+            string: NSLocalizedString(sortLocalizableKeys[0], tableName: "Home", comment: ""),
+            attributes: sortLabelAttributes
+        )
+        
+        return lb
+    }()
+    
+    private let sortArrowIcon: UIImageView = {
+        let iv = UIImageView()
+        iv.image = .whiteChevronDown.resize(.init(width: 24, height: 24))
+        iv.contentMode = .scaleAspectFit
+        
+        return iv
     }()
     
     private let addCategoryButton: UIView = {
@@ -183,6 +225,14 @@ class HomeView: UIViewController {
         return btn
     }()
     
+    private lazy var dropDownView: DropDownView = {
+        let ddv = DropDownView(selectionMode: .check, tableName: "Home")
+        ddv.items = sortLocalizableKeys
+        ddv.animationAnchor = .topLeft
+        
+        return ddv
+    }()
+    
     private lazy var gradientLayer = BackgroundGradientLayer(view)
     
     // MARK: - 생명주기
@@ -210,7 +260,7 @@ class HomeView: UIViewController {
         view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
-        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, searchTextFieldCover, categoriesScrollView, tableView, registerPostButton].forEach {
+        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, searchTextFieldCover, filtersScrollView, tableView, registerPostButton, dropDownView].forEach {
             view.addSubview($0)
         }
         
@@ -266,29 +316,29 @@ class HomeView: UIViewController {
         }
         
         // 카테고리 목록
-        categoriesScrollView.addSubview(categoriesStackView)
+        filtersScrollView.addSubview(filtersStackView)
         
-        categoriesScrollView.snp.makeConstraints { make in
+        filtersScrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(searchTextField.snp.bottom).offset(8)
             make.height.equalTo(51)
         }
         
-        categoriesStackView.snp.makeConstraints { make in
+        filtersStackView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.verticalEdges.equalToSuperview().inset(8)
         }
         
+        filtersStackView.addArrangedSubview(sortSelectView)
         addCategoryAll()
-        
-        categoriesStackView.addArrangedSubview(addCategoryButton)
+        filtersStackView.addArrangedSubview(addCategoryButton)
         
         // 게시글 목록
         tableView.refreshControl = refreshControl
         
         tableView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
-            make.top.equalTo(categoriesScrollView.snp.bottom).offset(8)
+            make.top.equalTo(filtersScrollView.snp.bottom).offset(8)
             make.bottom.equalToSuperview()
             make.width.equalToSuperview()
         }
@@ -297,6 +347,16 @@ class HomeView: UIViewController {
         registerPostButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8)
+        }
+        
+        [sortLabel, sortArrowIcon].forEach {
+            sortSelectView.addArrangedSubview($0)
+        }
+        
+        dropDownView.snp.remakeConstraints { make in
+            make.leading.equalTo(sortSelectView)
+            make.top.equalTo(sortSelectView.snp.bottom).offset(4)
+            make.width.equalTo(128)
         }
     }
 }
@@ -364,6 +424,20 @@ extension HomeView {
             .map { _ in Reactor.Action.loadMorePosts }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+        
+        // 정렬을 열고 닫을 때
+        sortSelectView.rx
+            .tapGesture()
+            .when(.recognized)
+            .map { _ in Reactor.Action.sortButtonTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // 정렬을 눌렀을 때
+        dropDownView.didCellTap
+            .map { Reactor.Action.sortTapped($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: HomeReactor) {
@@ -414,6 +488,24 @@ extension HomeView {
                 guard let self = self else { return }
                 
                 self.navigationController?.pushViewController(SearchView(), animated: false)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.isSortButtonOpen }
+            .subscribe(onNext: { [weak self] isOpen in
+                guard let self = self else { return }
+                
+                dropDownView.setOpen(isOpen: isOpen)
+                
+                sortArrowIcon.image = isOpen ? .whiteChevronUp.resize(.init(width: 24, height: 24)) : .whiteChevronDown.resize(.init(width: 24, height: 24))
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.sortBy }
+            .subscribe(onNext: { [weak self] sortBy in
+                guard let self = self else { return }
+                
+                sortLabel.attributedText = NSAttributedString(string: NSLocalizedString(sortBy, tableName: "Home", comment: ""), attributes: sortLabelAttributes)
             })
             .disposed(by: disposeBag)
         
@@ -475,14 +567,16 @@ extension HomeView {
         let view = CategorySelected()
         view.text = String(localized: "All", table: "Category")
         
-        categoriesStackView.addArrangedSubview(view)
+        filtersStackView.addArrangedSubview(view)
     }
     
     private func updateCategoriesStackView(_ selectedCategories: [String]) {
-        categoriesStackView.subviews.forEach {
-            categoriesStackView.removeArrangedSubview($0)
+        filtersStackView.subviews.forEach {
+            filtersStackView.removeArrangedSubview($0)
             $0.removeFromSuperview()
         }
+        
+        filtersStackView.addArrangedSubview(sortSelectView)
         
         if selectedCategories.isEmpty {
             addCategoryAll()
@@ -491,11 +585,11 @@ extension HomeView {
                 let view = CategorySelected()
                 view.text = NSLocalizedString("Category\($0)", tableName: "Category", comment: "")
                 
-                categoriesStackView.addArrangedSubview(view)
+                filtersStackView.addArrangedSubview(view)
             }
         }
         
-        categoriesStackView.addArrangedSubview(addCategoryButton)
+        filtersStackView.addArrangedSubview(addCategoryButton)
     }
     
     private func showSelectCategoriesBottomSheet() {
