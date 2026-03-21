@@ -69,33 +69,35 @@ class SettlementConfirmReactor: Reactor {
             return Observable.empty()
         }
         
-        return networkManager.getSettlement(settlementId: settlementId)
-            .asObservable()
-            .flatMap { model -> Observable<Mutation> in
-                let item = model.data
-                
-                let sortedParticipants = item.participants.sorted { lhs, rhs in
-                    let lhsIsCurrentUser = lhs.userId == currentUserId
-                    let rhsIsCurrentUser = rhs.userId == currentUserId
+        return Observable.deferred {
+            self.networkManager.getSettlement(settlementId: settlementId)
+                .asObservable()
+                .flatMap { model -> Observable<Mutation> in
+                    let item = model.data
                     
-                    if lhsIsCurrentUser != rhsIsCurrentUser {
-                        return lhsIsCurrentUser
+                    let sortedParticipants = item.participants.sorted { lhs, rhs in
+                        let lhsIsCurrentUser = lhs.userId == currentUserId
+                        let rhsIsCurrentUser = rhs.userId == currentUserId
+                        
+                        if lhsIsCurrentUser != rhsIsCurrentUser {
+                            return lhsIsCurrentUser
+                        }
+                        
+                        return false
                     }
                     
-                    return false
+                    return Observable.concat([
+                        .just(.setItem(item)),
+                        .just(.setSortedParticipants(sortedParticipants))
+                    ])
                 }
-                
-                return Observable.concat([
-                    .just(.setItem(item)),
-                    .just(.setSortedParticipants(sortedParticipants))
-                ])
-            }
-            .catch { [weak self] error in
-                guard let self = self else { return Observable.empty() }
-                
-                self.logger.critical("정산 상세 데이터 조회 실패: \(error.localizedDescription)")
-                
-                return .just(.setError("GetSettlementFailed"))
-            }
+                .catch { [weak self] error in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.critical("정산 상세 데이터 조회 실패: \(error.localizedDescription)")
+                    
+                    return .just(.setError("GetSettlementFailed"))
+                }
+        }
     }
 }

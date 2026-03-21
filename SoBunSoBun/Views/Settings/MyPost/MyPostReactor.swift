@@ -154,53 +154,57 @@ class MyPostReactor: Reactor {
     }
     
     private func loadMyPosts(page: Int, size: Int, isFirst: Bool) -> Observable<Mutation> {
-        return settingNetworkManager.getMyPosts(page: page, size: size)
-            .asObservable()
-            .flatMap { response -> Observable<Mutation> in
-                self.logger.debug("내 게시글 조회 성공")
-                
-                let mutations: Observable<Mutation> = isFirst
-                ? Observable.just(.setMyPosts(response.posts))
-                : Observable.just(.setAppendMyPosts(response.posts))
-                
-                return Observable.concat([
-                    mutations,
-                    Observable.just(.setHasMore(!response.pageInfo.last))
-                ])
-            }
-            .catch { error in
-                self.logger.critical("내가 게시한 글 불러오기 실패: \(error.localizedDescription)")
-                
-                return Observable.concat([
-                    isFirst ? Observable.just(.setMyPosts([])) : Observable.empty(),
-                    Observable.just(.setHasMore(false)),
-                    Observable.just(.setPage(0))
-                ])
-            }
+        return Observable.deferred {
+            self.settingNetworkManager.getMyPosts(page: page, size: size)
+                .asObservable()
+                .flatMap { response -> Observable<Mutation> in
+                    self.logger.debug("내 게시글 조회 성공")
+                    
+                    let mutations: Observable<Mutation> = isFirst
+                    ? Observable.just(.setMyPosts(response.posts))
+                    : Observable.just(.setAppendMyPosts(response.posts))
+                    
+                    return Observable.concat([
+                        mutations,
+                        Observable.just(.setHasMore(!response.pageInfo.last))
+                    ])
+                }
+                .catch { error in
+                    self.logger.critical("내가 게시한 글 불러오기 실패: \(error.localizedDescription)")
+                    
+                    return Observable.concat([
+                        isFirst ? Observable.just(.setMyPosts([])) : Observable.empty(),
+                        Observable.just(.setHasMore(false)),
+                        Observable.just(.setPage(0))
+                    ])
+                }
+        }
     }
     
     private func deletePost(id: Int) -> Observable<Mutation> {
-        return Observable.concat([
-            Observable.just(.setLoading(true)),
-            homeNetworkManager.deletePost(id: id)
-                .asObservable()
-                .flatMap { _ -> Observable<Mutation> in
-                    return Observable.concat([
-                        Observable.just(.removePostById(id)),
-                        Observable.just(.setShouldShowDeletePostDoneAlert),
-                        Observable.just(.setLoading(false))
-                    ])
-                }
-                .catch { [weak self] error in
-                    guard let self = self else { return Observable.empty() }
-                    
-                    self.logger.error("게시글 삭제 실패: \(error.localizedDescription)")
-                    
-                    return Observable.concat([
-                        Observable.just(.setError("게시글 삭제에 실패했습니다")),
-                        Observable.just(.setLoading(false))
-                    ])
-                }
-        ])
+        return Observable.deferred {
+            Observable.concat([
+                Observable.just(.setLoading(true)),
+                self.homeNetworkManager.deletePost(id: id)
+                    .asObservable()
+                    .flatMap { _ -> Observable<Mutation> in
+                        return Observable.concat([
+                            Observable.just(.removePostById(id)),
+                            Observable.just(.setShouldShowDeletePostDoneAlert),
+                            Observable.just(.setLoading(false))
+                        ])
+                    }
+                    .catch { [weak self] error in
+                        guard let self = self else { return Observable.empty() }
+                        
+                        self.logger.error("게시글 삭제 실패: \(error.localizedDescription)")
+                        
+                        return Observable.concat([
+                            Observable.just(.setError("게시글 삭제에 실패했습니다")),
+                            Observable.just(.setLoading(false))
+                        ])
+                    }
+            ])
+        }
     }
 }

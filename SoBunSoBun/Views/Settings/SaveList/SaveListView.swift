@@ -112,13 +112,13 @@ extension SaveListView {
         
         // 페이지 네이션
         tableView.rx.willDisplayCell
-            .filter { [weak self] cell, IndexPath -> Bool in
+            .filter { [weak self] cell, indexPath -> Bool in
                 guard let self = self else { return false }
                 
                 let totalCount = self.tableView.numberOfRows(inSection: 0)
                 let triggerCount = 3
                 
-                return totalCount > triggerCount && IndexPath.row >= totalCount - triggerCount
+                return totalCount > triggerCount && indexPath.row >= totalCount - triggerCount
             }
             .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
             .map { _ in Reactor.Action.loadMore }

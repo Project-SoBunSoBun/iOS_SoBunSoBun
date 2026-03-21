@@ -234,29 +234,31 @@ class SearchReactor: Reactor {
         // API 호출
         let api: Single<PostListResponseModel> = networkManager.getSearchList(keyword: keyword, sortBy: sortBy, page: page, size: pageSize)
         
-        return Observable.concat([
-            Observable.just(.setLoading(true)),
-            api.asObservable()
-                .flatMap { response -> Observable<Mutation> in
-                    let mutations: Observable<Mutation> = isFirst
-                    ? Observable.just(.setPosts(response.posts))
-                    : Observable.just(.appendPosts(response.posts))
-                    
-                    return Observable.concat([
-                        mutations,
-                        Observable.just(.setHasMore(!response.pageInfo.last))
-                    ])
-                }
-                .catch { error in
-                    self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
-                    
-                    return Observable.concat([
-                        isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
-                        Observable.just(.setHasMore(false)),
-                        Observable.just(.setPage(0))
-                    ])
-                },
-            Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
-        ])
+        return Observable.deferred {
+            Observable.concat([
+                Observable.just(.setLoading(true)),
+                api.asObservable()
+                    .flatMap { response -> Observable<Mutation> in
+                        let mutations: Observable<Mutation> = isFirst
+                            ? Observable.just(.setPosts(response.posts))
+                            : Observable.just(.appendPosts(response.posts))
+
+                        return Observable.concat([
+                            mutations,
+                            Observable.just(.setHasMore(!response.pageInfo.last))
+                        ])
+                    }
+                    .catch { error in
+                        self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+
+                        return Observable.concat([
+                            isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
+                            Observable.just(.setHasMore(false)),
+                            Observable.just(.setPage(0))
+                        ])
+                    },
+                Observable.just(.setLoading(false))
+            ])
+        }
     }
 }
