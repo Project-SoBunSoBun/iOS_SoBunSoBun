@@ -116,27 +116,30 @@ class AnnouncementReactor: Reactor {
     
     // 공지사항 API 호출
     private func loadNotices(page: Int, size: Int) -> Observable<Mutation> {
-        return Observable.concat([
-            Observable.just(.setLoading(true)),
-            networkManager.getAnnouncements(page: page, size: size)
-                .asObservable()
-                .flatMap { response -> Observable<Mutation> in
-                    self.logger.debug("공지사항 조회 성공")
-                    
-                    let isFirst = response.data.page.first
-                    
-                    return Observable.concat([
-                        isFirst ? Observable.just(.setNotices(response.data.content)) : Observable.just(.appendNotices(response.data.content)),
-                        Observable.just(.setHasMore(!response.data.page.last))
-                    ])
-                }
-                .catch { error in
-                    self.logger.fault("공지사항 조회 실패: \(error.localizedDescription)")
-                    return Observable.concat([
-                        Observable.just(.setError(error.localizedDescription))
-                    ])
-                },
-            Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
-        ])
+        return Observable.deferred {
+            Observable.concat([
+                Observable.just(.setLoading(true)),
+                self.networkManager.getAnnouncements(page: page, size: size)
+                    .asObservable()
+                    .flatMap { response -> Observable<Mutation> in
+                        self.logger.debug("공지사항 조회 성공")
+                        
+                        let isFirst = response.data.page.first
+                        
+                        return Observable.concat([
+                            isFirst ? Observable.just(.setNotices(response.data.content)) : Observable.just(.appendNotices(response.data.content)),
+                            Observable.just(.setHasMore(!response.data.page.last))
+                        ])
+                    }
+                    .catch { error in
+                        self.logger.fault("공지사항 조회 실패: \(error.localizedDescription)")
+                        
+                        return Observable.concat([
+                            Observable.just(.setError(error.localizedDescription))
+                        ])
+                    },
+                Observable.just(.setLoading(false))
+            ])
+        }
     }
 }

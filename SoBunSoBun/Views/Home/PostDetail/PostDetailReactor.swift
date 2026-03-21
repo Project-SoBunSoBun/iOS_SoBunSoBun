@@ -197,7 +197,10 @@ class PostDetailReactor: Reactor {
             return deletePost()
             
         case .createComment(let content):
-            return createComment(content: content)
+            return Observable.concat([
+                createComment(content: content),
+                getPostCommentsCount()
+            ])
             
         case .setSelectedCommentModel(let model):
             return Observable.just(.setSelectedCommentModel(model))
@@ -225,7 +228,10 @@ class PostDetailReactor: Reactor {
             return Observable.just(.setIsEditMode(true))
             
         case .editCommentTapped(let content):
-            return patchComment(content: content)
+            return Observable.concat([
+                getPostCommentsCount(),
+                patchComment(content: content)
+            ])
             
         case .editCancelTapped:
             return Observable.just(.setIsEditMode(false))
@@ -237,7 +243,10 @@ class PostDetailReactor: Reactor {
             ])
             
         case .deleteComment:
-            return deleteComment()
+            return Observable.concat([
+                getPostCommentsCount(),
+                deleteComment()
+            ])
             
         case .chatButtonTapped:
             return Observable.concat([
@@ -398,11 +407,13 @@ class PostDetailReactor: Reactor {
                     uniquingKeysWith: { (first, second) in second }
                 )
                 
-                return Observable.concat([
-                    Observable.just(.setComments(models)),
-                    Observable.just(.setCommentedUsersToNickname(commentedUsersToNickname)),
-                    Observable.just(.setCommentedUsersToId(commentedUsersToId))
-                ])
+                return Observable.deferred {
+                    Observable.concat([
+                        Observable.just(.setComments(models)),
+                        Observable.just(.setCommentedUsersToNickname(commentedUsersToNickname)),
+                        Observable.just(.setCommentedUsersToId(commentedUsersToId))
+                    ])
+                }
             }
             .catch { [weak self] error in
                 guard let self = self else {

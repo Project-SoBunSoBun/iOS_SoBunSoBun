@@ -115,29 +115,31 @@ class SaveListRecator: Reactor {
     }
     
     private func loadSavedPosts(page: Int, size: Int, isFirst: Bool) -> Observable<Mutation> {
-        return networkManager.getSavePosts(page: page, size: size)
-            .asObservable()
-            .flatMap { response -> Observable<Mutation> in
-                self.logger.debug("저장 목록 조회 성공")
-                
-                let mutations: Observable<Mutation> = isFirst
-                ? Observable.just(.setSavedPosts(response.posts))
-                : Observable.just(.appendSavedPosts(response.posts))
-                
-                return Observable.concat([
-                    mutations,
-                    Observable.just(.setHasMore(!response.pageInfo.last))
-                ])
-            }
-            .catch { error in
-                self.logger.critical("저장 목록 불러오기 실패: \(error.localizedDescription)")
-                
-                return Observable.concat([
-                    isFirst ? Observable.just(.setSavedPosts([])) : Observable.empty(),
-                    Observable.just(.setError(String(localized: "FailToLoadSavedPosts", table: "Settings"))),
-                    Observable.just(.setHasMore(false)),
-                    Observable.just(.setPage(0))
-                ])
-            }
+        return Observable.deferred {
+            self.networkManager.getSavePosts(page: page, size: size)
+                .asObservable()
+                .flatMap { response -> Observable<Mutation> in
+                    self.logger.debug("저장 목록 조회 성공")
+                    
+                    let mutations: Observable<Mutation> = isFirst
+                    ? Observable.just(.setSavedPosts(response.posts))
+                    : Observable.just(.appendSavedPosts(response.posts))
+                    
+                    return Observable.concat([
+                        mutations,
+                        Observable.just(.setHasMore(!response.pageInfo.last))
+                    ])
+                }
+                .catch { error in
+                    self.logger.critical("저장 목록 불러오기 실패: \(error.localizedDescription)")
+                    
+                    return Observable.concat([
+                        isFirst ? Observable.just(.setSavedPosts([])) : Observable.empty(),
+                        Observable.just(.setError(String(localized: "FailToLoadSavedPosts", table: "Settings"))),
+                        Observable.just(.setHasMore(false)),
+                        Observable.just(.setPage(0))
+                    ])
+                }
+        }
     }
 }

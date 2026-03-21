@@ -30,6 +30,9 @@ class HomeReactor: Reactor {
         
         case searchTapped // 검색창 tap
         
+        case sortButtonTapped // 정렬 목록 버튼 tap
+        case sortTapped(String) // 정렬 tap
+        
         case addCategoryTapped // 카테고리 추가 버튼 tap
         case getSelectedCategories([String]) // 선택한 카테고리 bind
         
@@ -48,6 +51,9 @@ class HomeReactor: Reactor {
         case setMyProfileView // 내 프로필로 이동
         
         case setSearchView // 검색 뷰로 이동
+        
+        case setIsSortButtonOpen(Bool) // 정렬 목록 버튼 열림 여부
+        case setSort(String) // 정렬 설정
         
         case setAddCategoryTapped // 카테고리 추가 뷰 표시
         case setSelectedCategories([String]) // 선택한 카테고리 적용
@@ -73,6 +79,10 @@ class HomeReactor: Reactor {
         @Pulse var shouldPushMyProfileView: Void? // 내 프로필 뷰로 이동
         
         @Pulse var shouldPushSearchView: Void? // 검색 뷰로 이동
+        
+        var isSortButtonOpen: Bool = false // 정렬 목록 버튼 열림
+        var sortBy: String = "SortByLatest" // 정렬
+        
         @Pulse var shouldShowBottomCategorySheet: Void? // 카테고리 추가 뷰 표시
         var selectedCategories: [String] = [] // 선택된 카테고리
         
@@ -91,7 +101,7 @@ class HomeReactor: Reactor {
             return Observable.concat([
                 getUnreadNotificationCount(),
                 Observable.just(.setPage(0)),
-                loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories),
+                loadPosts(sortBy: currentState.sortBy, page: 0, isFirst: true, categories: currentState.selectedCategories),
                 currentState.isLocationVerified ? Observable.empty() : verifyLocation()
             ])
             
@@ -104,6 +114,16 @@ class HomeReactor: Reactor {
         case .searchTapped:
             return Observable.just(.setSearchView)
             
+        case .sortButtonTapped:
+            return Observable.just(.setIsSortButtonOpen(!currentState.isSortButtonOpen))
+            
+        case .sortTapped(let sortBy):
+            return Observable.concat([
+                Observable.just(.setIsSortButtonOpen(false)),
+                Observable.just(.setSort(sortBy)),
+                loadPosts(sortBy: sortBy, page: 0, isFirst: true)
+            ])
+            
         case .addCategoryTapped:
             return Observable.just(.setAddCategoryTapped)
             
@@ -112,7 +132,7 @@ class HomeReactor: Reactor {
                 Observable.just(.setSelectedCategories(selectedCategories)),
                 Observable.just(.setRefreshing(true)),
                 Observable.just(.setPage(0)),
-                loadPosts(page: 0, isFirst: true, categories: selectedCategories),
+                loadPosts(sortBy: currentState.sortBy, page: 0, isFirst: true, categories: selectedCategories),
                 Observable.just(.setRefreshing(false))
             ])
             
@@ -124,14 +144,14 @@ class HomeReactor: Reactor {
             let nextPage = currentState.page + 1
             return Observable.concat([
                 Observable.just(.setPage(nextPage)),
-                loadPosts(page: nextPage, isFirst: false, categories: currentState.selectedCategories)
+                loadPosts(sortBy: currentState.sortBy, page: nextPage, isFirst: false, categories: currentState.selectedCategories)
             ])
             
         case .refresh:
             return Observable.concat([
                 Observable.just(.setRefreshing(true)),
                 Observable.just(.setPage(0)),
-                loadPosts(page: 0, isFirst: true, categories: currentState.selectedCategories),
+                loadPosts(sortBy: currentState.sortBy, page: 0, isFirst: true, categories: currentState.selectedCategories),
                 Observable.just(.setRefreshing(false))
             ])
             
@@ -167,6 +187,12 @@ class HomeReactor: Reactor {
             
         case .setSearchView:
             newState.shouldPushSearchView = ()
+            
+        case .setIsSortButtonOpen(let isOpen):
+            newState.isSortButtonOpen = isOpen
+            
+        case .setSort(let sortBy):
+            newState.sortBy = sortBy
             
         case .setAddCategoryTapped:
             newState.shouldShowBottomCategorySheet = ()
@@ -346,35 +372,39 @@ class HomeReactor: Reactor {
     }
     
     // 홈 게시글 목록 API 호출
-    private func loadPosts(page: Int, isFirst: Bool, categories: [String] = []) -> Observable<Mutation> {
+    private func loadPosts(sortBy: String, page: Int, isFirst: Bool, categories: [String] = []) -> Observable<Mutation> {
+        let sortBy = sortBy.replacingOccurrences(of: "SortBy", with: "").lowercased()
+        
         // API 호출
         let api: Single<PostListResponseModel> = categories.isEmpty
-        ? networkManager.getHomeList(page: page, size: pageSize)
-        : networkManager.getHomeListByCategories(categories: categories, page: page, size: pageSize)
+        ? networkManager.getHomeList(sortBy: sortBy, page: page, size: pageSize)
+        : networkManager.getHomeListByCategories(categories: categories, sortBy: sortBy, page: page, size: pageSize)
         
-        return Observable.concat([
-            Observable.just(.setLoading(true)),
-            api.asObservable()
-                .flatMap { response -> Observable<Mutation> in
-                    let mutations: Observable<Mutation> = isFirst
-                    ? Observable.just(.setPosts(response.posts))
-                    : Observable.just(.appendPosts(response.posts))
-                    
-                    return Observable.concat([
-                        mutations,
-                        Observable.just(.setHasMore(!response.pageInfo.last))
-                    ])
-                }
-                .catch { error in
-                    self.logger.critical("게시글 목록 불러오기 실패: \(error.localizedDescription)")
-                    
-                    return Observable.concat([
-                        isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
-                        Observable.just(.setHasMore(false)),
-                        Observable.just(.setPage(0))
-                    ])
-                },
-            Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance)
-        ])
+        return Observable.deferred {
+            Observable.concat([
+                Observable.just(.setLoading(true)),
+                api.asObservable()
+                    .flatMap { response -> Observable<Mutation> in
+                        let mutations: Observable<Mutation> = isFirst
+                            ? Observable.just(.setPosts(response.posts))
+                            : Observable.just(.appendPosts(response.posts))
+
+                        return Observable.concat([
+                            mutations,
+                            Observable.just(.setHasMore(!response.pageInfo.last))
+                        ])
+                    }
+                    .catch { error in
+                        self.logger.critical("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+
+                        return Observable.concat([
+                            isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
+                            Observable.just(.setHasMore(false)),
+                            Observable.just(.setPage(0))
+                        ])
+                    },
+                Observable.just(.setLoading(false))
+            ])
+        }
     }
 }

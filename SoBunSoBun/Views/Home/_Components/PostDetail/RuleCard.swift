@@ -73,13 +73,13 @@ class RuleCard: UIView {
     
     // MARK: - 레이아웃 설정
     private func configure(title: String, desc: String) {
-        self.backgroundColor = .neutral100
+        self.backgroundColor = .neutral50
         self.layer.cornerRadius = 16
         self.clipsToBounds = true
         
         // 제목
         var titleAttributes: [NSAttributedString.Key: Any] = title14.attributes()
-        titleAttributes[.foregroundColor] = UIColor.neutral700
+        titleAttributes[.foregroundColor] = UIColor.primary300
         titleLabel.attributedText = NSAttributedString(string: title, attributes: titleAttributes)
         
         addSubview(titleLabel)

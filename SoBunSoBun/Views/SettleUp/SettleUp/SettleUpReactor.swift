@@ -135,47 +135,49 @@ class SettleUpReactor: Reactor {
             status = "COMPLETED"
         }
         
-        return networkManager.mySettleUps(status: status, page: page, size: size)
-            .asObservable()
-            .flatMap { SettleUpModel -> Observable<Mutation> in
-                guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
-                
-                let currentUserId = Int(userId)
-                
-                let items: [SettleUpItemModel] = SettleUpModel.data.content.map { content in
-                    let isCompleted = (content.status == "COMPLETED")
+        return Observable.deferred {
+            self.networkManager.mySettleUps(status: status, page: page, size: size)
+                .asObservable()
+                .flatMap { SettleUpModel -> Observable<Mutation> in
+                    guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
                     
-                    return SettleUpItemModel(
-                        settlementId: content.id,
-                        authorId: content.authorId,
-                        isAuthor: content.authorId == currentUserId,
-                        settlementStatus: isCompleted,
-                        title: content.groupPostTitle,
-                        location: content.locationName,
-                        meetingDate: content.meetAt,
-                        participants: content.chatRoomMembers
-                    )
+                    let currentUserId = Int(userId)
+                    
+                    let items: [SettleUpItemModel] = SettleUpModel.data.content.map { content in
+                        let isCompleted = (content.status == "COMPLETED")
+                        
+                        return SettleUpItemModel(
+                            settlementId: content.id,
+                            authorId: content.authorId,
+                            isAuthor: content.authorId == currentUserId,
+                            settlementStatus: isCompleted,
+                            title: content.groupPostTitle,
+                            location: content.locationName,
+                            meetingDate: content.meetAt,
+                            participants: content.chatRoomMembers
+                        )
+                    }
+                    
+                    let mutation: Observable<Mutation> = isFirst
+                    ? Observable.just(.setItems(items))
+                    : Observable.just(.appendItems(items))
+                    
+                    return Observable.concat([
+                        mutation,
+                        Observable.just(.setHasMore(!SettleUpModel.data.last))
+                    ])
                 }
-                
-                let mutation: Observable<Mutation> = isFirst
-                ? Observable.just(.setItems(items))
-                : Observable.just(.appendItems(items))
-                
-                return Observable.concat([
-                    mutation,
-                    Observable.just(.setHasMore(!SettleUpModel.data.last))
-                ])
-            }
-            .catch { [weak self] error in
-                guard let self = self else { return Observable.empty() }
-                
-                self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
-                
-                return Observable.concat([
-                    isFirst ? Observable.just(.setItems([])) : Observable.empty(),
-                    Observable.just(.setError("정산 목록을 불러오는데 실패했습니다.")),
-                    Observable.just(.setHasMore(false))
-                ])
-            }
+                .catch { [weak self] error in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
+                    
+                    return Observable.concat([
+                        isFirst ? Observable.just(.setItems([])) : Observable.empty(),
+                        Observable.just(.setError("정산 목록을 불러오는데 실패했습니다.")),
+                        Observable.just(.setHasMore(false))
+                    ])
+                }
+        }
     }
 }

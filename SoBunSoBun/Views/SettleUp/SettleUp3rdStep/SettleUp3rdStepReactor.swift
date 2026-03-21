@@ -90,23 +90,27 @@ class SettleUp3rdStepReactor: Reactor {
     }
     
     private func putSettlementComplete(model: SettleUp3rdStepDataModel) -> Observable<Mutation> {
-        return Observable.concat([
-            Observable.just(.setLoading(true)),
-            networkManager.putSettlementComplete(model: model)
-                .asObservable()
-                .flatMap { [weak self] _ -> Observable<Mutation> in
-                    guard let self = self else { return Observable.empty() }
-                    
-                    self.logger.debug("정산 등록 성공")
-                    return Observable.just(.setNavigateToSettleUpView)
-                }
-                .catch { [weak self] error in
-                    guard let self = self else { return Observable.empty() }
-                    
-                    self.logger.error("정산 등록 실패: \(error.localizedDescription)")
-                    return Observable.just(.setError)
-                },
-            Observable.just(.setLoading(false))
-        ])
+        return Observable.deferred {
+            Observable.concat([
+                Observable.just(.setLoading(true)),
+                self.networkManager.putSettlementComplete(model: model)
+                    .asObservable()
+                    .flatMap { [weak self] _ -> Observable<Mutation> in
+                        guard let self = self else { return Observable.empty() }
+                        
+                        self.logger.debug("정산 등록 성공")
+                        
+                        return Observable.just(.setNavigateToSettleUpView)
+                    }
+                    .catch { [weak self] error in
+                        guard let self = self else { return Observable.empty() }
+                        
+                        self.logger.error("정산 등록 실패: \(error.localizedDescription)")
+                        
+                        return Observable.just(.setError)
+                    },
+                Observable.just(.setLoading(false))
+            ])
+        }
     }
 }

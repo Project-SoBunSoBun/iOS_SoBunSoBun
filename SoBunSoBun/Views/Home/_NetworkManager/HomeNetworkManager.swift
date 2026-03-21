@@ -42,17 +42,17 @@ class HomeNetworkManager {
     }
     
     // 홈 게시글 목록 불러오기
-    func getHomeList(page: Int, size: Int) -> Single<PostListResponseModel> {
+    func getHomeList(sortBy: String, page: Int, size: Int) -> Single<PostListResponseModel> {
         return authProvider.rx.request(
-            MultiTarget(HomeAPIs.getHomeList(page: page, size: size))
+            MultiTarget(HomeAPIs.getHomeList(sortBy: sortBy, page: page, size: size))
         )
         .tryMap(PostListResponseModel.self)
     }
     
     // 카테고리 선택 후 홈 게시글 목록 불러오기
-    func getHomeListByCategories(categories: [String], page: Int, size: Int) -> Single<PostListResponseModel> {
+    func getHomeListByCategories(categories: [String], sortBy: String, page: Int, size: Int) -> Single<PostListResponseModel> {
         return authProvider.rx.request(
-            MultiTarget(HomeAPIs.getHomeListByCategories(category: categories, page: page, size: size))
+            MultiTarget(HomeAPIs.getHomeListByCategories(category: categories, sortBy: sortBy, page: page, size: size))
         )
         .tryMap(PostListResponseModel.self)
     }
