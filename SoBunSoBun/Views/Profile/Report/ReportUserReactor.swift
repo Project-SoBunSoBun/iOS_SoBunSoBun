@@ -20,7 +20,7 @@ class ReportUserReactor: Reactor {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Profile.UserReport.Reactor"
+        category: "Profile.ReportUser.Reactor"
     )
     
     let initialState = State()
