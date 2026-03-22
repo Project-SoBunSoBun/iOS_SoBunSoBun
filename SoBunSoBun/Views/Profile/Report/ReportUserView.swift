@@ -29,7 +29,7 @@ class ReportUserView: UIViewController {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Profile.UserReport.View"
+        category: "Profile.ReportUser.View"
     )
     
     typealias Reactor = ReportUserReactor
