@@ -24,3 +24,9 @@ struct ProfileUserInfoResponseDataModel: Decodable, Equatable {
     var isBlocked: Bool
     let posts: PostListResponseModel
 }
+
+struct ReportUserRequestBodyModel: Encodable {
+    let groupPostId: Int
+    let reason: String
+    let description: String
+}

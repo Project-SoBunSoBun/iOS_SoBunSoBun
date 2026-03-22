@@ -413,7 +413,7 @@ extension OtherUserChatCellView {
             .tapGesture()
             .when(.recognized)
             .subscribe(onNext: { _ in
-                if let url = URL(string: "sobunsobun://profile_managable/\(model.userId)") {
+                if let url = URL(string: "sobunsobun://profile/\(model.userId)") {
                     UIApplication.shared.open(url)
                 }
             })

@@ -1,5 +1,5 @@
 //
-//  UserReportView.swift
+//  ReportUserView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 3/17/26.
@@ -12,11 +12,13 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class UserReportView: UIViewController {
+class ReportUserView: UIViewController {
     private let userId: Int
+    private let groupPostId: Int
     
-    init(userId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
+    init(userId: Int, groupPostId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
         self.userId = userId
+        self.groupPostId = groupPostId
         
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -30,8 +32,8 @@ class UserReportView: UIViewController {
         category: "Profile.UserReport.View"
     )
     
-    typealias Reactor = UserReportReactor
-    private lazy var reactor = UserReportReactor(userId: userId)
+    typealias Reactor = ReportUserReactor
+    private lazy var reactor = ReportUserReactor(userId: userId, groupPostId: groupPostId)
     
     private let disposeBag = DisposeBag()
     
@@ -172,7 +174,7 @@ class UserReportView: UIViewController {
     }
 }
 
-extension UserReportView {
+extension ReportUserView {
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)

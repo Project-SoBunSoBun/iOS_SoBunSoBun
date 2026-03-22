@@ -12,9 +12,12 @@ import OSLog
 
 class ProfileManagableView: UIViewController {
     private let userId: Int
+    private let groupPostId: Int
     
-    init(userId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
+    init(userId: Int, groupPostId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
         self.userId = userId
+        self.groupPostId = groupPostId
+        
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -219,12 +222,12 @@ extension ProfileManagableView {
             })
             .disposed(by: disposeBag)
         
-        reactor.pulse(\.$shouldPushUserReportView)
+        reactor.pulse(\.$shouldPushReportUserView)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                self.navigationController?.pushViewController(UserReportView(userId: userId), animated: true)
+                self.navigationController?.pushViewController(ReportUserView(userId: userId, groupPostId: groupPostId), animated: true)
             })
             .disposed(by: disposeBag)
         

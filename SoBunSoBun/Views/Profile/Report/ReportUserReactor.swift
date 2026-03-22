@@ -1,5 +1,5 @@
 //
-//  UserReportReactor.swift
+//  ReportUserReactor.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 3/17/26.
@@ -9,11 +9,13 @@ import Foundation
 import ReactorKit
 import OSLog
 
-class UserReportReactor: Reactor {
+class ReportUserReactor: Reactor {
     private let userId: Int
+    private let groupPostId: Int
     
-    init(userId: Int) {
+    init(userId: Int, groupPostId: Int) {
         self.userId = userId
+        self.groupPostId = groupPostId
     }
     
     private let logger = Logger(
@@ -134,7 +136,7 @@ class UserReportReactor: Reactor {
         
         let description = currentState.detailString ?? ""
         
-        return networkManager.reportUser(userId: userId, reason: reportType, description: description)
+        return networkManager.reportUser(userId: userId, groupPostId: groupPostId, reason: reportType, description: description)
         .asObservable()
         .flatMap { model -> Observable<Mutation> in
             self.logger.debug("신고 완료")
@@ -143,6 +145,9 @@ class UserReportReactor: Reactor {
                 return Observable.just(.setReportCompleted)
             } else {
                 if let errorCode = model.errorCode {
+                    
+                    
+                    
                     return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), errorCode)))
                 } else {
                     return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))

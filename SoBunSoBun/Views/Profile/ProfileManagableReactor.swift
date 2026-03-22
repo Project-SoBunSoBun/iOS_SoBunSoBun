@@ -38,7 +38,7 @@ class ProfileManagableReactor: Reactor {
     
     enum Mutation {
         case setUserInfo(ProfileUserInfoResponseDataModel)
-        case setShouldPushUserReportView
+        case setShouldPushReportUserView
         case setShouldShowBlockAlert
         case setShouldShowBlockDoneAlert
         case setShouldShowUnBlockAlert
@@ -54,7 +54,7 @@ class ProfileManagableReactor: Reactor {
         var hasMore: Bool = true // 페이지네이션 추가 가능 여부
         var isRefreshing: Bool = false
         @Pulse var shouldPushPostDetailView: PostModel?
-        @Pulse var shouldPushUserReportView: Void?
+        @Pulse var shouldPushReportUserView: Void?
         @Pulse var shouldShowBlockAlert: Void?
         @Pulse var shouldShowBlockDoneAlert: Void?
         @Pulse var shouldShowUnBlockAlert: Void?
@@ -68,7 +68,7 @@ class ProfileManagableReactor: Reactor {
             return loadPosts(page: 0, isFirst: true)
             
         case .reportButtonTapped:
-            return Observable.just(.setShouldPushUserReportView)
+            return Observable.just(.setShouldPushReportUserView)
             
         case .blockButtonTapped:
             guard let userInfo = currentState.userInfo else {
@@ -96,8 +96,8 @@ class ProfileManagableReactor: Reactor {
         case .setUserInfo(let model):
             newState.userInfo = model
             
-        case .setShouldPushUserReportView:
-            newState.shouldPushUserReportView = ()
+        case .setShouldPushReportUserView:
+            newState.shouldPushReportUserView = ()
             
         case .setShouldShowBlockAlert:
             newState.shouldShowBlockAlert = ()

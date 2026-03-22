@@ -12,7 +12,7 @@ enum ProfileAPIs {
     case getPostList(userId: Int, page: Int, size: Int)
     case blockUser(userId: Int)
     case unBlockUser(userId: Int)
-    case reportUser(userId: Int, reason: String, description: String)
+    case reportUser(userId: Int, groupPostId: Int, reason: String, description: String)
 }
 
 extension ProfileAPIs: TargetType {
@@ -36,7 +36,7 @@ extension ProfileAPIs: TargetType {
         case .unBlockUser(let userId):
             return "/api/v1/blocks/\(userId)"
             
-        case .reportUser(let userId, _, _):
+        case .reportUser(let userId, _, _, _):
             return "/api/v1/users/\(userId)/report"
         }
     }
@@ -71,8 +71,8 @@ extension ProfileAPIs: TargetType {
         case .unBlockUser:
             return .requestPlain
             
-        case .reportUser(_, let reason, let description):
-            let body: [String: String] = ["reason": reason, "description": description]
+        case .reportUser(_, let groupPostId, let reason, let description):
+            let body = ReportUserRequestBodyModel(groupPostId: groupPostId, reason: reason, description: description)
             
             return .requestJSONEncodable(body)
         }
