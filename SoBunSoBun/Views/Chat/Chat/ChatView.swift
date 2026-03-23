@@ -83,7 +83,6 @@ class ChatView: UIViewController {
         sv.backgroundColor = .backgroundWhite
         sv.isLayoutMarginsRelativeArrangement = true
         sv.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
-        sv.isHidden = true
         
         return sv
     }()
@@ -230,6 +229,19 @@ class ChatView: UIViewController {
             make.horizontalEdges.equalToSuperview()
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
+        
+        sendButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+        
+        plusButton.setContentHuggingPriority(.required, for: .horizontal)
+        plusButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        chatTextView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        chatTextView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        
+        sendButton.setContentHuggingPriority(.required, for: .vertical)
+        sendButton.setContentCompressionResistancePriority(.required, for: .vertical)
         
         safeareaBottomBackgroundView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
@@ -511,9 +523,6 @@ extension ChatView {
                     members: model.data.members
                 )
                 rightMenuView?.willLeave = willLeave
-                
-                // 하단 메뉴 설정
-                chatStackView.isHidden = false
                 
                 bottomMenuStackView.arrangedSubviews.forEach {
                     self.bottomMenuStackView.removeArrangedSubview($0)

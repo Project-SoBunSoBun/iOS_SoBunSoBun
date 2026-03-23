@@ -103,6 +103,7 @@ class ChatReactor: Reactor {
             
         case .sendMessage(let message):
             sendMessage(message: message)
+            
             return Observable.empty()
             
         case .rightMenuButtonTapped:
