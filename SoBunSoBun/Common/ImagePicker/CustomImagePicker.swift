@@ -167,7 +167,23 @@ extension CustomImagePicker: UIImagePickerControllerDelegate, UINavigationContro
             }
         }
         
-        imageSelected.onNext(image)
+        showImagePickerConfirmView(image: image)
+    }
+    
+    private func showImagePickerConfirmView(image: UIImage) {
+        guard let viewController = presentingViewController else { return }
+        
+        let vc = ImagePickerConfirmView(image: image)
+        
+        vc.onConfirm
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                imageSelected.onNext(image)
+            })
+            .disposed(by: vc.disposeBag)
+        
+        viewController.present(vc, animated: true)
     }
     
     // 취소 버튼 눌렀을 때

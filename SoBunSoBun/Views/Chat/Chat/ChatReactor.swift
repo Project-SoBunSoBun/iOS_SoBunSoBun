@@ -103,6 +103,7 @@ class ChatReactor: Reactor {
             
         case .sendMessage(let message):
             sendMessage(message: message)
+            
             return Observable.empty()
             
         case .rightMenuButtonTapped:
@@ -374,10 +375,7 @@ class ChatReactor: Reactor {
                     
                     self.logger.critical("채팅 이미지 보내기 실패: \(error.localizedDescription)")
                     
-                    return Observable.concat([
-                        Observable.just(.setError(String(localized: "ErrorSendImage", table: "Chat"))),
-                        Observable.just(.setBottomOpenMenu(false))
-                    ])
+                    return Observable.just(.setError(String(localized: "ErrorSendImage", table: "Chat")))
                 }
         } else {
             return Observable.just(.setError(String(localized: "ErrorSendImage", table: "Chat")))

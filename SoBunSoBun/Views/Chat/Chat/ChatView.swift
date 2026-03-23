@@ -83,7 +83,6 @@ class ChatView: UIViewController {
         sv.backgroundColor = .backgroundWhite
         sv.isLayoutMarginsRelativeArrangement = true
         sv.layoutMargins = .init(top: 16, left: 16, bottom: 16, right: 16)
-        sv.isHidden = true
         
         return sv
     }()
@@ -231,6 +230,19 @@ class ChatView: UIViewController {
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
         }
         
+        sendButton.snp.makeConstraints { make in
+            make.size.equalTo(24)
+        }
+        
+        plusButton.setContentHuggingPriority(.required, for: .horizontal)
+        plusButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        chatTextView.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        chatTextView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        
+        sendButton.setContentHuggingPriority(.required, for: .vertical)
+        sendButton.setContentCompressionResistancePriority(.required, for: .vertical)
+        
         safeareaBottomBackgroundView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(chatStackView.snp.bottom)
@@ -297,6 +309,11 @@ extension ChatView {
         
         // 이미지 전송 버튼
         sendImageButton.rx.tap
+            .do(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                _ = self.chatTextView.textView.resignFirstResponder()
+            })
             .map { Reactor.Action.showImagePicker }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -310,6 +327,8 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                
+                _ = self.chatTextView.textView.resignFirstResponder()
                 
                 let alert = CustomAlertView(
                     title: String(localized: "SendInvitationAlertTitle", table: "Chat"),
@@ -340,6 +359,8 @@ extension ChatView {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
+                _ = self.chatTextView.textView.resignFirstResponder()
+                
                 let alert = CustomAlertView(
                     title: String(localized: "SendSettlementConfirmAlertTitle", table: "Chat"),
                     subTitle: String(localized: "SendSettlementConfirmAlertSubTitle", table: "Chat"),
@@ -355,10 +376,6 @@ extension ChatView {
                     }
                 }
                 
-                alert.onCancelTapped = {
-                    
-                }
-                
                 alert.show(on: self)
             })
             .disposed(by: disposeBag)
@@ -372,6 +389,8 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                
+                _ = self.chatTextView.textView.resignFirstResponder()
                 
                 let sheetView = PostDetailView(
                     postId: model.data.groupPostId,
@@ -397,6 +416,8 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                
+                _ = self.chatTextView.textView.resignFirstResponder()
                 
                 if let settlementId = model.data.settlementId {
                     self.navigationController?.pushViewController(SettlementConfirmView(settlementId: settlementId), animated: true)
@@ -502,9 +523,6 @@ extension ChatView {
                     members: model.data.members
                 )
                 rightMenuView?.willLeave = willLeave
-                
-                // 하단 메뉴 설정
-                chatStackView.isHidden = false
                 
                 bottomMenuStackView.arrangedSubviews.forEach {
                     self.bottomMenuStackView.removeArrangedSubview($0)
