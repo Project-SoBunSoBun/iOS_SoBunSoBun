@@ -44,13 +44,6 @@ final class DeepLinkManager {
                     nav.pushViewController(vc, animated: true)
                 }
                 
-            case "profile_managable": // 프로필 차단 및 신고 가능
-                if let userIdString = url.pathComponents.last,
-                   let userId = Int(userIdString) {
-                    let vc = ProfileManagableView(userId: userId)
-                    nav.pushViewController(vc, animated: true)
-                }
-                
             case "settlement": // 정산
                 if let settlementIdString = url.pathComponents.last,
                    let settlementId = Int(settlementIdString) {

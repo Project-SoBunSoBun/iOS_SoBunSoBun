@@ -8,7 +8,6 @@
 import UIKit
 import SnapKit
 import RxSwift
-import RxGesture
 import OSLog
 
 class ChatMemberCellView: UIStackView {
@@ -16,14 +15,13 @@ class ChatMemberCellView: UIStackView {
         super.init(frame: frame)
         
         configureUI(isMe: isMe, model: model)
-        bind(model: model)
     }
     
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let disposeBag = DisposeBag()
+    let disposeBag = DisposeBag()
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
@@ -97,17 +95,5 @@ class ChatMemberCellView: UIStackView {
         attributes[.foregroundColor] = UIColor.neutral900
         
         nicknameLabel.attributedText = NSAttributedString(string: model.nickname ?? String(localized: "Unknown", table: "Common"), attributes: attributes)
-    }
-}
-
-extension ChatMemberCellView {
-    private func bind(model: ChatRoomDetailMemberModel) {
-        self.rx
-            .tapGesture()
-            .when(.recognized)
-            .subscribe(onNext: { _ in
-                DeepLinkManager.shared.handle(url: URL(string: "sobunsobun://profile_managable/\(model.userId)")!)
-            })
-            .disposed(by: disposeBag)
     }
 }

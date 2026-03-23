@@ -133,14 +133,6 @@ class HomeNetworkManager {
         .map { _ in () }
     }
     
-    // 게시글 신고
-    func reportPost(id: Int) -> Single<Void> {
-        return authProvider.rx.request(
-            MultiTarget(HomeAPIs.reportPost(id: id))
-        )
-        .map { _ in () }
-    }
-    
     // 게시글 삭제
     func deletePost(id: Int) -> Single<Void> {
         return authProvider.rx.request(
@@ -169,14 +161,6 @@ class HomeNetworkManager {
     func deletePostComment(id: Int) -> Single<Void> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.deletePostComment(id: id))
-        )
-        .map { _ in () }
-    }
-    
-    // 댓글 신고
-    func reportPostComment(id: Int) -> Single<Void> {
-        return authProvider.rx.request(
-            MultiTarget(HomeAPIs.reportPostComment(id: id))
         )
         .map { _ in () }
     }

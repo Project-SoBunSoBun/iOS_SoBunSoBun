@@ -32,8 +32,8 @@ class MyProfileReactor: Reactor {
     }
     
     enum Mutation {
-        case setShouldPushToSettingView
-        case setShouldPushToEditProfileView
+        case setShouldPushSettingView
+        case setShouldPushEditProfileView
         case setMyUserInfo(MyProfileResponseDataModel?)
         case setTab(Int)
         case setPosts([PostModel]) // 게시글 설정
@@ -42,7 +42,7 @@ class MyProfileReactor: Reactor {
         case setLoading(Bool)
         case setRefreshing(Bool)
         case setHasMore(Bool) // 페이지네이션 추가 가능 여부 설정
-        case setShouldPushToPostDetailView(PostModel)
+        case setShouldPushPostDetailView(PostModel)
         case setErrorMessage(String)
     }
     
@@ -54,9 +54,9 @@ class MyProfileReactor: Reactor {
         var isLoading: Bool = false
         var hasMore: Bool = true // 페이지네이션 추가 가능 여부
         var isRefreshing: Bool = false
-        @Pulse var shouldPushToSettingView: Void?
-        @Pulse var shouldPushToEditProfileView: Void?
-        @Pulse var shouldPushToPostDetailView: PostModel?
+        @Pulse var shouldPushSettingView: Void?
+        @Pulse var shouldPushEditProfileView: Void?
+        @Pulse var shouldPushPostDetailView: PostModel?
         @Pulse var errorMessage: String?
     }
     
@@ -69,10 +69,10 @@ class MyProfileReactor: Reactor {
             ])
             
         case .settingButtonTapped:
-            return Observable.just(.setShouldPushToSettingView)
+            return Observable.just(.setShouldPushSettingView)
             
         case .editProfileButtonTapped:
-            return Observable.just(.setShouldPushToEditProfileView)
+            return Observable.just(.setShouldPushEditProfileView)
             
         case .tabSelected(let index):
             return Observable.concat([
@@ -103,7 +103,7 @@ class MyProfileReactor: Reactor {
             ])
             
         case .postTapped(let model):
-            return Observable.just(.setShouldPushToPostDetailView(model))
+            return Observable.just(.setShouldPushPostDetailView(model))
         }
     }
     
@@ -114,11 +114,11 @@ class MyProfileReactor: Reactor {
         case .setMyUserInfo(let model):
             newState.userInfo = model
             
-        case .setShouldPushToSettingView:
-            newState.shouldPushToSettingView = ()
+        case .setShouldPushSettingView:
+            newState.shouldPushSettingView = ()
             
-        case .setShouldPushToEditProfileView:
-            newState.shouldPushToEditProfileView = ()
+        case .setShouldPushEditProfileView:
+            newState.shouldPushEditProfileView = ()
             
         case .setTab(let index):
             newState.tabIndex = index
@@ -141,8 +141,8 @@ class MyProfileReactor: Reactor {
         case .setHasMore(let hasMore):
             newState.hasMore = hasMore
             
-        case .setShouldPushToPostDetailView(let model):
-            newState.shouldPushToPostDetailView = model
+        case .setShouldPushPostDetailView(let model):
+            newState.shouldPushPostDetailView = model
             
         case .setErrorMessage(let message):
             newState.errorMessage = message

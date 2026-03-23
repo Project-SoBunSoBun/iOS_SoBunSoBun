@@ -78,13 +78,24 @@
         }
       }
     },
-    "ReportComment" : {
+    "ReportConfirmAlertSubTitle" : {
       "extractionState" : "manual",
       "localizations" : {
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "댓글 신고하기"
+            "value" : "신고하시겠습니까?"
+          }
+        }
+      }
+    },
+    "ReportDoneAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신고를 완료했습니다."
           }
         }
       }
@@ -100,6 +111,17 @@
         }
       }
     },
+    "ReportPostComment" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "댓글 신고하기"
+          }
+        }
+      }
+    },
     "ReportUser" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -107,17 +129,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "사용자 신고하기"
-          }
-        }
-      }
-    },
-    "ReportUserDoneAlertSubTitle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사용자 신고를 완료했습니다."
           }
         }
       }

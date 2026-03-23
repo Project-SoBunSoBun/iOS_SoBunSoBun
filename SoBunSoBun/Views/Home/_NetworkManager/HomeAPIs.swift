@@ -28,12 +28,10 @@ enum HomeAPIs {
     case getPostComments(id: Int)
     case savePost(id: Int)
     case cancelSavePost(id: Int)
-    case reportPost(id: Int)
     case deletePost(id: Int)
     case createPostComment(postId: Int, content: String)
     case patchPostComment(id: Int, content: String)
     case deletePostComment(id: Int)
-    case reportPostComment(id: Int)
     case createChatRoomId(userId: Int, groupPostId: Int)
     
     // 마이페이지
@@ -102,17 +100,11 @@ extension HomeAPIs: TargetType {
         case .savePost, .cancelSavePost:
             return "/api/v1/posts/saved"
             
-        case .reportPost:
-            return "/api/v1/posts/reports"
-            
         case .createPostComment(let postId, _):
             return "/api/posts/\(postId)/comments"
             
         case .patchPostComment(let id, _), .deletePostComment(let id):
             return "/api/comments/\(id)"
-            
-        case .reportPostComment:
-            return "/api/v1/comments/reports"
             
         case .createChatRoomId:
             return "/api/v1/chat/rooms/private"
@@ -152,9 +144,7 @@ extension HomeAPIs: TargetType {
         case // POST
                 .registerPost,
                 .savePost,
-                .reportPost,
                 .createPostComment,
-                .reportPostComment,
                 .createChatRoomId:
             return .post
             
@@ -228,11 +218,6 @@ extension HomeAPIs: TargetType {
             
             return .requestParameters(parameters: parameter, encoding: URLEncoding.queryString)
             
-        case .reportPost(let id):
-            let model: ReportPostModel = ReportPostModel(postId: id, reason: "OTHER", description: "유저가 신고한 게시글입니다.")
-            
-            return .requestJSONEncodable(model)
-            
         case .deletePost:
             return .requestPlain
             
@@ -248,11 +233,6 @@ extension HomeAPIs: TargetType {
             
         case .deletePostComment:
             return .requestPlain
-            
-        case .reportPostComment(let id):
-            let model: ReportCommentModel = ReportCommentModel(commentId: id, reason: "OTHER", description: "유저가 신고한 댓글입니다.")
-            
-            return .requestJSONEncodable(model)
             
         case .createChatRoomId(let userId, let groupPostId):
             let body: [String: Int] = ["otherUserId": userId, "groupPostId": groupPostId]

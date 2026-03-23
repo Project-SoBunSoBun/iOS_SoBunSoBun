@@ -40,8 +40,6 @@ class PostDetailReactor: Reactor {
         case shareButtonTapped
         case saveButtonTapped
         case menuButtonTapped(Bool)
-        case reportPostButtonTapped
-        case reportPost
         case deletePostButtonTapped
         case deletePost
         
@@ -54,9 +52,6 @@ class PostDetailReactor: Reactor {
         
         case replyButtonTapped(String)
         
-        case reportCommentButtonTapped
-        case reportComment
-        
         case editButtonTapped
         case editCommentTapped(String)
         case editCancelTapped
@@ -66,6 +61,10 @@ class PostDetailReactor: Reactor {
         
         // 채팅
         case chatButtonTapped
+        
+        // 신고
+        case reportPostButtonTapped
+        case reportCommentButtonTapped
     }
     
     enum Mutation {
@@ -78,8 +77,6 @@ class PostDetailReactor: Reactor {
         case setShouldShowShare
         case setIsSaved(Bool)
         case setIsMenuOpen(Bool)
-        case setShouldShowReportPostAlert
-        case setShouldShowReportPostDoneAlert
         case setShouldShowDeletePostAlert
         case setShouldShowDeletePostDoneAlert
         
@@ -88,9 +85,6 @@ class PostDetailReactor: Reactor {
         case setSelectedCommentModel(CommentModel)
         
         case setTextViewText(String)
-        
-        case setShouldShowReportCommentAlert
-        case setShouldShowReportCommentDoneAlert
         
         case setIsEditMode(Bool)
         
@@ -102,6 +96,9 @@ class PostDetailReactor: Reactor {
         case setRefreshing(Bool)
         
         case setShowRegisterSuccessView
+        
+        case setShouldPushReportPostView
+        case setShouldPushReportPostCommentView
         
         case setErrorMessage(String)
     }
@@ -124,16 +121,10 @@ class PostDetailReactor: Reactor {
         
         @Pulse var shouldShowShare: Void?
         
-        @Pulse var shouldShowReportPostAlert: Void?
-        @Pulse var shouldShowReportPostDoneAlert: Void?
-        
         @Pulse var shouldShowDeletePostAlert: Void?
         @Pulse var shouldShowDeletePostDoneAlert: Void?
         
         var isCommentMenuOpen: Bool = false
-        
-        @Pulse var shouldShowReportCommentAlert: Void?
-        @Pulse var shouldShowReportCommentDoneAlert: Void?
         
         @Pulse var shouldShowDeleteCommentAlert: Void?
         @Pulse var shouldShowDeleteCommentDoneAlert: Void?
@@ -143,6 +134,9 @@ class PostDetailReactor: Reactor {
         var isRefreshing: Bool = false
         
         @Pulse var shouldShowRegisterSuccessView: Void?
+        
+        @Pulse var shouldPushReportPostView: Void?
+        @Pulse var shouldPushReportPostCommentView: Void?
         
         @Pulse var errorMessage: String?
     }
@@ -184,12 +178,6 @@ class PostDetailReactor: Reactor {
         case .commentMenuButtonTapped(let isMenuOpen):
             return Observable.just(.setIsCommentMenuOpen(isMenuOpen))
             
-        case .reportPostButtonTapped:
-            return Observable.just(.setShouldShowReportPostAlert)
-            
-        case .reportPost:
-            return reportPost()
-            
         case .deletePostButtonTapped:
             return Observable.just(.setShouldShowDeletePostAlert)
             
@@ -210,19 +198,6 @@ class PostDetailReactor: Reactor {
                 Observable.just(.setIsEditMode(false)),
                 Observable.just(.setTextViewText(string))
             ])
-            
-        case .reportCommentButtonTapped:
-            return Observable.concat([
-                Observable.just(.setIsEditMode(false)),
-                Observable.just(.setShouldShowReportCommentAlert)
-            ])
-            
-        case .reportComment:
-            if let commentModel = currentState.selectedCommentModel {
-                return reportComment(commentId: commentModel.id)
-            } else {
-                return Observable.empty()
-            }
             
         case .editButtonTapped:
             return Observable.just(.setIsEditMode(true))
@@ -253,6 +228,12 @@ class PostDetailReactor: Reactor {
                 Observable.just(.setIsEditMode(false)),
                 createChatRoom()
             ])
+            
+        case .reportPostButtonTapped:
+            return Observable.just(.setShouldPushReportPostView)
+            
+        case .reportCommentButtonTapped:
+            return Observable.just(.setShouldPushReportPostCommentView)
         }
     }
     
@@ -284,12 +265,6 @@ class PostDetailReactor: Reactor {
         case .setIsMenuOpen(let isMenuOpen):
             newState.isMenuOpen = isMenuOpen
             
-        case .setShouldShowReportPostAlert:
-            newState.shouldShowReportPostAlert = ()
-            
-        case .setShouldShowReportPostDoneAlert:
-            newState.shouldShowReportPostDoneAlert = ()
-            
         case .setShouldShowDeletePostAlert:
             newState.shouldShowDeletePostAlert = ()
             
@@ -308,12 +283,6 @@ class PostDetailReactor: Reactor {
         case .setTextViewText(let string):
             newState.textViewText = string
             
-        case .setShouldShowReportCommentAlert:
-            newState.shouldShowReportCommentAlert = ()
-            
-        case .setShouldShowReportCommentDoneAlert:
-            newState.shouldShowReportCommentDoneAlert = ()
-            
         case .setShouldShowDeleteCommentAlert:
             newState.shouldShowDeleteCommentAlert = ()
             
@@ -328,6 +297,12 @@ class PostDetailReactor: Reactor {
             
         case .setShowRegisterSuccessView:
             newState.shouldShowRegisterSuccessView = ()
+            
+        case .setShouldPushReportPostView:
+            newState.shouldPushReportPostView = ()
+            
+        case .setShouldPushReportPostCommentView:
+            newState.shouldPushReportPostCommentView = ()
             
         case .setErrorMessage(let message):
             newState.errorMessage = message
@@ -459,23 +434,6 @@ class PostDetailReactor: Reactor {
             }
     }
     
-    // 게시글 신고
-    private func reportPost() -> Observable<Mutation> {
-        return networkManager.reportPost(id: postId)
-            .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                return Observable.just(.setShouldShowReportPostDoneAlert)
-            }
-            .catch { [weak self] error in
-                guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
-                }
-                
-                logger.critical("게시글 신고 실패: \(error.localizedDescription)")
-                return Observable.just(.setErrorMessage(String(localized: "ErrorAlreadyReportedOrNot", table: "Home")))
-            }
-    }
-    
     // 게시글 삭제
     private func deletePost() -> Observable<Mutation> {
         return networkManager.deletePost(id: postId)
@@ -578,27 +536,6 @@ class PostDetailReactor: Reactor {
                 
                 logger.critical("댓글 삭제 실패: \(error.localizedDescription)")
                 return Observable.just(.setErrorMessage(errorMessage))
-            }
-    }
-    
-    // 댓글 신고
-    private func reportComment(commentId: Int) -> Observable<Mutation> {
-        guard let commentModel = currentState.selectedCommentModel else {
-            return Observable.empty()
-        }
-        
-        return networkManager.reportPostComment(id: commentModel.id)
-            .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                return Observable.just(.setShouldShowReportCommentDoneAlert)
-            }
-            .catch { [weak self] error in
-                guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
-                }
-                
-                logger.critical("댓글 신고 실패: \(error.localizedDescription)")
-                return Observable.just(.setErrorMessage(String(localized: "ErrorAlreadyReportedOrNot", table: "Home")))
             }
     }
     

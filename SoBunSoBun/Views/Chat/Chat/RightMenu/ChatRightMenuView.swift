@@ -199,9 +199,19 @@ class ChatRightMenuView: UIViewController {
             .enumerated()
             .map { index, model in
                 let isMe: String = index == 0 ? "(\(String(localized: "Me", table: "Chat"))) " : ""
+                let cellView: ChatMemberCellView = ChatMemberCellView(isMe: isMe, model: model)
                 
-                // TODO: 프로필 연결 기능 추가
-                return ChatMemberCellView(isMe: isMe, model: model)
+                cellView.rx
+                    .tapGesture()
+                    .when(.recognized)
+                    .subscribe(onNext: { [weak self] _ in
+                        guard let self = self else { return }
+                        
+                        self.navigationController?.pushViewController(ProfileManagableView(userId: model.userId, groupPostId: groupPostId), animated: true)
+                    })
+                    .disposed(by: cellView.disposeBag)
+                
+                return cellView
             }
         
         memberCountCard.update(cells: [memberCountLabel] + memberCells)
