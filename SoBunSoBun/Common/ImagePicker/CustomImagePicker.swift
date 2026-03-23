@@ -175,11 +175,14 @@ extension CustomImagePicker: UIImagePickerControllerDelegate, UINavigationContro
         
         let vc = ImagePickerConfirmView(image: image)
         
-        vc.onConfirm = { [weak self] in
-            guard let self = self else { return }
-            
-            imageSelected.onNext(image)
-        }
+        vc.onConfirm
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                imageSelected.onNext(image)
+                
+            })
+            .disposed(by: vc.disposeBag)
         
         viewController.present(vc, animated: true)
     }

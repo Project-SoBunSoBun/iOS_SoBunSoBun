@@ -8,9 +8,10 @@
 import UIKit
 import SnapKit
 import RxSwift
+import RxCocoa
 
 class ImagePickerConfirmView: UIViewController {
-    var onConfirm: (() -> Void)?
+    let onConfirm = PublishSubject<Void>()
     
     private let image: UIImage
     
@@ -26,7 +27,7 @@ class ImagePickerConfirmView: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let disposeBag = DisposeBag()
+    let disposeBag = DisposeBag()
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -97,7 +98,9 @@ extension ImagePickerConfirmView {
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
-                dismiss(animated: true) { self.onConfirm?() }
+                dismiss(animated: true) {
+                    self.onConfirm.onNext(())
+                }
             })
             .disposed(by: disposeBag)
     }
