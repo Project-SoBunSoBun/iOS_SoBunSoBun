@@ -165,7 +165,7 @@ class ProfileManagableReactor: Reactor {
                     if let errorCode = model.errorCode {
                         self.logger.critical("차단 중 오류: \(model.message ?? "")")
                         
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), errorCode)))
+                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)))
                     } else {
                         self.logger.critical("차단 중 오류")
                         
@@ -209,7 +209,7 @@ class ProfileManagableReactor: Reactor {
                     if let errorCode = model.errorCode {
                         self.logger.critical("차단 해제 중 오류: \(model.message ?? "")")
                         
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Common"), errorCode)))
+                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)))
                     } else {
                         self.logger.critical("차단 해제 중 오류")
                         

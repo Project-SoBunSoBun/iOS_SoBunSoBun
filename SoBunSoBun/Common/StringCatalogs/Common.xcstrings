@@ -213,17 +213,6 @@
         }
       }
     },
-    "ErrorMessageWithCode" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.\n(코드: %1$(code)@)"
-          }
-        }
-      }
-    },
     "GoToSetting" : {
       "comment" : "Common",
       "extractionState" : "manual",
