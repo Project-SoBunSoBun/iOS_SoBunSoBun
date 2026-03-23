@@ -227,7 +227,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                self.navigationController?.pushViewController(ReportUserView(userId: userId, groupPostId: groupPostId), animated: true)
+                self.navigationController?.pushViewController(ReportView(target: .user(userId: userId, groupPostId: groupPostId)), animated: true)
             })
             .disposed(by: disposeBag)
         

@@ -1,5 +1,5 @@
 //
-//  ReportUserReactor.swift
+//  ReportReactor.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 3/17/26.
@@ -9,22 +9,20 @@ import Foundation
 import ReactorKit
 import OSLog
 
-class ReportUserReactor: Reactor {
-    private let userId: Int
-    private let groupPostId: Int
+class ReportReactor: Reactor {
+    private let target: ReportTarget
     
-    init(userId: Int, groupPostId: Int) {
-        self.userId = userId
-        self.groupPostId = groupPostId
+    init(target: ReportTarget) {
+        self.target = target
     }
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Profile.ReportUser.Reactor"
+        category: "Report.Reactor"
     )
     
     let initialState = State()
-    let networkManager = ProfileNetworkManager()
+    let networkManager = ReportNetworkManager()
     
     enum Action {
         // 신고 유형 선택시
@@ -37,6 +35,8 @@ class ReportUserReactor: Reactor {
         case agreeCheckBoxTapped(Bool)
         // 신고하기 버튼 선택시
         case reportButtonTapped
+        // 신고
+        case report
     }
     
     enum Mutation {
@@ -48,10 +48,12 @@ class ReportUserReactor: Reactor {
         case setDetail(String)
         // 동의 체크박스 선택시
         case setIsAgree(Bool)
+        // 신고 확인 알림 표시
+        case setShouldShowReportConfirmAlert
         // 로딩 상태
         case setLoading(Bool)
         // 신고하기 전송 성공
-        case setReportCompleted
+        case setShouldShowReportCompletedAlert
         // 에러
         case setErrorMessage(String)
     }
@@ -62,8 +64,10 @@ class ReportUserReactor: Reactor {
         var detailString: String?
         var isAgree: Bool = false
         
+        @Pulse var shouldShowReportConfirmAlert: Void?
+        
         var isLoading: Bool = false
-        @Pulse var reportCompleted: Void?
+        @Pulse var shouldShowReportCompletedAlert: Void?
         @Pulse var errorMessage: String?
         
         // 버튼 활성화 여부
@@ -90,6 +94,9 @@ class ReportUserReactor: Reactor {
             return Observable.just(.setIsAgree(isAgree))
             
         case .reportButtonTapped:
+            return Observable.just(.setShouldShowReportConfirmAlert)
+            
+        case .report:
             return Observable.concat([
                 Observable.just(.setLoading(true)),
                 report(),
@@ -117,8 +124,11 @@ class ReportUserReactor: Reactor {
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
             
-        case .setReportCompleted:
-            newState.reportCompleted = ()
+        case .setShouldShowReportConfirmAlert:
+            newState.shouldShowReportConfirmAlert = ()
+            
+        case .setShouldShowReportCompletedAlert:
+            newState.shouldShowReportCompletedAlert = ()
             
         case .setErrorMessage(let message):
             newState.errorMessage = message
@@ -136,13 +146,25 @@ class ReportUserReactor: Reactor {
         
         let description = currentState.detailString ?? ""
         
-        return networkManager.reportUser(userId: userId, groupPostId: groupPostId, reason: reportType, description: description)
-        .asObservable()
+        let api: Single<PlainResponseModel>
+        
+        switch target {
+        case .user(userId: let userId, groupPostId: let groupPostId):
+            api = networkManager.reportUser(userId: userId, groupPostId: groupPostId, reason: reportType, description: description)
+            
+        case .post(postId: let postId):
+            api = networkManager.reportPost(postId: postId, reason: reportType, description: description)
+            
+        case .comment(commentId: let commentId):
+            api = networkManager.reportPostComment(commentId: commentId, reason: reportType, description: description)
+        }
+        
+        return api.asObservable()
         .flatMap { model -> Observable<Mutation> in
             self.logger.debug("신고 완료")
             
             if model.success {
-                return Observable.just(.setReportCompleted)
+                return Observable.just(.setShouldShowReportCompletedAlert)
             } else {
                 if let errorCode = model.errorCode {
                     

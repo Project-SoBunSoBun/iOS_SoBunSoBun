@@ -133,14 +133,6 @@ class HomeNetworkManager {
         .map { _ in () }
     }
     
-    // 게시글 신고
-    func reportPost(id: Int) -> Single<Void> {
-        return authProvider.rx.request(
-            MultiTarget(HomeAPIs.reportPost(id: id))
-        )
-        .map { _ in () }
-    }
-    
     // 게시글 삭제
     func deletePost(id: Int) -> Single<Void> {
         return authProvider.rx.request(
@@ -173,14 +165,6 @@ class HomeNetworkManager {
         .map { _ in () }
     }
     
-    // 댓글 신고
-    func reportPostComment(id: Int) -> Single<Void> {
-        return authProvider.rx.request(
-            MultiTarget(HomeAPIs.reportPostComment(id: id))
-        )
-        .map { _ in () }
-    }
-    
     // 채팅방 id 조회
     func createChatRoomId(userId: Int, groupPostId: Int) -> Single<CreateChatRoomResponseModel> {
         return authProvider.rx.request(
@@ -188,6 +172,7 @@ class HomeNetworkManager {
         )
         .tryMap(CreateChatRoomResponseModel.self)
     }
+    
     
     // MARK: - 내 프로필
     func getMyProfile(tab: String, page: Int, size: Int) -> Single<MyProfileResponseModel> {

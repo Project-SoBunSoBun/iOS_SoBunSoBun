@@ -809,43 +809,6 @@ extension PostDetailView {
             })
             .disposed(by: disposeBag)
         
-        // 게시글 신고 알림
-        reactor.pulse(\.$shouldShowReportPostAlert)
-            .compactMap { $0 }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                let alert = CustomAlertView(
-                    title: String(localized: "ReportPostTitle", table: "Home"),
-                    primaryTitleKey: String(localized: "Report", table: "Home"),
-                    cancelTitleKey: String(localized: "Cancel", table: "Common")
-                )
-                
-                alert.onPrimaryTapped = {
-                    reactor.action.onNext(.reportPost)
-                }
-                
-                alert.show(on: self)
-            })
-            .disposed(by: disposeBag)
-        
-        // 게시글 신고 완료 알림
-        reactor.pulse(\.$shouldShowReportPostDoneAlert)
-            .compactMap { $0 }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                let alert = CustomAlertView(
-                    title: String(localized: "ReportDoneTitle", table: "Home"),
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
-            })
-            .disposed(by: disposeBag)
-        
         // 게시글 삭제 알림
         reactor.pulse(\.$shouldShowDeletePostAlert)
             .compactMap { $0 }
@@ -899,43 +862,6 @@ extension PostDetailView {
                 
                 tableView.isScrollEnabled = !isOpen
                 commentMenuDropDownView.setOpen(isOpen: isOpen)
-            })
-            .disposed(by: disposeBag)
-        
-        // 댓글 신고 알림
-        reactor.pulse(\.$shouldShowReportCommentAlert)
-            .compactMap { $0 }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                let alert = CustomAlertView(
-                    title: String(localized: "ReportCommentTitle", table: "Home"),
-                    primaryTitleKey: String(localized: "Report", table: "Home"),
-                    cancelTitleKey: String(localized: "Cancel", table: "Common")
-                )
-                
-                alert.onPrimaryTapped = {
-                    self.reactor.action.onNext(.reportComment)
-                }
-                
-                alert.show(on: self)
-            })
-            .disposed(by: disposeBag)
-        
-        // 댓글 신고 완료 알림
-        reactor.pulse(\.$shouldShowReportCommentDoneAlert)
-            .compactMap { $0 }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                let alert = CustomAlertView(
-                    title: String(localized: "ReportDoneTitle", table: "Home"),
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         
@@ -1006,6 +932,27 @@ extension PostDetailView {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                     self.successView.isHidden = true
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldPushReportPostView)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(ReportView(target: .post(postId: postId)), animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.pulse(\.$shouldPushReportPostCommentView)
+            .withLatestFrom(reactor.state.map { $0.selectedCommentModel })
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] commentModel in
+                guard let self = self else { return }
+                
+                self.navigationController?.pushViewController(ReportView(target: .comment(commentId: commentModel.id)), animated: true)
             })
             .disposed(by: disposeBag)
         

@@ -82,19 +82,9 @@ struct CommentModel: Decodable, Equatable {
     let deleted, edited: Bool
 }
 
-struct ReportPostModel: Encodable {
-    let postId: Int
-    let reason, description: String
-}
-
 struct CreateCommentModel: Encodable {
     let content: String
     let parentCommentId: Int
-}
-
-struct ReportCommentModel: Encodable {
-    let commentId: Int
-    let reason, description: String
 }
 
 struct CreateChatRoomResponseModel: Decodable {

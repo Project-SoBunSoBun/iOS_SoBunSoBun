@@ -1,5 +1,5 @@
 //
-//  ReportUserView.swift
+//  ReportView.swift
 //  SoBunSoBun
 //
 //  Created by 김태은 on 3/17/26.
@@ -12,13 +12,17 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class ReportUserView: UIViewController {
-    private let userId: Int
-    private let groupPostId: Int
+enum ReportTarget {
+    case user(userId: Int, groupPostId: Int)
+    case post(postId: Int)
+    case comment(commentId: Int)
+}
+
+class ReportView: UIViewController {
+    private let target: ReportTarget
     
-    init(userId: Int, groupPostId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
-        self.userId = userId
-        self.groupPostId = groupPostId
+    init(target: ReportTarget, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
+        self.target = target
         
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -29,11 +33,11 @@ class ReportUserView: UIViewController {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "Profile.ReportUser.View"
+        category: "Report.View"
     )
     
-    typealias Reactor = ReportUserReactor
-    private lazy var reactor = ReportUserReactor(userId: userId, groupPostId: groupPostId)
+    typealias Reactor = ReportReactor
+    private lazy var reactor = ReportReactor(target: target)
     
     private let disposeBag = DisposeBag()
     
@@ -174,7 +178,7 @@ class ReportUserView: UIViewController {
     }
 }
 
-extension ReportUserView {
+extension ReportView {
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -247,16 +251,34 @@ extension ReportUserView {
             .bind(to: reportButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
+        // 신고 확인
+        reactor.pulse(\.$shouldShowReportConfirmAlert)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.logger.debug("신고 확인 알림 표시")
+                showReportConfirmAlert()
+            })
+            .disposed(by: disposeBag)
+        
         // 신고 전송 완료
-        reactor.pulse(\.$reportCompleted)
+        reactor.pulse(\.$shouldShowReportCompletedAlert)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
                 self.logger.debug("신고 완료 알림 표시")
-                reportDoneAlert()
+                showReportDoneAlert()
             })
+            .disposed(by: disposeBag)
+        
+        // 로딩 상태
+        reactor.state.map { !$0.isLoading }
+            .distinctUntilChanged()
+            .bind(to: loadingView.rx.isHidden)
             .disposed(by: disposeBag)
         
         // 에러 처리
@@ -269,18 +291,27 @@ extension ReportUserView {
                 self.errorAlert(description: errorMessage)
             })
             .disposed(by: disposeBag)
-        
-        // 로딩 상태
-        reactor.state.map { !$0.isLoading }
-            .distinctUntilChanged()
-            .bind(to: loadingView.rx.isHidden)
-            .disposed(by: disposeBag)
     }
     
-    private func reportDoneAlert() {
+    private func showReportConfirmAlert() {
         let alert = CustomAlertView(
             title: String(localized: "Notice", table: "Common"),
-            subTitle: String(localized: "ReportUserDoneAlertSubTitle", table: "Report"),
+            subTitle: String(localized: "ReportConfirmAlertSubTitle", table: "Report"),
+            primaryTitleKey: String(localized: "Report", table: "Report"),
+            cancelTitleKey: String(localized: "Cancel", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.reactor.action.onNext(.report)
+        }
+        
+        alert.show(on: self)
+    }
+    
+    private func showReportDoneAlert() {
+        let alert = CustomAlertView(
+            title: String(localized: "Notice", table: "Common"),
+            subTitle: String(localized: "ReportDoneAlertSubTitle", table: "Report"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         

@@ -277,7 +277,7 @@ extension MyProfileView {
             .bind(to: refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         
-        reactor.pulse(\.$shouldPushToSettingView)
+        reactor.pulse(\.$shouldPushSettingView)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
@@ -286,7 +286,7 @@ extension MyProfileView {
             })
             .disposed(by: disposeBag)
         
-        reactor.pulse(\.$shouldPushToEditProfileView)
+        reactor.pulse(\.$shouldPushEditProfileView)
             .withLatestFrom(
                 reactor.state.map { $0.userInfo }
                     .distinctUntilChanged()
@@ -303,7 +303,7 @@ extension MyProfileView {
             })
             .disposed(by: disposeBag)
         
-        reactor.pulse(\.$shouldPushToPostDetailView)
+        reactor.pulse(\.$shouldPushPostDetailView)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
