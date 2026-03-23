@@ -297,6 +297,11 @@ extension ChatView {
         
         // 이미지 전송 버튼
         sendImageButton.rx.tap
+            .do(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                _ = self.chatTextView.textView.resignFirstResponder()
+            })
             .map { Reactor.Action.showImagePicker }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -310,6 +315,8 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                
+                _ = self.chatTextView.textView.resignFirstResponder()
                 
                 let alert = CustomAlertView(
                     title: String(localized: "SendInvitationAlertTitle", table: "Chat"),
@@ -340,6 +347,8 @@ extension ChatView {
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
                 
+                _ = self.chatTextView.textView.resignFirstResponder()
+                
                 let alert = CustomAlertView(
                     title: String(localized: "SendSettlementConfirmAlertTitle", table: "Chat"),
                     subTitle: String(localized: "SendSettlementConfirmAlertSubTitle", table: "Chat"),
@@ -355,10 +364,6 @@ extension ChatView {
                     }
                 }
                 
-                alert.onCancelTapped = {
-                    
-                }
-                
                 alert.show(on: self)
             })
             .disposed(by: disposeBag)
@@ -372,6 +377,8 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                
+                _ = self.chatTextView.textView.resignFirstResponder()
                 
                 let sheetView = PostDetailView(
                     postId: model.data.groupPostId,
@@ -397,6 +404,8 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                
+                _ = self.chatTextView.textView.resignFirstResponder()
                 
                 if let settlementId = model.data.settlementId {
                     self.navigationController?.pushViewController(SettlementConfirmView(settlementId: settlementId), animated: true)
