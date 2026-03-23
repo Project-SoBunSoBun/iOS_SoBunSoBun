@@ -180,7 +180,6 @@ extension CustomImagePicker: UIImagePickerControllerDelegate, UINavigationContro
                 guard let self = self else { return }
                 
                 imageSelected.onNext(image)
-                
             })
             .disposed(by: vc.disposeBag)
         
