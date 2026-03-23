@@ -234,7 +234,7 @@ class BugReportView: UIViewController {
         // 신고하기 버튼
         reportButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(agreeCheckBox.snp.bottom).offset(16)
+            make.top.equalTo(agreeCheckBox.snp.bottom).offset(36)
             make.bottom.equalToSuperview()
         }
         

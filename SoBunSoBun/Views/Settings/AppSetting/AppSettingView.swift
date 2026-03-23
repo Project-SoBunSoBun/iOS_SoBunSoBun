@@ -80,7 +80,7 @@ class AppSettingView: UIViewController {
     private let terms = SettingCardCell(title: String(localized: "Terms", table: "Settings"), type: .button)
     
     // 현재 버전
-    private let currentVersion = SettingCardCell(title: String(localized: "CurrentVersion", table: "Settings"), subTitle: "25.1.0" ,type: .text)
+    private let currentVersion = SettingCardCell(title: String(localized: "CurrentVersion", table: "Settings"), subTitle: "1.0.0" ,type: .text)
     
     // 기타 세팅 카드
     private lazy var etcSettingCard = SettingCard(cells: [announcement, customerSupport, terms, currentVersion])
