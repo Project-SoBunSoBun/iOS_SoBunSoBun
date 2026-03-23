@@ -45,8 +45,18 @@ class ReportView: UIViewController {
     // 상단 네비게이션 바
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
-        tnb.title = String(localized: "ReportUser", table: "Report")
         tnb.parentViewController = self
+        
+        switch target {
+        case .user:
+            tnb.title = String(localized: "ReportUser", table: "Report")
+            
+        case .post:
+            tnb.title = String(localized: "ReportPost", table: "Report")
+            
+        case .comment:
+            tnb.title = String(localized: "ReportPostComment", table: "Report")
+        }
         
         return tnb
     }()
