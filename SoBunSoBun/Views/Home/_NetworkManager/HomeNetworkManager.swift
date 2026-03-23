@@ -173,7 +173,6 @@ class HomeNetworkManager {
         .tryMap(CreateChatRoomResponseModel.self)
     }
     
-    
     // MARK: - 내 프로필
     func getMyProfile(tab: String, page: Int, size: Int) -> Single<MyProfileResponseModel> {
         return authProvider.rx.request(
