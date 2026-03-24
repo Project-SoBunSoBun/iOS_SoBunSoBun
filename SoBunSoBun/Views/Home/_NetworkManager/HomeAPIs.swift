@@ -40,6 +40,7 @@ enum HomeAPIs {
     // 알림
     case getNotifications(page: Int, size: Int)
     case readNotification(id: Int)
+    case readAllNotifications
 }
 
 extension HomeAPIs: TargetType {
@@ -116,6 +117,9 @@ extension HomeAPIs: TargetType {
             
         case .readNotification(let id):
             return "/api/me/notifications/\(id)/read"
+            
+        case .readAllNotifications:
+            return "/api/me/notifications/read-all"
         }
     }
     
@@ -146,7 +150,8 @@ extension HomeAPIs: TargetType {
         case // PATCH
                 .patchLocationVerification,
                 .patchPostComment,
-                .readNotification:
+                .readNotification,
+                .readAllNotifications:
             return .patch
             
         case // DELETE
@@ -245,6 +250,9 @@ extension HomeAPIs: TargetType {
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
             
         case .readNotification:
+            return .requestPlain
+            
+        case .readAllNotifications:
             return .requestPlain
         }
     }

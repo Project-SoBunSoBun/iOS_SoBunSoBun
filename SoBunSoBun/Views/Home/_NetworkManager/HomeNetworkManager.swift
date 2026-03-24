@@ -195,4 +195,11 @@ class HomeNetworkManager {
         )
         .tryMap(PlainResponseModel.self)
     }
+    
+    func readAllNotifications() -> Single<PlainResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(HomeAPIs.readAllNotifications)
+        )
+        .tryMap(PlainResponseModel.self)
+    }
 }

@@ -67,8 +67,13 @@ class NotificationsView: UIViewController {
         super.viewWillAppear(animated)
         
         reactor.action.onNext(.viewWillAppear)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         
         if isMovingFromParent {
+            reactor.action.onNext(.viewWillDisappear)
             NotificationCenter.default.post(name: .didPopNotificationsView, object: nil)
         }
     }
