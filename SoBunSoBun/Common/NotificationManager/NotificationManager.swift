@@ -96,4 +96,13 @@ final class NotificationManager: NSObject {
                 .disposed(by: self.disposeBag)
         }
     }
+    
+    func updateBadgeCount(_ count: Int) {
+        UNUserNotificationCenter.current().setBadgeCount(count)
+    }
+
+    func addBadgeCount(_ count: Int) {
+        let current = UIApplication.shared.applicationIconBadgeNumber
+        updateBadgeCount(current + count)
+    }
 }

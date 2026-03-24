@@ -182,13 +182,6 @@ class HomeNetworkManager {
     }
     
     // MARK: - 알림
-    func getUnreadNotificationCount() -> Single<UnreadNotificationCountResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(HomeAPIs.getUnreadNotificationCount)
-        )
-        .tryMap(UnreadNotificationCountResponseModel.self)
-    }
-    
     func getNotifications(page: Int, size: Int) -> Single<NotificationResponseModel> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.getNotifications(page: page, size: size))

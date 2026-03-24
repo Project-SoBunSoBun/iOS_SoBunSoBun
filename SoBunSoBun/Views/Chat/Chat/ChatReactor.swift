@@ -19,7 +19,7 @@ class ChatReactor: Reactor {
     }
     
     deinit {
-        _ = disappearChatRoom()
+        webSocketManager.disconnect()
     }
     
     private let logger = Logger(
@@ -51,7 +51,8 @@ class ChatReactor: Reactor {
         case acceptGroupChatRoom(Int) // 그룹 채팅방 초대 수락(개인 채팅 전용)
         case sendSettlementCard(Int) // 정산서 보내기
         case leaveChatRoom // 채팅방 나가기
-        case viewDidDisappear // 채팅방 navigate pop
+        case readLastChat // 마지막 채팅 읽기
+        case disconnectChatRoom // 채팅방 navigate pop
     }
     
     enum Mutation {
@@ -139,8 +140,17 @@ class ChatReactor: Reactor {
         case .leaveChatRoom:
             return leaveChatRoom()
             
-        case .viewDidDisappear:
-            return disappearChatRoom()
+        case .readLastChat:
+            if let latestMessageId = currentState.messages.first?.id {
+                webSocketManager.read(lastMessageId: latestMessageId)
+            }
+            
+            return Observable.empty()
+            
+        case .disconnectChatRoom:
+            webSocketManager.disconnect()
+            
+            return Observable.empty()
         }
     }
     
@@ -471,16 +481,5 @@ class ChatReactor: Reactor {
                 
                 return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
             }
-    }
-    
-    // 채팅방 navigate pop
-    private func disappearChatRoom() -> Observable<Mutation> {
-        if let latestMessageId = currentState.messages.first?.id {
-            webSocketManager.read(lastMessageId: latestMessageId)
-        }
-        
-        webSocketManager.disconnect()
-        
-        return Observable.empty()
     }
 }

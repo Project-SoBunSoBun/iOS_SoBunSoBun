@@ -9,6 +9,7 @@ import Foundation
 import Moya
 
 enum NavigationTabAPIs {
+    case getUnreadNotificationCount
     case getChatRoomList
 }
 
@@ -24,6 +25,9 @@ extension NavigationTabAPIs: TargetType {
     
     var path: String {
         switch self {
+        case .getUnreadNotificationCount:
+            return "/api/me/notifications/unread-count"
+            
         case .getChatRoomList:
             return "/api/v1/chat/rooms/list"
         }
@@ -32,6 +36,7 @@ extension NavigationTabAPIs: TargetType {
     var method: Moya.Method {
         switch self {
         case // GET
+                .getUnreadNotificationCount,
                 .getChatRoomList:
             return .get
         }
@@ -39,6 +44,9 @@ extension NavigationTabAPIs: TargetType {
     
     var task: Moya.Task {
         switch self {
+        case .getUnreadNotificationCount:
+            return .requestPlain
+            
         case .getChatRoomList:
             return .requestPlain
         }

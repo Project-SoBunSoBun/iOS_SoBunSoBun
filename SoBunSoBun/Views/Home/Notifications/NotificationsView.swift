@@ -67,6 +67,10 @@ class NotificationsView: UIViewController {
         super.viewWillAppear(animated)
         
         reactor.action.onNext(.viewWillAppear)
+        
+        if isMovingFromParent {
+            NotificationCenter.default.post(name: .didPopNotificationsView, object: nil)
+        }
     }
     
     // MARK: - 레이아웃 설정

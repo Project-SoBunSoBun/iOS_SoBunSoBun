@@ -14,7 +14,7 @@ import ReactorKit
 
 class NavigationTabView: UIViewController {
     typealias Reactor = NavigationTabReactor
-    private let reactor = NavigationTabReactor()
+    let reactor = NavigationTabReactor()
     private let disposeBag = DisposeBag()
     
     private let homeView = HomeView()
@@ -56,6 +56,12 @@ class NavigationTabView: UIViewController {
         bind(reactor: reactor)
         
         showViewController(index: 0)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        reactor.action.onNext(.getUnreadNotificationCount)
     }
     
     // MARK: - 레이아웃 설정
@@ -123,9 +129,8 @@ extension NavigationTabView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        NotificationCenter.default.rx
-            .notification(.init("RefreshChatRoomList"))
-            .map { _ in Reactor.Action.getChatRoomListData }
+        NotificationCenter.default.rx.notification(.didPopNotificationsView)
+            .map { _ in Reactor.Action.getUnreadNotificationCount }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
@@ -142,6 +147,12 @@ extension NavigationTabView {
                 // BottomNavigationBar 컴포넌트 상태 업데이트
                 bottomNavigationBar.updateSelectedIndex(index: index)
             })
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.unreadNotificationCount }
+            .distinctUntilChanged()
+            .observe(on: MainScheduler.instance)
+            .bind(to: homeView.unreadNotificationCount)
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.chatRoomList }
@@ -201,15 +212,6 @@ extension NavigationTabView {
     }
 }
 
-// 미리보기
-#if DEBUG
-import SwiftUI
-
-struct NavigationTabViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            NavigationTabView()
-        }
-    }
+extension Notification.Name {
+    static let didPopNotificationsView = Notification.Name("didPopNotificationsView")
 }
-#endif

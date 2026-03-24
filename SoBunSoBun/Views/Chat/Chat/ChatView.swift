@@ -16,7 +16,7 @@ class ChatView: UIViewController {
     private let chatRoomId: Int
     
     typealias Reactor = ChatReactor
-    private lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
+    lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
     
     private let disposeBag = DisposeBag()
     
@@ -209,7 +209,8 @@ class ChatView: UIViewController {
         super.viewDidDisappear(animated)
         
         chatTextView.textView.inputView = nil
-        reactor.action.onNext(.viewDidDisappear)
+        reactor.action.onNext(.readLastChat)
+        reactor.action.onNext(.disconnectChatRoom)
     }
     
     // MARK: - 레이아웃 설정

@@ -38,7 +38,6 @@ enum HomeAPIs {
     case getMyProfile(tab: String, page: Int, size: Int)
     
     // 알림
-    case getUnreadNotificationCount
     case getNotifications(page: Int, size: Int)
     case readNotification(id: Int)
 }
@@ -112,9 +111,6 @@ extension HomeAPIs: TargetType {
         case .getMyProfile:
             return "/api/v1/users/me/profile"
             
-        case .getUnreadNotificationCount:
-            return "/api/me/notifications/unread-count"
-            
         case .getNotifications:
             return "/api/me/notifications"
             
@@ -137,7 +133,6 @@ extension HomeAPIs: TargetType {
                 .getPostCommentsCount,
                 .getPostComments,
                 .getMyProfile,
-                .getUnreadNotificationCount,
                 .getNotifications:
             return .get
             
@@ -243,9 +238,6 @@ extension HomeAPIs: TargetType {
             let parameters = MyProfileRequestModel(tab: tab, page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
-            
-        case .getUnreadNotificationCount:
-            return .requestPlain
             
         case .getNotifications(let page, let size):
             let parameters = PagenationRequestModel(page: page, size: size)
