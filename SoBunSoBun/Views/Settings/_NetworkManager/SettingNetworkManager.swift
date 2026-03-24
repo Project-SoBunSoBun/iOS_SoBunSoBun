@@ -12,6 +12,7 @@ import RxSwift
 import UIKit
 
 class SettingNetworkManager {
+    private let provider = MoyaProvider<MultiTarget>(plugins: [MoyaLoggingPlugin()])
     private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared), plugins: [MoyaLoggingPlugin()])
     
     // MARK: - 마이페이지
@@ -124,7 +125,7 @@ class SettingNetworkManager {
     // MARK: - 약관 조회
     // 약관 조회
     func getTermsDetail(termsType: String) -> Single<TermsResponseModel> {
-        return authProvider.rx.request(
+        return provider.rx.request(
             MultiTarget(SettingAPIs.getTermsDetail(termsType: termsType))
         )
         .tryMap(TermsResponseModel.self)
