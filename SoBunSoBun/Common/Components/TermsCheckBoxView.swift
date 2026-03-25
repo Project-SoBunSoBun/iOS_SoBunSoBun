@@ -63,9 +63,9 @@ class TermsCheckBoxView: UIView {
         config.image = .greyChevronRight.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
-        let btn = UIButton(configuration: config)
+        let bt = UIButton(configuration: config)
         
-        return btn
+        return bt
     }()
     
     private let tapAreaButton: UIButton = {
