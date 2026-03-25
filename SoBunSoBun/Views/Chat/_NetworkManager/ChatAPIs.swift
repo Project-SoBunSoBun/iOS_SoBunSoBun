@@ -11,7 +11,8 @@ import Moya
 enum ChatAPIs {
     case getChatRoomDetail(id: Int)
     case getChatHistory(id: Int, cursor: String?, size: Int)
-    case uploadChatImage(id: Int, message: String?, image: Data)
+    case sendText(id: Int, message: String)
+    case sendChatImage(id: Int, message: String?, image: Data)
     case sendInviteCard(chatRoomId: Int, inviteeId: Int)
     case acceptInvitation(inviteId: Int)
     case sendSettlementCard(chatRoomId: Int, settlementId: Int)
@@ -23,7 +24,7 @@ enum ChatAPIs {
 extension ChatAPIs: TargetType {
     // interceptor retry 활성화
     var validationType: ValidationType {
-        return .successCodes
+        return .customCodes(Array(200...299) + [400] + Array(402...499))
     }
     
     var baseURL: URL {
@@ -38,7 +39,10 @@ extension ChatAPIs: TargetType {
         case .getChatHistory(let id, _, _):
             return "/api/v1/chat/rooms/\(id)/messages/cursor"
             
-        case .uploadChatImage(let id, _, _):
+        case .sendText:
+            return "/api/messages"
+            
+        case .sendChatImage(let id, _, _):
             return "/api/v1/chat/rooms/\(id)/images"
             
         case .sendInviteCard(let chatRoomId, _):
@@ -69,7 +73,8 @@ extension ChatAPIs: TargetType {
             return .get
             
         case // POST
-                .uploadChatImage,
+                .sendText,
+                .sendChatImage,
                 .rateManners,
                 .sendInviteCard,
                 .sendSettlementCard:
@@ -100,7 +105,12 @@ extension ChatAPIs: TargetType {
             
             return .requestParameters(parameters: parameters, encoding: URLEncoding.default)
             
-        case .uploadChatImage(_, let message, let image):
+        case .sendText(let id, let message):
+            let body = ChatSendTextBodyModel(groupChatRoomId: id, content: message)
+            
+            return .requestJSONEncodable(body)
+            
+        case .sendChatImage(_, let message, let image):
             let imageData = image
             var formData: [MultipartFormData] = []
             
@@ -152,7 +162,7 @@ extension ChatAPIs: TargetType {
     
     var headers: [String : String]? {
         switch self {
-        case .uploadChatImage:
+        case .sendChatImage:
             return ["Content-Type": "multipart/form-data"]
             
         default:

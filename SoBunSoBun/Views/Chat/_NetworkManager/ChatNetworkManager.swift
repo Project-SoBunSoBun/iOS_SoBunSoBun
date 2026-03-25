@@ -17,7 +17,6 @@ class ChatNetworkManager {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.getChatRoomDetail(id: id))
         )
-        .filterSuccessfulStatusCodes()
         .tryMap(ChatRoomDetailModel.self)
     }
     
@@ -25,63 +24,62 @@ class ChatNetworkManager {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.getChatHistory(id: id, cursor: cursor, size: size))
         )
-        .filterSuccessfulStatusCodes()
         .tryMap(ChatMessageHistoryModel.self)
     }
     
-    func uploadChatImage(id: Int, message: String?, image: Data) -> Single<Void> {
+    func sendText(id: Int, message: String) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
-            MultiTarget(ChatAPIs.uploadChatImage(id: id, message: message, image: image))
+            MultiTarget(ChatAPIs.sendText(id: id, message: message))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
-    func sendInviteCard(chatRoomId: Int, inviteeId: Int) -> Single<Void> {
+    func sendChatImage(id: Int, message: String?, image: Data) -> Single<PlainResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(ChatAPIs.sendChatImage(id: id, message: message, image: image))
+        )
+        .tryMap(PlainResponseModel.self)
+    }
+    
+    func sendInviteCard(chatRoomId: Int, inviteeId: Int) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.sendInviteCard(chatRoomId: chatRoomId, inviteeId: inviteeId))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     func acceptInvitation(inviteId: Int) -> Single<GroupChatAcceptResponseModel> {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.acceptInvitation(inviteId: inviteId))
         )
-        .filterSuccessfulStatusCodes()
         .tryMap(GroupChatAcceptResponseModel.self)
     }
     
-    func sendSettlementCard(chatRoomId: Int, settlementId: Int) -> Single<Void> {
+    func sendSettlementCard(chatRoomId: Int, settlementId: Int) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.sendSettlementCard(chatRoomId: chatRoomId, settlementId: settlementId))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
-    func leaveChatRoom(id: Int) -> Single<Void> {
+    func leaveChatRoom(id: Int) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.leaveChatRoom(id: id))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
-    func kickMember(chatRoomId: Int, userId: Int) -> Single<Void> {
+    func kickMember(chatRoomId: Int, userId: Int) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.kickMember(chatRoomId: chatRoomId, userId: userId))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
-    func rateManners(groupPostId: Int, manners: [Int: [String]]) -> Single<Void> {
+    func rateManners(groupPostId: Int, manners: [Int: [String]]) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(ChatAPIs.rateManners(groupPostId: groupPostId, manners: manners))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
 }

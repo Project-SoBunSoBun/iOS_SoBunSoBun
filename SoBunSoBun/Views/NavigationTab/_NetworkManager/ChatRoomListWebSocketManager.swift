@@ -18,14 +18,12 @@ class ChatRoomListWebSocketManager {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "ChatRoomListWebSocketManager"
+        category: "NavigationTab.ChatRoomListWebSocketManager"
     )
     
     let didReceiveChatRoom = PublishRelay<ChatRoomListResponseDataModel>()
     
-    private var tryCount: Int = 0
-    private let maxRetryCount: Int = 3
-    private var hasTriedTokenRefresh: Bool = false
+    private var isWaitingForRefreshToken: Bool = false
     private var subscribeUrl: String = ""
     
     private let disposeBag = DisposeBag()
@@ -56,53 +54,31 @@ class ChatRoomListWebSocketManager {
         logger.debug("채팅방 목록 Websocket 연결 종료")
     }
     
-    private func handleUnauthorized() {
-        guard !AuthInterceptor.shared.isRefreshing else {
-            logger.debug("이미 토큰 갱신 중")
-            
-            reconnect()
-            
-            return
-        }
+    private func waitForRefreshAndReconnect() {
+        guard !isWaitingForRefreshToken else { return }
         
-        AuthInterceptor.shared.isRefreshing = true
+        isWaitingForRefreshToken = true
         
-        logger.debug("401 에러 감지 - 토큰 갱신 시작")
-        
-        guard let refreshToken = KeyChain.shared.get(key: "REFRESH_TOKEN") else {
-            AuthManager.shared.logout()
-            
-            logger.fault("리프레시 토큰 없음")
-            
-            return
-        }
-        
-        let networkManager = CommonNetworkManager()
-        
-        networkManager.refreshAccessToken(refreshToken: refreshToken)
-            .asObservable()
-            .subscribe(onNext: { [weak self] model in
-                guard let self = self else { return }
+        AuthInterceptor.shared.didFinishRefreshing
+            .take(1)
+            .timeout(.seconds(10), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                guard let self else { return }
                 
-                KeyChain.shared.set(key: "ACCESS_TOKEN", value: model.accessToken)
-                KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: model.accessTokenExpiresAtKst)
+                self.isWaitingForRefreshToken = false
+                self.logger.debug("리프레시 토큰 갱신 완료, 채팅방 목록 웹소켓 재연결")
+                self.reconnect()
+            }, onError: { [weak self] _ in
+                guard let self else { return }
                 
-                AuthInterceptor.shared.isRefreshing = false
-                reconnect()
-                
-                logger.debug("[재발급한 ACCESS_TOKEN]\n\n\(model.accessToken)")
-            }, onError: { [weak self] error in
-                guard let self = self else { return }
-                
-                AuthInterceptor.shared.isRefreshing = false
-                
-                logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
+                self.isWaitingForRefreshToken = false
+                self.logger.fault("리프페시 토큰 갱신 대기 타임아웃, 채팅방 목록 웹소켓 재연결 중단")
             })
             .disposed(by: disposeBag)
     }
     
     private func reconnect() {
-        logger.debug("채팅방 목록 WebSocket 재연결 시작")
+        logger.debug("채팅방 목록 Websocket 재연결 시작")
         disconnect()
         connect()
     }
@@ -110,9 +86,6 @@ class ChatRoomListWebSocketManager {
 
 extension ChatRoomListWebSocketManager: SwiftStompDelegate {
     func onConnect(swiftStomp: SwiftStomp, connectType: StompConnectType) {
-        tryCount = 0
-        hasTriedTokenRefresh = false
-        
         switch connectType {
         case .toSocketEndpoint:
             logger.debug("채팅방 목록 Socket 연결 성공")
@@ -185,19 +158,17 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         
         logger.critical("\(log)")
         
-        guard tryCount < maxRetryCount else {
-            logger.fault("채팅방 목록 Websocket 연결 재시도 \(self.maxRetryCount)회 실패")
-            
-            return
-        }
-        
-        tryCount += 1
-        
-        if !hasTriedTokenRefresh {
-            hasTriedTokenRefresh = true
-            handleUnauthorized()
+        // Error handler
+        if AuthInterceptor.shared.isRefreshing {
+            logger.debug("리프레시 토큰 갱신 대기 중, 채팅방 목록 웹소켓 재연결 예정")
+            waitForRefreshAndReconnect()
         } else {
-            reconnect()
+            if !isWaitingForRefreshToken {
+                logger.debug("채팅방 목록 웹소켓 재연결 시도")
+                reconnect()
+            } else {
+                logger.fault("채팅방 목록 웹소켓 재연결 시도 후 다시 오류 발생, 재시도 중단")
+            }
         }
     }
 }
