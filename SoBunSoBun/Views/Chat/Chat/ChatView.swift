@@ -209,7 +209,8 @@ class ChatView: UIViewController {
         super.viewDidDisappear(animated)
         
         chatTextView.textView.inputView = nil
-        reactor.action.onNext(.viewDidDisappear)
+        reactor.action.onNext(.readLastChat)
+        reactor.action.onNext(.disconnectChatRoom)
     }
     
     // MARK: - 레이아웃 설정

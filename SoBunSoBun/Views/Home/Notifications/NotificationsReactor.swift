@@ -28,6 +28,7 @@ class NotificationsReactor: Reactor {
         case cellTapped(NotificationModel) // 테이블 뷰 셀 클릭
         case refresh
         case loadMore
+        case viewWillDisappear
     }
     
     enum Mutation {
@@ -61,9 +62,10 @@ class NotificationsReactor: Reactor {
             ])
             
         case .cellTapped(let model):
-            readNotification(model: model)
-            
-            return Observable.just(.setShouldPushView(model))
+            return Observable.concat([
+                readNotification(model: model),
+                Observable.just(.setShouldPushView(model))
+            ])
             
         case .refresh:
             return Observable.concat([
@@ -84,6 +86,9 @@ class NotificationsReactor: Reactor {
                 Observable.just(.setPage(nextPage)),
                 loadNotifications(page: nextPage, size: PAGE_SIZE, isFirst: false)
             ])
+            
+        case .viewWillDisappear:
+            return readAllNotifications()
         }
     }
     
@@ -146,24 +151,51 @@ class NotificationsReactor: Reactor {
             }
     }
     
-    private func readNotification(model: NotificationModel) {
-        guard !model.isRead else { return }
+    private func readNotification(model: NotificationModel) -> Observable<Mutation> {
+        guard !model.isRead else { return Observable.empty() }
         
-        networkManager.readNotification(id: model.id)
+        return networkManager.readNotification(id: model.id)
             .asObservable()
-            .subscribe(onNext: { [weak self] model in
-                guard let self else { return }
+            .flatMap{ [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
                 
-                if let errorCode = model.errorCode {
-                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(model.message ?? "")")
+                if let errorCode = response.errorCode {
+                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
                 } else {
                     self.logger.debug("알림 읽음 완료")
                 }
-            }, onError: { [weak self] error in
-                guard let self else { return }
+                
+                return Observable.empty()
+            }
+            .catch { [weak self] error in
+                guard let self else { return Observable.empty() }
                 
                 self.logger.critical("알림 읽음 실패: \(error.localizedDescription)")
-            })
-            .disposed(by: disposeBag)
+                
+                return Observable.empty()
+            }
+    }
+    
+    private func readAllNotifications() -> Observable<Mutation> {
+        return networkManager.readAllNotifications()
+            .asObservable()
+            .flatMap { [weak self] model -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
+                if let errorCode = model.errorCode {
+                    self.logger.critical("알림 모두 읽음 실패(\(errorCode)): \(model.message ?? "")")
+                } else {
+                    self.logger.debug("알림 모두 읽음 완료")
+                }
+                
+                return Observable.empty()
+            }
+            .catch { [weak self] error in
+                guard let self else { return Observable.empty() }
+                
+                self.logger.critical("알림 모두 읽음 실패: \(error.localizedDescription)")
+                
+                return Observable.empty()
+            }
     }
 }

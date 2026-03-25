@@ -18,6 +18,9 @@ class HomeView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
+    // 외부 이벤트에서 전달
+    let unreadNotificationCount = PublishSubject<Int>()
+    
     // 외부 이벤트 전달
     let shouldShowLocationSettingAlert = PublishRelay<Void>()
     
@@ -455,7 +458,7 @@ extension HomeView {
             .bind(to: locationLabel.rx.text)
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.unreadNotificationCount }
+        unreadNotificationCount
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] count in
                 guard let self = self else { return }

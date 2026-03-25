@@ -46,7 +46,6 @@ class HomeReactor: Reactor {
         case verifyLocation(String) // 위치 인증
         case setShowLocationSettingAlert // 위치 권환 알림 표시
         
-        case setUnreadNotificationCount(Int) // 읽지 않은 알림 뷰 수
         case setNotificationsView // 알림 뷰로 이동
         case setMyProfileView // 내 프로필로 이동
         
@@ -73,7 +72,6 @@ class HomeReactor: Reactor {
         var verifiedLocation: String = "\(String(localized: "Loading", table: "Common"))..." // 인증된 위치 정보
         @Pulse var shouldShowLocationSettingAlert: Void? // 위치 권한 알림 표시
         
-        var unreadNotificationCount: Int = 0
         @Pulse var shouldPushNotificationsView: Void? // 알림 뷰로 이동
         
         @Pulse var shouldPushMyProfileView: Void? // 내 프로필 뷰로 이동
@@ -99,7 +97,6 @@ class HomeReactor: Reactor {
         switch action {
         case .viewWillAppear:
             return Observable.concat([
-                getUnreadNotificationCount(),
                 Observable.just(.setPage(0)),
                 loadPosts(sortBy: currentState.sortBy, page: 0, isFirst: true, categories: currentState.selectedCategories),
                 currentState.isLocationVerified ? Observable.empty() : verifyLocation()
@@ -175,9 +172,6 @@ class HomeReactor: Reactor {
         case .setShowLocationSettingAlert:
             newState.shouldShowLocationSettingAlert = ()
             newState.verifiedLocation = String(localized: "LocationPermissionDenied", table: "Home")
-            
-        case .setUnreadNotificationCount(let count):
-            newState.unreadNotificationCount = count
             
         case .setNotificationsView:
             newState.shouldPushNotificationsView = ()
@@ -351,23 +345,6 @@ class HomeReactor: Reactor {
                 
                 logger.fault("위치 인증 실패: \(error.localizedDescription)")
                 return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
-            }
-    }
-    
-    // 읽지 않음 알림 개수 호출
-    private func getUnreadNotificationCount() -> Observable<Mutation> {
-        return networkManager.getUnreadNotificationCount()
-            .asObservable()
-            .flatMap { response -> Observable<Mutation> in
-                let count = response.data.unreadCount
-                self.logger.debug("읽지 않은 알림 개수: \(count)")
-                
-                return Observable.just(.setUnreadNotificationCount(count))
-            }
-            .catch { error -> Observable<Mutation> in
-                self.logger.critical("읽지 않은 알림 개수를 불러오는 중 오류 발생: \(error.localizedDescription)")
-                
-                return Observable.empty()
             }
     }
     

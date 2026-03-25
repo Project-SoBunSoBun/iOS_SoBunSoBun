@@ -20,6 +20,8 @@ class NavigationTabReactor: Reactor {
     
     let initialState = State()
     
+    private let disposeBag = DisposeBag()
+    
     private let chatRoomListWebSocketManager = ChatRoomListWebSocketManager()
     private let commonNetworkManager = CommonNetworkManager()
     private let networkManager = NavigationTabNetworkManager()
@@ -31,12 +33,14 @@ class NavigationTabReactor: Reactor {
     
     enum Action {
         case viewDidLoad
+        case getUnreadNotificationCount
         case getChatRoomListData
         case selectIndex(Int)
     }
     
     enum Mutation {
         case setSelectedIndex(Int)
+        case setUnreadNotificationCount(Int)
         case setChatRoomList([ChatRoomListResponseDataModel])
         case updateChatRoomList(ChatRoomListResponseDataModel)
         case setErrorMessage(String)
@@ -44,6 +48,7 @@ class NavigationTabReactor: Reactor {
     
     struct State {
         var selectedIndex: Int = 0
+        var unreadNotificationCount: Int = 0
         var chatRoomList: [ChatRoomListResponseDataModel] = []
         @Pulse var errorMessage: String? = nil
     }
@@ -54,9 +59,13 @@ class NavigationTabReactor: Reactor {
             checkFCMToken()
             
             return Observable.concat([
+                getUnreadNotificationCount(),
                 getChatRoomList(),
                 getMyData()
             ])
+            
+        case .getUnreadNotificationCount:
+            return getUnreadNotificationCount()
             
         case .getChatRoomListData:
             return getChatRoomList()
@@ -72,6 +81,9 @@ class NavigationTabReactor: Reactor {
         switch mutation {
         case .setSelectedIndex(let index):
             newState.selectedIndex = index
+            
+        case .setUnreadNotificationCount(let count):
+            newState.unreadNotificationCount = count
             
         case .setChatRoomList(let models):
             newState.chatRoomList = models
@@ -91,7 +103,26 @@ class NavigationTabReactor: Reactor {
             newState.errorMessage = message
         }
         
+        let chatUnreadCount = newState.chatRoomList.reduce(0) { $0 + $1.unReadCount }
+        let totalBadgeCount = newState.unreadNotificationCount + chatUnreadCount
+        
+        NotificationManager.shared.updateBadgeCount(totalBadgeCount)
+        
         return newState
+    }
+    
+    // sceneDidEnterBackground action 연결 및 변환
+    func transform(action: Observable<Action>) -> Observable<Action> {
+        let backgroundAction = NotificationCenter.default.rx
+            .notification(.sceneDidEnterBackground)
+            .flatMap { _ in
+                Observable.merge([
+                    Observable.just(Action.getUnreadNotificationCount),
+                    Observable.just(Action.getChatRoomListData)
+                ])
+            }
+        
+        return Observable.merge(action, backgroundAction)
     }
     
     // webSocketManager publish mutation 연결 및 변환
@@ -123,6 +154,23 @@ class NavigationTabReactor: Reactor {
                 self.logger.critical("내 정보 불러오는 중 오류 발생: \(error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+            }
+    }
+    
+    // 읽지 않음 알림 개수 호출
+    private func getUnreadNotificationCount() -> Observable<Mutation> {
+        return networkManager.getUnreadNotificationCount()
+            .asObservable()
+            .flatMap { response -> Observable<Mutation> in
+                let count = response.data.unreadCount
+                self.logger.debug("읽지 않은 알림 개수: \(count)")
+                
+                return Observable.just(.setUnreadNotificationCount(count))
+            }
+            .catch { error -> Observable<Mutation> in
+                self.logger.critical("읽지 않은 알림 개수를 불러오는 중 오류 발생: \(error.localizedDescription)")
+                
+                return Observable.empty()
             }
     }
     

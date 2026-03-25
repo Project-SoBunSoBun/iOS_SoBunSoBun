@@ -69,6 +69,15 @@ class NotificationsView: UIViewController {
         reactor.action.onNext(.viewWillAppear)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        if isMovingFromParent {
+            reactor.action.onNext(.viewWillDisappear)
+            NotificationCenter.default.post(name: .didPopNotificationsView, object: nil)
+        }
+    }
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
