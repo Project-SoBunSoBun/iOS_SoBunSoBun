@@ -8,11 +8,13 @@
 import Foundation
 import Alamofire
 import RxSwift
+import RxCocoa
 import OSLog
 
 final class AuthInterceptor: RequestInterceptor {
     nonisolated(unsafe) private let disposeBag = DisposeBag()
     nonisolated(unsafe) var isRefreshing: Bool = false
+    nonisolated(unsafe) let didFinishRefreshing = PublishRelay<Void>()
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
@@ -99,6 +101,7 @@ final class AuthInterceptor: RequestInterceptor {
                 
                 if isSuccess {
                     completion(.retry)
+                    didFinishRefreshing.accept(())
                     logger.debug("액세스 토큰 재발급 완료")
                 } else {
                     AuthManager.shared.logout()

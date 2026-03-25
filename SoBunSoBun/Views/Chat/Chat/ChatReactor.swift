@@ -247,7 +247,15 @@ class ChatReactor: Reactor {
                 return self.getDetailInfo()
             }
         
-        return Observable.merge(mutation, didReceiveMessage, didReceiveSettlement)
+        let didReceiveError = webSocketManager.didReceiveError
+            .compactMap { $0 }
+            .flatMap { [weak self] _ -> Observable<Mutation> in
+                guard let self = self else { return Observable.empty() }
+                
+                return self.getDetailInfo()
+            }
+        
+        return Observable.merge(mutation, didReceiveMessage, didReceiveSettlement, didReceiveError)
     }
     
     // websocket 연결

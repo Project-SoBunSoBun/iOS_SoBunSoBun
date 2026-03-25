@@ -19,14 +19,14 @@ class ChatWebSocketManager {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "ChatWebSocketManager"
+        category: "Chat.ChatWebSocketManager"
     )
     
     let didReceiveMessage = PublishRelay<ChatMessageModel>()
     let didReceiveSettlement = PublishRelay<Void?>()
+    let didReceiveError = PublishRelay<Void?>()
     
-    private var tryCount: Int = 0
-    private let maxRetryCount: Int = 3
+    private var isWaitingForRefreshToken: Bool = false
     private var subscribeUrl: String = ""
     
     private let disposeBag = DisposeBag()
@@ -49,7 +49,7 @@ class ChatWebSocketManager {
         subscribeUrl = "/topic/chat/room/\(chatRoomId)"
         swiftStomp?.subscribe(to: subscribeUrl)
         
-        logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Websocket 구독: \(self.subscribeUrl)")
+        logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 Websocket 구독: \(self.subscribeUrl)")
     }
     
     func sendMessage(message: String) {
@@ -72,7 +72,30 @@ class ChatWebSocketManager {
     
     func disconnect() {
         swiftStomp?.disconnect()
-        logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Websocket 연결 종료")
+        logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 Websocket 연결 종료")
+    }
+    
+    private func waitForRefreshAndReconnect() {
+        guard !isWaitingForRefreshToken else { return }
+        
+        isWaitingForRefreshToken = true
+        
+        AuthInterceptor.shared.didFinishRefreshing
+            .take(1)
+            .timeout(.seconds(10), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                guard let self else { return }
+                
+                self.isWaitingForRefreshToken = false
+                self.logger.debug("리프레시 토큰 갱신 완료, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결")
+                self.reconnect()
+            }, onError: { [weak self] _ in
+                guard let self else { return }
+                
+                self.isWaitingForRefreshToken = false
+                self.logger.fault("리프페시 토큰 갱신 대기 타임아웃, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 중단")
+            })
+            .disposed(by: disposeBag)
     }
     
     private func reconnect() {
@@ -82,8 +105,7 @@ class ChatWebSocketManager {
             return
         }
         
-        tryCount = 0
-        logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Websocket 재연결 시작")
+        logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 Websocket 재연결 시작")
         disconnect()
         connect(chatRoomId: chatRoomId)
     }
@@ -91,14 +113,12 @@ class ChatWebSocketManager {
 
 extension ChatWebSocketManager: SwiftStompDelegate {
     func onConnect(swiftStomp: SwiftStomp, connectType: StompConnectType) {
-        tryCount = 0
-        
         switch connectType {
         case .toSocketEndpoint:
-            logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Socket 연결 성공")
+            logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 Socket 연결 성공")
             
         case .toStomp:
-            logger.debug("채팅방 \(self.currentChatRoomId ?? -1) Stomp 연결 성공")
+            logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 Stomp 연결 성공")
         }
         
         if let currentChatRoomId {
@@ -109,18 +129,18 @@ extension ChatWebSocketManager: SwiftStompDelegate {
     func onDisconnect(swiftStomp: SwiftStomp, disconnectType: StompDisconnectType) {
         switch disconnectType {
         case .fromSocket:
-            logger.error("채팅방 \(self.currentChatRoomId ?? -1) Socket에서 연결 끊김")
+            logger.error("\(self.currentChatRoomId ?? -1)번 채팅방 Socket에서 연결 끊김")
             
         case .fromStomp:
-            logger.error("채팅방 Stomp에서 구독 \(self.subscribeUrl) 끊김")
+            logger.error("\(self.currentChatRoomId ?? -1)번 채팅방 Stomp에서 구독 \(self.subscribeUrl) 끊김")
         }
     }
     
     func onMessageReceived(swiftStomp: SwiftStomp, message: Any?, messageId: String, destination: String, headers: [String : String]) {
-        logger.debug("[채팅방 \(self.currentChatRoomId ?? -1) 메시지 수신]\n\ndestination: \(destination)\nmessageId: \(messageId)")
+        logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 메시지 수신]\n\ndestination: \(destination)\nmessageId: \(messageId)")
         
         guard let messageString = message as? String else {
-            logger.fault("채팅방 \(self.currentChatRoomId ?? -1) Websocket 메시지를 String으로 변환 중 실패")
+            logger.fault("\(self.currentChatRoomId ?? -1)번 채팅방 Websocket 메시지를 String으로 변환 중 실패")
             
             return
         }
@@ -148,7 +168,7 @@ extension ChatWebSocketManager: SwiftStompDelegate {
     }
     
     func onReceipt(swiftStomp: SwiftStomp, receiptId: String) {
-        var log: String = "[채팅방 \(self.currentChatRoomId ?? -1) 수신 확인]\n\n"
+        var log: String = "[\(self.currentChatRoomId ?? -1)번 채팅방 수신 확인]\n\n"
         log += "receiptId: \(String(describing: receiptId))"
         
         logger.debug("\(log)")
@@ -159,10 +179,10 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         
         switch type {
         case .fromSocket:
-            log += "[채팅방 \(self.currentChatRoomId ?? -1) Socket 오류]\n\n"
+            log += "[\(self.currentChatRoomId ?? -1)번 채팅방 Socket 오류]\n\n"
             
         case .fromStomp:
-            log += "[채팅방 \(self.currentChatRoomId ?? -1) Stomp 오류]\n\n"
+            log += "[\(self.currentChatRoomId ?? -1)번 채팅방 Stomp 오류]\n\n"
         }
         
         log += "receiptId: \(String(describing: receiptId))\n"
@@ -173,22 +193,12 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         
         // Error handler
         if AuthInterceptor.shared.isRefreshing {
-            guard tryCount < maxRetryCount else {
-                logger.fault("리프레시 토큰 갱신 대기 중 재연결 시도 \(self.maxRetryCount)회 초과, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재시도 중단")
-                
-                return
-            }
-            
-            tryCount += 1
-            logger.debug("리프레시 토큰 갱신 진행 중: 1초 후 \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 시도 (\(self.tryCount)/\(self.maxRetryCount))")
-            
-            DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) { [weak self] in
-                self?.reconnect()
-            }
+            logger.debug("리프레시 토큰 갱신 대기 중, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 예정")
+            waitForRefreshAndReconnect()
         } else {
-            if tryCount == 0 {
-                tryCount += 1
-                logger.debug("AuthInterceptor의 isRefreshing이 false이므로 \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 시도")
+            if !isWaitingForRefreshToken {
+                logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 시도")
+                didReceiveError.accept(())
                 reconnect()
             } else {
                 logger.fault("\(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 시도 후 다시 오류 발생, 재시도 중단")

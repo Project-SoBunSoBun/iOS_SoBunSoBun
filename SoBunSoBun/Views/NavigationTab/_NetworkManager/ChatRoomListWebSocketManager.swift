@@ -18,13 +18,12 @@ class ChatRoomListWebSocketManager {
     
     private let logger = Logger(
         subsystem: "SoBunSoBun",
-        category: "ChatRoomListWebSocketManager"
+        category: "NavigationTab.ChatRoomListWebSocketManager"
     )
     
     let didReceiveChatRoom = PublishRelay<ChatRoomListResponseDataModel>()
     
-    private var tryCount: Int = 0
-    private let maxRetryCount: Int = 3
+    private var isWaitingForRefreshToken: Bool = false
     private var subscribeUrl: String = ""
     
     private let disposeBag = DisposeBag()
@@ -55,8 +54,31 @@ class ChatRoomListWebSocketManager {
         logger.debug("채팅방 목록 Websocket 연결 종료")
     }
     
+    private func waitForRefreshAndReconnect() {
+        guard !isWaitingForRefreshToken else { return }
+        
+        isWaitingForRefreshToken = true
+        
+        AuthInterceptor.shared.didFinishRefreshing
+            .take(1)
+            .timeout(.seconds(10), scheduler: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                guard let self else { return }
+                
+                self.isWaitingForRefreshToken = false
+                self.logger.debug("리프레시 토큰 갱신 완료, 채팅방 목록 웹소켓 재연결")
+                self.reconnect()
+            }, onError: { [weak self] _ in
+                guard let self else { return }
+                
+                self.isWaitingForRefreshToken = false
+                self.logger.fault("리프페시 토큰 갱신 대기 타임아웃, 채팅방 목록 웹소켓 재연결 중단")
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private func reconnect() {
-        logger.debug("채팅방 목록 WebSocket 재연결 시작")
+        logger.debug("채팅방 목록 Websocket 재연결 시작")
         disconnect()
         connect()
     }
@@ -64,8 +86,6 @@ class ChatRoomListWebSocketManager {
 
 extension ChatRoomListWebSocketManager: SwiftStompDelegate {
     func onConnect(swiftStomp: SwiftStomp, connectType: StompConnectType) {
-        tryCount = 0
-        
         switch connectType {
         case .toSocketEndpoint:
             logger.debug("채팅방 목록 Socket 연결 성공")
@@ -140,25 +160,14 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         
         // Error handler
         if AuthInterceptor.shared.isRefreshing {
-            guard tryCount < maxRetryCount else {
-                logger.fault("리프레시 토큰 갱신 대기 중 재연결 시도 \(self.maxRetryCount)회 초과, 채팅방 목록 웹소켓 재시도 중단")
-                
-                return
-            }
-            
-            tryCount += 1
-            logger.debug("리프레시 토큰 갱신 진행 중: 1초 후 채팅방 목록 웹소켓 재연결 시도 (\(self.tryCount)/\(self.maxRetryCount))")
-            
-            DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) { [weak self] in
-                self?.reconnect()
-            }
+            logger.debug("리프레시 토큰 갱신 대기 중, 채팅방 목록 웹소켓 재연결 예정")
+            waitForRefreshAndReconnect()
         } else {
-            if tryCount == 0 {
-                tryCount += 1
-                logger.debug("AuthInterceptor의 isRefreshing이 false이므로 채팅방 목록 웹소켓 재연결 시도")
+            if !isWaitingForRefreshToken {
+                logger.debug("채팅방 목록 웹소켓 재연결 시도")
                 reconnect()
             } else {
-                logger.critical("채팅방 목록 웹소켓 재연결 시도 후 다시 오류 발생, 재시도 중단")
+                logger.fault("채팅방 목록 웹소켓 재연결 시도 후 다시 오류 발생, 재시도 중단")
             }
         }
     }
