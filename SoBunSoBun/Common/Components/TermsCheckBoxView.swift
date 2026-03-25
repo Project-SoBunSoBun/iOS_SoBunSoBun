@@ -36,9 +36,17 @@ class TermsCheckBoxView: UIView {
     
     // MARK: - 디자인 요소
     private let checkButton: UIButton = {
-        let bt = UIButton()
-        bt.setImage(UIImage(named: "GreyCheck"), for: .normal)
-        bt.setImage(UIImage(named: "BlueCheck"), for: .selected)
+        var config = UIButton.Configuration.plain()
+        config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
+        
+        let bt = UIButton(configuration: config)
+        
+        bt.configurationUpdateHandler = { btn in
+            var updatedConfig = btn.configuration
+            updatedConfig?.image = btn.isSelected ? .blueCheck.resize(.init(width: 24, height: 24)) : .greyCheck.resize(.init(width: 24, height: 24))
+            updatedConfig?.baseBackgroundColor = .clear
+            btn.configuration = updatedConfig
+        }
         
         return bt
     }()
