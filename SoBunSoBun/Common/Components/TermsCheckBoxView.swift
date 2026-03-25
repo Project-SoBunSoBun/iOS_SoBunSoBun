@@ -36,32 +36,43 @@ class TermsCheckBoxView: UIView {
     
     // MARK: - 디자인 요소
     private let checkButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "GreyCheck"), for: .normal)
-        button.setImage(UIImage(named: "BlueCheck"), for: .selected)
+        var config = UIButton.Configuration.plain()
+        config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
-        return button
+        let bt = UIButton(configuration: config)
+        
+        bt.configurationUpdateHandler = { btn in
+            var updatedConfig = btn.configuration
+            updatedConfig?.image = btn.isSelected ? .blueCheck.resize(.init(width: 24, height: 24)) : .greyCheck.resize(.init(width: 24, height: 24))
+            updatedConfig?.baseBackgroundColor = .clear
+            btn.configuration = updatedConfig
+        }
+        
+        return bt
     }()
     
     private let titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .neutral600
+        let lb = UILabel()
+        lb.textColor = .neutral600
         
-        return label
+        return lb
     }()
     
     private let detailButton: UIButton = {
-        let button = UIButton()
-        button.setImage(UIImage(named: "GreyRight"), for: .normal)
+        var config = UIButton.Configuration.plain()
+        config.image = .greyChevronRight.resize(.init(width: 24, height: 24))
+        config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
         
-        return button
+        let bt = UIButton(configuration: config)
+        
+        return bt
     }()
     
     private let tapAreaButton: UIButton = {
-        let button = UIButton()
-        button.backgroundColor = .clear
+        let bt = UIButton()
+        bt.backgroundColor = .clear
         
-        return button
+        return bt
     }()
     
     // MARK: - 레이아웃 설정
