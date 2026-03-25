@@ -64,6 +64,7 @@ class ChatReactor: Reactor {
         case setIsDBMessageEmpty(Bool) // 캐싱된 메시지가 없을 때
         case setShouldNavigateToRightMenu // 오른쪽 메뉴 뷰 이동
         case setSendSucceed // 텍스트 전송 결과
+        case setLastSendTime(Date)
         case setBottomOpenMenu(Bool) // 하단 메뉴 표시
         case setIsChatCellMenuOpen(Bool) // 채팅 상호작용 메뉴 표시
         case setSelectedChatMessageModel(ChatMessageModel) // 선택(상호작용)할 채팅 설정
@@ -83,6 +84,7 @@ class ChatReactor: Reactor {
         var isOpenBottomMenu: Bool = false
         var isChatCellMenuOpen: Bool = false
         var selectedChatMessageModel: ChatMessageModel?
+        var lastSendTime: Date = Date()
         @Pulse var shouldNavigateToRightMenu: Void?
         @Pulse var sendSucceed: Void?
         @Pulse var shouldShowImagePicker: Void?
@@ -194,6 +196,9 @@ class ChatReactor: Reactor {
             
         case .setSendSucceed:
             newState.sendSucceed = ()
+            
+        case .setLastSendTime(let time):
+            newState.lastSendTime = time
             
         case .setBottomOpenMenu(let isOpen):
             newState.isOpenBottomMenu = isOpen
@@ -381,32 +386,37 @@ class ChatReactor: Reactor {
     private func sendMessage(message: String) -> Observable<Mutation> {
         let cleanedMessage = message.limitNewLines(limit: 2).trimmingCharacters(in: .whitespacesAndNewlines)
         
-        guard !cleanedMessage.isEmpty else {
+        // 도배 방지
+        guard !cleanedMessage.isEmpty, Date() > currentState.lastSendTime.addingTimeInterval(0.5) else {
             return Observable.empty()
         }
         
-        return networkManager.sendText(id: chatRoomId, message: message)
-            .asObservable()
-            .flatMap { [weak self] response -> Observable<Mutation> in
-                guard let self = self else { return Observable.empty() }
-                
-                if let errorCode = response.errorCode {
-                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
+        return Observable.concat([
+            networkManager.sendText(id: chatRoomId, message: message)
+                .asObservable()
+                .flatMap { [weak self] response -> Observable<Mutation> in
+                    guard let self = self else { return Observable.empty() }
                     
-                    return Observable.just(.setErrorMessage(NSLocalizedString(errorCode, tableName: "Error", comment: "")))
-                } else {
-                    self.logger.debug("알림 읽음 완료")
-                    
-                    return Observable.just(.setSendSucceed)
+                    if let errorCode = response.errorCode {
+                        self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(NSLocalizedString(errorCode, tableName: "Error", comment: "")))
+                    } else {
+                        self.logger.debug("알림 읽음 완료")
+                        
+                        return Observable.just(.setSendSucceed)
+                    }
                 }
-            }
-            .catch { [weak self] error -> Observable<Mutation> in
-                guard let self = self else { return Observable.empty() }
-                
-                self.logger.critical("텍스트 보내기 실패: \(error.localizedDescription)")
-                
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
-            }
+                .catch { [weak self] error -> Observable<Mutation> in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.critical("텍스트 보내기 실패: \(error.localizedDescription)")
+                    
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                }
+            ,
+            Observable.just(.setLastSendTime(Date()))
+        ])
     }
     
     // 이미지 전송
