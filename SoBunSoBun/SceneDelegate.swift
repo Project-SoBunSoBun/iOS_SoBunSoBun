@@ -105,18 +105,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidEnterBackground(_ scene: UIScene) {
-        guard let currentWindow,
-              let viewControllers = currentWindow.rootViewController?.navigationController?.viewControllers,
-              let navigationTabView = viewControllers.first(where: { $0 is NavigationTabView }) as? NavigationTabView else { return }
-        
-        if viewControllers.contains(where: { $0 is NotificationsView }) {
-            navigationTabView.reactor.action.onNext(.getUnreadNotificationCount)
-        }
-        
-        if let chatView = viewControllers.first(where: { $0 is ChatView }) as? ChatView {
-            navigationTabView.reactor.action.onNext(.getChatRoomListData)
-            chatView.reactor.action.onNext(.readLastChat)
-        }
+        NotificationCenter.default.post(name: .sceneDidEnterBackground, object: nil)
     }
 }
 
+extension Notification.Name {
+    static let sceneDidEnterBackground = Notification.Name("sceneDidEnterBackground")
+}

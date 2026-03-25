@@ -220,6 +220,15 @@ class ChatReactor: Reactor {
         return newState
     }
     
+    // sceneDidEnterBackground action 연결 및 변환
+    func transform(action: Observable<Action>) -> Observable<Action> {
+        let backgroundAction = NotificationCenter.default.rx
+            .notification(.sceneDidEnterBackground)
+            .map { _ in Action.readLastChat }
+        
+        return Observable.merge(action, backgroundAction)
+    }
+    
     // webSocketManager publish mutation 연결 및 변환
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
         let didReceiveMessage = webSocketManager.didReceiveMessage

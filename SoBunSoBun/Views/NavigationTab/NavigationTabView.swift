@@ -14,7 +14,7 @@ import ReactorKit
 
 class NavigationTabView: UIViewController {
     typealias Reactor = NavigationTabReactor
-    let reactor = NavigationTabReactor()
+    private let reactor = NavigationTabReactor()
     private let disposeBag = DisposeBag()
     
     private let homeView = HomeView()

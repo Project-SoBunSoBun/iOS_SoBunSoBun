@@ -20,6 +20,8 @@ class NavigationTabReactor: Reactor {
     
     let initialState = State()
     
+    private let disposeBag = DisposeBag()
+    
     private let chatRoomListWebSocketManager = ChatRoomListWebSocketManager()
     private let commonNetworkManager = CommonNetworkManager()
     private let networkManager = NavigationTabNetworkManager()
@@ -107,6 +109,20 @@ class NavigationTabReactor: Reactor {
         NotificationManager.shared.updateBadgeCount(totalBadgeCount)
         
         return newState
+    }
+    
+    // sceneDidEnterBackground action 연결 및 변환
+    func transform(action: Observable<Action>) -> Observable<Action> {
+        let backgroundAction = NotificationCenter.default.rx
+            .notification(.sceneDidEnterBackground)
+            .flatMap { _ in
+                Observable.merge([
+                    Observable.just(Action.getUnreadNotificationCount),
+                    Observable.just(Action.getChatRoomListData)
+                ])
+            }
+        
+        return Observable.merge(action, backgroundAction)
     }
     
     // webSocketManager publish mutation 연결 및 변환

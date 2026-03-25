@@ -16,7 +16,7 @@ class ChatView: UIViewController {
     private let chatRoomId: Int
     
     typealias Reactor = ChatReactor
-    lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
+    private lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
     
     private let disposeBag = DisposeBag()
     
