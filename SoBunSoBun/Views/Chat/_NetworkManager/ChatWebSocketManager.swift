@@ -52,15 +52,6 @@ class ChatWebSocketManager {
         logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 Websocket 구독: \(self.subscribeUrl)")
     }
     
-    func sendMessage(message: String) {
-        guard let currentChatRoomId else { return }
-        
-        let model = ChatSendMessageModel(roomId: currentChatRoomId, type: .TEXT, content: message)
-        
-        swiftStomp?.send(body: model, to: "/app/chat/send")
-        logger.debug("메시지 전송")
-    }
-    
     func read(lastMessageId: String) {
         guard let currentChatRoomId else { return }
         

@@ -294,12 +294,8 @@ extension ChatView {
         // 메시지 전송
         sendButton.rx.tap
             .withLatestFrom(chatTextView.rx.text.orEmpty)
-            .subscribe(onNext: { [weak self] text in
-                guard let self = self else { return }
-                
-                reactor.action.onNext(.sendMessage(text))
-                chatTextView.text = ""
-            })
+            .map { Reactor.Action.sendMessage($0) }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         // 하단 메뉴 버튼
@@ -749,6 +745,16 @@ extension ChatView {
                 }
                 
                 self.navigationController?.pushViewController(rightMenuView, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        // 텍스트 전송 성공
+        reactor.pulse(\.$sendSucceed)
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                chatTextView.text = ""
             })
             .disposed(by: disposeBag)
         

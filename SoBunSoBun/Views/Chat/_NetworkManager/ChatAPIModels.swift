@@ -35,11 +35,9 @@ struct ChatMessageModel: Codable, Equatable, FetchableRecord, PersistableRecord 
     static var databaseTableName: String { "messages" }
 }
 
-struct ChatSendMessageModel: Encodable, Equatable {
-    let roomId: Int
-    let type: ChatMessageType
-    let content: String?
-    let cardPayload: String? = nil
+struct ChatSendTextBodyModel: Encodable, Equatable {
+    let groupChatRoomId: Int
+    let content: String
 }
 
 struct ChatReadMessageModel: Encodable {
