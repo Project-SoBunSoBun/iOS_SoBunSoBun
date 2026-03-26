@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>프로필 사진을 설정하기 위해 사진 접근 권한이 필요합니다.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>이미지를 사진 앱에 저장하려면 권한이 필요합니다.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>내 주변의 모임을 검색하거나\n동네 인증을 위해 현재 위치를 확인합니다.\n미 허용 시 앱을 사용하실 수 없습니다.</string>
+	<key>CFBundleIdentifier</key>
+	<string>dev.seongpil.SoBunHaeYo</string>
 	<key>API_URL</key>
 	<string>$(API_URL)</string>
 	<key>CFBundleURLTypes</key>
