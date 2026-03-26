@@ -174,7 +174,7 @@ extension NavigationTabView {
             })
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.errorMessage }
+        reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
