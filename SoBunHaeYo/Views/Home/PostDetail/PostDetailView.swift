@@ -33,6 +33,7 @@ class PostDetailView: UIViewController {
         isNew: Bool = false,
         showBackButton: Bool = true,
         showChatButton: Bool = true,
+        notificationId: Int? = nil,
         nibName: String? = nil,
         bundle: Bundle? = nil
     ) {
@@ -42,6 +43,10 @@ class PostDetailView: UIViewController {
         self.showChatButton = showChatButton
         
         super.init(nibName: nibName, bundle: bundle)
+        
+        if let notificationId {
+            reactor.action.onNext(.readNotification(notificationId))
+        }
     }
     
     required init?(coder: NSCoder) {

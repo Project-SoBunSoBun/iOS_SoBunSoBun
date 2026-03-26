@@ -180,26 +180,4 @@ class HomeNetworkManager {
         )
         .tryMap(MyProfileResponseModel.self)
     }
-    
-    // MARK: - 알림
-    func getNotifications(page: Int, size: Int) -> Single<NotificationResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(HomeAPIs.getNotifications(page: page, size: size))
-        )
-        .tryMap(NotificationResponseModel.self)
-    }
-    
-    func readNotification(id: Int) -> Single<PlainResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(HomeAPIs.readNotification(id: id))
-        )
-        .tryMap(PlainResponseModel.self)
-    }
-    
-    func readAllNotifications() -> Single<PlainResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(HomeAPIs.readAllNotifications)
-        )
-        .tryMap(PlainResponseModel.self)
-    }
 }

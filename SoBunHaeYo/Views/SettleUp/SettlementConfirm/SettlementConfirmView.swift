@@ -14,10 +14,14 @@ class SettlementConfirmView: UIViewController {
     typealias Reactor = SettlementConfirmReactor
     private let reactor: SettlementConfirmReactor
     
-    init(settlementId: Int) {
+    init(settlementId: Int, notificationId: Int? = nil) {
         reactor = SettlementConfirmReactor(settlementId: settlementId)
         
         super.init(nibName: nil, bundle: nil)
+        
+        if let notificationId {
+            reactor.action.onNext(.readNotification(notificationId))
+        }
     }
     
     required init?(coder: NSCoder) {

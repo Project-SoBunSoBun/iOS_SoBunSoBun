@@ -139,22 +139,3 @@ enum NotificationType: String, Decodable {
         self = NotificationType(rawValue: value) ?? .unknown
     }
 }
-
-struct NotificationModel: Decodable {
-    let id: Int
-    let type: NotificationType
-    let nickname: String?
-    let postId, settlementId, chatRoomId: Int?
-    let isRead: Bool
-    let createdAt: String
-}
-
-struct NotificationResponseModel: Decodable {
-    let success: Bool
-    let data: NotificationResponseDataModel
-}
-
-struct NotificationResponseDataModel: Decodable {
-    let content: [NotificationModel]
-    let page: PageInfoModel
-}
