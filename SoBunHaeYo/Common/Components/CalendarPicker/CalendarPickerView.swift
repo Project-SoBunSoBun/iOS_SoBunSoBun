@@ -203,7 +203,7 @@ class CalendarPickerView: UIViewController {
         calendarCollectionView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(weekdayStackView.snp.bottom)
-            make.height.equalTo(40 * 5)
+            make.height.equalTo(40 * 6)
         }
         
         button.snp.makeConstraints { make in

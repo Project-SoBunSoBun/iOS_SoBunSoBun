@@ -175,8 +175,8 @@ class CalendarPickerReactor: Reactor {
             }
         }
         
-        // 다음 달
-        let remainingCells = 35 - dates.count
+        // 다음 달 (항상 42칸 = 6행으로 채움)
+        let remainingCells = 42 - dates.count
         if remainingCells > 0 {
             for day in 1...remainingCells {
                 if let date = calendar.date(byAdding: .day, value: numDays + day - 1, to: firstDayOfMonth) {
