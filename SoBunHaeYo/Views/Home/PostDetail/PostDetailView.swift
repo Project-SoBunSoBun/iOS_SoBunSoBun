@@ -734,11 +734,29 @@ extension PostDetailView {
                         // 버튼 좌표 변환
                         let buttonFrame = button.convert(button.bounds, to: view)
                         
+                        // 드롭다운 높이: 항목 수 × 셀 높이
+                        let dropdownHeight = CGFloat(commentMenuDropDownView.items.count) * commentMenuDropDownView.cellHeight
+                        
+                        // commentDividerView 위까지 남은 공간
+                        let availableSpaceBelow = commentDividerView.frame.minY - buttonFrame.maxY
+                        let shouldOpenUpward = dropdownHeight > availableSpaceBelow
+                        
+                        commentMenuDropDownView.animationAnchor = shouldOpenUpward ? .bottomRight : .topRight
+                        
                         commentMenuDropDownView.snp.remakeConstraints { make in
                             make.trailing.equalTo(self.view.snp.leading).offset(buttonFrame.maxX)
-                            make.top.equalToSuperview().offset(buttonFrame.maxY)
+                            
+                            if shouldOpenUpward {
+                                make.bottom.equalTo(self.view.snp.top).offset(buttonFrame.minY)
+                            } else {
+                                make.top.equalToSuperview().offset(buttonFrame.maxY)
+                            }
+                            
                             make.width.equalTo(70)
                         }
+                        
+                        // z-order 재설정
+                        view.bringSubviewToFront(commentMenuDropDownView)
                         
                         let currentState = reactor.currentState
                         let isSameComment = currentState.selectedCommentModel?.id == model.id
