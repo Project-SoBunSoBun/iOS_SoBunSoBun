@@ -369,6 +369,30 @@ class PostDetailView: UIViewController {
     }()
     
     // MARK: - 생명주기
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        updateTableHeaderViewHeight()
+    }
+    
+    private func updateTableHeaderViewHeight() {
+        guard let headerView = tableView.tableHeaderView else { return }
+        
+        let height = headerView.systemLayoutSizeFitting(
+            CGSize(width: tableView.bounds.width, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        ).height
+        
+        var frame = headerView.frame
+        
+        if abs(frame.size.height - height) > 1 {
+            frame.size.height = height
+            headerView.frame = frame
+            tableView.tableHeaderView = headerView
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -1059,6 +1083,9 @@ extension PostDetailView {
         if !isOwner && showChatButton {
             createCommentStackView.insertArrangedSubview(chatButton, at: 0)
         }
+        
+        contentView.layoutIfNeeded()
+        updateTableHeaderViewHeight()
     }
     
     // 수정 모드 UI 업데이트
@@ -1088,16 +1115,3 @@ extension PostDetailView {
         }
     }
 }
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct PostDetaillViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            PostDetailView(postId: 0)
-        }
-    }
-}
-#endif
