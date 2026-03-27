@@ -675,15 +675,23 @@ class PostDetailReactor: Reactor {
         
         return homeNetworkManager.createChatRoomId(userId: ownerId, groupPostId: postId)
             .asObservable()
-            .flatMap { model -> Observable<Mutation> in
-                return Observable.just(.setShouldNavigateToChat(model.data.roomId))
+            .flatMap { [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
+                if let errorCode = response.errorCode {
+                    self.logger.critical("채팅방 생성 혹은 조회 실패(\(errorCode)) - \(response.message)")
+                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                    return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                } else {
+                    return Observable.just(.setShouldNavigateToChat(response.data.roomId))
+                }
             }
             .catch { [weak self] error in
-                guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
-                }
+                guard let self = self else { return Observable.empty() }
                 
-                logger.critical("채팅방 생성 혹은 조회 실패: \(error.localizedDescription)")
+                self.logger.critical("채팅방 생성 혹은 조회 실패: \(error.localizedDescription)")
+                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }

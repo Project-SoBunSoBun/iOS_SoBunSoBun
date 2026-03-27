@@ -22,7 +22,7 @@ class SignUpCompletedReactor: Reactor {
     enum Mutation {
         case setNickname(String)
         case setLoading(Bool)
-        case setError(String)
+        case setErrorMessage(String)
         case setNavigateToHome
     }
     
@@ -52,7 +52,7 @@ class SignUpCompletedReactor: Reactor {
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
             
         case .setNavigateToHome:
@@ -71,7 +71,8 @@ class SignUpCompletedReactor: Reactor {
                     Observable.just(.setNickname(userInfo.nickname ?? "Error"))
                 }
                 .catch { error in
-                    return Observable.just(.setError(error.localizedDescription))
+                    let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                    return Observable.just(.setErrorMessage(errorMessage))
                 },
             Observable.just(.setLoading(false))
         ])

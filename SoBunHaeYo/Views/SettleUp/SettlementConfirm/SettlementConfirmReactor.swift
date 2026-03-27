@@ -33,7 +33,7 @@ class SettlementConfirmReactor: Reactor {
     enum Mutation {
         case setItem(SettlementModel)
         case setSortedParticipants([SettlementParticipantModel])
-        case setError(String)
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -63,7 +63,7 @@ class SettlementConfirmReactor: Reactor {
         case .setSortedParticipants(let participants):
             newState.sortedParticipants = participants
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
         }
         
@@ -102,31 +102,46 @@ class SettlementConfirmReactor: Reactor {
         return Observable.deferred {
             self.settleUpNetworkManager.getSettlement(settlementId: settlementId)
                 .asObservable()
-                .flatMap { model -> Observable<Mutation> in
-                    let item = model.data
+                .flatMap { [weak self] response -> Observable<Mutation> in
+                    guard let self else { return Observable.empty() }
                     
-                    let sortedParticipants = item.participants.sorted { lhs, rhs in
-                        let lhsIsCurrentUser = lhs.userId == currentUserId
-                        let rhsIsCurrentUser = rhs.userId == currentUserId
+                    if response.success {
+                        let item = response.data
                         
-                        if lhsIsCurrentUser != rhsIsCurrentUser {
-                            return lhsIsCurrentUser
+                        let sortedParticipants = item.participants.sorted { lhs, rhs in
+                            let lhsIsCurrentUser = lhs.userId == currentUserId
+                            let rhsIsCurrentUser = rhs.userId == currentUserId
+                            
+                            if lhsIsCurrentUser != rhsIsCurrentUser {
+                                return lhsIsCurrentUser
+                            }
+                            
+                            return false
                         }
                         
-                        return false
+                        return Observable.concat([
+                            .just(.setItem(item)),
+                            .just(.setSortedParticipants(sortedParticipants))
+                        ])
+                    } else {
+                        if let errorCode = response.errorCode {
+                            self.logger.critical("정산 상세 데이터 조회 실패(\(errorCode)): \(response.message ?? "")")
+                            let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                            let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                            return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        } else {
+                            self.logger.critical("정산 상세 데이터 조회 실패")
+                            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        }
                     }
-                    
-                    return Observable.concat([
-                        .just(.setItem(item)),
-                        .just(.setSortedParticipants(sortedParticipants))
-                    ])
                 }
                 .catch { [weak self] error in
                     guard let self = self else { return Observable.empty() }
                     
                     self.logger.critical("정산 상세 데이터 조회 실패: \(error.localizedDescription)")
                     
-                    return .just(.setError("GetSettlementFailed"))
+                    let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                    return Observable.just(.setErrorMessage(errorMessage))
                 }
         }
     }

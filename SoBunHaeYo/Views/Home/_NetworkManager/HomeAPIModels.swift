@@ -91,7 +91,7 @@ struct CreateChatRoomResponseModel: Decodable {
     let status, message: String
     let code: Int
     let data: CreateChatRoomResponseDataModel
-    let error: String?
+    let errorCode: String?
 }
 
 struct CreateChatRoomResponseDataModel: Decodable {

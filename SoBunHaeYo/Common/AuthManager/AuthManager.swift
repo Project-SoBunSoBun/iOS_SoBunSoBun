@@ -182,7 +182,7 @@ class AuthManager {
                 } else {
                     if let errorCode = response.errorCode,
                        let message = response.message {
-                        self.logger.critical("애플 Revoke 실패: \(errorCode) - \(message)")
+                        self.logger.critical("애플 Revoke 실패(\(errorCode)) - \(message)")
                     } else {
                         self.logger.critical("애플 Revoke 실패")
                     }
