@@ -113,7 +113,7 @@ class ChatWebSocketManager {
         }
         
         isReconnecting = true
-        logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 3초 후 재연결 시도")
+        logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 2초 후 재연결 시도")
         
         reconnectWorkItem?.cancel()
         
@@ -125,7 +125,7 @@ class ChatWebSocketManager {
         }
         
         reconnectWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: workItem)
     }
 }
 

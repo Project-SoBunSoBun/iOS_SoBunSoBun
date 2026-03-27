@@ -95,7 +95,7 @@ class ChatRoomListWebSocketManager {
         }
         
         isReconnecting = true
-        logger.debug("채팅방 목록 3초 후 재연결 시도")
+        logger.debug("채팅방 목록 2초 후 재연결 시도")
         
         reconnectWorkItem?.cancel()
         
@@ -107,7 +107,7 @@ class ChatRoomListWebSocketManager {
         }
         
         reconnectWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: workItem)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: workItem)
     }
 }
 
