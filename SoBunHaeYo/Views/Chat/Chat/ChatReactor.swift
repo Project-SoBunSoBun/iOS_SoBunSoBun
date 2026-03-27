@@ -275,8 +275,18 @@ class ChatReactor: Reactor {
     private func getDetailInfo() -> Observable<Mutation> {
         return networkManager.getChatRoomDetail(id: chatRoomId)
             .asObservable()
-            .flatMap { model -> Observable<Mutation> in
-                return Observable.just(.setDetailInfo(model))
+            .flatMap { [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
+                if let errorCode = response.errorCode {
+                    self.logger.critical("채팅방 정보 불러오기 실패(\(errorCode)): \(response.message ?? "")")
+                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                    return Observable.just(.setCriticalErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                } else {
+                    return Observable.just(.setDetailInfo(response))
+                }
             }
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }

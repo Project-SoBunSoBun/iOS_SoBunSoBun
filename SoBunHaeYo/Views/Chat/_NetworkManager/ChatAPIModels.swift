@@ -57,7 +57,7 @@ struct ChatRoomDetailModel: Decodable, Equatable {
     let status: String
     let code: Int
     let data: ChatRoomDetailDataModel
-    let message, error: String?
+    let message, errorCode: String?
 }
 
 struct ChatRoomDetailDataModel: Decodable, Equatable {
