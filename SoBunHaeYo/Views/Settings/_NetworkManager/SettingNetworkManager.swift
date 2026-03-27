@@ -21,28 +21,25 @@ class SettingNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.getMeProfile)
         )
-        .filterSuccessfulStatusCodes()
-        .map(MyProfileModel.self)
+        .tryMap(MyProfileModel.self)
     }
     
     // 프로필 이미지 변경
-    func patchProfileImage(profileImage: UIImage) -> Single<Void> {
+    func patchProfileImage(profileImage: UIImage) -> Single<PlainResponseModel> {
         let imageData = profileImage.jpegData(compressionQuality: 0.7) ?? Data()
             
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.patchProfileImage(profileImage: imageData))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // 닉네임 변경
-    func patchNickname(nickname:String) -> Single<Void> {
+    func patchNickname(nickname:String) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.patchNickname(nickname: nickname))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // MARK: - 내 게시글 조회
@@ -51,8 +48,7 @@ class SettingNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.getMyPosts(page: page, size: size))
         )
-        .filterSuccessfulStatusCodes()
-        .map(PostListResponseModel.self)
+        .tryMap(PostListResponseModel.self)
     }
     
     // MARK: - 저장 목록
@@ -61,7 +57,6 @@ class SettingNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.getSavedPosts(page: page, size: size))
         )
-        .filterSuccessfulStatusCodes()
         .tryMap(PostListResponseModel.self)
     }
     
@@ -71,8 +66,7 @@ class SettingNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.getAnnouncement(page: page, size: size))
         )
-        .filterSuccessfulStatusCodes()
-        .map(AnnouncementModel.self)
+        .tryMap(AnnouncementModel.self)
     }
     
     // 공지사항 상세 조회
@@ -80,23 +74,21 @@ class SettingNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.getAnnouncementDetail(id: id))
         )
-        .filterSuccessfulStatusCodes()
-        .map(AnnouncementDetailModel.self)
+        .tryMap(AnnouncementDetailModel.self)
     }
     
     // MARK: - 회원 탈퇴
     // 사용자 회원 탈퇴
-    func withdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool) -> Single<Void> {
+    func withdraw(reasonCode: String, reasonDetail: String, agreedToTerms: Bool) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.postWithdraw(reasonCode: reasonCode, reasonDetail: reasonDetail, agreedToTerms: agreedToTerms))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // MARK: - 1:1 문의
     // 1:1 문의 전송
-    func postInquiries(typeCode: String, content: String, replyEmail: String, selectedImages: [UIImage]?) -> Single<Void> {
+    func postInquiries(typeCode: String, content: String, replyEmail: String, selectedImages: [UIImage]?) -> Single<PlainResponseModel> {
         let imageDatas: [Data]? = selectedImages?.compactMap {
             $0.jpegData(compressionQuality: 0.7)
         }
@@ -104,13 +96,12 @@ class SettingNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.postInquiries(typeCode: typeCode, content: content, replyEmail: replyEmail, selectedImages: imageDatas))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // MARK: - 버그 신고하기
     // 버그 신고하기
-    func postBugReport(typeCode: String, content: String, deviceInfo: String, selectedImages: [UIImage]?) -> Single<Void> {
+    func postBugReport(typeCode: String, content: String, deviceInfo: String, selectedImages: [UIImage]?) -> Single<PlainResponseModel> {
         let imageDatas: [Data]? = selectedImages?.compactMap {
             $0.jpegData(compressionQuality: 0.7)
         }
@@ -118,8 +109,7 @@ class SettingNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettingAPIs.postBugReport(typeCode: typeCode, content: content, deviceInfo: deviceInfo, selectedImages: imageDatas))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // MARK: - 약관 조회

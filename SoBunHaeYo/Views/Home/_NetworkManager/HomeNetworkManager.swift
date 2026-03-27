@@ -118,51 +118,51 @@ class HomeNetworkManager {
     }
     
     // 게시글 저장
-    func savePost(id: Int) -> Single<Void> {
+    func savePost(id: Int) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.savePost(id: id))
         )
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // 게시글 저장 취소
-    func cancelSavePost(id: Int) -> Single<Void> {
+    func cancelSavePost(id: Int) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.cancelSavePost(id: id))
         )
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // 게시글 삭제
-    func deletePost(id: Int) -> Single<Void> {
+    func deletePost(id: Int) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.deletePost(id: id))
         )
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // 댓글 생성
-    func createPostComment(postId: Int, content: String) -> Single<Void> {
+    func createPostComment(postId: Int, content: String) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.createPostComment(postId: postId, content: content))
         )
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // 댓글 수정
-    func patchPostComment(id: Int, content: String) -> Single<Void> {
+    func patchPostComment(id: Int, content: String) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.patchPostComment(id: id, content: content))
         )
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // 댓글 삭제
-    func deletePostComment(id: Int) -> Single<Void> {
+    func deletePostComment(id: Int) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(HomeAPIs.deletePostComment(id: id))
         )
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // 채팅방 id 조회
