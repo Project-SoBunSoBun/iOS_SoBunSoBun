@@ -356,6 +356,10 @@ class HomeView: UIViewController {
             sortSelectView.addArrangedSubview($0)
         }
         
+        updateDropDownViewConstraints()
+    }
+    
+    private func updateDropDownViewConstraints() {
         dropDownView.snp.remakeConstraints { make in
             make.leading.equalTo(sortSelectView)
             make.top.equalTo(sortSelectView.snp.bottom).offset(4)
@@ -580,6 +584,9 @@ extension HomeView {
         }
         
         filtersStackView.addArrangedSubview(sortSelectView)
+        
+        // sortSelectView가 제거/재추가되면 dropDownView의 제약도 같이 사라지므로 재적용
+        updateDropDownViewConstraints()
         
         if selectedCategories.isEmpty {
             addCategoryAll()
