@@ -112,7 +112,7 @@ class ChatRoomKickReactor: Reactor {
             .catch { error in
                 self.logger.critical("멤버 강퇴 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setError(String(localized: "ErrorMessage", table: "Error")))
             }
     }
 }

@@ -180,7 +180,7 @@ extension NavigationTabView {
                 guard let self = self else { return }
                 
                 let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Common"),
+                    title: String(localized: "Error", table: "Error"),
                     subTitle: message,
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
@@ -192,7 +192,7 @@ extension NavigationTabView {
     
     private func showLocationSettingAlert() {
         let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Common"),
+            title: String(localized: "Error", table: "Error"),
             subTitle: String(localized: "LocationSettingTitle", table: "Common"),
             primaryTitleKey: String(localized: "GoToSetting", table: "Common")
         )

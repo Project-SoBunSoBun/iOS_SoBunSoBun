@@ -412,7 +412,7 @@ class ChatReactor: Reactor {
                     
                     self.logger.critical("텍스트 보내기 실패: \(error.localizedDescription)")
                     
-                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
             ,
             Observable.just(.setLastSendTime(Date()))
@@ -449,13 +449,13 @@ class ChatReactor: Reactor {
               let myId = Int(myIdString) else {
             logger.critical("내 USER_ID를 불러오는 중 오류 발생")
             
-            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
         }
         
         guard let inviteeId: Int = currentState.detailInfoModel?.data.members.first(where: { $0.userId != myId })?.userId else {
             logger.critical("초대할 상대가 없어 오류 발생")
             
-            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
         }
         
         return networkManager.sendInviteCard(chatRoomId: chatRoomId, inviteeId: inviteeId)
@@ -530,7 +530,7 @@ class ChatReactor: Reactor {
                 
                 self.logger.critical("채팅방 나가기 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
             }
     }
 }

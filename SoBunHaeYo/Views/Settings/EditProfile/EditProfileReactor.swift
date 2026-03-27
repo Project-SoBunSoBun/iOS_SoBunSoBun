@@ -36,7 +36,7 @@ class EditProfileReactor: Reactor {
         case setNickname(String?)
         case setProfileImage(UIImage)
         case setCompleteButtonEnabled(Bool)
-        case setError(String)
+        case setErrorMessage(String)
         case setProfileSaved
     }
     
@@ -95,7 +95,7 @@ class EditProfileReactor: Reactor {
         case .setCompleteButtonEnabled(let enabled):
             newState.isCompleteButtonEnabled = enabled
         
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
             
         case .setProfileSaved:
@@ -121,7 +121,7 @@ class EditProfileReactor: Reactor {
             return saveProfileImage()
         } else {
             logger.debug("변경 사항 없음")
-            return Observable.just(.setError("변경된 내용이 없습니다."))
+            return Observable.just(.setErrorMessage("변경된 내용이 없습니다."))
         }
     }
     
@@ -133,11 +133,21 @@ class EditProfileReactor: Reactor {
         
         return settingNetworkManager.patchProfileImage(profileImage: profileImage)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                return Observable.just(.setProfileSaved)
+            .flatMap { response -> Observable<Mutation> in
+                if response.success {
+                    return Observable.just(.setProfileSaved)
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { error in
-                return Observable.just(.setError(error.localizedDescription))
+                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
             }
     }
     
@@ -147,11 +157,21 @@ class EditProfileReactor: Reactor {
         
         return settingNetworkManager.patchNickname(nickname: nickname)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                return Observable.just(.setProfileSaved)
+            .flatMap { response -> Observable<Mutation> in
+                if response.success {
+                    return Observable.just(.setProfileSaved)
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { error in
-                return Observable.just(.setError(error.localizedDescription))
+                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
             }
     }
     
@@ -162,11 +182,21 @@ class EditProfileReactor: Reactor {
         
         return signInNetworkManager.saveProfile(nickname: nickname, profileImage: profileImage)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                return Observable.just(.setProfileSaved)
+            .flatMap { response -> Observable<Mutation> in
+                if response.success {
+                    return Observable.just(.setProfileSaved)
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { error in
-                return Observable.just(.setError(error.localizedDescription))
+                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
             }
     }
     

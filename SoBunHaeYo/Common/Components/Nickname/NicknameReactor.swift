@@ -106,7 +106,7 @@ class NicknameReactor: Reactor {
             newState.infoMessage = String(localized: "DenyNicknameInput", table: "Common")
         case .error:
             newState.nickNameAvailable = false
-            newState.infoMessage = String(localized: "ErrorMessage", table: "Common")
+            newState.infoMessage = String(localized: "ErrorMessage", table: "Error")
         case .setButtonEnabled(let isEnabled):
             newState.isButtonEnabled = isEnabled
         case .resetValidation:

@@ -84,7 +84,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "저장된 Apple refresh_token이 없습니다.\nApple 앱에서 직접 연결 해제를 진행해주세요."
+            "value" : "저장된 Apple 리프레시 토큰이 없습니다.\nApple 앱에서 직접 연결 해제를 진행해주세요."
           }
         }
       }
@@ -426,6 +426,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.\n(코드: %1$(code)@)"
+          }
+        }
+      }
+    },
+    "ErrorMessageWithReason" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오류가 발생했습니다.\n잠시 후 다시 시도해 주세요.\n(%1$(reason)@)"
           }
         }
       }

@@ -138,7 +138,7 @@ extension TermsDetailView {
     private func errorAlert(message: String) {
         let alert = CustomAlertView(
             title: message,
-            subTitle: String(localized: "ErrorMessage", table: "Common"),
+            subTitle: String(localized: "ErrorMessage", table: "Error"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         

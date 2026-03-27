@@ -160,26 +160,26 @@ class ReportReactor: Reactor {
         }
         
         return api.asObservable()
-            .flatMap { model -> Observable<Mutation> in
+            .flatMap { response -> Observable<Mutation> in
                 self.logger.debug("신고 완료")
                 
-                if model.success {
+                if response.success {
                     return Observable.just(.setShouldShowReportCompletedAlert)
                 } else {
-                    if let errorCode = model.errorCode {
+                    if let errorCode = response.errorCode {
                         let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                         let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
                         
                         return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                     }
                 }
             }
             .catch { error in
                 self.logger.debug("신고 에러: \(error)")
                 
-                return Observable.just(.setErrorMessage(error.localizedDescription))
+                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
             }
     }
 }

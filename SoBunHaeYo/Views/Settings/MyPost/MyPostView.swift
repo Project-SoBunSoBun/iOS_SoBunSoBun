@@ -328,7 +328,8 @@ extension MyPostView {
     // 에러 알러트
     private func errorAlert() {
         let alert = CustomAlertView(
-            title: String(localized: "ErrorMessage", table: "Common"),
+            title: String(localized: "Error", table: "Error"),
+            subTitle: String(localized: "ErrorMessage", table: "Error"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         

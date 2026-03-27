@@ -99,7 +99,7 @@ class ChatRateMannerReactor: Reactor {
             .catch { error in
                 self.logger.critical("매너 평가 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setError(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -116,7 +116,7 @@ class ChatRateMannerReactor: Reactor {
             .catch { error in
                 self.logger.critical("매너 평가 스킵 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setError(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setError(String(localized: "ErrorMessage", table: "Error")))
             }
     }
 }

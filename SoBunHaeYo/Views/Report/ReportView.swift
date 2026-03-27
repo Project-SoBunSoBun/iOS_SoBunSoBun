@@ -334,7 +334,7 @@ extension ReportView {
     
     private func errorAlert(description: String) {
         let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Common"),
+            title: String(localized: "Error", table: "Error"),
             subTitle: description,
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )

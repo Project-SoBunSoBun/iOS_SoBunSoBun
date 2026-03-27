@@ -167,7 +167,7 @@ class HomeReactor: Reactor {
         case .verifyLocation(let address):
             newState.verifiedLocation = address
             newState.isLocationVerified = !address.isEmpty &&
-            [String(localized: "ErrorMessage", table: "Common"), String(localized: "LocationPermissionDenied", table: "Home")].contains(address) == false
+            [String(localized: "ErrorMessage", table: "Error"), String(localized: "LocationPermissionDenied", table: "Home")].contains(address) == false
             
         case .setShowLocationSettingAlert:
             newState.shouldShowLocationSettingAlert = ()
@@ -237,7 +237,7 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.critical("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
-                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -268,7 +268,7 @@ class HomeReactor: Reactor {
                         
                     default: // 뭔가 잘못 됨
                         self.logger.fault("위치 권한 요청 후 무언가 잘못 됨: \(status.rawValue)")
-                        return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                        return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
                     }
                 }
                 .catch { error in
@@ -285,7 +285,7 @@ class HomeReactor: Reactor {
             
         default:
             logger.fault("위치 권한이 무언가 잘못 됨: \(authStatus.rawValue)")
-            return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+            return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
         }
     }
     
@@ -304,7 +304,7 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.fault("위치 가져오기 실패: \(error.localizedDescription)")
-                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -324,7 +324,7 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.critical("지오코드 API 호출 실패: \(error.localizedDescription)")
-                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -337,14 +337,14 @@ class HomeReactor: Reactor {
                     return .verifyLocation(address)
                 } else {
                     self.logger.critical("patch 후에도 address 적용 안 됨")
-                    return .verifyLocation(String(localized: "ErrorMessage", table: "Common"))
+                    return .verifyLocation(String(localized: "ErrorMessage", table: "Error"))
                 }
             }
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
                 logger.fault("위치 인증 실패: \(error.localizedDescription)")
-                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     

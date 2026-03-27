@@ -274,7 +274,7 @@ extension LoginView {
             })
             .disposed(by: disposeBag)
         
-        reactor.pulse(\.$ErrorMessage)
+        reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
@@ -287,7 +287,8 @@ extension LoginView {
     
     private func errorAlert() {
         let alert = CustomAlertView(
-            title: String(localized: "ErrorMessage", table: "Common"),
+            title: String(localized: "Error", table: "Error"),
+            subTitle: String(localized: "ErrorMessage", table: "Error"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         

@@ -43,7 +43,7 @@ class MyPostReactor: Reactor {
         case setIsMenuOpen(Bool)
         case removePostById(Int)
         case setShouldShowDeletePostDoneAlert
-        case setError(String)
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -146,7 +146,7 @@ class MyPostReactor: Reactor {
         case .setShouldShowDeletePostDoneAlert:
             newState.shouldShowDeletePostDoneAlert = ()
         
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
         }
         
@@ -187,12 +187,28 @@ class MyPostReactor: Reactor {
                 Observable.just(.setLoading(true)),
                 self.homeNetworkManager.deletePost(id: id)
                     .asObservable()
-                    .flatMap { _ -> Observable<Mutation> in
-                        return Observable.concat([
-                            Observable.just(.removePostById(id)),
-                            Observable.just(.setShouldShowDeletePostDoneAlert),
-                            Observable.just(.setLoading(false))
-                        ])
+                    .flatMap { response -> Observable<Mutation> in
+                        if response.success {
+                            return Observable.concat([
+                                Observable.just(.removePostById(id)),
+                                Observable.just(.setShouldShowDeletePostDoneAlert),
+                                Observable.just(.setLoading(false))
+                            ])
+                        } else {
+                            if let errorCode = response.errorCode {
+                                let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                                let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                                return Observable.concat([
+                                    Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback)),
+                                    Observable.just(.setLoading(false))
+                                ])
+                            } else {
+                                return Observable.concat([
+                                    Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error"))),
+                                    Observable.just(.setLoading(false))
+                                ])
+                            }
+                        }
                     }
                     .catch { [weak self] error in
                         guard let self = self else { return Observable.empty() }
@@ -200,7 +216,7 @@ class MyPostReactor: Reactor {
                         self.logger.error("게시글 삭제 실패: \(error.localizedDescription)")
                         
                         return Observable.concat([
-                            Observable.just(.setError("게시글 삭제에 실패했습니다")),
+                            Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription))),
                             Observable.just(.setLoading(false))
                         ])
                     }

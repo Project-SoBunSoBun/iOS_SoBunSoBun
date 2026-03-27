@@ -269,10 +269,22 @@ extension SettleUp3rdStepView {
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert()
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Error"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = { [weak self] in
+                    guard let self = self else { return }
+                    
+                    self.logger.debug("확인 버튼 클릭")
+                }
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
     }
@@ -300,19 +312,4 @@ extension SettleUp3rdStepView {
         alert.show(on: self)
     }
     
-    private func errorAlert() {
-        let alert = CustomAlertView(
-            title: String(localized: "SettlementFailed", table: "SettleUp"),
-            subTitle: String(localized: "ErrorMessage", table: "Common"),
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = { [weak self] in
-            guard let self = self else { return }
-            
-            self.logger.debug("확인 버튼 클릭")
-        }
-        
-        alert.show(on: self)
-    }
 }

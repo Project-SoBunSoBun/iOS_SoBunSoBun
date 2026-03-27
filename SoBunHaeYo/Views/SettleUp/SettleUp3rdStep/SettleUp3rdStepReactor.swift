@@ -33,7 +33,7 @@ class SettleUp3rdStepReactor: Reactor {
         case setLoading(Bool)
         case setShouldShowSaveAlert
         case setNavigateToSettleUpView
-        case setError
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -56,7 +56,7 @@ class SettleUp3rdStepReactor: Reactor {
         
         @Pulse var shouldShowSaveAlert: Void? = nil
         @Pulse var shouldNavigateToSettleUpView: Void? = nil
-        @Pulse var errorMessage: Void? = nil
+        @Pulse var errorMessage: String? = nil
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -82,8 +82,8 @@ class SettleUp3rdStepReactor: Reactor {
         case .setNavigateToSettleUpView:
             newState.shouldNavigateToSettleUpView = ()
             
-        case .setError:
-            newState.errorMessage = ()
+        case .setErrorMessage(let message):
+            newState.errorMessage = message
         }
         
         return newState
@@ -95,19 +95,29 @@ class SettleUp3rdStepReactor: Reactor {
                 Observable.just(.setLoading(true)),
                 self.networkManager.putSettlementComplete(model: model)
                     .asObservable()
-                    .flatMap { [weak self] _ -> Observable<Mutation> in
+                    .flatMap { [weak self] response -> Observable<Mutation> in
                         guard let self = self else { return Observable.empty() }
                         
                         self.logger.debug("정산 등록 성공")
                         
-                        return Observable.just(.setNavigateToSettleUpView)
+                        if response.success {
+                            return Observable.just(.setNavigateToSettleUpView)
+                        } else {
+                            if let errorCode = response.errorCode {
+                                let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                                let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                                return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                            } else {
+                                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                            }
+                        }
                     }
                     .catch { [weak self] error in
                         guard let self = self else { return Observable.empty() }
                         
                         self.logger.error("정산 등록 실패: \(error.localizedDescription)")
                         
-                        return Observable.just(.setError)
+                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
                     },
                 Observable.just(.setLoading(false))
             ])
