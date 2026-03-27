@@ -26,7 +26,7 @@ class PostDetailReactor: Reactor {
     private let homeNetworkManager = HomeNetworkManager()
     private let notificationNetworkManager = NotificationNetworkManager()
     
-    private let errorMessage: String = String(localized: "ErrorMessage", table: "Common")
+    private let errorMessage: String = String(localized: "ErrorMessage", table: "Error")
     
     let initialState: State = State()
     
@@ -434,8 +434,19 @@ class PostDetailReactor: Reactor {
     private func savePost() -> Observable<Mutation> {
         return homeNetworkManager.savePost(id: postId)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                return Observable.just(.setIsSaved(true))
+            .flatMap { response -> Observable<Mutation> in
+                if response.success {
+                    return Observable.just(.setIsSaved(true))
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { [weak self] error in
                 guard let self = self else {
@@ -451,8 +462,19 @@ class PostDetailReactor: Reactor {
     private func cancelSavePost() -> Observable<Mutation> {
         return homeNetworkManager.cancelSavePost(id: postId)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                return Observable.just(.setIsSaved(false))
+            .flatMap { response -> Observable<Mutation> in
+                if response.success {
+                    return Observable.just(.setIsSaved(false))
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { [weak self] error in
                 guard let self = self else {
@@ -468,8 +490,19 @@ class PostDetailReactor: Reactor {
     private func deletePost() -> Observable<Mutation> {
         return homeNetworkManager.deletePost(id: postId)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                return Observable.just(.setShouldShowDeletePostDoneAlert)
+            .flatMap { response -> Observable<Mutation> in
+                if response.success {
+                    return Observable.just(.setShouldShowDeletePostDoneAlert)
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { [weak self] error in
                 guard let self = self else {
@@ -493,10 +526,21 @@ class PostDetailReactor: Reactor {
         
         return homeNetworkManager.createPostComment(postId: postId, content: convertedComment)
             .asObservable()
-            .flatMap { [weak self] _ -> Observable<Mutation> in
+            .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                return getComments()
+                if response.success {
+                    return getComments()
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { [weak self] error in
                 guard let self = self else {
@@ -524,13 +568,24 @@ class PostDetailReactor: Reactor {
         
         return homeNetworkManager.patchPostComment(id: commentModel.id, content: convertedComment)
             .asObservable()
-            .flatMap { [weak self] _ -> Observable<Mutation> in
+            .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                return Observable.concat([
-                    getComments(),
-                    Observable.just(.setIsEditMode(false))
-                ])
+                if response.success {
+                    return Observable.concat([
+                        getComments(),
+                        Observable.just(.setIsEditMode(false))
+                    ])
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { [weak self] error in
                 guard let self = self else {
@@ -550,14 +605,25 @@ class PostDetailReactor: Reactor {
         
         return homeNetworkManager.deletePostComment(id: commentModel.id)
             .asObservable()
-            .flatMap { [weak self] _ -> Observable<Mutation> in
+            .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                return Observable.concat([
-                    getPostCommentsCount(),
-                    getComments(),
-                    Observable.just(.setShouldShowDeleteCommentDoneAlert)
-                ])
+                if response.success {
+                    return Observable.concat([
+                        getPostCommentsCount(),
+                        getComments(),
+                        Observable.just(.setShouldShowDeleteCommentDoneAlert)
+                    ])
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { [weak self] error in
                 guard let self = self else {
@@ -615,15 +681,25 @@ class PostDetailReactor: Reactor {
         
         return homeNetworkManager.createChatRoomId(userId: ownerId, groupPostId: postId)
             .asObservable()
-            .flatMap { model -> Observable<Mutation> in
-                return Observable.just(.setShouldNavigateToChat(model.data.roomId))
+            .flatMap { [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
+                if let errorCode = response.errorCode {
+                    self.logger.critical("채팅방 생성 혹은 조회 실패(\(errorCode)) - \(response.message)")
+                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                    
+                    return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                } else {
+                    return Observable.just(.setShouldNavigateToChat(response.data.roomId))
+                }
             }
             .catch { [weak self] error in
-                guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
-                }
+                guard let self = self else { return Observable.empty() }
                 
-                logger.critical("채팅방 생성 혹은 조회 실패: \(error.localizedDescription)")
+                self.logger.critical("채팅방 생성 혹은 조회 실패: \(error.localizedDescription)")
+                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }

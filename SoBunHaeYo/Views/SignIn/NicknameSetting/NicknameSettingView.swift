@@ -214,9 +214,14 @@ extension NicknameSettingView {
                 guard let self = self else { return }
                 
                 self.logger.debug("에러 발생: \(message)")
-                let alert = UIAlertController(title: String(localized: "ErrorMessage", table: "Common"), message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: String(localized: "Confirm", table: "Common"), style: .default))
-                self.present(alert, animated: true)
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Error"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         

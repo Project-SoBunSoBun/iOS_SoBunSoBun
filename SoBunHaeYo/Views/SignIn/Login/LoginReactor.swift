@@ -41,7 +41,7 @@ class LoginReactor: Reactor {
     
     struct State {
         @Pulse var loginCompleted: Bool?
-        @Pulse var ErrorMessage: String?
+        @Pulse var errorMessage: String?
         @Pulse var shouldNavigateToHome: Bool?
     }
     
@@ -109,13 +109,13 @@ class LoginReactor: Reactor {
             newState.loginCompleted = isNewUser
             
         case .loginFailed(let message):
-            newState.ErrorMessage = message
+            newState.errorMessage = message
             
         case .loginAndNavigateToHomeSuccess(let isSaved):
             newState.shouldNavigateToHome = isSaved
             
         case .loginAndNavigateToHomeFailed(let message):
-            newState.ErrorMessage = message
+            newState.errorMessage = message
         }
         
         return newState

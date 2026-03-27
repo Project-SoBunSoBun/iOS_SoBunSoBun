@@ -20,17 +20,15 @@ class SettleUpNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettleUpAPIs.mySettleUps(status: status, page: page, size: size))
         )
-        .filterSuccessfulStatusCodes()
         .tryMap(SettleUpResponseModel.self)
     }
     
     // 정산 완료 등록 메서드
-    func putSettlementComplete(model: SettleUp3rdStepDataModel) -> Single<Void> {
+    func putSettlementComplete(model: SettleUp3rdStepDataModel) -> Single<PlainResponseModel> {
         return authProvider.rx.request(
             MultiTarget(SettleUpAPIs.putSettlementComplete(model: model))
         )
-        .filterSuccessfulStatusCodes()
-        .map { _ in () }
+        .tryMap(PlainResponseModel.self)
     }
     
     // 정산 상세 조회 메서드
@@ -38,7 +36,6 @@ class SettleUpNetworkManager {
         return authProvider.rx.request(
             MultiTarget(SettleUpAPIs.getSettlement(settlementId: settlementId))
         )
-        .filterSuccessfulStatusCodes()
         .tryMap(SettlementResponseModel.self)
     }
 }

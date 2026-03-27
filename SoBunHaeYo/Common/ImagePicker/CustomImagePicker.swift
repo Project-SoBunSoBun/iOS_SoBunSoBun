@@ -123,18 +123,13 @@ class CustomImagePicker: NSObject {
     private func showImageSizeAlert() {
         guard let viewController = presentingViewController else { return }
         
-        let alert = UIAlertController(
+        let alert = CustomAlertView(
             title: String(localized: "ImageSizeExceeded", table: "Common"),
-            message: String(localized: "SelectOnlyFilesUnder5MB", table: "Common"),
-            preferredStyle: .alert
+            subTitle: String(localized: "SelectOnlyFilesUnder5MB", table: "Common"),
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        alert.addAction(UIAlertAction(
-            title: String(localized: "Confirm", table: "Common"),
-            style: .default
-        ))
-        
-        viewController.present(alert, animated: true)
+        alert.show(on: viewController)
     }
 }
 

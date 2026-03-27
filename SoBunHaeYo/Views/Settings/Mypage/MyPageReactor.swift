@@ -42,14 +42,14 @@ class MyPageReactor: Reactor {
     enum Mutation {
         case setProfile(MyProfileModel)
         case setLoading(Bool)
-        case setError(String)
+        case setErrorMessage(String)
         case setNavigate(ViewType)
     }
     
     struct State {
         var profile: MyProfileModel?
         var isLoading: Bool = false
-        var errorMessage: String?
+        @Pulse var errorMessage: String?
         @Pulse var shouldNavigate: ViewType? = nil
     }
     
@@ -65,7 +65,9 @@ class MyPageReactor: Reactor {
                     }
                     .catch { error in
                         self.logger.error("getMeProfile 실패: \(error.localizedDescription)")
-                        return Observable.just(.setError(error.localizedDescription))
+                        let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                        
+                        return Observable.just(.setErrorMessage(errorMessage))
                     },
                 Observable.just(.setLoading(false))
             ])
@@ -100,7 +102,7 @@ class MyPageReactor: Reactor {
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
         
         case .setNavigate(let viewType):

@@ -153,7 +153,7 @@ class NavigationTabReactor: Reactor {
             .catch { error in
                 self.logger.critical("내 정보 불러오는 중 오류 발생: \(error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -185,7 +185,7 @@ class NavigationTabReactor: Reactor {
             .catch { error in
                 self.logger.critical("채팅방 목록 불러오는 중 오류 발생: \(error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     

@@ -134,7 +134,7 @@ class ProfileManagableReactor: Reactor {
             .catch { error in
                 self.logger.critical("게시글 목록 불러오기 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -159,7 +159,7 @@ class ProfileManagableReactor: Reactor {
                     } else {
                         self.logger.fault("차단 중 userInfo가 없음")
                         
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                     }
                 } else {
                     if let errorCode = model.errorCode {
@@ -169,7 +169,7 @@ class ProfileManagableReactor: Reactor {
                     } else {
                         self.logger.critical("차단 중 오류")
                         
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                     }
                 }
             }
@@ -178,7 +178,7 @@ class ProfileManagableReactor: Reactor {
                 
                 self.logger.critical("차단 중 오류: \(error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -203,7 +203,7 @@ class ProfileManagableReactor: Reactor {
                     } else {
                         self.logger.fault("차단 해제 중 userInfo가 없음")
                         
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                     }
                 } else {
                     if let errorCode = model.errorCode {
@@ -213,7 +213,7 @@ class ProfileManagableReactor: Reactor {
                     } else {
                         self.logger.critical("차단 해제 중 오류")
                         
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                     }
                 }
             }
@@ -222,7 +222,7 @@ class ProfileManagableReactor: Reactor {
                 
                 self.logger.critical("차단 해제 중 오류: \(error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
             }
     }
 }

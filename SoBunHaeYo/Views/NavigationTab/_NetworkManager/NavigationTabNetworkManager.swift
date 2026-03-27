@@ -24,7 +24,6 @@ class NavigationTabNetworkManager {
         return authProvider.rx.request(
             MultiTarget(NavigationTabAPIs.getChatRoomList)
         )
-        .filterSuccessfulStatusCodes()
         .tryMap(ChatRoomListResponseModel.self)
     }
 }

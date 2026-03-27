@@ -20,7 +20,7 @@ class HomeReactor: Reactor {
     private let networkManager = HomeNetworkManager()
     
     let initialState: State = State()
-    private let pageSize: Int = 20
+    private let PAGE_SIZE: Int = 20
     
     enum Action {
         case viewWillAppear // viewWillAppear 생명주기 실행
@@ -139,6 +139,7 @@ class HomeReactor: Reactor {
             }
             
             let nextPage = currentState.page + 1
+            
             return Observable.concat([
                 Observable.just(.setPage(nextPage)),
                 loadPosts(sortBy: currentState.sortBy, page: nextPage, isFirst: false, categories: currentState.selectedCategories)
@@ -167,7 +168,7 @@ class HomeReactor: Reactor {
         case .verifyLocation(let address):
             newState.verifiedLocation = address
             newState.isLocationVerified = !address.isEmpty &&
-            [String(localized: "ErrorMessage", table: "Common"), String(localized: "LocationPermissionDenied", table: "Home")].contains(address) == false
+            [String(localized: "ErrorMessage", table: "Error"), String(localized: "LocationPermissionDenied", table: "Home")].contains(address) == false
             
         case .setShowLocationSettingAlert:
             newState.shouldShowLocationSettingAlert = ()
@@ -237,7 +238,8 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.critical("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
-                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -260,19 +262,23 @@ class HomeReactor: Reactor {
                 .flatMap { status -> Observable<Mutation> in
                     switch status {
                     case .authorizedWhenInUse, .authorizedAlways: // 권한 허용
+                        
                         return self.requestLocationAndProcess()
                         
                     case .denied, .restricted: // 권한 거부됨
                         self.logger.fault("위치 권한 요청 후 거부됨")
+                        
                         return Observable.just(.setShowLocationSettingAlert)
                         
                     default: // 뭔가 잘못 됨
                         self.logger.fault("위치 권한 요청 후 무언가 잘못 됨: \(status.rawValue)")
-                        return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                        
+                        return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
                     }
                 }
                 .catch { error in
                     self.logger.fault("위치 권한 요청 오류: \(error.localizedDescription)")
+                    
                     return Observable.just(.setShowLocationSettingAlert)
                 }
             
@@ -281,11 +287,13 @@ class HomeReactor: Reactor {
             
         case .denied, .restricted: // 권한 거부
             logger.fault("위치 권한 거부됨")
+            
             return Observable.just(.setShowLocationSettingAlert)
             
         default:
             logger.fault("위치 권한이 무언가 잘못 됨: \(authStatus.rawValue)")
-            return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+            
+            return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
         }
     }
     
@@ -304,7 +312,8 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.fault("위치 가져오기 실패: \(error.localizedDescription)")
-                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -324,7 +333,8 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.critical("지오코드 API 호출 실패: \(error.localizedDescription)")
-                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -337,14 +347,16 @@ class HomeReactor: Reactor {
                     return .verifyLocation(address)
                 } else {
                     self.logger.critical("patch 후에도 address 적용 안 됨")
-                    return .verifyLocation(String(localized: "ErrorMessage", table: "Common"))
+                    
+                    return .verifyLocation(String(localized: "ErrorMessage", table: "Error"))
                 }
             }
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
                 logger.fault("위치 인증 실패: \(error.localizedDescription)")
-                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Common")))
+                
+                return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }
     
@@ -354,8 +366,8 @@ class HomeReactor: Reactor {
         
         // API 호출
         let api: Single<PostListResponseModel> = categories.isEmpty
-        ? networkManager.getHomeList(sortBy: sortBy, page: page, size: pageSize)
-        : networkManager.getHomeListByCategories(categories: categories, sortBy: sortBy, page: page, size: pageSize)
+        ? networkManager.getHomeList(sortBy: sortBy, page: page, size: PAGE_SIZE)
+        : networkManager.getHomeListByCategories(categories: categories, sortBy: sortBy, page: page, size: PAGE_SIZE)
         
         return Observable.deferred {
             Observable.concat([

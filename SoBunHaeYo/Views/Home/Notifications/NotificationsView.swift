@@ -243,7 +243,7 @@ extension NotificationsView {
     // 에러 알러트
     private func errorAlert(subTitle: String) {
         let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Common"),
+            title: String(localized: "Error", table: "Error"),
             subTitle: subTitle,
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )

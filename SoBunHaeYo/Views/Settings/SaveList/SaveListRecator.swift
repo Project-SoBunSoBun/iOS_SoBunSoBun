@@ -35,7 +35,7 @@ class SaveListRecator: Reactor {
         case setHasMore(Bool)
         case setRefreshing(Bool)
         case setSavedPostDetail(PostModel)
-        case setError(String)
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -107,7 +107,7 @@ class SaveListRecator: Reactor {
         case .setSavedPostDetail(let model):
             newState.shouldPushSavedPostDetailView = model
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
         }
         
@@ -135,7 +135,7 @@ class SaveListRecator: Reactor {
                     
                     return Observable.concat([
                         isFirst ? Observable.just(.setSavedPosts([])) : Observable.empty(),
-                        Observable.just(.setError(String(localized: "FailToLoadSavedPosts", table: "Settings"))),
+                        Observable.just(.setErrorMessage(String(localized: "FailToLoadSavedPosts", table: "Settings"))),
                         Observable.just(.setHasMore(false)),
                         Observable.just(.setPage(0))
                     ])

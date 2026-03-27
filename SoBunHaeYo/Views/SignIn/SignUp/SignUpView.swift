@@ -352,16 +352,13 @@ extension SignUpView {
     
     // 에러 알림창
     private func showErrorAlert(message: String) {
-        let alert = UIAlertController(
-            title: "오류",
-            message: message,
-            preferredStyle: .alert
+        let alert = CustomAlertView(
+            title: String(localized: "Error", table: "Error"),
+            subTitle: message,
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        let okAction = UIAlertAction(title: "확인", style: .default)
-        alert.addAction(okAction)
-        
-        present(alert, animated: true)
+        alert.show(on: self)
     }
 }
 

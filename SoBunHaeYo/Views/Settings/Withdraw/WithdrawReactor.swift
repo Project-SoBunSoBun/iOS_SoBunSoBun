@@ -46,7 +46,7 @@ class WithdrawReactor: Reactor {
         // 탈퇴 완료
         case setWithdrawCompleted
         // 에러
-        case setError(String)
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -104,7 +104,7 @@ class WithdrawReactor: Reactor {
         case .setWithdrawCompleted:
             newState.withdrawCompleted = ()
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
             
         case .setLoading(let isLoading):
@@ -117,7 +117,8 @@ class WithdrawReactor: Reactor {
     private func withdraw() -> Observable<Mutation> {
         guard let reasonNumber = currentState.reasonNumber else {
             logger.error("탈퇴 사유가 선택되지 않음")
-            return Observable.just(.setError(String(localized: "SelectWithdrawReason", table: "Settings")))
+            
+            return Observable.just(.setErrorMessage(String(localized: "SelectWithdrawReason", table: "Settings")))
         }
         
         let reasonCode = String(format: "%03d", reasonNumber)
@@ -130,15 +131,26 @@ class WithdrawReactor: Reactor {
             agreedToTerms: agreedToTerms
         )
         .asObservable()
-        .flatMap { _ -> Observable<Mutation> in
+        .flatMap { response -> Observable<Mutation> in
             self.logger.debug("탈퇴 완료")
             
-            return Observable.just(.setWithdrawCompleted)
+            if response.success {
+                return Observable.just(.setWithdrawCompleted)
+            } else {
+                if let errorCode = response.errorCode {
+                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                    
+                    return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                } else {
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                }
+            }
         }
         .catch { error in
             self.logger.debug("탈퇴 에러: \(error)")
             
-            return Observable.just(.setError(error.localizedDescription))
+            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
         }
     }
 }

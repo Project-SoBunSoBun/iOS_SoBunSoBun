@@ -160,8 +160,12 @@ class MyProfileReactor: Reactor {
                 Observable.just(.setLoading(true)),
                 self.networkManager.getMyProfile(tab: tabs[self.currentState.tabIndex], page: page, size: self.PAGE_SIZE)
                     .asObservable()
-                    .flatMap { response -> Observable<Mutation> in
-                        if let data = response.data {
+                    .flatMap { [weak self] response -> Observable<Mutation> in
+                        guard let self else { return Observable.empty() }
+                        
+                        if response.success {
+                            guard let data = response.data else { return Observable.empty() }
+                            
                             let mutations: Observable<Mutation> = isFirst ?
                             Observable.concat([
                                 Observable.just(.setMyUserInfo(data)),
@@ -173,24 +177,31 @@ class MyProfileReactor: Reactor {
                                 Observable.just(.setHasMore(!data.posts.pageInfo.last))
                             ])
                         } else {
-                            if let errorMessage = response.message {
-                                self.logger.critical("내 정보 조회 중 오류: \(errorMessage)")
-                                
-                                return Observable.empty()
+                            if let errorCode = response.errorCode {
+                                self.logger.critical("내 정보 조회 실패(\(errorCode)): \(response.message ?? "")")
+                                let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                                let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                                return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                             } else {
-                                self.logger.critical("내 정보 조회 중 오류")
+                                self.logger.critical("내 정보 조회 실패")
                                 
-                                return Observable.empty()
+                                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                             }
                         }
                     }
-                    .catch { error in
+                    .catch { [weak self] error in
+                        guard let self = self else { return Observable.empty() }
+                        
                         self.logger.critical("내 정보 불러오기 실패: \(error.localizedDescription)")
+                        
+                        let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
                         
                         return Observable.concat([
                             isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
                             Observable.just(.setHasMore(false)),
-                            Observable.just(.setPage(0))
+                            Observable.just(.setPage(0)),
+                            Observable.just(.setErrorMessage(errorMessage))
                         ])
                     },
                 Observable.just(.setLoading(false))

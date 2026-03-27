@@ -114,13 +114,13 @@ class ReportReactor: Reactor {
             
         case .setReportType(let type):
             newState.reportType = type
-        
+            
         case .setDetail(let detail):
             newState.detailString = detail
             
         case .setIsAgree(let isAgree):
             newState.isAgree = isAgree
-        
+            
         case .setLoading(let isLoading):
             newState.isLoading = isLoading
             
@@ -160,26 +160,26 @@ class ReportReactor: Reactor {
         }
         
         return api.asObservable()
-        .flatMap { model -> Observable<Mutation> in
-            self.logger.debug("신고 완료")
-            
-            if model.success {
-                return Observable.just(.setShouldShowReportCompletedAlert)
-            } else {
-                if let errorCode = model.errorCode {
-                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-                    
-                    return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+            .flatMap { response -> Observable<Mutation> in
+                self.logger.debug("신고 완료")
+                
+                if response.success {
+                    return Observable.just(.setShouldShowReportCompletedAlert)
                 } else {
-                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
                 }
             }
-        }
-        .catch { error in
-            self.logger.debug("신고 에러: \(error)")
-            
-            return Observable.just(.setErrorMessage(error.localizedDescription))
-        }
+            .catch { error in
+                self.logger.debug("신고 에러: \(error)")
+                
+                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+            }
     }
 }

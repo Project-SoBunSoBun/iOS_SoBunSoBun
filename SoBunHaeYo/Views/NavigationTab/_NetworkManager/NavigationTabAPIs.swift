@@ -16,7 +16,7 @@ enum NavigationTabAPIs {
 extension NavigationTabAPIs: TargetType {
     // interceptor retry 활성화
     var validationType: ValidationType {
-        return .successCodes
+        return .customCodes(Array(200...299) + [400] + Array(402...499))
     }
     
     var baseURL: URL {

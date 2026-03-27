@@ -61,7 +61,7 @@ class InquiriesReactor: Reactor {
         // 문의 전송 성공
         case setInquiriesCompleted
         // 에러
-        case setError(String)
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -159,7 +159,7 @@ class InquiriesReactor: Reactor {
         case .setInquiriesCompleted:
             newState.inquiriesCompleted = ()
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
         }
         
@@ -170,18 +170,18 @@ class InquiriesReactor: Reactor {
         guard let menuNumber = currentState.menuNumber else {
             logger.error("문의 사유가 선택되지 않음")
             
-            return Observable.just(.setError(String(localized: "SelectInquiries", table: "Settings")))
+            return Observable.just(.setErrorMessage(String(localized: "SelectInquiries", table: "Settings")))
         }
         
         let typeCode = String(format: "%03d", menuNumber)
         let content = currentState.detailString ?? ""
         
         guard let replyEmail = currentState.emailString, !replyEmail.isEmpty else {
-            return Observable.just(.setError(String(localized: "PleaseInputEmail", table: "Settings")))
+            return Observable.just(.setErrorMessage(String(localized: "PleaseInputEmail", table: "Settings")))
         }
         
         guard isValidEmail(replyEmail) else {
-            return Observable.just(.setError(String(localized: "InvalidEmailFormat", table: "Settings")))
+            return Observable.just(.setErrorMessage(String(localized: "InvalidEmailFormat", table: "Settings")))
         }
         
         let selectedImages = currentState.selectedImages
@@ -193,15 +193,26 @@ class InquiriesReactor: Reactor {
             selectedImages: selectedImages
         )
         .asObservable()
-        .flatMap { _ -> Observable<Mutation> in
+        .flatMap { response -> Observable<Mutation> in
             self.logger.debug("문의 전송 완료")
             
-            return Observable.just(.setInquiriesCompleted)
+            if response.success {
+                return Observable.just(.setInquiriesCompleted)
+            } else {
+                if let errorCode = response.errorCode {
+                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                    return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                } else {
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                }
+            }
         }
         .catch { error in
             self.logger.debug("문의 전송 에러: \(error)")
             
-            return Observable.just(.setError(error.localizedDescription))
+            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
         }
     }
     

@@ -7,7 +7,6 @@
 
 import UIKit
 import ReactorKit
-import Moya
 import RxSwift
 import OSLog
 
@@ -36,7 +35,7 @@ class NicknameSettingReactor: Reactor {
         case setProfileImage(UIImage)
         case setLoading(Bool)
         case setProfileSaved
-        case setError(String)
+        case setErrorMessage(String)
         case showImagePicker
     }
     
@@ -88,7 +87,7 @@ class NicknameSettingReactor: Reactor {
         case .setProfileSaved:
             newState.profileSaved = ()
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
             
         case .showImagePicker:
@@ -104,39 +103,31 @@ class NicknameSettingReactor: Reactor {
         
         // 닉네임이 비어있는지 확인
         guard !nickname.isEmpty else {
-            return Observable.just(.setError("닉네임을 입력해주세요."))
+            return Observable.just(.setErrorMessage("닉네임을 입력해주세요."))
         }
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
             networkManager.saveProfile(nickname: nickname, profileImage: profileImage)
                 .asObservable()
-                .flatMap { _ -> Observable<Mutation> in
-                    return Observable.just(.setProfileSaved)
+                .flatMap { response -> Observable<Mutation> in
+                    if response.success {
+                        return Observable.just(.setProfileSaved)
+                    } else {
+                        if let errorCode = response.errorCode {
+                            let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                            let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
+                            return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        } else {
+                            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        }
+                    }
                 }
                 .catch { error in
-                    let errorMessage = self.handleError(error)
-                    return Observable.just(.setError(errorMessage))
+                    return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
                 },
             Observable.just(.setLoading(false))
         ])
-    }
-    
-    private func handleError(_ error: Error) -> String {
-        if let moyaError = error as? MoyaError {
-            switch moyaError {
-            case .statusCode(let response):
-                if (400...499).contains(response.statusCode) {
-                    self.logger.fault("에러 코드 출력: \(response.statusCode)")
-                    return "잘못된 요청입니다. 입력 정보를 확인해주세요."
-                } else if response.statusCode >= 500 {
-                    self.logger.critical("에러 코드 출력: \(response.statusCode)")
-                    return "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
-                }
-            default:
-                break
-            }
-        }
-        return "프로필 저장에 실패했습니다. 다시 시도해주세요."
     }
 }

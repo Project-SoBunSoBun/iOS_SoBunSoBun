@@ -250,7 +250,7 @@ class RegisterPostReactor: Reactor {
                     
                     return Observable.concat([
                         Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                        Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Common")))
+                        Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                     ])
                 }
         ])
