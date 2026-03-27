@@ -128,6 +128,7 @@ class SettlementConfirmReactor: Reactor {
                             self.logger.critical("정산 상세 데이터 조회 실패(\(errorCode)): \(response.message ?? "")")
                             let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                             let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                             return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                         } else {
                             self.logger.critical("정산 상세 데이터 조회 실패")

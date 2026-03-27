@@ -139,6 +139,7 @@ class WithdrawReactor: Reactor {
                 if let errorCode = response.errorCode {
                     let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                     let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                     return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                 } else {
                     return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))

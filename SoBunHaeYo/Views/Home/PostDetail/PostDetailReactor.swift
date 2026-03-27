@@ -441,6 +441,7 @@ class PostDetailReactor: Reactor {
                     if let errorCode = response.errorCode {
                         let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                         let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                         return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                     } else {
                         return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
@@ -468,6 +469,7 @@ class PostDetailReactor: Reactor {
                     if let errorCode = response.errorCode {
                         let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                         let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                         return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                     } else {
                         return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
@@ -495,6 +497,7 @@ class PostDetailReactor: Reactor {
                     if let errorCode = response.errorCode {
                         let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                         let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                         return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                     } else {
                         return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
@@ -532,6 +535,7 @@ class PostDetailReactor: Reactor {
                     if let errorCode = response.errorCode {
                         let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                         let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                         return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                     } else {
                         return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
@@ -576,6 +580,7 @@ class PostDetailReactor: Reactor {
                     if let errorCode = response.errorCode {
                         let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                         let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                         return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                     } else {
                         return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
@@ -613,6 +618,7 @@ class PostDetailReactor: Reactor {
                     if let errorCode = response.errorCode {
                         let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                         let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                         return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                     } else {
                         return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
@@ -682,6 +688,7 @@ class PostDetailReactor: Reactor {
                     self.logger.critical("채팅방 생성 혹은 조회 실패(\(errorCode)) - \(response.message)")
                     let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                     let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+
                     return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                 } else {
                     return Observable.just(.setShouldNavigateToChat(response.data.roomId))
