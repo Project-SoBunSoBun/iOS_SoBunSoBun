@@ -49,7 +49,7 @@ class MyPageReactor: Reactor {
     struct State {
         var profile: MyProfileModel?
         var isLoading: Bool = false
-        var errorMessage: String?
+        @Pulse var errorMessage: String?
         @Pulse var shouldNavigate: ViewType? = nil
     }
     
