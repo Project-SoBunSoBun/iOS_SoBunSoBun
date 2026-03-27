@@ -17,6 +17,7 @@ class PostDetailView: UIViewController {
     private let isNew: Bool
     private let showBackButton: Bool
     private let showChatButton: Bool
+    private let notificationId: Int?
     
     typealias Reactor = PostDetailReactor
     private lazy var reactor = PostDetailReactor(postId: postId)
@@ -41,12 +42,9 @@ class PostDetailView: UIViewController {
         self.isNew = isNew
         self.showBackButton = showBackButton
         self.showChatButton = showChatButton
+        self.notificationId = notificationId
         
         super.init(nibName: nibName, bundle: bundle)
-        
-        if let notificationId {
-            reactor.action.onNext(.readNotification(notificationId))
-        }
     }
     
     required init?(coder: NSCoder) {
@@ -552,6 +550,10 @@ extension PostDetailView {
     
     private func bindAction(reactor: PostDetailReactor) {
         reactor.action.onNext(.viewDidLoad)
+        
+        if let notificationId {
+            reactor.action.onNext(.readNotification(notificationId))
+        }
         
         if isNew {
             logger.debug("RegisterPostSuccessView 보이기")

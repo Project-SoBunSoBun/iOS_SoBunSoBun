@@ -109,6 +109,7 @@ class ChatWebSocketManager {
     private func scheduleReconnect() {
         guard !isReconnecting else {
             logger.fault("\(self.currentChatRoomId ?? -1)번 채팅방 이미 재연결 대기 중, 추가 재연결 무시")
+            
             return
         }
         

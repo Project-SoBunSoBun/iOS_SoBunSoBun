@@ -91,6 +91,7 @@ class ChatRoomListWebSocketManager {
     private func scheduleReconnect() {
         guard !isReconnecting else {
             logger.fault("채팅방 목록 이미 재연결 대기 중, 추가 재연결 무시")
+            
             return
         }
         
