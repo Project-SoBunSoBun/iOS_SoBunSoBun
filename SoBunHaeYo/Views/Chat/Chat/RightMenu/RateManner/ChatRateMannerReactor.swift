@@ -111,6 +111,7 @@ class ChatRateMannerReactor: Reactor {
                 self.logger.critical("매너 평가 실패: \(error.localizedDescription)")
                 
                 let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -140,6 +141,7 @@ class ChatRateMannerReactor: Reactor {
                 self.logger.critical("매너 평가 스킵 실패: \(error.localizedDescription)")
                 
                 let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }

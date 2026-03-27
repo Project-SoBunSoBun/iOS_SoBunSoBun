@@ -135,7 +135,7 @@ class AnnouncementReactor: Reactor {
                             if let errorCode = response.errorCode {
                                 let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                                 let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
+                                
                                 return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                             } else {
                                 return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
@@ -146,6 +146,7 @@ class AnnouncementReactor: Reactor {
                         self.logger.fault("공지사항 조회 실패: \(error.localizedDescription)")
                         
                         let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                        
                         return Observable.just(.setErrorMessage(errorMessage))
                     },
                 Observable.just(.setLoading(false))

@@ -124,6 +124,7 @@ class ChatRoomKickReactor: Reactor {
                 self.logger.critical("멤버 강퇴 실패: \(error.localizedDescription)")
                 
                 let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }

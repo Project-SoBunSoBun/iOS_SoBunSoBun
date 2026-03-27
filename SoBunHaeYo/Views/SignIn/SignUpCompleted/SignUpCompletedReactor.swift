@@ -72,6 +72,7 @@ class SignUpCompletedReactor: Reactor {
                 }
                 .catch { error in
                     let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                    
                     return Observable.just(.setErrorMessage(errorMessage))
                 },
             Observable.just(.setLoading(false))

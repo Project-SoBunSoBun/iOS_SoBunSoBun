@@ -186,10 +186,15 @@ extension SignUpCompletedView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.logger.debug("에러 발생: \(message)")
-                let alert = UIAlertController(title: String(localized: "Error", table: "Error"), message: message, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: String(localized: "Confirm", table: "Common"), style: .default))
-                self.present(alert, animated: true)
+                self.logger.fault("에러 발생: \(message)")
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Error"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
     }

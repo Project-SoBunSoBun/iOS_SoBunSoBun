@@ -237,6 +237,7 @@ class HomeReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 logger.critical("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
+                
                 return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
     }

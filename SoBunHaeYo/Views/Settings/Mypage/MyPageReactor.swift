@@ -66,6 +66,7 @@ class MyPageReactor: Reactor {
                     .catch { error in
                         self.logger.error("getMeProfile 실패: \(error.localizedDescription)")
                         let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                        
                         return Observable.just(.setErrorMessage(errorMessage))
                     },
                 Observable.just(.setLoading(false))

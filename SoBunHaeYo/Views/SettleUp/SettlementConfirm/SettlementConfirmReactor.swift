@@ -132,6 +132,7 @@ class SettlementConfirmReactor: Reactor {
                             return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                         } else {
                             self.logger.critical("정산 상세 데이터 조회 실패")
+                            
                             return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                         }
                     }
@@ -142,6 +143,7 @@ class SettlementConfirmReactor: Reactor {
                     self.logger.critical("정산 상세 데이터 조회 실패: \(error.localizedDescription)")
                     
                     let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+
                     return Observable.just(.setErrorMessage(errorMessage))
                 }
         }

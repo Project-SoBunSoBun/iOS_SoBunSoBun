@@ -117,6 +117,7 @@ class WithdrawReactor: Reactor {
     private func withdraw() -> Observable<Mutation> {
         guard let reasonNumber = currentState.reasonNumber else {
             logger.error("탈퇴 사유가 선택되지 않음")
+            
             return Observable.just(.setErrorMessage(String(localized: "SelectWithdrawReason", table: "Settings")))
         }
         
@@ -139,7 +140,7 @@ class WithdrawReactor: Reactor {
                 if let errorCode = response.errorCode {
                     let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
                     let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
+                    
                     return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
                 } else {
                     return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
