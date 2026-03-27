@@ -34,7 +34,7 @@ class AnnouncementReactor: Reactor {
         case setPage(Int)
         case setHasMore(Bool)
         case setRefreshing(Bool)
-        case setError(String)
+        case setErrorMessage(String)
         case setNoticeDetailView(AnnouncementContentModel)
     }
     
@@ -89,7 +89,7 @@ class AnnouncementReactor: Reactor {
         case .setNotices(let notices):
             newState.notices = notices
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
             
         case .setRefreshing(let isRefreshing):
@@ -122,21 +122,30 @@ class AnnouncementReactor: Reactor {
                 self.networkManager.getAnnouncements(page: page, size: size)
                     .asObservable()
                     .flatMap { response -> Observable<Mutation> in
-                        self.logger.debug("공지사항 조회 성공")
-                        
-                        let isFirst = response.data.page.first
-                        
-                        return Observable.concat([
-                            isFirst ? Observable.just(.setNotices(response.data.content)) : Observable.just(.appendNotices(response.data.content)),
-                            Observable.just(.setHasMore(!response.data.page.last))
-                        ])
+                        if response.success {
+                            self.logger.debug("공지사항 조회 성공")
+                            
+                            let isFirst = response.data.page.first
+                            
+                            return Observable.concat([
+                                isFirst ? Observable.just(.setNotices(response.data.content)) : Observable.just(.appendNotices(response.data.content)),
+                                Observable.just(.setHasMore(!response.data.page.last))
+                            ])
+                        } else {
+                            if let errorCode = response.errorCode {
+                                let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                                let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                                return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                            } else {
+                                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                            }
+                        }
                     }
                     .catch { error in
                         self.logger.fault("공지사항 조회 실패: \(error.localizedDescription)")
                         
-                        return Observable.concat([
-                            Observable.just(.setError(error.localizedDescription))
-                        ])
+                        let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                        return Observable.just(.setErrorMessage(errorMessage))
                     },
                 Observable.just(.setLoading(false))
             ])

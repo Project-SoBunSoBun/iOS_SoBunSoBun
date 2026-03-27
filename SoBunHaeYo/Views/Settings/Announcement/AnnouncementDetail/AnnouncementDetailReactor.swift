@@ -29,7 +29,7 @@ class AnnouncementDetailReactor: Reactor {
     
     enum Mutation {
         case setNoticeDetail(AnnouncementDetailDataModel)
-        case setError(String)
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -52,7 +52,7 @@ class AnnouncementDetailReactor: Reactor {
         case .setNoticeDetail(let noticeDetail):
             newState.noticeDetail = noticeDetail
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
         }
         
@@ -63,14 +63,25 @@ class AnnouncementDetailReactor: Reactor {
         return networkManager.getAnnouncementsDetail(id: id)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                self.logger.debug("공지사항 상세 조회 성공")
-                
-                return Observable.just(.setNoticeDetail(response.data))
+                if response.success {
+                    self.logger.debug("공지사항 상세 조회 성공")
+                    
+                    return Observable.just(.setNoticeDetail(response.data))
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { error in
                 self.logger.fault("공지사항 상세 조회 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setError(error.localizedDescription))
+                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
 }

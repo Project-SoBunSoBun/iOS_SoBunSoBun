@@ -38,7 +38,7 @@ class ChatRoomKickReactor: Reactor {
         case setShouldShowKickAlert
         case changeMembers(Int)
         case setShouldShowKickDoneAlert
-        case setError(String)
+        case setErrorMessage(String)
     }
     
     struct State {
@@ -91,7 +91,7 @@ class ChatRoomKickReactor: Reactor {
         case .setShouldShowKickDoneAlert:
             newState.shouldShowKickDoneAlert = ()
             
-        case .setError(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
         }
         
@@ -101,18 +101,29 @@ class ChatRoomKickReactor: Reactor {
     private func kickMember(id: Int) -> Observable<Mutation> {
         return networkManager.kickMember(chatRoomId: chatRoomId, userId: id)
             .asObservable()
-            .flatMap { _ -> Observable<Mutation> in
-                self.logger.debug("멤버 강퇴 성공")
-                
-                return Observable.concat([
-                    Observable.just(.changeMembers(id)),
-                    Observable.just(.setShouldShowKickDoneAlert)
-                ])
+            .flatMap { response -> Observable<Mutation> in
+                if response.success {
+                    self.logger.debug("멤버 강퇴 성공")
+                    
+                    return Observable.concat([
+                        Observable.just(.changeMembers(id)),
+                        Observable.just(.setShouldShowKickDoneAlert)
+                    ])
+                } else {
+                    if let errorCode = response.errorCode {
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
             }
             .catch { error in
                 self.logger.critical("멤버 강퇴 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setError(String(localized: "ErrorMessage", table: "Error")))
+                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
 }
