@@ -174,14 +174,23 @@ class AuthManager {
     private func appleRevoke() {
         // 서버에 authorizationCode를 보내 애플 Revoke API 진행
         signInNetworkManager.fetchAuthRevokeApple()
-            .subscribe(onSuccess: { [weak self] _ in
+            .subscribe(onSuccess: { [weak self] response in
                 guard let self = self else { return }
                 
-                self.logger.debug("애플 Revoke 성공")
+                if response.success {
+                    self.logger.debug("애플 Revoke 성공")
+                } else {
+                    if let errorCode = response.errorCode,
+                       let message = response.message {
+                        self.logger.critical("애플 Revoke 실패: \(errorCode) - \(message)")
+                    } else {
+                        self.logger.critical("애플 Revoke 실패")
+                    }
+                }
             }, onFailure: { [weak self] error in
                 guard let self = self else { return }
                 
-                self.logger.error("애플 Revoke 실패: \(error.localizedDescription)")
+                self.logger.critical("애플 Revoke 실패: \(error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
