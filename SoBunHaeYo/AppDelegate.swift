@@ -69,12 +69,20 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             switch type {
             case "COMMENT", "COMMENT_MENTIONED", "POST_UPDATE":
                 if let postIdString = userInfo["postId"] as? String {
-                    urlString = "sobunhaeyo://post/\(postIdString)"
+                    if let notificationIdString = userInfo["id"] as? String {
+                        urlString = "sobunhaeyo://post/\(postIdString)?id=\(notificationIdString)"
+                    } else {
+                        urlString = "sobunhaeyo://post/\(postIdString)"
+                    }
                 }
                 
             case "SETTLEMENT":
                 if let settlementIdString = userInfo["settlementId"] as? String {
-                    urlString = "sobunhaeyo://settlement/\(settlementIdString)"
+                    if let notificationIdString = userInfo["id"] as? String {
+                        urlString = "sobunhaeyo://settlement/\(settlementIdString)?id=\(notificationIdString)"
+                    } else {
+                        urlString = "sobunhaeyo://settlement/\(settlementIdString)"
+                    }
                 }
                 
             case "CHAT":

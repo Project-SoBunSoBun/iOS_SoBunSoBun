@@ -20,7 +20,8 @@ class NotificationsReactor: Reactor {
     
     private let disposeBag = DisposeBag()
     
-    private let networkManager = HomeNetworkManager()
+    private let homeNetworkManager = HomeNetworkManager()
+    private let notificationsNetworkManager = NotificationNetworkManager()
     private let PAGE_SIZE: Int = 20
     
     enum Action {
@@ -62,10 +63,7 @@ class NotificationsReactor: Reactor {
             ])
             
         case .cellTapped(let model):
-            return Observable.concat([
-                readNotification(model: model),
-                Observable.just(.setShouldPushView(model))
-            ])
+            return Observable.just(.setShouldPushView(model))
             
         case .refresh:
             return Observable.concat([
@@ -125,7 +123,7 @@ class NotificationsReactor: Reactor {
     }
     
     private func loadNotifications(page: Int, size: Int, isFirst: Bool) -> Observable<Mutation> {
-        return networkManager.getNotifications(page: page, size: size)
+        return notificationsNetworkManager.getNotifications(page: page, size: size)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
                 self.logger.debug("알림 목록 조회 성공")
@@ -151,33 +149,8 @@ class NotificationsReactor: Reactor {
             }
     }
     
-    private func readNotification(model: NotificationModel) -> Observable<Mutation> {
-        guard !model.isRead else { return Observable.empty() }
-        
-        return networkManager.readNotification(id: model.id)
-            .asObservable()
-            .flatMap{ [weak self] response -> Observable<Mutation> in
-                guard let self else { return Observable.empty() }
-                
-                if let errorCode = response.errorCode {
-                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
-                } else {
-                    self.logger.debug("알림 읽음 완료")
-                }
-                
-                return Observable.empty()
-            }
-            .catch { [weak self] error in
-                guard let self else { return Observable.empty() }
-                
-                self.logger.critical("알림 읽음 실패: \(error.localizedDescription)")
-                
-                return Observable.empty()
-            }
-    }
-    
     private func readAllNotifications() -> Observable<Mutation> {
-        return networkManager.readAllNotifications()
+        return notificationsNetworkManager.readAllNotifications()
             .asObservable()
             .flatMap { [weak self] model -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }

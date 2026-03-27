@@ -17,6 +17,7 @@ class PostDetailView: UIViewController {
     private let isNew: Bool
     private let showBackButton: Bool
     private let showChatButton: Bool
+    private let notificationId: Int?
     
     typealias Reactor = PostDetailReactor
     private lazy var reactor = PostDetailReactor(postId: postId)
@@ -33,6 +34,7 @@ class PostDetailView: UIViewController {
         isNew: Bool = false,
         showBackButton: Bool = true,
         showChatButton: Bool = true,
+        notificationId: Int? = nil,
         nibName: String? = nil,
         bundle: Bundle? = nil
     ) {
@@ -40,6 +42,7 @@ class PostDetailView: UIViewController {
         self.isNew = isNew
         self.showBackButton = showBackButton
         self.showChatButton = showChatButton
+        self.notificationId = notificationId
         
         super.init(nibName: nibName, bundle: bundle)
     }
@@ -369,6 +372,30 @@ class PostDetailView: UIViewController {
     }()
     
     // MARK: - 생명주기
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        updateTableHeaderViewHeight()
+    }
+    
+    private func updateTableHeaderViewHeight() {
+        guard let headerView = tableView.tableHeaderView else { return }
+        
+        let height = headerView.systemLayoutSizeFitting(
+            CGSize(width: tableView.bounds.width, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel
+        ).height
+        
+        var frame = headerView.frame
+        
+        if abs(frame.size.height - height) > 1 {
+            frame.size.height = height
+            headerView.frame = frame
+            tableView.tableHeaderView = headerView
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -523,6 +550,10 @@ extension PostDetailView {
     
     private func bindAction(reactor: PostDetailReactor) {
         reactor.action.onNext(.viewDidLoad)
+        
+        if let notificationId {
+            reactor.action.onNext(.readNotification(notificationId))
+        }
         
         if isNew {
             logger.debug("RegisterPostSuccessView 보이기")
@@ -710,11 +741,29 @@ extension PostDetailView {
                         // 버튼 좌표 변환
                         let buttonFrame = button.convert(button.bounds, to: view)
                         
+                        // 드롭다운 높이: 항목 수 × 셀 높이
+                        let dropdownHeight = CGFloat(commentMenuDropDownView.items.count) * commentMenuDropDownView.cellHeight
+                        
+                        // commentDividerView 위까지 남은 공간
+                        let availableSpaceBelow = commentDividerView.frame.minY - buttonFrame.maxY
+                        let shouldOpenUpward = dropdownHeight > availableSpaceBelow
+                        
+                        commentMenuDropDownView.animationAnchor = shouldOpenUpward ? .bottomRight : .topRight
+                        
                         commentMenuDropDownView.snp.remakeConstraints { make in
                             make.trailing.equalTo(self.view.snp.leading).offset(buttonFrame.maxX)
-                            make.top.equalToSuperview().offset(buttonFrame.maxY)
+                            
+                            if shouldOpenUpward {
+                                make.bottom.equalTo(self.view.snp.top).offset(buttonFrame.minY)
+                            } else {
+                                make.top.equalToSuperview().offset(buttonFrame.maxY)
+                            }
+                            
                             make.width.equalTo(70)
                         }
+                        
+                        // z-order 재설정
+                        view.bringSubviewToFront(commentMenuDropDownView)
                         
                         let currentState = reactor.currentState
                         let isSameComment = currentState.selectedCommentModel?.id == model.id
@@ -1059,6 +1108,9 @@ extension PostDetailView {
         if !isOwner && showChatButton {
             createCommentStackView.insertArrangedSubview(chatButton, at: 0)
         }
+        
+        contentView.layoutIfNeeded()
+        updateTableHeaderViewHeight()
     }
     
     // 수정 모드 UI 업데이트
@@ -1088,16 +1140,3 @@ extension PostDetailView {
         }
     }
 }
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct PostDetaillViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            PostDetailView(postId: 0)
-        }
-    }
-}
-#endif

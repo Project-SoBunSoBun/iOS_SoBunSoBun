@@ -36,11 +36,6 @@ enum HomeAPIs {
     
     // 마이페이지
     case getMyProfile(tab: String, page: Int, size: Int)
-    
-    // 알림
-    case getNotifications(page: Int, size: Int)
-    case readNotification(id: Int)
-    case readAllNotifications
 }
 
 extension HomeAPIs: TargetType {
@@ -111,15 +106,6 @@ extension HomeAPIs: TargetType {
             
         case .getMyProfile:
             return "/api/v1/users/me/profile"
-            
-        case .getNotifications:
-            return "/api/me/notifications"
-            
-        case .readNotification(let id):
-            return "/api/me/notifications/\(id)/read"
-            
-        case .readAllNotifications:
-            return "/api/me/notifications/read-all"
         }
     }
     
@@ -136,8 +122,7 @@ extension HomeAPIs: TargetType {
                 .checkPostSaved,
                 .getPostCommentsCount,
                 .getPostComments,
-                .getMyProfile,
-                .getNotifications:
+                .getMyProfile:
             return .get
             
         case // POST
@@ -149,9 +134,7 @@ extension HomeAPIs: TargetType {
             
         case // PATCH
                 .patchLocationVerification,
-                .patchPostComment,
-                .readNotification,
-                .readAllNotifications:
+                .patchPostComment:
             return .patch
             
         case // DELETE
@@ -243,17 +226,6 @@ extension HomeAPIs: TargetType {
             let parameters = MyProfileRequestModel(tab: tab, page: page, size: size)
             
             return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
-            
-        case .getNotifications(let page, let size):
-            let parameters = PagenationRequestModel(page: page, size: size)
-            
-            return .requestParameters(parameters: parameters.toDictionary()!, encoding: URLEncoding.queryString)
-            
-        case .readNotification:
-            return .requestPlain
-            
-        case .readAllNotifications:
-            return .requestPlain
         }
     }
     

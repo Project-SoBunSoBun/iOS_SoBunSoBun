@@ -573,7 +573,7 @@ extension RegisterPostView {
             .bind(to: loadingView.rx.isHidden)
             .disposed(by: disposeBag)
         
-        reactor.state.map { $0.errorMessage }
+        reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
@@ -713,16 +713,3 @@ extension RegisterPostView {
             .disposed(by: disposeBag)
     }
 }
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct RegisterPostViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            RegisterPostView()
-        }
-    }
-}
-#endif

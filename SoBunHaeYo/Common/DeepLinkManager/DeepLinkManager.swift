@@ -33,7 +33,10 @@ final class DeepLinkManager {
             case "post": // 게시글
                 if let postIdString = url.pathComponents.last,
                    let postId = Int(postIdString) {
-                    let vc = PostDetailView(postId: postId)
+                    let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                    let notificationId = components?.queryItems?.first(where: { $0.name == "id" })?.value.flatMap { Int($0) }
+                    
+                    let vc = PostDetailView(postId: postId, notificationId: notificationId)
                     nav.pushViewController(vc, animated: true)
                 }
                 
@@ -47,7 +50,10 @@ final class DeepLinkManager {
             case "settlement": // 정산
                 if let settlementIdString = url.pathComponents.last,
                    let settlementId = Int(settlementIdString) {
-                    let vc = SettlementConfirmView(settlementId: settlementId)
+                    let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                    let notificationId = components?.queryItems?.first(where: { $0.name == "id" })?.value.flatMap { Int($0) }
+                    
+                    let vc = SettlementConfirmView(settlementId: settlementId, notificationId: notificationId)
                     nav.pushViewController(vc, animated: true)
                 }
                 

@@ -23,13 +23,17 @@ class PostDetailReactor: Reactor {
     )
     
     private let disposeBag = DisposeBag()
-    private let networkManager = HomeNetworkManager()
+    private let homeNetworkManager = HomeNetworkManager()
+    private let notificationNetworkManager = NotificationNetworkManager()
     
     private let errorMessage: String = String(localized: "ErrorMessage", table: "Common")
     
     let initialState: State = State()
     
     enum Action {
+        // 알림 읽음
+        case readNotification(Int)
+        
         case viewDidLoad
         case refresh
         
@@ -143,6 +147,9 @@ class PostDetailReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .readNotification(let id):
+            return readNotification(id: id)
+            
         case .viewDidLoad:
             return Observable.concat([
                 getPost(),
@@ -311,9 +318,32 @@ class PostDetailReactor: Reactor {
         return newState
     }
     
+    private func readNotification(id: Int) -> Observable<Mutation> {
+        return notificationNetworkManager.readNotification(id: id)
+            .asObservable()
+            .flatMap{ [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
+                if let errorCode = response.errorCode {
+                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
+                } else {
+                    self.logger.debug("알림 읽음 완료")
+                }
+                
+                return Observable.empty()
+            }
+            .catch { [weak self] error in
+                guard let self else { return Observable.empty() }
+                
+                self.logger.critical("알림 읽음 실패: \(error.localizedDescription)")
+                
+                return Observable.empty()
+            }
+    }
+    
     // 게시글 정보 불러오기
     private func getPost() -> Observable<Mutation> {
-        return networkManager.getPost(id: postId)
+        return homeNetworkManager.getPost(id: postId)
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 return Observable.just(.setPostInfo(model))
@@ -330,7 +360,7 @@ class PostDetailReactor: Reactor {
     
     // 게시글 저장 유무 확인
     private func checkPostSaved() -> Observable<Mutation> {
-        return networkManager.checkPostSaved(id: postId)
+        return homeNetworkManager.checkPostSaved(id: postId)
             .asObservable()
             .flatMap { bool -> Observable<Mutation> in
                 return Observable.just(.setIsSaved(bool))
@@ -347,7 +377,7 @@ class PostDetailReactor: Reactor {
     
     // 댓글 개수 불러오기
     private func getPostCommentsCount() -> Observable<Mutation> {
-        return networkManager.getPostCommentsCount(id: postId)
+        return homeNetworkManager.getPostCommentsCount(id: postId)
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 return Observable.just(.setPostCommentsCount(model))
@@ -364,7 +394,7 @@ class PostDetailReactor: Reactor {
     
     // 댓글 불러오기
     private func getComments() -> Observable<Mutation> {
-        return networkManager.getPostComments(id: postId)
+        return homeNetworkManager.getPostComments(id: postId)
             .asObservable()
             .flatMap { models -> Observable<Mutation> in
                 let commentedUsersToNickname: [String: String] = Dictionary(
@@ -402,7 +432,7 @@ class PostDetailReactor: Reactor {
     
     // 게시글 저장
     private func savePost() -> Observable<Mutation> {
-        return networkManager.savePost(id: postId)
+        return homeNetworkManager.savePost(id: postId)
             .asObservable()
             .flatMap { _ -> Observable<Mutation> in
                 return Observable.just(.setIsSaved(true))
@@ -419,7 +449,7 @@ class PostDetailReactor: Reactor {
     
     // 게시글 저장 취소
     private func cancelSavePost() -> Observable<Mutation> {
-        return networkManager.cancelSavePost(id: postId)
+        return homeNetworkManager.cancelSavePost(id: postId)
             .asObservable()
             .flatMap { _ -> Observable<Mutation> in
                 return Observable.just(.setIsSaved(false))
@@ -436,7 +466,7 @@ class PostDetailReactor: Reactor {
     
     // 게시글 삭제
     private func deletePost() -> Observable<Mutation> {
-        return networkManager.deletePost(id: postId)
+        return homeNetworkManager.deletePost(id: postId)
             .asObservable()
             .flatMap { _ -> Observable<Mutation> in
                 return Observable.just(.setShouldShowDeletePostDoneAlert)
@@ -461,7 +491,7 @@ class PostDetailReactor: Reactor {
         
         let convertedComment = convertComment(comment: cleanedContent)
         
-        return networkManager.createPostComment(postId: postId, content: convertedComment)
+        return homeNetworkManager.createPostComment(postId: postId, content: convertedComment)
             .asObservable()
             .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
@@ -492,7 +522,7 @@ class PostDetailReactor: Reactor {
         
         let convertedComment = convertComment(comment: cleanedContent)
         
-        return networkManager.patchPostComment(id: commentModel.id, content: convertedComment)
+        return homeNetworkManager.patchPostComment(id: commentModel.id, content: convertedComment)
             .asObservable()
             .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
@@ -518,7 +548,7 @@ class PostDetailReactor: Reactor {
             return Observable.empty()
         }
         
-        return networkManager.deletePostComment(id: commentModel.id)
+        return homeNetworkManager.deletePostComment(id: commentModel.id)
             .asObservable()
             .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
@@ -583,7 +613,7 @@ class PostDetailReactor: Reactor {
             return Observable.just(.setErrorMessage(errorMessage))
         }
         
-        return networkManager.createChatRoomId(userId: ownerId, groupPostId: postId)
+        return homeNetworkManager.createChatRoomId(userId: ownerId, groupPostId: postId)
             .asObservable()
             .flatMap { model -> Observable<Mutation> in
                 return Observable.just(.setShouldNavigateToChat(model.data.roomId))

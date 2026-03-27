@@ -13,9 +13,11 @@ import OSLog
 class SettlementConfirmView: UIViewController {
     typealias Reactor = SettlementConfirmReactor
     private let reactor: SettlementConfirmReactor
+    private let notificationId: Int?
     
-    init(settlementId: Int) {
+    init(settlementId: Int, notificationId: Int? = nil) {
         reactor = SettlementConfirmReactor(settlementId: settlementId)
+        self.notificationId = notificationId
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -138,6 +140,10 @@ extension SettlementConfirmView {
     
     private func bindAction(reactor: SettlementConfirmReactor) {
         reactor.action.onNext(.viewDidLoad)
+        
+        if let notificationId {
+            reactor.action.onNext(.readNotification(notificationId))
+        }
     }
     
     private func bindState(reactor: SettlementConfirmReactor) {

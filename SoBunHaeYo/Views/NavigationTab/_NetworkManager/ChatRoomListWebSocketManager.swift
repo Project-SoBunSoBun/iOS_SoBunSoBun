@@ -26,6 +26,11 @@ class ChatRoomListWebSocketManager {
     private var isWaitingForRefreshToken: Bool = false
     private var subscribeUrl: String = ""
     
+    private var isReconnecting: Bool = false
+    
+    // 예약된 재연결 작업 - cancel()로 취소 가능
+    private var reconnectWorkItem: DispatchWorkItem?
+    
     private let disposeBag = DisposeBag()
     
     func connect() {
@@ -82,6 +87,29 @@ class ChatRoomListWebSocketManager {
         disconnect()
         connect()
     }
+    
+    private func scheduleReconnect() {
+        guard !isReconnecting else {
+            logger.fault("채팅방 목록 이미 재연결 대기 중, 추가 재연결 무시")
+            
+            return
+        }
+        
+        isReconnecting = true
+        logger.debug("채팅방 목록 2초 후 재연결 시도")
+        
+        reconnectWorkItem?.cancel()
+        
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            
+            self.isReconnecting = false
+            self.reconnect()
+        }
+        
+        reconnectWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: workItem)
+    }
 }
 
 extension ChatRoomListWebSocketManager: SwiftStompDelegate {
@@ -92,9 +120,13 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
             
         case .toStomp:
             logger.debug("채팅방 목록 Stomp 연결 성공")
+            
+            // 재연결 플래그 초기화
+            isReconnecting = false
+            
+            // STOMP 연결 완료 시에만 구독 (Socket + STOMP 이중 구독 방지)
+            subscribe()
         }
-        
-        subscribe()
     }
     
     func onDisconnect(swiftStomp: SwiftStomp, disconnectType: StompDisconnectType) {
@@ -162,13 +194,8 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         if AuthInterceptor.shared.isRefreshing {
             logger.debug("리프레시 토큰 갱신 대기 중, 채팅방 목록 웹소켓 재연결 예정")
             waitForRefreshAndReconnect()
-        } else {
-            if !isWaitingForRefreshToken {
-                logger.debug("채팅방 목록 웹소켓 재연결 시도")
-                reconnect()
-            } else {
-                logger.fault("채팅방 목록 웹소켓 재연결 시도 후 다시 오류 발생, 재시도 중단")
-            }
+        } else if !isWaitingForRefreshToken {
+            scheduleReconnect()
         }
     }
 }

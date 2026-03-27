@@ -189,7 +189,7 @@ extension NotificationsView {
                         return
                     }
                     
-                    self.navigationController?.pushViewController(PostDetailView(postId: postId), animated: true)
+                    self.navigationController?.pushViewController(PostDetailView(postId: postId, notificationId: model.id), animated: true)
                     
                 case .PARTICIPATION:
                     guard let chatRoomId = model.chatRoomId else {
@@ -207,7 +207,7 @@ extension NotificationsView {
                         return
                     }
                     
-                    self.navigationController?.pushViewController(SettlementConfirmView(settlementId: settlementId), animated: true)
+                    self.navigationController?.pushViewController(SettlementConfirmView(settlementId: settlementId, notificationId: model.id), animated: true)
                     
                 case .unknown:
                     self.logger.fault("UNKNOWN 타입으로, push view 불가")

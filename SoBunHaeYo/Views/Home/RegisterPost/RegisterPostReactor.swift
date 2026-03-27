@@ -87,7 +87,7 @@ class RegisterPostReactor: Reactor {
         var isLoading: Bool = false
         @Pulse var isSuccess: Void?
         var postId: Int?
-        var errorMessage: String?
+        @Pulse var errorMessage: String?
     }
     
     func mutate(action: Action) -> Observable<Mutation> {

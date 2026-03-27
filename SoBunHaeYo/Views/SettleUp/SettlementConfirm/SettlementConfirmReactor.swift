@@ -20,9 +20,13 @@ class SettlementConfirmReactor: Reactor {
         category: "SettleUp.SettlementConfirm.Reactor"
     )
     
-    private let networkManager = SettleUpNetworkManager()
+    private let settleUpNetworkManager = SettleUpNetworkManager()
+    private let notificationNetworkManager = NotificationNetworkManager()
     
     enum Action {
+        // 알림 읽음
+        case readNotification(Int)
+        
         case viewDidLoad
     }
     
@@ -41,8 +45,11 @@ class SettlementConfirmReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .readNotification(let id):
+            return readNotification(id: id)
+            
         case .viewDidLoad:
-            loadItems(settlementId: currentState.settlementId)
+            return loadItems(settlementId: currentState.settlementId)
         }
     }
     
@@ -63,6 +70,29 @@ class SettlementConfirmReactor: Reactor {
         return newState
     }
     
+    private func readNotification(id: Int) -> Observable<Mutation> {
+        return notificationNetworkManager.readNotification(id: id)
+            .asObservable()
+            .flatMap{ [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
+                if let errorCode = response.errorCode {
+                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
+                } else {
+                    self.logger.debug("알림 읽음 완료")
+                }
+                
+                return Observable.empty()
+            }
+            .catch { [weak self] error in
+                guard let self else { return Observable.empty() }
+                
+                self.logger.critical("알림 읽음 실패: \(error.localizedDescription)")
+                
+                return Observable.empty()
+            }
+    }
+    
     private func loadItems(settlementId: Int) -> Observable<Mutation> {
         guard let userIdString = KeyChain.shared.get(key: "USER_ID"),
               let currentUserId = Int(userIdString) else {
@@ -70,7 +100,7 @@ class SettlementConfirmReactor: Reactor {
         }
         
         return Observable.deferred {
-            self.networkManager.getSettlement(settlementId: settlementId)
+            self.settleUpNetworkManager.getSettlement(settlementId: settlementId)
                 .asObservable()
                 .flatMap { model -> Observable<Mutation> in
                     let item = model.data
