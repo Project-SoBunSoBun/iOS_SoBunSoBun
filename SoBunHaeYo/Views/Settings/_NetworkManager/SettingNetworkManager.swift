@@ -120,4 +120,12 @@ class SettingNetworkManager {
         )
         .tryMap(TermsResponseModel.self)
     }
+    
+    // MARK: - 차단 목록 조회
+    func getBlockList() -> Single<BlockListResponseModel> {
+        return authProvider.rx.request(
+            MultiTarget(SettingAPIs.getBlockList)
+        )
+        .tryMap(BlockListResponseModel.self)
+    }
 }
