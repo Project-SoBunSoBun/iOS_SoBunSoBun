@@ -436,6 +436,18 @@
         }
       }
     },
+    "SharePostText" : {
+      "comment" : "Common - 게시글 공유 문구 (%1$@ = 게시글 제목, %2$@ = 딥링크)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "소분해요에서 '%1$@' 게시글을 확인해 보세요!\n\n%2$@"
+          }
+        }
+      }
+    },
     "TryAgain" : {
       "comment" : "Common",
       "extractionState" : "manual",
