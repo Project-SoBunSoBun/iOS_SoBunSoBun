@@ -923,6 +923,54 @@
         }
       }
     },
+    "Unblock" : {
+      "comment" : "Settings - 차단 해제 버튼",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "차단해제"
+          }
+        }
+      }
+    },
+    "UnblockAlertConfirm" : {
+      "comment" : "Settings - 차단 해제 알림 확인 버튼",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해제하기"
+          }
+        }
+      }
+    },
+    "UnblockAlertSubTitle" : {
+      "comment" : "Settings - 차단 해제 알림 서브 타이틀",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "차단을 해제하시겠습니까?"
+          }
+        }
+      }
+    },
+    "UnblockAlertTitle" : {
+      "comment" : "Settings - 차단 해제 알림 타이틀",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "차단 해제 이후에는\n취소할 수 없습니다."
+          }
+        }
+      }
+    },
     "UnknownNickname" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -1051,42 +1099,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "사용하기 불편해서"
-          }
-        }
-      }
-    },
-    "Unblock" : {
-      "comment" : "Settings - 차단 해제 버튼",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "해제하기"
-          }
-        }
-      }
-    },
-    "UnblockAlertSubTitle" : {
-      "comment" : "Settings - 차단 해제 알림 서브 타이틀",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "차단을 해제하시겠습니까?"
-          }
-        }
-      }
-    },
-    "UnblockAlertTitle" : {
-      "comment" : "Settings - 차단 해제 알림 타이틀",
-      "extractionState" : "manual",
-      "localizations" : {
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "차단 해제 이후에는\n취소할 수 없습니다."
           }
         }
       }

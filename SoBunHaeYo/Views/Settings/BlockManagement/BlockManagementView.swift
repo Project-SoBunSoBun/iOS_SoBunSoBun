@@ -153,7 +153,7 @@ extension BlockManagementView {
                 let alert = CustomAlertView(
                     title: String(localized: "UnblockAlertTitle", table: "Settings"),
                     subTitle: String(localized: "UnblockAlertSubTitle", table: "Settings"),
-                    primaryTitleKey: String(localized: "Unblock", table: "Settings"),
+                    primaryTitleKey: String(localized: "UnblockAlertConfirm", table: "Settings"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
