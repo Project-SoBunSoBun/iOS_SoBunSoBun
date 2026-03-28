@@ -111,7 +111,7 @@ class NavigationTabReactor: Reactor {
         return newState
     }
     
-    // sceneDidEnterBackground action 연결 및 변환
+    // sceneDidEnterBackground / sceneWillEnterForeground action 연결 및 변환
     func transform(action: Observable<Action>) -> Observable<Action> {
         let backgroundAction = NotificationCenter.default.rx
             .notification(.sceneDidEnterBackground)
@@ -122,7 +122,11 @@ class NavigationTabReactor: Reactor {
                 ])
             }
         
-        return Observable.merge(action, backgroundAction)
+        let foregroundAction = NotificationCenter.default.rx
+            .notification(.sceneWillEnterForeground)
+            .map { _ in Action.getUnreadNotificationCount }
+        
+        return Observable.merge(action, backgroundAction, foregroundAction)
     }
     
     // webSocketManager publish mutation 연결 및 변환

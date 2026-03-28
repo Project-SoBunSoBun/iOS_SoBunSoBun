@@ -100,8 +100,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        NotificationCenter.default.post(name: .sceneWillEnterForeground, object: nil)
     }
     
     func sceneDidEnterBackground(_ scene: UIScene) {
@@ -111,4 +110,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension Notification.Name {
     static let sceneDidEnterBackground = Notification.Name("sceneDidEnterBackground")
+    static let sceneWillEnterForeground = Notification.Name("sceneWillEnterForeground")
 }
