@@ -131,6 +131,7 @@ func ISO8601ToAdaptiveDateString(_ iso8601DatetimeString: String) -> String {
     
     guard let date = ISO8601ToDate(iso8601DatetimeString) else {
         logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
+        
         return ""
     }
     
