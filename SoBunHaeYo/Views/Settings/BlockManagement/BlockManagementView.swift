@@ -139,6 +139,7 @@ extension BlockManagementView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] blockList in
                 guard let self else { return }
+                
                 updateBlockListCells(blockList: blockList)
             })
             .disposed(by: disposeBag)

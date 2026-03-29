@@ -132,7 +132,6 @@ class ChatRoomKickView: UIViewController {
         members
             .filter { $0.userId != myId }
             .forEach { model in
-                // TODO: 프로필 연결 기능 추가
                 let cellView = UserActionCellView(
                     userId: model.userId,
                     nickname: model.nickname,
