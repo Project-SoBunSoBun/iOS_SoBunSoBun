@@ -189,7 +189,7 @@ class ChatRoomListCellView: UIView {
         var lastSentAtString: String = ""
         
         if let lastSentAt = model.lastMessage?.createdAt {
-            lastSentAtString = ISO8601ToRelativeString(lastSentAt)
+            lastSentAtString = ISO8601ToAdaptiveDateString(lastSentAt)
         }
         
         lastSentAtLabel.attributedText = NSAttributedString(string: lastSentAtString, attributes: lastSentAtAttributes)

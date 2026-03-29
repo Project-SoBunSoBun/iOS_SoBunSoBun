@@ -78,7 +78,6 @@ struct ChatRoomDetailMemberModel: Decodable, Equatable {
 
 struct GroupChatAcceptResponseModel: Decodable {
     let success: Bool
-    let statusCode: Int
     let message: String?
     let data: GroupChatAcceptResponseDataModel
 }

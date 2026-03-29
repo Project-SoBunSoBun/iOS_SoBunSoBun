@@ -28,6 +28,8 @@ enum SettingAPIs {
     case postBugReport(typeCode: String, content: String, deviceInfo: String, selectedImages: [Data]?)
     // 약관 조회
     case getTermsDetail(termsType: String)
+    // 차단 목록 조회
+    case getBlockList
 }
 
 extension SettingAPIs: TargetType {
@@ -74,6 +76,9 @@ extension SettingAPIs: TargetType {
             
         case .getTermsDetail(termsType: let termsType):
             return "/api/terms/\(termsType)"
+            
+        case .getBlockList:
+            return "/api/v1/blocks"
         }
     }
     
@@ -85,7 +90,8 @@ extension SettingAPIs: TargetType {
                 .getSavedPosts,
                 .getAnnouncement,
                 .getAnnouncementDetail,
-                .getTermsDetail:
+                .getTermsDetail,
+                .getBlockList:
             return .get
             
         case // POST
@@ -208,6 +214,9 @@ extension SettingAPIs: TargetType {
             return .uploadCompositeMultipart(formData, urlParameters: urlParameters)
             
         case .getTermsDetail:
+            return .requestPlain
+            
+        case .getBlockList:
             return .requestPlain
         }
     }

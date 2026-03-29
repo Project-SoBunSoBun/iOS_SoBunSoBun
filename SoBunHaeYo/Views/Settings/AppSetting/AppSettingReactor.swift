@@ -20,6 +20,7 @@ class AppSettingReactor: Reactor {
     enum ViewType {
         case notificationSetting
         case managingAccountInfo
+        case blockManagement
         case announcement
         case customerSupport
         case terms
@@ -28,6 +29,7 @@ class AppSettingReactor: Reactor {
     enum Action {
         case notificationSettingTapped
         case managingAccountInfoTapped
+        case blockManagementTapped
         case announcementTapped
         case customerSupportTapped
         case termsTapped
@@ -49,6 +51,9 @@ class AppSettingReactor: Reactor {
             
         case .managingAccountInfoTapped:
             return Observable.just(.setNavigate(.managingAccountInfo))
+            
+        case .blockManagementTapped:
+            return Observable.just(.setNavigate(.blockManagement))
             
         case .announcementTapped:
             return Observable.just(.setNavigate(.announcement))

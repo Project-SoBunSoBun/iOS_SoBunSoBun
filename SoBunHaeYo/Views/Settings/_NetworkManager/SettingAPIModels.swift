@@ -102,6 +102,19 @@ struct BugReportPostModel: Encodable {
     let deviceInfo: String
 }
 
+// MARK: - 차단 목록
+struct BlockListResponseModel: Decodable {
+    let success: Bool
+    let data: [BlockListResponseDataModel]
+}
+
+struct BlockListResponseDataModel: Decodable, Equatable {
+    let userId: Int
+    let nickname: String
+    let profileImageUrl: String?
+    let blockedAt: String
+}
+
 // MARK: - 약관 조회
 struct TermsResponseModel: Decodable {
     let success: Bool

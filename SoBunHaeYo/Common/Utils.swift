@@ -84,6 +84,7 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
         let components = calendar.dateComponents([.day], from: now, to: targetDay)
         guard let day = components.day else {
             logger.fault("components.day 생성 중 오류 발생: \(iso8601DatetimeString)")
+            
             return "Error!"
         }
         
@@ -96,6 +97,7 @@ func ISO8601ToDDay(_ iso8601DatetimeString: String) -> String {
         }
     } else {
         logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
+        
         return "Error!"
     }
 }
@@ -115,8 +117,35 @@ func ISO8601ToRelativeString(_ iso8601DatetimeString: String) -> String {
         return formatter.localizedString(for: date, relativeTo: Date())
     } else {
         logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
+        
         return "Error!"
     }
+}
+
+// ISO8601 DateTime에서 날짜/시간에 적응하는 포맷으로
+func ISO8601ToAdaptiveDateString(_ iso8601DatetimeString: String) -> String {
+    let logger = Logger(
+        subsystem: "SoBunHaeYo",
+        category: "Utils"
+    )
+    
+    guard let date = ISO8601ToDate(iso8601DatetimeString) else {
+        logger.fault("isoFormatter.date 생성 중 오류 발생: \(iso8601DatetimeString)")
+        
+        return ""
+    }
+    
+    let formatter = DateFormatter()
+    formatter.locale = Locale.current
+    
+    if Calendar.current.isDateInToday(date) {
+        formatter.timeStyle = .short
+        formatter.dateStyle = .none
+    } else {
+        formatter.setLocalizedDateFormatFromTemplate("MMMd")
+    }
+    
+    return formatter.string(from: date)
 }
 
 // String 타입에서 Date 타입 변환

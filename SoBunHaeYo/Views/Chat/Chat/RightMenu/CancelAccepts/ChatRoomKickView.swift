@@ -132,11 +132,15 @@ class ChatRoomKickView: UIViewController {
         members
             .filter { $0.userId != myId }
             .forEach { model in
-                // TODO: 프로필 연결 기능 추가
-                let cellView = ChatMemberKickCellView(model: model)
+                let cellView = UserActionCellView(
+                    userId: model.userId,
+                    nickname: model.nickname,
+                    profileImageUrl: model.profileImage,
+                    actionTitle: String(localized: "Cancel", table: "Chat")
+                )
                 let card = SettingCard(cells: [cellView])
                 
-                cellView.cancelButton.rx.tap
+                cellView.actionButton.rx.tap
                     .map { Reactor.Action.kickButtonTapped(model.userId) }
                     .bind(to: reactor.action)
                     .disposed(by: disposeBag)

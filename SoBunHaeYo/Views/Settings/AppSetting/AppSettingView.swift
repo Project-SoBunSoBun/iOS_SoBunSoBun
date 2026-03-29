@@ -64,8 +64,11 @@ class AppSettingView: UIViewController {
     // 계정 정보 관리
     private let managingAccountInfo = SettingCardCell(title: String(localized: "ManagingAccountInfo", table: "Settings"), type: .button)
     
-    // 계정 정보 관리 세팅 카드
-    private lazy var managingAccountInfoSettingCard = SettingCard(cells: [managingAccountInfo])
+    // 차단 관리
+    private let blockManagement = SettingCardCell(title: String(localized: "BlockManagement", table: "Settings"), type: .button)
+    
+    // 사용자 설정 세팅 카드
+    private lazy var managingAccountInfoSettingCard = SettingCard(cells: [managingAccountInfo, blockManagement])
     
     // 기타 라벨
     private lazy var etcLabel = makeLabel(string: String(localized: "Etc", table: "Settings"))
@@ -135,8 +138,10 @@ class AppSettingView: UIViewController {
             make.top.equalTo(personalSettingLabel.snp.bottom).offset(16)
         }
         
-        managingAccountInfo.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
+        [managingAccountInfo, blockManagement].forEach {
+            $0.snp.makeConstraints { make in
+                make.horizontalEdges.equalToSuperview()
+            }
         }
         
         // 기타 라벨
@@ -178,6 +183,12 @@ extension AppSettingView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        // 차단 관리 클릭
+        blockManagement.didTap
+            .map { Reactor.Action.blockManagementTapped }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         // 공지 사항 클릭
         announcement.didTap
             .map { Reactor.Action.announcementTapped }
@@ -214,6 +225,9 @@ extension AppSettingView {
                     
                 case .managingAccountInfo:
                     view = ManagingAccountInfoView()
+                    
+                case .blockManagement:
+                    view = BlockManagementView()
                     
                 case .announcement:
                     view = AnnouncementView()

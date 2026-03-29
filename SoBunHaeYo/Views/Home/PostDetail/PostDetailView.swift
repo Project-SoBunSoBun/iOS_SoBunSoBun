@@ -848,13 +848,25 @@ extension PostDetailView {
             .bind(to: createCommentTextView.rx.text)
             .disposed(by: disposeBag)
         
-        // TODO: 공유 기능 추가 필요
         reactor.pulse(\.$shouldShowShare)
             .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
+                let postTitle = reactor.currentState.postInfo?.title ?? String(localized: "Unknown", table: "Common")
+                let shareContent = String(
+                    format: String(localized: "SharePostText", table: "Common"),
+                    postTitle,
+                    "sobunhaeyo://post/\(self.postId)"
+                )
                 
+                let activityVC = UIActivityViewController(
+                    activityItems: [shareContent],
+                    applicationActivities: nil
+                )
+                
+                self.present(activityVC, animated: true)
             })
             .disposed(by: disposeBag)
         
