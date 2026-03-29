@@ -86,8 +86,14 @@ final class AuthInterceptor: RequestInterceptor {
         }
         
         if isRefreshing {
-            logger.debug("이미 재발급 중")
-            completion(.retry)
+            logger.debug("이미 재발급 중 - 완료 후 재시도")
+            
+            didFinishRefreshing
+                .take(1)
+                .subscribe(onNext: { _ in
+                    completion(.retry)
+                })
+                .disposed(by: disposeBag)
         } else {
             isRefreshing = true
             
