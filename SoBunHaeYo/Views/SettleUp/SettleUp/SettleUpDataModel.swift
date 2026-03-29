@@ -9,6 +9,7 @@ import Foundation
 
 struct SettleUpItemModel {
     let settlementId, authorId: Int
+    let chatRoomId: Int?
     let isAuthor: Bool
     let settlementStatus: Bool
     let title: String

@@ -28,6 +28,7 @@ struct SettleUpModel: Decodable {
 
 struct SettleUpContentModel: Decodable {
     let id, authorId, groupPostId: Int
+    let chatRoomId: Int?
     let groupPostTitle: String
     let status: String
     let totalAmount: Int?
@@ -80,11 +81,8 @@ struct SettlementCompleteItemModel: Codable {
 // 정산 상세 조회
 struct SettlementResponseModel: Decodable {
     let success: Bool
-    let statusCode: Int
-    let message: String?
     let data: SettlementModel
-    let errorCode: String?
-    let timestamp: String
+    let message, errorCode: String?
 }
 
 struct SettlementModel: Decodable {

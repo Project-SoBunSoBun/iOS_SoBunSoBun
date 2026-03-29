@@ -302,7 +302,21 @@ extension SettleUpView {
                         guard let self = self else { return }
                         
                         self.logger.debug("공유 버튼 탭: id=\(item.settlementId)")
-                        // TODO: 공유 기능 로직
+                        
+                        let alert = CustomAlertView(
+                            title: String(localized: "SettleUpShareConfirmTitle", table: "SettleUp"),
+                            primaryTitleKey: String(localized: "Share", table: "Common"),
+                            cancelTitleKey: String(localized: "Cancel", table: "Common")
+                        )
+                        
+                        alert.onPrimaryTapped = { [weak self] in
+                            guard let self = self,
+                                  let chatRoomId = item.chatRoomId else { return }
+                            
+                            self.reactor.action.onNext(.sendSettlementCard(settlementId: item.settlementId, chatRoomId: chatRoomId))
+                        }
+                        
+                        alert.show(on: self)
                     })
                     .disposed(by: cell.disposeBag)
             }
@@ -334,6 +348,22 @@ extension SettleUpView {
             }
         })
         .disposed(by: disposeBag)
+        
+        // 정산서 공유 성공
+        reactor.pulse(\.$showShareSucceedAlert)
+            .compactMap { $0 }
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                let alert = CustomAlertView(
+                    title: String(localized: "SettleUpShareSuccessMessage", table: "SettleUp"),
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.show(on: self)
+            })
+            .disposed(by: disposeBag)
         
         // 새로고침
         reactor.state.map { $0.isRefreshing }

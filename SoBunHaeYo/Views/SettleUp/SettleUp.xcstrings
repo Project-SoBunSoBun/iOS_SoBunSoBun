@@ -144,6 +144,30 @@
         }
       }
     },
+    "SettleUpShareSuccessMessage" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 공유가 완료되었습니다."
+          }
+        }
+      }
+    },
+    "SettleUpShareConfirmTitle" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서를\n공유하시겠습니까?"
+          }
+        }
+      }
+    },
     "SettleUpAll" : {
       "comment" : "CalculationCategory.swift에서 사용",
       "extractionState" : "manual",
