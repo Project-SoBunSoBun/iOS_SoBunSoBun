@@ -14,23 +14,20 @@ final class NotificationNetworkManager {
     private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared), plugins: [MoyaLoggingPlugin()])
     
     func getNotifications(page: Int, size: Int) -> Single<NotificationResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(NotificationAPIs.getNotifications(page: page, size: size))
-        )
-        .tryMap(NotificationResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(NotificationAPIs.getNotifications(page: page, size: size)))
+        
+        return request.tryMap(NotificationResponseModel.self)
     }
     
     func readNotification(id: Int) -> Single<PlainResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(NotificationAPIs.readNotification(id: id))
-        )
-        .tryMap(PlainResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(NotificationAPIs.readNotification(id: id)))
+        
+        return request.tryMap(PlainResponseModel.self)
     }
     
     func readAllNotifications() -> Single<PlainResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(NotificationAPIs.readAllNotifications)
-        )
-        .tryMap(PlainResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(NotificationAPIs.readAllNotifications))
+        
+        return request.tryMap(PlainResponseModel.self)
     }
 }

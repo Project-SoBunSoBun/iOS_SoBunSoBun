@@ -15,25 +15,22 @@ final class ReportNetworkManager {
     
     // 댓글 신고
     func reportPostComment(commentId: Int, reason: String, description: String) -> Single<PlainResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(ReportAPIs.reportPostComment(commentId: commentId, reason: reason, description: description))
-        )
-        .tryMap(PlainResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(ReportAPIs.reportPostComment(commentId: commentId, reason: reason, description: description)))
+        
+        return request.tryMap(PlainResponseModel.self)
     }
     
     // 게시글 신고
     func reportPost(postId: Int, reason: String, description: String) -> Single<PlainResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(ReportAPIs.reportPost(postId: postId, reason: reason, description: description))
-        )
-        .tryMap(PlainResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(ReportAPIs.reportPost(postId: postId, reason: reason, description: description)))
+        
+        return request.tryMap(PlainResponseModel.self)
     }
     
     // 사용자 신고
     func reportUser(userId: Int, groupPostId: Int, reason: String, description: String) -> Single<PlainResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(ReportAPIs.reportUser(userId: userId, groupPostId: groupPostId, reason: reason, description: description))
-        )
-        .tryMap(PlainResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(ReportAPIs.reportUser(userId: userId, groupPostId: groupPostId, reason: reason, description: description)))
+        
+        return request.tryMap(PlainResponseModel.self)
     }
 }

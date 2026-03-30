@@ -14,16 +14,14 @@ class NavigationTabNetworkManager {
     private let authProvider = MoyaProvider<MultiTarget>(session: Session(interceptor: AuthInterceptor.shared), plugins: [MoyaLoggingPlugin()])
     
     func getUnreadNotificationCount() -> Single<UnreadNotificationCountResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(NavigationTabAPIs.getUnreadNotificationCount)
-        )
-        .tryMap(UnreadNotificationCountResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(NavigationTabAPIs.getUnreadNotificationCount))
+        
+        return request.tryMap(UnreadNotificationCountResponseModel.self)
     }
     
     func getChatRoomList() -> Single<ChatRoomListResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(NavigationTabAPIs.getChatRoomList)
-        )
-        .tryMap(ChatRoomListResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(NavigationTabAPIs.getChatRoomList))
+        
+        return request.tryMap(ChatRoomListResponseModel.self)
     }
 }
