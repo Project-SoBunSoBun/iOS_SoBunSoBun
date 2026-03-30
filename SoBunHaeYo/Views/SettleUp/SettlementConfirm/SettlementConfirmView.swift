@@ -179,15 +179,15 @@ extension SettlementConfirmView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert(title: message)
+                self.errorAlert(subTitle: message)
             })
             .disposed(by: disposeBag)
     }
     
-    private func errorAlert(title: String) {
+    private func errorAlert(subTitle: String) {
         let alert = CustomAlertView(
-            title: NSLocalizedString(title, tableName: "SettleUp", comment: ""),
-            subTitle: String(localized: "TryAgain", table: "Common"),
+            title: String(localized: "Error", table: "Error"),
+            subTitle: subTitle,
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         

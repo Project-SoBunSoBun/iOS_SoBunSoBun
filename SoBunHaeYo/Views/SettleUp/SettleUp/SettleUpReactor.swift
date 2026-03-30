@@ -26,6 +26,7 @@ class SettleUpReactor: Reactor {
     private let disposeBag = DisposeBag()
     
     private let networkManager = SettleUpNetworkManager()
+    private let chatNetworkManager = ChatNetworkManager()
     private let pageSize: Int = 20
     
     enum Action {
@@ -33,6 +34,7 @@ class SettleUpReactor: Reactor {
         case refresh // 새로고침
         case loadMore // 페이지네이션
         case categorySelected(SettleUpCategory)
+        case sendSettlementCard(settlementId: Int, chatRoomId: Int) // 정산서 공유
     }
     
     enum Mutation {
@@ -42,6 +44,7 @@ class SettleUpReactor: Reactor {
         case setPage(Int)
         case setHasMore(Bool)
         case setRefreshing(Bool)
+        case setShowShareSucceedAlert
         case setErrorMessage(String)
     }
     
@@ -51,6 +54,7 @@ class SettleUpReactor: Reactor {
         var page: Int = 0 // 페이지네이션 페이지 번호
         var hasMore: Bool = true // 새로고침 여부
         var isRefreshing: Bool = false // 새로고침 여부
+        @Pulse var showShareSucceedAlert: Void?
         @Pulse var errorMessage: String?
     }
     
@@ -89,6 +93,9 @@ class SettleUpReactor: Reactor {
                 Observable.just(.setPage(0)),
                 loadItems(for: category, page: 0, size: pageSize, isFirst: true)
             ])
+            
+        case .sendSettlementCard(let settlementId, let chatRoomId):
+            return sendSettlementCard(settlementId: settlementId, chatRoomId: chatRoomId)
         }
     }
     
@@ -114,9 +121,13 @@ class SettleUpReactor: Reactor {
         case .setRefreshing(let isRefreshing):
             newState.isRefreshing = isRefreshing
             
+        case .setShowShareSucceedAlert:
+            newState.showShareSucceedAlert = ()
+            
         case .setErrorMessage(let message):
             newState.errorMessage = message
         }
+        
         return newState
     }
     
@@ -150,6 +161,7 @@ class SettleUpReactor: Reactor {
                             return SettleUpItemModel(
                                 settlementId: content.id,
                                 authorId: content.authorId,
+                                chatRoomId: content.chatRoomId,
                                 isAuthor: content.authorId == currentUserId,
                                 settlementStatus: isCompleted,
                                 title: content.groupPostTitle,
@@ -192,5 +204,40 @@ class SettleUpReactor: Reactor {
                     ])
                 }
         }
+    }
+    
+    // 정산서 공유
+    private func sendSettlementCard(settlementId: Int, chatRoomId: Int) -> Observable<Mutation> {
+        return chatNetworkManager.sendSettlementCard(chatRoomId: chatRoomId, settlementId: settlementId)
+            .asObservable()
+            .flatMap { [weak self] response -> Observable<Mutation> in
+                guard let self = self else { return Observable.empty() }
+                
+                if response.success {
+                    self.logger.debug("정산서 전송 성공")
+                    
+                    return Observable.just(.setShowShareSucceedAlert)
+                } else {
+                    if let errorCode = response.errorCode {
+                        self.logger.critical("정산서 전송 실패(\(errorCode)): \(response.message ?? "")")
+                        
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        
+                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        self.logger.critical("정산서 전송 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    }
+                }
+            }
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
+                
+                self.logger.critical("정산서 전송 실패: \(error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+            }
     }
 }

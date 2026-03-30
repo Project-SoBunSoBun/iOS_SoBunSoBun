@@ -276,16 +276,25 @@ class ChatReactor: Reactor {
         return networkManager.getChatRoomDetail(id: chatRoomId)
             .asObservable()
             .flatMap { [weak self] response -> Observable<Mutation> in
-                guard let self else { return Observable.empty() }
+                guard let self = self else { return Observable.empty() }
                 
-                if let errorCode = response.errorCode {
-                    self.logger.critical("채팅방 정보 불러오기 실패(\(errorCode)): \(response.message ?? "")")
-                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                    return Observable.just(.setCriticalErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
-                } else {
+                if response.success {
+                    self.logger.debug("채팅방 정보 불러오기 성공")
+                    
                     return Observable.just(.setDetailInfo(response))
+                } else {
+                    if let errorCode = response.errorCode {
+                        self.logger.critical("채팅방 정보 불러오기 실패(\(errorCode)): \(response.message ?? "")")
+                        
+                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        
+                        return Observable.just(.setCriticalErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    } else {
+                        self.logger.critical("채팅방 정보 불러오기 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setCriticalErrorMessage(String(localized: "ErrorGetChatRoomDetail", table: "Chat")))
+                    }
                 }
             }
             .catch { [weak self] error in
@@ -322,7 +331,7 @@ class ChatReactor: Reactor {
         return Observable.deferred { [weak self] in // 백그라운드에서 수행
             guard let self = self else { return Observable.empty() }
             
-            let members = self.currentState.detailInfoModel?.data.members
+            let members = self.currentState.detailInfoModel?.data?.members
             let messages = self.databaseManager.getMessages(
                 roomId: self.chatRoomId,
                 beforeCreatedAt: self.currentState.messages.last?.createdAt,
@@ -361,27 +370,37 @@ class ChatReactor: Reactor {
             size: MESSAGE_LIMIT_COUNT
         )
         .asObservable()
-        .flatMap { [weak self] models -> Observable<Mutation> in
+        .flatMap { [weak self] response -> Observable<Mutation> in
             guard let self = self else { return Observable.empty() }
             
-            self.logger.debug(
-                """
-                \(models.message ?? "서버로부터 받은 메시지가 없습니다.")\n
-                서버로부터 메시지 과거 메시지 조회 성공: \(models.data.count)개
-                """
-            )
-            
-            self.databaseManager.insertMessages(models.data)
-            
-            if !currentState.hasLoadedFromServer, let latestMessageId = models.data.first?.id {
-                webSocketManager.read(lastMessageId: latestMessageId)
+            if response.success {
+                self.logger.debug("서버로부터 메시지 과거 메시지 조회 성공: \(response.data.count)개")
+                
+                self.databaseManager.insertMessages(response.data)
+                
+                if !currentState.hasLoadedFromServer, let latestMessageId = response.data.first?.id {
+                    webSocketManager.read(lastMessageId: latestMessageId)
+                }
+                
+                return Observable.concat([
+                    Observable.just(.setHasLoadedFromServer(true)),
+                    Observable.just(.updateMessages(response.data)),
+                    Observable.just(.setIsServerMessageEmpty(self.MESSAGE_LIMIT_COUNT > response.data.count))
+                ])
+            } else {
+                if let errorCode = response.errorCode {
+                    self.logger.critical("채팅방 메시지 불러오기 실패(\(errorCode)): \(response.message ?? "")")
+                    
+                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                    
+                    return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                } else {
+                    self.logger.critical("채팅방 메시지 불러오기 실패: \(response.message ?? "")")
+                    
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                }
             }
-            
-            return Observable.concat([
-                Observable.just(.setHasLoadedFromServer(true)),
-                Observable.just(.updateMessages(models.data)),
-                Observable.just(.setIsServerMessageEmpty(self.MESSAGE_LIMIT_COUNT > models.data.count))
-            ])
         }
         .catch { [weak self] error in
             guard let self = self else { return Observable.empty() }
@@ -462,7 +481,7 @@ class ChatReactor: Reactor {
             return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
         }
         
-        guard let inviteeId: Int = currentState.detailInfoModel?.data.members.first(where: { $0.userId != myId })?.userId else {
+        guard let inviteeId: Int = currentState.detailInfoModel?.data?.members.first(where: { $0.userId != myId })?.userId else {
             logger.critical("초대할 상대가 없어 오류 발생")
             
             return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))

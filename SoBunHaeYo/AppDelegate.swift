@@ -63,6 +63,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         let userInfo = response.notification.request.content.userInfo
         let type = userInfo["type"] as? String
         
+        print("[AppDelegate] userNotificationCenter\n", userInfo)
+        
         DispatchQueue.main.async {
             var urlString: String?
             

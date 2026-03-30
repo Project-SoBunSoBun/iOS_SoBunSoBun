@@ -14,7 +14,7 @@ import RxCocoa
 // window
 var currentWindow: UIWindow? {
     let windowScene = UIApplication.shared.connectedScenes
-        .filter { $0.activationState == .foregroundActive }
+        .filter { $0.activationState == .foregroundActive || $0.activationState == .foregroundInactive }
         .first { $0 is UIWindowScene } as? UIWindowScene
     
     return windowScene?.windows.first { $0.isKeyWindow }

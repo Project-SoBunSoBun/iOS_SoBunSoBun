@@ -25,7 +25,8 @@ enum ChatRoomType: String, Codable {
 
 struct ChatMessageModel: Codable, Equatable, FetchableRecord, PersistableRecord {
     let id: String
-    let roomId, userId: Int
+    let roomId: Int
+    let userId: Int?
     var nickname, profileImage: String?
     let type: ChatMessageType
     let content, imageUrl: String?
@@ -47,16 +48,14 @@ struct ChatReadMessageModel: Encodable {
 
 // 과거 메시지 불러오기 모델
 struct ChatMessageHistoryModel: Decodable, Equatable {
-    let status: String
-    let code: Int
+    let success: Bool
     let data: [ChatMessageModel]
-    let message: String?
+    let message, errorCode: String?
 }
 
 struct ChatRoomDetailModel: Decodable, Equatable {
-    let status: String
-    let code: Int
-    let data: ChatRoomDetailDataModel
+    let success: Bool
+    let data: ChatRoomDetailDataModel?
     let message, errorCode: String?
 }
 
