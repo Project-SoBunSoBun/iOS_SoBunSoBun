@@ -151,6 +151,8 @@ class SettleUpReactor: Reactor {
                 .asObservable()
                 .flatMap { response -> Observable<Mutation> in
                     if response.success {
+                        self.logger.debug("정산 목록 조회 성공")
+                        
                         guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
                         
                         let currentUserId = Int(userId)
@@ -181,12 +183,13 @@ class SettleUpReactor: Reactor {
                         ])
                     } else {
                         if let errorCode = response.errorCode {
-                            let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                            let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                            self.logger.critical("정산 목록 로드 실패(\(errorCode)) - \(response.message ?? "")")
                             
-                            return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                            return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                         } else {
-                            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                            self.logger.critical("정산 목록 로드 실패: \(response.message ?? "")")
+                            
+                            return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                         }
                     }
                 }
@@ -219,16 +222,13 @@ class SettleUpReactor: Reactor {
                     return Observable.just(.setShowShareSucceedAlert)
                 } else {
                     if let errorCode = response.errorCode {
-                        self.logger.critical("정산서 전송 실패(\(errorCode)): \(response.message ?? "")")
+                        self.logger.critical("정산서 전송 실패(\(errorCode)) - \(response.message ?? "")")
                         
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-                        
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
                         self.logger.critical("정산서 전송 실패: \(response.message ?? "")")
                         
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }
@@ -237,7 +237,7 @@ class SettleUpReactor: Reactor {
                 
                 self.logger.critical("정산서 전송 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
             }
     }
 }

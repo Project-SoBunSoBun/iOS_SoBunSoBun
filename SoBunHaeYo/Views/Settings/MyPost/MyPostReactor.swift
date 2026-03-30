@@ -189,6 +189,8 @@ class MyPostReactor: Reactor {
                     .asObservable()
                     .flatMap { response -> Observable<Mutation> in
                         if response.success {
+                            self.logger.debug("게시글 삭제 성공")
+                            
                             return Observable.concat([
                                 Observable.just(.removePostById(id)),
                                 Observable.just(.setShouldShowDeletePostDoneAlert),
@@ -196,16 +198,17 @@ class MyPostReactor: Reactor {
                             ])
                         } else {
                             if let errorCode = response.errorCode {
-                                let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                                let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                                self.logger.critical("게시글 삭제 실패(\(errorCode)) - \(response.message ?? "")")
                                 
                                 return Observable.concat([
-                                    Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback)),
+                                    Observable.just(.setErrorMessage(localizedErrorMessage(errorCode))),
                                     Observable.just(.setLoading(false))
                                 ])
                             } else {
+                                self.logger.critical("게시글 삭제 실패: \(response.message ?? "")")
+                                
                                 return Observable.concat([
-                                    Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error"))),
+                                    Observable.just(.setErrorMessage(localizedErrorMessage(nil))),
                                     Observable.just(.setLoading(false))
                                 ])
                             }

@@ -112,15 +112,18 @@ class NicknameSettingReactor: Reactor {
                 .asObservable()
                 .flatMap { response -> Observable<Mutation> in
                     if response.success {
+                        self.logger.debug("닉네임 설정 성공")
+                        
                         return Observable.just(.setProfileSaved)
                     } else {
                         if let errorCode = response.errorCode {
-                            let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                            let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                            return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                            self.logger.critical("닉네임 설정 실패(\(errorCode)) - \(response.message ?? "")")
+                            
+                            return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                         } else {
-                            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                            self.logger.critical("닉네임 설정 실패: \(response.message ?? "")")
+                            
+                            return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                         }
                     }
                 }

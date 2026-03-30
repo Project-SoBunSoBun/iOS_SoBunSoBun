@@ -284,12 +284,9 @@ class ChatReactor: Reactor {
                     return Observable.just(.setDetailInfo(response))
                 } else {
                     if let errorCode = response.errorCode {
-                        self.logger.critical("채팅방 정보 불러오기 실패(\(errorCode)): \(response.message ?? "")")
+                        self.logger.critical("채팅방 정보 불러오기 실패(\(errorCode)) - \(response.message ?? "")")
                         
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-                        
-                        return Observable.just(.setCriticalErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        return Observable.just(.setCriticalErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
                         self.logger.critical("채팅방 정보 불러오기 실패: \(response.message ?? "")")
                         
@@ -389,16 +386,13 @@ class ChatReactor: Reactor {
                 ])
             } else {
                 if let errorCode = response.errorCode {
-                    self.logger.critical("채팅방 메시지 불러오기 실패(\(errorCode)): \(response.message ?? "")")
+                    self.logger.critical("채팅방 메시지 불러오기 실패(\(errorCode)) - \(response.message ?? "")")
                     
-                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-                    
-                    return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                 } else {
                     self.logger.critical("채팅방 메시지 불러오기 실패: \(response.message ?? "")")
                     
-                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                 }
             }
         }
@@ -427,9 +421,9 @@ class ChatReactor: Reactor {
                     guard let self = self else { return Observable.empty() }
                     
                     if let errorCode = response.errorCode {
-                        self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
+                        self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
                         
-                        return Observable.just(.setErrorMessage(NSLocalizedString(errorCode, tableName: "Error", comment: "")))
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
                         self.logger.debug("알림 읽음 완료")
                         
@@ -441,7 +435,7 @@ class ChatReactor: Reactor {
                     
                     self.logger.critical("텍스트 보내기 실패: \(error.localizedDescription)")
                     
-                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                 }
             ,
             Observable.just(.setLastSendTime(Date()))
@@ -478,13 +472,13 @@ class ChatReactor: Reactor {
               let myId = Int(myIdString) else {
             logger.critical("내 USER_ID를 불러오는 중 오류 발생")
             
-            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+            return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
         }
         
         guard let inviteeId: Int = currentState.detailInfoModel?.data?.members.first(where: { $0.userId != myId })?.userId else {
             logger.critical("초대할 상대가 없어 오류 발생")
             
-            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+            return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
         }
         
         return networkManager.sendInviteCard(chatRoomId: chatRoomId, inviteeId: inviteeId)
@@ -559,7 +553,7 @@ class ChatReactor: Reactor {
                 
                 self.logger.critical("채팅방 나가기 실패: \(error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
             }
     }
 }

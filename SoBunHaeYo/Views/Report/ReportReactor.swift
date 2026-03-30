@@ -161,18 +161,19 @@ class ReportReactor: Reactor {
         
         return api.asObservable()
             .flatMap { response -> Observable<Mutation> in
-                self.logger.debug("신고 완료")
-                
                 if response.success {
+                    self.logger.debug("신고 완료")
+                    
                     return Observable.just(.setShouldShowReportCompletedAlert)
                 } else {
                     if let errorCode = response.errorCode {
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        self.logger.critical("신고 실패(\(errorCode)) - \(response.message ?? "")")
                         
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        self.logger.critical("신고 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }

@@ -69,12 +69,13 @@ class AnnouncementDetailReactor: Reactor {
                     return Observable.just(.setNoticeDetail(response.data))
                 } else {
                     if let errorCode = response.errorCode {
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                        self.logger.critical("공지사항 상세 조회 실패(\(errorCode)) - \(response.message ?? "")")
                         
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        self.logger.critical("공지사항 상세 조회 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }

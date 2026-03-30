@@ -325,7 +325,7 @@ class PostDetailReactor: Reactor {
                 guard let self else { return Observable.empty() }
                 
                 if let errorCode = response.errorCode {
-                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
+                    self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
                 } else {
                     self.logger.debug("알림 읽음 완료")
                 }
@@ -434,17 +434,22 @@ class PostDetailReactor: Reactor {
     private func savePost() -> Observable<Mutation> {
         return homeNetworkManager.savePost(id: postId)
             .asObservable()
-            .flatMap { response -> Observable<Mutation> in
+            .flatMap { [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
                 if response.success {
+                    self.logger.debug("게시글 저장 성공")
+                    
                     return Observable.just(.setIsSaved(true))
                 } else {
                     if let errorCode = response.errorCode {
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        self.logger.critical("게시글 저장 실패(\(errorCode)) - \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        self.logger.critical("게시글 저장 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }
@@ -462,17 +467,22 @@ class PostDetailReactor: Reactor {
     private func cancelSavePost() -> Observable<Mutation> {
         return homeNetworkManager.cancelSavePost(id: postId)
             .asObservable()
-            .flatMap { response -> Observable<Mutation> in
+            .flatMap { [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
                 if response.success {
+                    self.logger.debug("게시글 저장 취소 성공")
+                    
                     return Observable.just(.setIsSaved(false))
                 } else {
                     if let errorCode = response.errorCode {
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        self.logger.critical("게시글 저장 취소 실패(\(errorCode)) - \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        self.logger.critical("게시글 저장 취소 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }
@@ -490,17 +500,22 @@ class PostDetailReactor: Reactor {
     private func deletePost() -> Observable<Mutation> {
         return homeNetworkManager.deletePost(id: postId)
             .asObservable()
-            .flatMap { response -> Observable<Mutation> in
+            .flatMap { [weak self] response -> Observable<Mutation> in
+                guard let self else { return Observable.empty() }
+                
                 if response.success {
+                    self.logger.debug("게시글 삭제 성공")
+                    
                     return Observable.just(.setShouldShowDeletePostDoneAlert)
                 } else {
                     if let errorCode = response.errorCode {
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        self.logger.critical("게시글 삭제 실패(\(errorCode)) - \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        self.logger.critical("게시글 삭제 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }
@@ -530,15 +545,18 @@ class PostDetailReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 if response.success {
+                    self.logger.debug("댓글 생성 성공")
+                    
                     return getComments()
                 } else {
                     if let errorCode = response.errorCode {
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        self.logger.critical("댓글 생성 실패(\(errorCode)) - \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        self.logger.critical("댓글 생성 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }
@@ -572,18 +590,21 @@ class PostDetailReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 if response.success {
+                    self.logger.debug("댓글 수정 성공")
+                    
                     return Observable.concat([
                         getComments(),
                         Observable.just(.setIsEditMode(false))
                     ])
                 } else {
                     if let errorCode = response.errorCode {
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        self.logger.critical("댓글 수정 실패(\(errorCode)) - \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        self.logger.critical("댓글 수정 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }
@@ -609,6 +630,8 @@ class PostDetailReactor: Reactor {
                 guard let self = self else { return Observable.empty() }
                 
                 if response.success {
+                    self.logger.debug("댓글 삭제 성공")
+                    
                     return Observable.concat([
                         getPostCommentsCount(),
                         getComments(),
@@ -616,12 +639,13 @@ class PostDetailReactor: Reactor {
                     ])
                 } else {
                     if let errorCode = response.errorCode {
-                        let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                        let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                        return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                        self.logger.critical("댓글 삭제 실패(\(errorCode)) - \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                     } else {
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        self.logger.critical("댓글 삭제 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                     }
                 }
             }
@@ -686,10 +710,8 @@ class PostDetailReactor: Reactor {
                 
                 if let errorCode = response.errorCode {
                     self.logger.critical("채팅방 생성 혹은 조회 실패(\(errorCode)) - \(response.message)")
-                    let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
                     
-                    return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                 } else {
                     return Observable.just(.setShouldNavigateToChat(response.data.roomId))
                 }
