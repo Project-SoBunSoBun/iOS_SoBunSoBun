@@ -366,7 +366,7 @@ extension ChatView {
                 )
                 
                 alert.onPrimaryTapped = {
-                    if let settlementId = model.data.settlementId {
+                    if let settlementId = model.data?.settlementId {
                         reactor.action.onNext(.sendSettlementCard(settlementId))
                     } else {
                         self.showNotSettledYetForOwnerAlert()
@@ -386,11 +386,12 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                guard let data = model.data else { return }
                 
                 _ = self.chatTextView.textView.resignFirstResponder()
                 
                 let sheetView = PostDetailView(
-                    postId: model.data.groupPostId,
+                    postId: data.groupPostId,
                     showBackButton: false,
                     showChatButton: false
                 )
@@ -413,10 +414,11 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                guard let data = model.data else { return }
                 
                 _ = self.chatTextView.textView.resignFirstResponder()
                 
-                if let settlementId = model.data.settlementId {
+                if let settlementId = data.settlementId {
                     self.navigationController?.pushViewController(SettlementConfirmView(settlementId: settlementId), animated: true)
                 } else {
                     let alert = CustomAlertView(
@@ -508,16 +510,17 @@ extension ChatView {
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] model in
                 guard let self = self else { return }
+                guard let data = model.data else { return }
                 
                 // 제목, 메뉴 설정
-                topNavigationBar.title = model.data.roomName
+                topNavigationBar.title = data.roomName
                 topNavigationBar.buttons = [rightMenuButton]
                 
                 rightMenuView = ChatRightMenuView(
                     chatRoomId: chatRoomId,
-                    groupPostId: model.data.groupPostId,
-                    type: model.data.roomType,
-                    members: model.data.members
+                    groupPostId: data.groupPostId,
+                    type: data.roomType,
+                    members: data.members
                 )
                 rightMenuView?.willLeave = willLeave
                 
@@ -538,14 +541,14 @@ extension ChatView {
                     make.height.equalTo(88)
                 }
                 
-                if model.data.ownerId == myId {
-                    if model.data.roomType == .ONE_TO_ONE {
+                if data.ownerId == myId {
+                    if data.roomType == .ONE_TO_ONE {
                         bottomMenuStackView.addArrangedSubview(sendInvitationButton)
                         sendInvitationButton.snp.makeConstraints { make in
                             make.horizontalEdges.equalToSuperview()
                             make.height.equalTo(88)
                         }
-                    } else if model.data.roomType == .GROUP {
+                    } else if data.roomType == .GROUP {
                         bottomMenuStackView.addArrangedSubview(sendSettlementButton)
                         sendSettlementButton.snp.makeConstraints { make in
                             make.horizontalEdges.equalToSuperview()
@@ -553,13 +556,13 @@ extension ChatView {
                         }
                     }
                 } else {
-                    if model.data.roomType == .ONE_TO_ONE {
+                    if data.roomType == .ONE_TO_ONE {
                         bottomMenuStackView.addArrangedSubview(checkPostButton)
                         checkPostButton.snp.makeConstraints { make in
                             make.horizontalEdges.equalToSuperview()
                             make.height.equalTo(88)
                         }
-                    } else if model.data.roomType == .GROUP {
+                    } else if data.roomType == .GROUP {
                         bottomMenuStackView.addArrangedSubview(confirmSettlementButton)
                         confirmSettlementButton.snp.makeConstraints { make in
                             make.horizontalEdges.equalToSuperview()
@@ -569,12 +572,12 @@ extension ChatView {
                 }
                 
                 // 방장만 정산 후 자동 매너 평가 뷰 이동
-                if model.data.ownerId == myId && model.data.isSettled && model.data.isReviewed == false {
+                if data.ownerId == myId && data.isSettled && data.isReviewed == false {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         self.navigationController?.pushViewController(
                             ChatRateMannerView(
-                                groupPostId: model.data.groupPostId,
-                                members: model.data.members
+                                groupPostId: data.groupPostId,
+                                members: data.members
                             ), animated: true
                         )
                     }
