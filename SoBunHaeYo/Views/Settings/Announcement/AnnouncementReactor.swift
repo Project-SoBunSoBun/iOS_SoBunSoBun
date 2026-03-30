@@ -18,7 +18,7 @@ class AnnouncementReactor: Reactor {
     let initialState = State()
     
     private let networkManager = SettingNetworkManager()
-    private let pageSize: Int = 20
+    private let PAGE_SIZE: Int = 20
     
     enum Action {
         case viewWillAppear
@@ -53,7 +53,7 @@ class AnnouncementReactor: Reactor {
         case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setPage(0)),
-                loadNotices(page: currentState.page, size: pageSize)
+                loadNotices(page: currentState.page, size: PAGE_SIZE)
             ])
             
         case .loadMore:
@@ -66,14 +66,14 @@ class AnnouncementReactor: Reactor {
             
             return Observable.concat([
                 Observable.just(.setPage(nextPage)),
-                loadNotices(page: nextPage, size: pageSize)
+                loadNotices(page: nextPage, size: PAGE_SIZE)
             ])
             
         case .refresh:
             return Observable.concat([
                 Observable.just(.setRefreshing(true)),
                 Observable.just(.setPage(0)),
-                loadNotices(page: 0, size: pageSize),
+                loadNotices(page: 0, size: PAGE_SIZE),
                 Observable.just(.setRefreshing(false))
             ])
             

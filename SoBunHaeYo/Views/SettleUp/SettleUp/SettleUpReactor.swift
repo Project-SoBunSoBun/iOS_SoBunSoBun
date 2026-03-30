@@ -27,7 +27,7 @@ class SettleUpReactor: Reactor {
     
     private let networkManager = SettleUpNetworkManager()
     private let chatNetworkManager = ChatNetworkManager()
-    private let pageSize: Int = 20
+    private let PAGE_SIZE: Int = 20
     
     enum Action {
         case viewWillAppear
@@ -63,7 +63,7 @@ class SettleUpReactor: Reactor {
         case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setPage(0)),
-                loadItems(page: 0, size: pageSize, isFirst: true),
+                loadItems(page: 0, size: PAGE_SIZE, isFirst: true),
             ])
             
             
@@ -71,7 +71,7 @@ class SettleUpReactor: Reactor {
             return Observable.concat([
                 Observable.just(.setRefreshing(true)),
                 Observable.just(.setPage(0)),
-                loadItems(page: 0, size: pageSize, isFirst: true),
+                loadItems(page: 0, size: PAGE_SIZE, isFirst: true),
                 Observable.just(.setRefreshing(false))
             ])
             
@@ -84,14 +84,14 @@ class SettleUpReactor: Reactor {
             
             return Observable.concat([
                 Observable.just(.setPage(nextPage)),
-                loadItems(page: nextPage, size: pageSize, isFirst: false)
+                loadItems(page: nextPage, size: PAGE_SIZE, isFirst: false)
             ])
             
         case .categorySelected(let category):
             return Observable.concat([
                 Observable.just(.setSelectedCategory(category)),
                 Observable.just(.setPage(0)),
-                loadItems(for: category, page: 0, size: pageSize, isFirst: true)
+                loadItems(for: category, page: 0, size: PAGE_SIZE, isFirst: true)
             ])
             
         case .sendSettlementCard(let settlementId, let chatRoomId):
