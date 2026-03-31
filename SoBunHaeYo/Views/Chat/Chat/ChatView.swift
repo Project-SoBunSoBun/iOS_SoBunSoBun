@@ -633,9 +633,23 @@ extension ChatView {
                             return
                         }
                         
-                        chatCellMenuDropDownView.animationAnchor = isMine ? .topRight : .topLeft
+                        chatCellMenuDropDownView.items = ["Copy"]
                         
+                        // 버튼 좌표 변환
                         let chatCellViewFrame = chatCellView.convert(chatCellView.bounds, to: view)
+                        
+                        // 드롭다운 높이: 항목 수 × 셀 높이
+                        let dropdownHeight = CGFloat(chatCellMenuDropDownView.items.count) * chatCellMenuDropDownView.cellHeight
+                        
+                        // 입력 영역 위까지 남은 공간
+                        let availableSpaceBelow = chatStackView.frame.minY - chatCellViewFrame.maxY
+                        let shouldOpenUpward = dropdownHeight > availableSpaceBelow
+                        
+                        if isMine {
+                            chatCellMenuDropDownView.animationAnchor = shouldOpenUpward ? .bottomRight : .topRight
+                        } else {
+                            chatCellMenuDropDownView.animationAnchor = shouldOpenUpward ? .bottomLeft : .topLeft
+                        }
                         
                         chatCellMenuDropDownView.snp.remakeConstraints { make in
                             if isMine {
@@ -644,15 +658,22 @@ extension ChatView {
                                 make.leading.equalTo(self.view.snp.leading).offset(chatCellViewFrame.minX)
                             }
                             
-                            make.top.equalToSuperview().offset(chatCellViewFrame.maxY + 4)
+                            if shouldOpenUpward {
+                                make.bottom.equalTo(self.view.snp.top).offset(chatCellViewFrame.minY)
+                            } else {
+                                make.top.equalToSuperview().offset(chatCellViewFrame.maxY + 4)
+                            }
+                            
                             make.width.equalTo(70)
                         }
+                        
+                        // z-order 재설정
+                        view.bringSubviewToFront(chatCellMenuDropDownView)
                         
                         let currentState = reactor.currentState
                         let isSameChatId = currentState.selectedChatMessageModel?.id == model.id
                         let shouldChatCellMenuOpen = !(currentState.isChatCellMenuOpen && isSameChatId)
                         
-                        chatCellMenuDropDownView.items = ["Copy"]
                         reactor.action.onNext(.setSelectedChatMessageModel(model))
                         reactor.action.onNext(.chatLongPressed(shouldChatCellMenuOpen))
                     })

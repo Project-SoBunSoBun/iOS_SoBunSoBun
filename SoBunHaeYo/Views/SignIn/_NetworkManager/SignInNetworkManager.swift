@@ -18,52 +18,45 @@ class SignInNetworkManager {
     // MARK: - 로그인
     // 서버에서 카카오 토큰을 통해 임시 토큰을 가져오는 메서드
     func fetchAuthLoginKakao(accessToken: String) -> Single<AuthResponse> {
-        return provider.rx.request(
-            MultiTarget(SignInAPIs.authLoginKakao(accessToken: accessToken))
-        )
-        .tryMap(AuthResponse.self)
+        let request: Single<Response> = provider.rx.request(MultiTarget(SignInAPIs.authLoginKakao(accessToken: accessToken)))
+        
+        return request.tryMap(AuthResponse.self)
     }
     
     // 애플 로그인
     func fethAuthLoginApple(code: String, idToken: String) -> Single<AuthResponse> {
-        return provider.rx.request(
-            MultiTarget(SignInAPIs.authLoginApple(code: code, idToken: idToken))
-        )
-        .tryMap(AuthResponse.self)
+        let request: Single<Response> = provider.rx.request(MultiTarget(SignInAPIs.authLoginApple(code: code, idToken: idToken)))
+        
+        return request.tryMap(AuthResponse.self)
     }
     
     // 애플 계정 연결 해제
     func fetchAuthRevokeApple() -> Single<PlainResponseModel> {
-        return authProvider.rx.request(
-            MultiTarget(SignInAPIs.authRevokeApple)
-        )
-        .tryMap(PlainResponseModel.self)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(SignInAPIs.authRevokeApple))
+        
+        return request.tryMap(PlainResponseModel.self)
     }
     
     // 서버에서 임시 토큰을 통해 사용자 정보를 가져오는 메서드
     func fetchAuthCompleteSignUp(loginToken: String, serviceTermsAgreed: Bool, privacyPolicyAgreed: Bool, marketingOptionalAgreed: Bool) -> Single<UserModel> {
-        return provider.rx.request(
-            MultiTarget(SignInAPIs.authCompleteSignUp(loginToken: loginToken, serviceTermsAgreed: serviceTermsAgreed, privacyPolicyAgreed: privacyPolicyAgreed, marketingOptionalAgreed: marketingOptionalAgreed))
-        )
-        .tryMap(UserModel.self)
+        let request: Single<Response> = provider.rx.request(MultiTarget(SignInAPIs.authCompleteSignUp(loginToken: loginToken, serviceTermsAgreed: serviceTermsAgreed, privacyPolicyAgreed: privacyPolicyAgreed, marketingOptionalAgreed: marketingOptionalAgreed)))
+        
+        return request.tryMap(UserModel.self)
     }
     
     // 서버에서 닉네임 중복 여부를 확인하는 메서드
     func checkNickname(nickname: String) -> Single<CheckNicknameModel> {
-        return provider.rx.request(
-            MultiTarget(SignInAPIs.checkNickname(nickname: nickname))
-        )
-        .tryMap(CheckNicknameModel.self)
+        let request: Single<Response> = provider.rx.request(MultiTarget(SignInAPIs.checkNickname(nickname: nickname)))
+        
+        return request.tryMap(CheckNicknameModel.self)
     }
     
     // MARK: - 닉네임 설정
     // 서버에 닉네임과 프로필 이미지를 저장하는 메서드
     func saveProfile(nickname: String, profileImage: UIImage?) -> Single<PlainResponseModel> {
         let imageData = profileImage?.jpegData(compressionQuality: 0.7)
+        let request: Single<Response> = authProvider.rx.request(MultiTarget(SignInAPIs.saveProfile(nickname: nickname, profileImage: imageData)))
         
-        return authProvider.rx.request(
-            MultiTarget(SignInAPIs.saveProfile(nickname: nickname, profileImage: imageData))
-        )
-        .tryMap(PlainResponseModel.self)
+        return request.tryMap(PlainResponseModel.self)
     }
 }

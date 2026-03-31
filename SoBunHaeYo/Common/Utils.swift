@@ -260,6 +260,18 @@ extension String {
     }
 }
 
+// 오류 코드에 해당하는 다국어 오류 메시지 변환
+func localizedErrorMessage(_ errorCode: String?) -> String {
+    guard let errorCode else {
+        return String(localized: "ErrorMessage", table: "Error")
+    }
+    
+    let message = NSLocalizedString(errorCode, tableName: "Error", comment: "")
+    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+    
+    return message != errorCode ? message : fallback
+}
+
 extension PrimitiveSequence where Trait == SingleTrait, Element == Response {
     /// Model Decode 실패 시 Data 로그를 추가로 출력합니다.
     func tryMap<T: Decodable>(_ type: T.Type) -> Single<T> {

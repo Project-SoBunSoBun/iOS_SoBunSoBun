@@ -19,7 +19,7 @@ class MyPostReactor: Reactor {
     
     private let settingNetworkManager = SettingNetworkManager()
     private let homeNetworkManager = HomeNetworkManager()
-    private let pageSize: Int = 20
+    private let PAGE_SIZE: Int = 20
     
     enum Action {
         case viewWillAppear
@@ -67,7 +67,7 @@ class MyPostReactor: Reactor {
         case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setPage(0)),
-                loadMyPosts(page: currentState.page, size: pageSize, isFirst: true)
+                loadMyPosts(page: currentState.page, size: PAGE_SIZE, isFirst: true)
             ])
             
         case .loadMore:
@@ -79,14 +79,14 @@ class MyPostReactor: Reactor {
             
             return Observable.concat([
                 Observable.just(.setPage(nextPage)),
-                loadMyPosts(page: nextPage, size: pageSize, isFirst: false)
+                loadMyPosts(page: nextPage, size: PAGE_SIZE, isFirst: false)
             ])
             
         case .refresh:
             return Observable.concat([
                 Observable.just(.setRefreshing(true)),
                 Observable.just(.setPage(0)),
-                loadMyPosts(page: 0, size: pageSize, isFirst: true),
+                loadMyPosts(page: 0, size: PAGE_SIZE, isFirst: true),
                 Observable.just(.setRefreshing(false))
             ])
             
@@ -189,6 +189,8 @@ class MyPostReactor: Reactor {
                     .asObservable()
                     .flatMap { response -> Observable<Mutation> in
                         if response.success {
+                            self.logger.debug("게시글 삭제 성공")
+                            
                             return Observable.concat([
                                 Observable.just(.removePostById(id)),
                                 Observable.just(.setShouldShowDeletePostDoneAlert),
@@ -196,16 +198,17 @@ class MyPostReactor: Reactor {
                             ])
                         } else {
                             if let errorCode = response.errorCode {
-                                let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                                let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                                self.logger.critical("게시글 삭제 실패(\(errorCode)) - \(response.message ?? "")")
                                 
                                 return Observable.concat([
-                                    Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback)),
+                                    Observable.just(.setErrorMessage(localizedErrorMessage(errorCode))),
                                     Observable.just(.setLoading(false))
                                 ])
                             } else {
+                                self.logger.critical("게시글 삭제 실패: \(response.message ?? "")")
+                                
                                 return Observable.concat([
-                                    Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error"))),
+                                    Observable.just(.setErrorMessage(localizedErrorMessage(nil))),
                                     Observable.just(.setLoading(false))
                                 ])
                             }

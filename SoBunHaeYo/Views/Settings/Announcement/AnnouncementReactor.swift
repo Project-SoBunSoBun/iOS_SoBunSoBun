@@ -18,7 +18,7 @@ class AnnouncementReactor: Reactor {
     let initialState = State()
     
     private let networkManager = SettingNetworkManager()
-    private let pageSize: Int = 20
+    private let PAGE_SIZE: Int = 20
     
     enum Action {
         case viewWillAppear
@@ -53,7 +53,7 @@ class AnnouncementReactor: Reactor {
         case .viewWillAppear:
             return Observable.concat([
                 Observable.just(.setPage(0)),
-                loadNotices(page: currentState.page, size: pageSize)
+                loadNotices(page: currentState.page, size: PAGE_SIZE)
             ])
             
         case .loadMore:
@@ -66,14 +66,14 @@ class AnnouncementReactor: Reactor {
             
             return Observable.concat([
                 Observable.just(.setPage(nextPage)),
-                loadNotices(page: nextPage, size: pageSize)
+                loadNotices(page: nextPage, size: PAGE_SIZE)
             ])
             
         case .refresh:
             return Observable.concat([
                 Observable.just(.setRefreshing(true)),
                 Observable.just(.setPage(0)),
-                loadNotices(page: 0, size: pageSize),
+                loadNotices(page: 0, size: PAGE_SIZE),
                 Observable.just(.setRefreshing(false))
             ])
             
@@ -133,12 +133,13 @@ class AnnouncementReactor: Reactor {
                             ])
                         } else {
                             if let errorCode = response.errorCode {
-                                let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                                let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                                self.logger.critical("공지사항 조회 실패(\(errorCode)) - \(response.message ?? "")")
                                 
-                                return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                                return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                             } else {
-                                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                                self.logger.critical("공지사항 조회 실패: \(response.message ?? "")")
+                                
+                                return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                             }
                         }
                     }

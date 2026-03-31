@@ -77,7 +77,7 @@ class SettlementConfirmReactor: Reactor {
                 guard let self else { return Observable.empty() }
                 
                 if let errorCode = response.errorCode {
-                    self.logger.critical("알림 읽음 실패(\(errorCode)): \(response.message ?? "")")
+                    self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
                 } else {
                     self.logger.debug("알림 읽음 완료")
                 }
@@ -106,6 +106,8 @@ class SettlementConfirmReactor: Reactor {
                     guard let self else { return Observable.empty() }
                     
                     if response.success {
+                        self.logger.debug("정산 상세 데이터 조회 성공")
+                        
                         let item = response.data
                         
                         let sortedParticipants = item.participants.sorted { lhs, rhs in
@@ -125,15 +127,13 @@ class SettlementConfirmReactor: Reactor {
                         ])
                     } else {
                         if let errorCode = response.errorCode {
-                            self.logger.critical("정산 상세 데이터 조회 실패(\(errorCode)): \(response.message ?? "")")
-                            let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                            let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-
-                            return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                            self.logger.critical("정산 상세 데이터 조회 실패(\(errorCode)) - \(response.message ?? "")")
+                            
+                            return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                         } else {
                             self.logger.critical("정산 상세 데이터 조회 실패")
                             
-                            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                            return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                         }
                     }
                 }

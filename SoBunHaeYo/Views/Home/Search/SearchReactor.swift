@@ -20,7 +20,7 @@ class SearchReactor: Reactor {
     private let networkManager = HomeNetworkManager()
     
     let initialState: State = State()
-    private let pageSize: Int = 20
+    private let PAGE_SIZE: Int = 20
     
     enum Action {
         case viewWillAppear // viewWillAppear 생명주기 실행
@@ -232,7 +232,7 @@ class SearchReactor: Reactor {
         let sortBy = sortBy.replacingOccurrences(of: "SortBy", with: "").lowercased()
         
         // API 호출
-        let api: Single<PostListResponseModel> = networkManager.getSearchList(keyword: keyword, sortBy: sortBy, page: page, size: pageSize)
+        let api: Single<PostListResponseModel> = networkManager.getSearchList(keyword: keyword, sortBy: sortBy, page: page, size: PAGE_SIZE)
         
         return Observable.deferred {
             Observable.concat([

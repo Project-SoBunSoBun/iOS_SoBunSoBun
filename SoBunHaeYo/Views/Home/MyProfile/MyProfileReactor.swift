@@ -164,6 +164,8 @@ class MyProfileReactor: Reactor {
                         guard let self else { return Observable.empty() }
                         
                         if response.success {
+                            self.logger.debug("내 정보 조회 성공")
+                            
                             guard let data = response.data else { return Observable.empty() }
                             
                             let mutations: Observable<Mutation> = isFirst ?
@@ -178,15 +180,13 @@ class MyProfileReactor: Reactor {
                             ])
                         } else {
                             if let errorCode = response.errorCode {
-                                self.logger.critical("내 정보 조회 실패(\(errorCode)): \(response.message ?? "")")
-                                let errorMessage = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-                                let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
+                                self.logger.critical("내 정보 조회 실패(\(errorCode)) - \(response.message ?? "")")
 
-                                return Observable.just(.setErrorMessage(errorMessage != errorCode ? errorMessage : fallback))
+                                return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                             } else {
-                                self.logger.critical("내 정보 조회 실패")
+                                self.logger.critical("내 정보 조회 실패: \(response.message ?? "")")
                                 
-                                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                                return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                             }
                         }
                     }
