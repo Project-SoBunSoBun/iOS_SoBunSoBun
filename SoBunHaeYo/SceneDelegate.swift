@@ -65,6 +65,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.makeKeyAndVisible()
         }
         
+        // 애플 계정 연결 상태 체크 (앱 최초 실행 시 1회)
+        AuthManager.shared.checkAppleAuthentication()
+        
         logger.debug("[저장된 ACCESS_TOKEN]\n\n\(KeyChain.shared.get(key: "ACCESS_TOKEN") ?? "KeyChain에 저장되지 않음")")
         // logger.debug("[저장된 LOGIN_TOKEN]\n\n\(KeyChain.shared.get(key: "LOGIN_TOKEN") ?? "KeyChain에 저장되지 않음")")
     }
@@ -90,8 +93,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // 애플 계정 연결 상태 체크
-        AuthManager.shared.checkAppleAuthentication()
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
