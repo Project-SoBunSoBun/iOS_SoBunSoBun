@@ -65,6 +65,7 @@ class AuthManager {
             
             deleteFCMToken()
             removeTokens()
+            NotificationManager.shared.updateBadgeCount(0)
             showLogOutAlert()
         }
         
@@ -84,6 +85,7 @@ class AuthManager {
             deleteFCMToken()
             removeTokens()
             switchToLoginView()
+            NotificationManager.shared.updateBadgeCount(0)
         }
     }
     
