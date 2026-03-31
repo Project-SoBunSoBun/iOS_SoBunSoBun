@@ -34,7 +34,7 @@ class BlueMeatballsRefreshController: UIRefreshControl {
     
     private func configureUI() {
         self.tintColor = .clear
-        self.backgroundColor = .red
+        self.backgroundColor = .backgroundWhite
         
         addSubview(gifImageView)
         
