@@ -18,29 +18,25 @@ class CommonNetworkManager {
 
     // 서버에 유저 정보를 받아오는 메서드
     func myProfile() -> Single<UserInfoModel> {
-        let request: Single<Response> = authProvider.rx.request(MultiTarget(CommonAPIs.me))
-        
-        return request.tryMap(UserInfoModel.self)
+        return authProvider.rx.request(MultiTarget(CommonAPIs.me))
+            .tryMap(UserInfoModel.self)
     }
     
     // 액세스 토큰 재발급
     func refreshAccessToken(refreshToken: String) -> Single<RefreshResponseModel> {
-        let request: Single<Response> = provider.rx.request(MultiTarget(CommonAPIs.refreshAccessToken(refreshToken: refreshToken)))
-        
-        return request.tryMap(RefreshResponseModel.self)
+        return provider.rx.request(MultiTarget(CommonAPIs.refreshAccessToken(refreshToken: refreshToken)))
+            .tryMap(RefreshResponseModel.self)
     }
     
     // FCM 토큰 전송
     func registerFCMToken(deviceId: String, token: String) -> Single<PlainResponseModel> {
-        let request: Single<Response> = authProvider.rx.request(MultiTarget(CommonAPIs.registerFCMToken(deviceId: deviceId, token: token)))
-        
-        return request.tryMap(PlainResponseModel.self)
+        return authProvider.rx.request(MultiTarget(CommonAPIs.registerFCMToken(deviceId: deviceId, token: token)))
+            .tryMap(PlainResponseModel.self)
     }
     
     // FCM 토큰 삭제
     func deleteFCMToken(deviceId: String) -> Single<PlainResponseModel> {
-        let request: Single<Response> = authProvider.rx.request(MultiTarget(CommonAPIs.deleteFCMToken(deviceId: deviceId)))
-        
-        return request.tryMap(PlainResponseModel.self)
+        return authProvider.rx.request(MultiTarget(CommonAPIs.deleteFCMToken(deviceId: deviceId)))
+            .tryMap(PlainResponseModel.self)
     }
 }
