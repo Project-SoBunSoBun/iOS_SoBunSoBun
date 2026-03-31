@@ -60,9 +60,13 @@ class AuthManager {
             kakaoLogout()
         }
         
-        deleteFCMToken()
-        removeTokens()
-        showLogOutAlert()
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            
+            deleteFCMToken()
+            removeTokens()
+            showLogOutAlert()
+        }
         
         logger.debug("로그아웃 처리")
     }
@@ -74,9 +78,13 @@ class AuthManager {
             appleRevoke()
         }
         
-        deleteFCMToken()
-        removeTokens()
-        switchToLoginView()
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            
+            deleteFCMToken()
+            removeTokens()
+            switchToLoginView()
+        }
     }
     
     func removeTokens() {
