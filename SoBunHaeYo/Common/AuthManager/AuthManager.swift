@@ -60,6 +60,7 @@ class AuthManager {
     func logout() {
         // 이미 로그아웃 처리 중이면 중복 실행 방지 (deleteFCMToken의 adapt()에서 재진입 방어)
         guard !isLoggingOut else { return }
+        
         isLoggingOut = true
         
         if loginType == "KAKAO" {
@@ -80,6 +81,7 @@ class AuthManager {
     
     func withdraw() {
         guard !isLoggingOut else { return }
+        
         isLoggingOut = true
         
         if loginType == "KAKAO" {
