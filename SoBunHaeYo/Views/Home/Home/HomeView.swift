@@ -19,7 +19,7 @@ class HomeView: UIViewController {
     private let disposeBag = DisposeBag()
     
     // 외부 이벤트에서 전달
-    let unreadNotificationCount = PublishSubject<Int>()
+    let unreadNotificationCount = BehaviorRelay<Int>(value: 0)
     
     // 외부 이벤트 전달
     let shouldShowLocationSettingAlert = PublishRelay<Void>()

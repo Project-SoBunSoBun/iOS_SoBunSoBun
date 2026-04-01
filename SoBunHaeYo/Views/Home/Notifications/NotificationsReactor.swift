@@ -155,10 +155,15 @@ class NotificationsReactor: Reactor {
             .flatMap { [weak self] model -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if let errorCode = model.errorCode {
-                    self.logger.critical("알림 모두 읽음 실패(\(errorCode)) - \(model.message ?? "")")
-                } else {
+                if model.success {
                     self.logger.debug("알림 모두 읽음 완료")
+                    NotificationCenter.default.post(name: .didReadAllNotifications, object: nil)
+                } else {
+                    if let errorCode = model.errorCode {
+                        self.logger.critical("알림 모두 읽음 실패(\(errorCode)) - \(model.message ?? "")")
+                    } else {
+                        self.logger.critical("알림 모두 읽음 실패: \(model.message ?? "")")
+                    }
                 }
                 
                 return Observable.empty()

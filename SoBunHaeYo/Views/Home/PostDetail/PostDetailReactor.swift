@@ -324,10 +324,14 @@ class PostDetailReactor: Reactor {
             .flatMap{ [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if let errorCode = response.errorCode {
-                    self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
-                } else {
+                if response.success {
                     self.logger.debug("알림 읽음 완료")
+                } else {
+                    if let errorCode = response.errorCode {
+                        self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
+                    } else {
+                        self.logger.critical("알림 읽음 실패: \(response.message ?? "")")
+                    }
                 }
                 
                 return Observable.empty()
