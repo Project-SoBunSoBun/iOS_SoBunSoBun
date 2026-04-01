@@ -30,6 +30,7 @@ class ChatRoomListView: UIViewController {
     private let buttonScrollView: UIScrollView = {
         let sv = UIScrollView()
         sv.showsVerticalScrollIndicator = false
+        sv.showsHorizontalScrollIndicator = false
         
         return sv
     }()

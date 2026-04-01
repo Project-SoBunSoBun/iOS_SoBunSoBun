@@ -89,10 +89,9 @@ struct CreateCommentModel: Encodable {
 }
 
 struct CreateChatRoomResponseModel: Decodable {
-    let status, message: String
-    let code: Int
-    let data: CreateChatRoomResponseDataModel
-    let errorCode: String?
+    let success: Bool
+    let data: CreateChatRoomResponseDataModel?
+    let message, errorCode: String?
 }
 
 struct CreateChatRoomResponseDataModel: Decodable {

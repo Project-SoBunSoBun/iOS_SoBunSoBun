@@ -137,7 +137,12 @@ class NavigationTabReactor: Reactor {
                 return Observable.just(.updateChatRoomList(model))
             }
         
-        return Observable.merge(mutation, didReceiveChatRoom)
+        // 알림 모두 읽음 완료 시 카운트를 0으로 직접 설정 (getUnreadNotificationCount와의 타이밍 경쟁 방지)
+        let didReadAllNotifications = NotificationCenter.default.rx
+            .notification(.didReadAllNotifications)
+            .map { _ in Mutation.setUnreadNotificationCount(0) }
+        
+        return Observable.merge(mutation, didReceiveChatRoom, didReadAllNotifications)
     }
     
     private func getMyData() -> Observable<Mutation> {
@@ -184,7 +189,7 @@ class NavigationTabReactor: Reactor {
             .flatMap { model -> Observable<Mutation> in
                 self.logger.debug("채팅방 목록 불러옴")
                 
-                return Observable.just(.setChatRoomList(model.data))
+                return Observable.just(.setChatRoomList(model.data ?? []))
             }
             .catch { error in
                 self.logger.critical("채팅방 목록 불러오는 중 오류 발생: \(error.localizedDescription)")

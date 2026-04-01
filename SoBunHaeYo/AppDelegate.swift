@@ -23,13 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         
         UNUserNotificationCenter.current().delegate = self
-        
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: authOptions,
-            completionHandler: { _, _ in }
-        )
-        
         Messaging.messaging().delegate = self
         
         application.registerForRemoteNotifications()
@@ -115,16 +108,17 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 }
 
 extension AppDelegate: MessagingDelegate {
+    // 앱 시작마다 토큰 갱신 여부 확인
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("Firebase registration token: \(String(describing: fcmToken))")
+        let now = Date()
         
-        let dataDict: [String: String] = ["token": fcmToken ?? ""]
-        NotificationCenter.default.post(
-            name: Notification.Name("FCMToken"),
-            object: nil,
-            userInfo: dataDict
-        )
-        // TODO: If necessary send token to application server.
-        // Note: This callback is fired at each app startup and whenever a new token is generated.
+        guard KeyChain.shared.get(key: "REFRESH_TOKEN") != nil,
+              let refreshTokenExpireAtKST = KeyChain.shared.get(key: "REFRESH_TOKEN_EXPIRE_AT_KST"),
+              let dateRefreshTokenExpireAtKST = ISO8601ToDate(refreshTokenExpireAtKST),
+              dateRefreshTokenExpireAtKST > now else {
+            return
+        }
+        
+        NotificationManager.shared.registerFCMToken()
     }
 }

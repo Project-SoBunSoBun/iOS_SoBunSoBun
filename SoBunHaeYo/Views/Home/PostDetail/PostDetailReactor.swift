@@ -324,10 +324,14 @@ class PostDetailReactor: Reactor {
             .flatMap{ [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if let errorCode = response.errorCode {
-                    self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
-                } else {
+                if response.success {
                     self.logger.debug("알림 읽음 완료")
+                } else {
+                    if let errorCode = response.errorCode {
+                        self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
+                    } else {
+                        self.logger.critical("알림 읽음 실패: \(response.message ?? "")")
+                    }
                 }
                 
                 return Observable.empty()
@@ -708,18 +712,26 @@ class PostDetailReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if let errorCode = response.errorCode {
-                    self.logger.critical("채팅방 생성 혹은 조회 실패(\(errorCode)) - \(response.message)")
+                if response.success, let data = response.data {
+                    self.logger.debug("채팅방 생성 및 조회 성공")
                     
-                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
+                    return Observable.just(.setShouldNavigateToChat(data.roomId))
                 } else {
-                    return Observable.just(.setShouldNavigateToChat(response.data.roomId))
+                    if let errorCode = response.errorCode {
+                        self.logger.critical("채팅방 생성 및 조회 실패(\(errorCode)) - \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
+                    } else {
+                        self.logger.critical("채팅방 생성 및 조회 실패: \(response.message ?? "")")
+                        
+                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
+                    }
                 }
             }
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("채팅방 생성 혹은 조회 실패: \(error.localizedDescription)")
+                self.logger.critical("채팅방 생성 및 조회 실패: \(error.localizedDescription)")
                 let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
                 
                 return Observable.just(.setErrorMessage(errorMessage))

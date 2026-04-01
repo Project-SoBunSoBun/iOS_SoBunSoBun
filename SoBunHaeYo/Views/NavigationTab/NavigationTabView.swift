@@ -214,4 +214,5 @@ extension NavigationTabView {
 
 extension Notification.Name {
     static let didPopNotificationsView = Notification.Name("didPopNotificationsView")
+    static let didReadAllNotifications = Notification.Name("didReadAllNotifications")
 }

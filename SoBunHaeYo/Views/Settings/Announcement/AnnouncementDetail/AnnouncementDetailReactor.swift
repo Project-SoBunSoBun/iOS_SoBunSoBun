@@ -63,10 +63,10 @@ class AnnouncementDetailReactor: Reactor {
         return networkManager.getAnnouncementsDetail(id: id)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success {
+                if response.success, let data = response.data {
                     self.logger.debug("공지사항 상세 조회 성공")
                     
-                    return Observable.just(.setNoticeDetail(response.data))
+                    return Observable.just(.setNoticeDetail(data))
                 } else {
                     if let errorCode = response.errorCode {
                         self.logger.critical("공지사항 상세 조회 실패(\(errorCode)) - \(response.message ?? "")")

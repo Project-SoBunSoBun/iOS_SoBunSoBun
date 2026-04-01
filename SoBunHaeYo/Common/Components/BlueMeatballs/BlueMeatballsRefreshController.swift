@@ -23,7 +23,7 @@ class BlueMeatballsRefreshController: UIRefreshControl {
     }()
     
     override init(frame: CGRect = .zero) {
-        super.init(frame: frame)
+        super.init(frame: CGRect(x: frame.origin.x, y: frame.origin.y, width: frame.width, height: 80))
         
         configureUI()
     }
@@ -34,6 +34,7 @@ class BlueMeatballsRefreshController: UIRefreshControl {
     
     private func configureUI() {
         self.tintColor = .clear
+        self.backgroundColor = .backgroundWhite
         
         addSubview(gifImageView)
         

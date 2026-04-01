@@ -28,8 +28,8 @@ final class AuthInterceptor: RequestInterceptor {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         // 저장된 액세스 토큰 가져오기
         guard let accessToken = KeyChain.shared.get(key: "ACCESS_TOKEN") else {
-            AuthManager.shared.removeTokens()
-            AuthManager.shared.switchToLoginView()
+            // logout()은 isLoggingOut 플래그로 중복 실행을 방지하므로 안전하게 호출
+            AuthManager.shared.logout()
             
             logger.debug("ACCESS_TOKEN이 Keychain에 존재하지 않습니다.")
             logger.fault("API 요청 중 오류가 발생했습니다. 요청을 중단하고 로그아웃 처리됩니다.")

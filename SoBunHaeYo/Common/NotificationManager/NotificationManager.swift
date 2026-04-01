@@ -74,9 +74,14 @@ final class NotificationManager: NSObject {
                 self.logger.fault("Error fetching FCM registration token: \(error)")
             }
             
-            guard let token = token,
-                  KeyChain.shared.get(key: "FCM_TOKEN") != token else {
-                self.logger.debug("FCM 토큰을 서버에 전송하지 않음")
+            guard let token else {
+                self.logger.error("FCM 토큰을 가져오지 못함")
+                
+                return
+            }
+            
+            guard KeyChain.shared.get(key: "FCM_TOKEN") != token else {
+                self.logger.debug("FCM 토큰이 이미 서버에 전송됨 (동일 토큰)")
                 
                 return
             }
@@ -88,8 +93,9 @@ final class NotificationManager: NSObject {
                         self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생(\(errorCode)) - \(model.message ?? "")")
                     } else {
                         self.logger.debug("FCM 토큰 서버 전송 완료\nDevice Id: \(uuid)\nFCM Token: \(token)")
+                        
+                        KeyChain.shared.set(key: "FCM_TOKEN", value: token)
                     }
-                    KeyChain.shared.set(key: "FCM_TOKEN", value: token)
                 }, onError: { error in
                     self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생: \(error.localizedDescription)")
                 })
