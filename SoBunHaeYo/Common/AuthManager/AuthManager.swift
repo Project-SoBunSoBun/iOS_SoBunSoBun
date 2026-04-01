@@ -67,7 +67,7 @@ class AuthManager {
         }
         
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
+            guard let self = self else { return }
             
             deleteFCMToken()
             removeTokens()
@@ -89,7 +89,7 @@ class AuthManager {
         }
         
         DispatchQueue.main.async { [weak self] in
-            guard let self else { return }
+            guard let self = self else { return }
             
             deleteFCMToken()
             removeTokens()

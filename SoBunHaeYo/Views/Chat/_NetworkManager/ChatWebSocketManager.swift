@@ -104,6 +104,7 @@ class ChatWebSocketManager {
     // STOMP 인증 실패 시 토큰을 직접 갱신한 후 재연결
     private func refreshTokenAndReconnect() {
         guard !isWaitingForRefreshToken else { return }
+        
         isWaitingForRefreshToken = true
         
         logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 STOMP 인증 실패 감지, 토큰 갱신 후 재연결 시도")
