@@ -25,8 +25,10 @@ class AuthManager {
     private let disposeBag = DisposeBag()
     
     private var isShowingLogOutAlert = false
+    private var isLoggingOut = false
     
-    private let loginType = KeyChain.shared.get(key: "LOGIN_TYPE")
+    // computed property로 변경: 싱글톤 초기화 시점이 아닌 매번 KeyChain에서 읽어 로그인 후에도 올바른 값 반환
+    private var loginType: String? { KeyChain.shared.get(key: "LOGIN_TYPE") }
     
     private init() {}
     
@@ -56,6 +58,10 @@ class AuthManager {
     }
     
     func logout() {
+        // 이미 로그아웃 처리 중이면 중복 실행 방지 (deleteFCMToken의 adapt()에서 재진입 방어)
+        guard !isLoggingOut else { return }
+        isLoggingOut = true
+        
         if loginType == "KAKAO" {
             kakaoLogout()
         }
@@ -73,6 +79,9 @@ class AuthManager {
     }
     
     func withdraw() {
+        guard !isLoggingOut else { return }
+        isLoggingOut = true
+        
         if loginType == "KAKAO" {
             kakaoUnlink()
         } else if loginType == "APPLE" {
@@ -153,13 +162,18 @@ class AuthManager {
     }
     
     func switchToLoginView() {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
             if let currentWindow {
                 let vc = UINavigationController(rootViewController: LoginView())
                 vc.isNavigationBarHidden = true
                 
                 currentWindow.rootViewController = vc
             }
+            // 다음 로그인-로그아웃 사이클을 위해 플래그 리셋
+            self.isLoggingOut = false
+            self.isShowingLogOutAlert = false
         }
         
         logger.debug("LoginView로 전환")
