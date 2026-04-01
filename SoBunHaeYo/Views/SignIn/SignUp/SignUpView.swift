@@ -318,7 +318,7 @@ extension SignUpView {
             .disposed(by: disposeBag)
         
         // 에러 처리
-        reactor.pulse(\.$signUpErrorMessage)
+        reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }

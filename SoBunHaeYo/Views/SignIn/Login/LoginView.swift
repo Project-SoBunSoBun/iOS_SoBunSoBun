@@ -280,19 +280,23 @@ extension LoginView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.onPrimaryTapped = {
-                    self.logger.debug("확인 버튼 클릭")
-                }
-                
-                alert.show(on: self)
+                self.errorAlert(message: message)
             })
             .disposed(by: disposeBag)
+    }
+    
+    private func errorAlert(message: String) {
+        let alert = CustomAlertView(
+            title: String(localized: "Error", table: "Error"),
+            subTitle: message,
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.logger.debug("확인 버튼 클릭")
+        }
+        
+        alert.show(on: self)
     }
 }
 

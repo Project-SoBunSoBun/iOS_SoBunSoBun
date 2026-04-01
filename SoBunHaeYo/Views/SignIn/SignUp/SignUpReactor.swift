@@ -7,8 +7,13 @@
 
 import UIKit
 import ReactorKit
+import OSLog
 
 class SignUpReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunHaeYo",
+        category: "SignIn.SignUp.Reactor"
+    )
     
     let initialState = State()
     private let disposeBag = DisposeBag()
@@ -30,8 +35,8 @@ class SignUpReactor: Reactor {
         case setAllAgree(Bool)
         case setTermsCheck(String, Bool)
         case setTermsDetail(String)
-        case setSignUpSuccess // 로그인 성공
-        case setSignUpFailed(String) // 로그인 실패
+        case setSignUpSuccess
+        case setErrorMessage(String)
         case setRequestLocationPermission
         case setShowLocationSettingAlert
         case setNextButtonTapped
@@ -41,7 +46,7 @@ class SignUpReactor: Reactor {
         @Pulse var shouldPopViewController: Void?
         @Pulse var shouldTermsDetail: String?
         @Pulse var signUpCompleted: Bool = false
-        @Pulse var signUpErrorMessage: String?
+        @Pulse var errorMessage: String?
         @Pulse var shouldRequestLocationPermission: Bool = false
         @Pulse var shouldShowLocationSettingAlert: Bool = false
         
@@ -133,8 +138,8 @@ class SignUpReactor: Reactor {
         case .setSignUpSuccess:
             newState.signUpCompleted = true
             
-        case .setSignUpFailed(let message):
-            newState.signUpErrorMessage = message
+        case .setErrorMessage(let message):
+            newState.errorMessage = message
             
         case .setRequestLocationPermission:
             newState.shouldRequestLocationPermission = true
@@ -151,7 +156,7 @@ class SignUpReactor: Reactor {
     
     private func performSignUp() -> Observable<Mutation> {
         guard let loginToken = KeyChain.shared.get(key: "LOGIN_TOKEN") else {
-            return Observable.just(.setSignUpFailed("로그인 토큰이 없습니다"))
+            return Observable.just(.setErrorMessage("로그인 토큰이 없습니다"))
         }
         
         let serviceTermsAgreed = currentState.termsChecked["service"] ?? false
@@ -164,15 +169,42 @@ class SignUpReactor: Reactor {
             marketingOptionalAgreed: false
         )
         .asObservable()
-        .map { userModel in
-            KeyChain.shared.set(key: "ACCESS_TOKEN", value: userModel.accessToken)
-            KeyChain.shared.set(key: "REFRESH_TOKEN", value: userModel.refreshToken)
-            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(userModel.accessTokenExpiresAtKst))
-            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(userModel.refreshTokenExpiresAtKst))
-            return Mutation.setSignUpSuccess
+        .flatMap { [weak self] userModelResponse -> Observable<Mutation> in
+            guard let self = self else { return Observable.empty() }
+            
+            if userModelResponse.success,
+               let accessToken = userModelResponse.accessToken,
+               let refreshToken = userModelResponse.refreshToken,
+               let accessTokenExpiresAtKst = userModelResponse.accessTokenExpiresAtKst,
+               let refreshTokenExpiresAtKst = userModelResponse.refreshTokenExpiresAtKst {
+                self.logger.debug("회원가입 성공")
+                
+                KeyChain.shared.set(key: "ACCESS_TOKEN", value: accessToken)
+                KeyChain.shared.set(key: "REFRESH_TOKEN", value: refreshToken)
+                KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(accessTokenExpiresAtKst))
+                KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(refreshTokenExpiresAtKst))
+                
+                return Observable.just(.setSignUpSuccess)
+            } else {
+                self.logger.critical("\(String(describing: userModelResponse))")
+                
+                if let errorCode = userModelResponse.errorCode {
+                    self.logger.critical("회원가입 실패(\(errorCode)) - \(userModelResponse.message ?? "")")
+                    
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
+                } else {
+                    self.logger.critical("회원가입 실패: \(userModelResponse.message ?? "")")
+                    
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
+                }
+            }
         }
-        .catch { error in
-            return Observable.just(.setSignUpFailed("회원가입 실패"))
+        .catch { [weak self] error in
+            guard let self = self else { return Observable.empty() }
+            
+            self.logger.debug("회원 가입 에러: \(error)")
+            
+            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
         }
     }
 }

@@ -1,5 +1,5 @@
 //
-//  SignInModels.swift
+//  SignInAPIModels.swift
 //  SoBunHaeYo
 //
 //  Created by 허성필 on 2/13/26.
@@ -9,19 +9,17 @@ import Foundation
 
 // MARK: - 로그인
 struct AuthResponse: Decodable {
-    let email: String
-    let nickname: String?
-    let profileImageUrl: String?
-    let loginToken: String
-    let newUser: Bool
+    let success: Bool
+    let email, nickname, profileImageUrl, loginToken: String?
+    let newUser: Bool?
+    let message, errorCode: String?
 }
 
 struct UserModel: Decodable {
-    let accessToken: String
-    let refreshToken: String
-    let user: UserInfoModel
-    let accessTokenExpiresAtKst: String
-    let refreshTokenExpiresAtKst: String
+    let success: Bool
+    let accessToken, refreshToken, accessTokenExpiresAtKst, refreshTokenExpiresAtKst: String?
+    let user: UserInfoModel?
+    let message, errorCode: String?
 }
 
 struct CheckNicknameModel: Decodable {

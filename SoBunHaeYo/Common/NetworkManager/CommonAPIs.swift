@@ -22,7 +22,7 @@ enum CommonAPIs {
 extension CommonAPIs: TargetType {
     // interceptor retry 활성화
     var validationType: ValidationType {
-        return .customCodes(Array(200...299) + [400] + Array(402...499))
+        return RESPONSE_CODES
     }
     
     var baseURL: URL {
