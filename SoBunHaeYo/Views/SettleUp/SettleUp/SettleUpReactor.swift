@@ -150,14 +150,14 @@ class SettleUpReactor: Reactor {
             self.networkManager.mySettleUps(status: status, page: page, size: size)
                 .asObservable()
                 .flatMap { response -> Observable<Mutation> in
-                    if response.success {
+                    if response.success, let data = response.data {
                         self.logger.debug("정산 목록 조회 성공")
                         
                         guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
                         
                         let currentUserId = Int(userId)
                         
-                        let items: [SettleUpItemModel] = response.data.content.map { content in
+                        let items: [SettleUpItemModel] = data.content.map { content in
                             let isCompleted = (content.status == "COMPLETED")
                             
                             return SettleUpItemModel(
@@ -179,7 +179,7 @@ class SettleUpReactor: Reactor {
                         
                         return Observable.concat([
                             mutation,
-                            Observable.just(.setHasMore(!response.data.last))
+                            Observable.just(.setHasMore(!data.last))
                         ])
                     } else {
                         if let errorCode = response.errorCode {

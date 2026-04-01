@@ -11,7 +11,7 @@ import Foundation
 struct SettleUpResponseModel: Decodable {
     let success: Bool
     let message: String?
-    let data: SettleUpModel
+    let data: SettleUpModel?
     let errorCode: String?
 }
 
@@ -81,7 +81,7 @@ struct SettlementCompleteItemModel: Codable {
 // 정산 상세 조회
 struct SettlementResponseModel: Decodable {
     let success: Bool
-    let data: SettlementModel
+    let data: SettlementModel?
     let message, errorCode: String?
 }
 

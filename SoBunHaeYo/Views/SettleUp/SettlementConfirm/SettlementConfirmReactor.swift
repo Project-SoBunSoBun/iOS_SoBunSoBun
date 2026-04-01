@@ -105,10 +105,8 @@ class SettlementConfirmReactor: Reactor {
                 .flatMap { [weak self] response -> Observable<Mutation> in
                     guard let self else { return Observable.empty() }
                     
-                    if response.success {
+                    if response.success, let item = response.data {
                         self.logger.debug("정산 상세 데이터 조회 성공")
-                        
-                        let item = response.data
                         
                         let sortedParticipants = item.participants.sorted { lhs, rhs in
                             let lhsIsCurrentUser = lhs.userId == currentUserId

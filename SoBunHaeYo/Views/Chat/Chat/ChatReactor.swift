@@ -370,19 +370,19 @@ class ChatReactor: Reactor {
         .flatMap { [weak self] response -> Observable<Mutation> in
             guard let self = self else { return Observable.empty() }
             
-            if response.success {
-                self.logger.debug("서버로부터 메시지 과거 메시지 조회 성공: \(response.data.count)개")
+            if response.success, let data = response.data {
+                self.logger.debug("서버로부터 메시지 과거 메시지 조회 성공: \(data.count)개")
                 
-                self.databaseManager.insertMessages(response.data)
+                self.databaseManager.insertMessages(data)
                 
-                if !currentState.hasLoadedFromServer, let latestMessageId = response.data.first?.id {
+                if !currentState.hasLoadedFromServer, let latestMessageId = data.first?.id {
                     webSocketManager.read(lastMessageId: latestMessageId)
                 }
                 
                 return Observable.concat([
                     Observable.just(.setHasLoadedFromServer(true)),
-                    Observable.just(.updateMessages(response.data)),
-                    Observable.just(.setIsServerMessageEmpty(self.MESSAGE_LIMIT_COUNT > response.data.count))
+                    Observable.just(.updateMessages(data)),
+                    Observable.just(.setIsServerMessageEmpty(self.MESSAGE_LIMIT_COUNT > data.count))
                 ])
             } else {
                 if let errorCode = response.errorCode {

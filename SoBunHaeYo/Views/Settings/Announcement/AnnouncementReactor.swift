@@ -122,14 +122,14 @@ class AnnouncementReactor: Reactor {
                 self.networkManager.getAnnouncements(page: page, size: size)
                     .asObservable()
                     .flatMap { response -> Observable<Mutation> in
-                        if response.success {
+                        if response.success, let data = response.data {
                             self.logger.debug("공지사항 조회 성공")
                             
-                            let isFirst = response.data.page.first
+                            let isFirst = data.page.first
                             
                             return Observable.concat([
-                                isFirst ? Observable.just(.setNotices(response.data.content)) : Observable.just(.appendNotices(response.data.content)),
-                                Observable.just(.setHasMore(!response.data.page.last))
+                                isFirst ? Observable.just(.setNotices(data.content)) : Observable.just(.appendNotices(data.content)),
+                                Observable.just(.setHasMore(!data.page.last))
                             ])
                         } else {
                             if let errorCode = response.errorCode {

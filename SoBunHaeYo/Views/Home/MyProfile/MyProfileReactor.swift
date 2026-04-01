@@ -163,10 +163,8 @@ class MyProfileReactor: Reactor {
                     .flatMap { [weak self] response -> Observable<Mutation> in
                         guard let self else { return Observable.empty() }
                         
-                        if response.success {
+                        if response.success, let data = response.data {
                             self.logger.debug("내 정보 조회 성공")
-                            
-                            guard let data = response.data else { return Observable.empty() }
                             
                             let mutations: Observable<Mutation> = isFirst ?
                             Observable.concat([

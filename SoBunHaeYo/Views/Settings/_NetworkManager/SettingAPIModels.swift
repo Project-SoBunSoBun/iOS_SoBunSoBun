@@ -40,7 +40,7 @@ struct AnnouncementRequestModel: Encodable {
 
 struct AnnouncementModel: Decodable {
     let success: Bool
-    let data: AnnouncementDataModel
+    let data: AnnouncementDataModel?
     let errorCode: String?
     let message: String?
 }
@@ -68,7 +68,7 @@ struct AnnouncementDetailRequestModel: Encodable {
 
 struct AnnouncementDetailModel: Decodable {
     let success: Bool
-    let data: AnnouncementDetailDataModel
+    let data: AnnouncementDetailDataModel?
     let errorCode: String?
     let message: String?
 }
