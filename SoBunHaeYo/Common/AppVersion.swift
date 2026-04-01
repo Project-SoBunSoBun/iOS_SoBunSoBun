@@ -9,10 +9,10 @@ import Foundation
 
 enum AppVersion {
     static var current: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? String(localized: "Unknown", table: "Common")
     }
     
     static var build: String {
-        Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
+        Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? String(localized: "Unknown", table: "Common")
     }
 }
