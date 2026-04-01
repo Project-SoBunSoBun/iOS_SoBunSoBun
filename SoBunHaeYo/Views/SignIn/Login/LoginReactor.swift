@@ -69,6 +69,8 @@ class LoginReactor: Reactor {
                                 
                                 return Observable.just(.loginSuccess(isNewUser: isNewUser))
                             } else {
+                                self.logger.critical("\(String(describing: kakaoAuthResponse))")
+                                
                                 if let errorCode = kakaoAuthResponse.errorCode {
                                     self.logger.critical("카카오 로그인 실패(\(errorCode)) - \(kakaoAuthResponse.message ?? "")")
                                     
@@ -119,6 +121,8 @@ class LoginReactor: Reactor {
                                 
                                 return Observable.just(.loginSuccess(isNewUser: isNewUser))
                             } else {
+                                self.logger.critical("\(String(describing: appleAuthResponse))")
+                                
                                 if let errorCode = appleAuthResponse.errorCode {
                                     self.logger.critical("애플 로그인 실패(\(errorCode)) - \(appleAuthResponse.message ?? "")")
                                     
@@ -212,6 +216,8 @@ extension LoginReactor {
                 
                 return Observable.just(.loginAndNavigateToHomeSuccess(isSaved: true))
             } else {
+                self.logger.critical("\(String(describing: userModelResponse))")
+                
                 if let errorCode = userModelResponse.errorCode {
                     self.logger.critical("로그인 실패(\(errorCode)) - \(userModelResponse.message ?? "")")
                     

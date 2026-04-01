@@ -186,6 +186,8 @@ class SignUpReactor: Reactor {
                 
                 return Observable.just(.setSignUpSuccess)
             } else {
+                self.logger.critical("\(String(describing: userModelResponse))")
+                
                 if let errorCode = userModelResponse.errorCode {
                     self.logger.critical("회원가입 실패(\(errorCode)) - \(userModelResponse.message ?? "")")
                     
