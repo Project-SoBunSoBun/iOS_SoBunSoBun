@@ -109,7 +109,8 @@ class ChatWebSocketManager {
         logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 STOMP 인증 실패 감지, 토큰 갱신 후 재연결 시도")
         
         AuthInterceptor.shared.refreshAccessToken { [weak self] isSuccess in
-            guard let self else { return }
+            guard let self = self else { return }
+            
             self.isWaitingForRefreshToken = false
             
             if isSuccess {

@@ -171,6 +171,7 @@ class AuthManager {
                 
                 currentWindow.rootViewController = vc
             }
+            
             // 다음 로그인-로그아웃 사이클을 위해 플래그 리셋
             self.isLoggingOut = false
             self.isShowingLogOutAlert = false
