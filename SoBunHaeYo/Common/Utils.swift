@@ -25,6 +25,9 @@ var currentWindow: UIWindow? {
 // API URL
 let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
 
+// RESPONSE CODES
+let RESPONSE_CODES: ValidationType = .customCodes(Array(200...299) + [400] + Array(402...499))
+
 // ISO8601 Datetime에서 Date형 변환
 func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
     let isoFormatter = ISO8601DateFormatter()
