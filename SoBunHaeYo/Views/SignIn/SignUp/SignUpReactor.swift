@@ -35,8 +35,8 @@ class SignUpReactor: Reactor {
         case setAllAgree(Bool)
         case setTermsCheck(String, Bool)
         case setTermsDetail(String)
-        case setSignUpSuccess // 로그인 성공
-        case setSignUpFailed(String) // 로그인 실패
+        case setSignUpSuccess
+        case setErrorMessage(String)
         case setRequestLocationPermission
         case setShowLocationSettingAlert
         case setNextButtonTapped
@@ -138,7 +138,7 @@ class SignUpReactor: Reactor {
         case .setSignUpSuccess:
             newState.signUpCompleted = true
             
-        case .setSignUpFailed(let message):
+        case .setErrorMessage(let message):
             newState.signUpErrorMessage = message
             
         case .setRequestLocationPermission:
@@ -156,7 +156,7 @@ class SignUpReactor: Reactor {
     
     private func performSignUp() -> Observable<Mutation> {
         guard let loginToken = KeyChain.shared.get(key: "LOGIN_TOKEN") else {
-            return Observable.just(.setSignUpFailed("로그인 토큰이 없습니다"))
+            return Observable.just(.setErrorMessage("로그인 토큰이 없습니다"))
         }
         
         let serviceTermsAgreed = currentState.termsChecked["service"] ?? false
@@ -189,11 +189,11 @@ class SignUpReactor: Reactor {
                 if let errorCode = userModelResponse.errorCode {
                     self.logger.critical("회원가입 실패(\(errorCode)) - \(userModelResponse.message ?? "")")
                     
-                    return Observable.just(.setSignUpFailed(localizedErrorMessage(errorCode)))
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                 } else {
                     self.logger.critical("회원가입 실패: \(userModelResponse.message ?? "")")
                     
-                    return Observable.just(.setSignUpFailed(localizedErrorMessage(nil)))
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                 }
             }
         }
@@ -202,7 +202,7 @@ class SignUpReactor: Reactor {
             
             self.logger.debug("회원 가입 에러: \(error)")
             
-            return Observable.just(.setSignUpFailed(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
         }
     }
 }

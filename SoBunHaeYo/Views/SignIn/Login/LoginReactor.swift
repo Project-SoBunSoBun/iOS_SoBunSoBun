@@ -34,8 +34,7 @@ class LoginReactor: Reactor {
     
     enum Mutation {
         case loginSuccess(isNewUser: Bool) // 로그인 성공했을 때
-        case loginFailed(String) // 로그인에 실패했을 때
-        case savedFailed(String) // 토근 저장에 실패했을 때
+        case setErrorMessage(String) // 로그인에 실패했을 때
         case loginAndNavigateToHomeSuccess(isSaved: Bool) // 로그인 후 홈으로 이동 성공
         case loginAndNavigateToHomeFailed(String) // 로그인 후 홈으로 이동 실패
     }
@@ -73,11 +72,11 @@ class LoginReactor: Reactor {
                                 if let errorCode = kakaoAuthResponse.errorCode {
                                     self.logger.critical("카카오 로그인 실패(\(errorCode)) - \(kakaoAuthResponse.message ?? "")")
                                     
-                                    return Observable.just(.loginFailed(localizedErrorMessage(errorCode)))
+                                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                                 } else {
                                     self.logger.critical("카카오 로그인 실패: \(kakaoAuthResponse.message ?? "")")
                                     
-                                    return Observable.just(.loginFailed(localizedErrorMessage(nil)))
+                                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                                 }
                             }
                         }
@@ -86,7 +85,7 @@ class LoginReactor: Reactor {
                             
                             self.logger.debug("카카오 로그인 에러: \(error)")
                             
-                            return Observable.just(.loginFailed(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
                         }
                 }
                 .catch { [weak self] error in
@@ -123,11 +122,11 @@ class LoginReactor: Reactor {
                                 if let errorCode = appleAuthResponse.errorCode {
                                     self.logger.critical("애플 로그인 실패(\(errorCode)) - \(appleAuthResponse.message ?? "")")
                                     
-                                    return Observable.just(.loginFailed(localizedErrorMessage(errorCode)))
+                                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                                 } else {
                                     self.logger.critical("애플 로그인 실패: \(appleAuthResponse.message ?? "")")
                                     
-                                    return Observable.just(.loginFailed(localizedErrorMessage(nil)))
+                                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                                 }
                             }
                         }
@@ -136,7 +135,7 @@ class LoginReactor: Reactor {
                             
                             self.logger.debug("애플 로그인 에러: \(error)")
                             
-                            return Observable.just(.loginFailed(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
                         }
                 }
                 .catch { [weak self] error  in
@@ -159,10 +158,7 @@ class LoginReactor: Reactor {
         case .loginSuccess(let isNewUser):
             newState.loginCompleted = isNewUser
             
-        case .loginFailed(let message):
-            newState.errorMessage = message
-            
-        case .savedFailed(let message):
+        case .setErrorMessage(let message):
             newState.errorMessage = message
             
         case .loginAndNavigateToHomeSuccess(let isSaved):
@@ -219,11 +215,11 @@ extension LoginReactor {
                 if let errorCode = userModelResponse.errorCode {
                     self.logger.critical("로그인 실패(\(errorCode)) - \(userModelResponse.message ?? "")")
                     
-                    return Observable.just(.savedFailed(localizedErrorMessage(errorCode)))
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
                 } else {
                     self.logger.critical("로그인 실패: \(userModelResponse.message ?? "")")
                     
-                    return Observable.just(.savedFailed(localizedErrorMessage(nil)))
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
                 }
             }
         }
@@ -232,7 +228,7 @@ extension LoginReactor {
             
             self.logger.debug("토근 저장 실패")
             
-            return Observable.just(.savedFailed(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
         }
     }
 }
