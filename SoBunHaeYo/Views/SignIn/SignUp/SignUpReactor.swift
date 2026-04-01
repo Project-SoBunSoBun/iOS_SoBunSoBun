@@ -46,7 +46,7 @@ class SignUpReactor: Reactor {
         @Pulse var shouldPopViewController: Void?
         @Pulse var shouldTermsDetail: String?
         @Pulse var signUpCompleted: Bool = false
-        @Pulse var ErrorMessage: String?
+        @Pulse var errorMessage: String?
         @Pulse var shouldRequestLocationPermission: Bool = false
         @Pulse var shouldShowLocationSettingAlert: Bool = false
         
@@ -139,7 +139,7 @@ class SignUpReactor: Reactor {
             newState.signUpCompleted = true
             
         case .setErrorMessage(let message):
-            newState.ErrorMessage = message
+            newState.errorMessage = message
             
         case .setRequestLocationPermission:
             newState.shouldRequestLocationPermission = true
