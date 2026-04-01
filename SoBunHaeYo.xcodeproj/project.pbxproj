@@ -62,9 +62,9 @@
 		BBB09B582E7ABD0E00287084 /* Exceptions for "SoBunHaeYo" folder in "SoBunHaeYo" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Common/debug.xcconfig,
-				Common/release.xcconfig,
+				debug.xcconfig,
 				Info.plist,
+				release.xcconfig,
 			);
 			target = BB75726E2E4F4436008DFF98 /* SoBunHaeYo */;
 		};
@@ -385,7 +385,7 @@
 		BB7572852E4F4438008DFF98 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = BB7572712E4F4436008DFF98 /* SoBunHaeYo */;
-			baseConfigurationReferenceRelativePath = Common/debug.xcconfig;
+			baseConfigurationReferenceRelativePath = debug.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -453,7 +453,7 @@
 		BB7572862E4F4438008DFF98 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReferenceAnchor = BB7572712E4F4436008DFF98 /* SoBunHaeYo */;
-			baseConfigurationReferenceRelativePath = Common/release.xcconfig;
+			baseConfigurationReferenceRelativePath = release.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
