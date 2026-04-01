@@ -287,7 +287,8 @@ extension LoginView {
     
     private func errorAlert(message: String) {
         let alert = CustomAlertView(
-            title: message,
+            title: String(localized: "Error", table: "Error"),
+            subTitle: message,
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         

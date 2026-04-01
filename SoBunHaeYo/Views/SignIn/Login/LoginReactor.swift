@@ -35,6 +35,7 @@ class LoginReactor: Reactor {
     enum Mutation {
         case loginSuccess(isNewUser: Bool) // 로그인 성공했을 때
         case loginFailed(String) // 로그인에 실패했을 때
+        case savedFailed(String) // 토근 저장에 실패했을 때
         case loginAndNavigateToHomeSuccess(isSaved: Bool) // 로그인 후 홈으로 이동 성공
         case loginAndNavigateToHomeFailed(String) // 로그인 후 홈으로 이동 실패
     }
@@ -61,10 +62,9 @@ class LoginReactor: Reactor {
                         .flatMap { [weak self] kakaoAuthResponse -> Observable<Mutation> in
                             guard let self = self else { return Observable.empty() }
                             
-                            if kakaoAuthResponse.success {
-                                guard let loginToken = kakaoAuthResponse.loginToken,
-                                      let isNewUser = kakaoAuthResponse.newUser else { return Observable.empty() }
-                                
+                            if kakaoAuthResponse.success,
+                               let loginToken = kakaoAuthResponse.loginToken,
+                               let isNewUser = kakaoAuthResponse.newUser {
                                 // 임시 토큰 저장
                                 KeyChain.shared.set(key: "LOGIN_TOKEN", value: loginToken)
                                 
@@ -111,9 +111,9 @@ class LoginReactor: Reactor {
                         .flatMap { [weak self] appleAuthResponse -> Observable<Mutation> in
                             guard let self = self else { return Observable.empty() }
                             
-                            if appleAuthResponse.success {
-                                guard let loginToken = appleAuthResponse.loginToken,
-                                      let isNewUser = appleAuthResponse.newUser else { return Observable.empty() }
+                            if appleAuthResponse.success,
+                               let loginToken = appleAuthResponse.loginToken,
+                               let isNewUser = appleAuthResponse.newUser {
                                 
                                 // 임시 토큰 저장
                                 KeyChain.shared.set(key: "LOGIN_TOKEN", value: loginToken)
@@ -162,6 +162,9 @@ class LoginReactor: Reactor {
         case .loginFailed(let message):
             newState.errorMessage = message
             
+        case .savedFailed(let message):
+            newState.errorMessage = message
+            
         case .loginAndNavigateToHomeSuccess(let isSaved):
             newState.shouldNavigateToHome = isSaved
             
@@ -200,20 +203,36 @@ extension LoginReactor {
         )
         .asObservable()
         .flatMap { userModelResponse -> Observable<Mutation> in
-            guard let accessToken = userModelResponse.accessToken,
-                  let refreshToken = userModelResponse.refreshToken,
-                  let accessTokenExpiresAtKst = userModelResponse.accessTokenExpiresAtKst,
-                  let refreshTokenExpiresAtKst = userModelResponse.refreshTokenExpiresAtKst else { return Observable.empty() }
-            
-            KeyChain.shared.set(key: "ACCESS_TOKEN", value: accessToken)
-            KeyChain.shared.set(key: "REFRESH_TOKEN", value: refreshToken)
-            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(accessTokenExpiresAtKst))
-            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(refreshTokenExpiresAtKst))
-            
-            return Observable.just(.loginAndNavigateToHomeSuccess(isSaved: true))
+            if userModelResponse.success,
+               let accessToken = userModelResponse.accessToken,
+               let refreshToken = userModelResponse.refreshToken,
+               let accessTokenExpiresAtKst = userModelResponse.accessTokenExpiresAtKst,
+               let refreshTokenExpiresAtKst = userModelResponse.refreshTokenExpiresAtKst {
+                
+                KeyChain.shared.set(key: "ACCESS_TOKEN", value: accessToken)
+                KeyChain.shared.set(key: "REFRESH_TOKEN", value: refreshToken)
+                KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(accessTokenExpiresAtKst))
+                KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(refreshTokenExpiresAtKst))
+                
+                return Observable.just(.loginAndNavigateToHomeSuccess(isSaved: true))
+            } else {
+                if let errorCode = userModelResponse.errorCode {
+                    self.logger.critical("로그인 실패(\(errorCode)) - \(userModelResponse.message ?? "")")
+                    
+                    return Observable.just(.savedFailed(localizedErrorMessage(errorCode)))
+                } else {
+                    self.logger.critical("로그인 실패: \(userModelResponse.message ?? "")")
+                    
+                    return Observable.just(.savedFailed(localizedErrorMessage(nil)))
+                }
+            }
         }
-        .catch { error in
-            return Observable.just(.loginAndNavigateToHomeFailed("토큰 저장 실패"))
+        .catch { [weak self] error in
+            guard let self = self else { return Observable.empty() }
+            
+            self.logger.debug("토근 저장 실패")
+            
+            return Observable.just(.savedFailed(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
         }
     }
 }

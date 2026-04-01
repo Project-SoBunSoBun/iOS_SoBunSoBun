@@ -172,13 +172,12 @@ class SignUpReactor: Reactor {
         .flatMap { [weak self] userModelResponse -> Observable<Mutation> in
             guard let self = self else { return Observable.empty() }
             
-            if userModelResponse.success {
+            if userModelResponse.success,
+               let accessToken = userModelResponse.accessToken,
+               let refreshToken = userModelResponse.refreshToken,
+               let accessTokenExpiresAtKst = userModelResponse.accessTokenExpiresAtKst,
+               let refreshTokenExpiresAtKst = userModelResponse.refreshTokenExpiresAtKst {
                 self.logger.debug("회원가입 성공")
-                
-                guard let accessToken = userModelResponse.accessToken,
-                      let refreshToken = userModelResponse.refreshToken,
-                      let accessTokenExpiresAtKst = userModelResponse.accessTokenExpiresAtKst,
-                      let refreshTokenExpiresAtKst = userModelResponse.refreshTokenExpiresAtKst else { return Observable.empty() }
                 
                 KeyChain.shared.set(key: "ACCESS_TOKEN", value: accessToken)
                 KeyChain.shared.set(key: "REFRESH_TOKEN", value: refreshToken)
