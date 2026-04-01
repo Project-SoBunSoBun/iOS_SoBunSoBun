@@ -52,48 +52,99 @@ class LoginReactor: Reactor {
             return kakaoLoginAction()
                 .flatMap { oauthToken in
                     let accessToken = oauthToken.accessToken
+                    
                     // 로그인 타입 저장
                     KeyChain.shared.set(key: "LOGIN_TYPE", value: "KAKAO")
                     
                     return self.networkManager.fetchAuthLoginKakao(accessToken: accessToken)
                         .asObservable()
-                        .map { kakaoAuthResponse in
-                            // 임시 토큰 저장
-                            KeyChain.shared.set(key: "LOGIN_TOKEN", value: kakaoAuthResponse.loginToken)
+                        .flatMap { [weak self] kakaoAuthResponse -> Observable<Mutation> in
+                            guard let self = self else { return Observable.empty() }
                             
-                            return Mutation.loginSuccess(isNewUser: kakaoAuthResponse.newUser)
+                            if kakaoAuthResponse.success {
+                                guard let loginToken = kakaoAuthResponse.loginToken,
+                                      let isNewUser = kakaoAuthResponse.newUser else { return Observable.empty() }
+                                
+                                // 임시 토큰 저장
+                                KeyChain.shared.set(key: "LOGIN_TOKEN", value: loginToken)
+                                
+                                return Observable.just(.loginSuccess(isNewUser: isNewUser))
+                            } else {
+                                if let errorCode = kakaoAuthResponse.errorCode {
+                                    self.logger.critical("카카오 로그인 실패(\(errorCode)) - \(kakaoAuthResponse.message ?? "")")
+                                    
+                                    return Observable.just(.loginFailed(localizedErrorMessage(errorCode)))
+                                } else {
+                                    self.logger.critical("카카오 로그인 실패: \(kakaoAuthResponse.message ?? "")")
+                                    
+                                    return Observable.just(.loginFailed(localizedErrorMessage(nil)))
+                                }
+                            }
                         }
-                        .catch { error in
-                            Observable.just(Mutation.loginFailed("ServerConnectFailed"))
+                        .catch { [weak self] error in
+                            guard let self = self else { return Observable.empty() }
+                            
+                            self.logger.debug("카카오 로그인 에러: \(error)")
+                            
+                            return Observable.just(.loginFailed(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
                         }
                 }
-                .catch { error in
-                    Observable.just(Mutation.loginFailed("KakaoLoginFailed"))
+                .catch { [weak self] error in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.debug("카카오 로그인 취소: \(error.localizedDescription)")
+                    
+                    return Observable.empty()
                 }
             
         case .appleButtonTapped:
             return appleLoginManager.appleLogin()
                 .flatMap { authInfo in
-                    // 테스트 후 삭제하기
-                    self.logger.debug("애플 code: \(authInfo.authorizationCode)")
-                    self.logger.debug("애플 token: \(authInfo.identityToken)")
-                    self.logger.debug("애플 userID: \(authInfo.userIdentifier)")
                     // userID 저장
                     KeyChain.shared.set(key: "APPLE_USER_ID", value: authInfo.userIdentifier)
+                    
                     // 로그인 타입 저장
                     KeyChain.shared.set(key: "LOGIN_TYPE", value: "APPLE")
                     
                     return self.networkManager.fethAuthLoginApple(code: authInfo.authorizationCode, idToken: authInfo.identityToken)
                         .asObservable()
-                        .map { AppleAuthResponse in
-                            // 임시 토큰 저장
-                            KeyChain.shared.set(key: "LOGIN_TOKEN", value: AppleAuthResponse.loginToken)
+                        .flatMap { [weak self] appleAuthResponse -> Observable<Mutation> in
+                            guard let self = self else { return Observable.empty() }
                             
-                            return Mutation.loginSuccess(isNewUser: AppleAuthResponse.newUser)
+                            if appleAuthResponse.success {
+                                guard let loginToken = appleAuthResponse.loginToken,
+                                      let isNewUser = appleAuthResponse.newUser else { return Observable.empty() }
+                                
+                                // 임시 토큰 저장
+                                KeyChain.shared.set(key: "LOGIN_TOKEN", value: loginToken)
+                                
+                                return Observable.just(.loginSuccess(isNewUser: isNewUser))
+                            } else {
+                                if let errorCode = appleAuthResponse.errorCode {
+                                    self.logger.critical("애플 로그인 실패(\(errorCode)) - \(appleAuthResponse.message ?? "")")
+                                    
+                                    return Observable.just(.loginFailed(localizedErrorMessage(errorCode)))
+                                } else {
+                                    self.logger.critical("애플 로그인 실패: \(appleAuthResponse.message ?? "")")
+                                    
+                                    return Observable.just(.loginFailed(localizedErrorMessage(nil)))
+                                }
+                            }
+                        }
+                        .catch { [weak self] error in
+                            guard let self = self else { return Observable.empty() }
+                            
+                            self.logger.debug("애플 로그인 에러: \(error)")
+                            
+                            return Observable.just(.loginFailed(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
                         }
                 }
-                .catch { error  in
-                    Observable.just(.loginFailed("AppleLoginFailed"))
+                .catch { [weak self] error  in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.debug("애플 로그인 취소: \(error.localizedDescription)")
+                    
+                    return Observable.empty()
                 }
             
         case .completeLoginAndNavigateToHome:
@@ -148,12 +199,18 @@ extension LoginReactor {
             marketingOptionalAgreed: false
         )
         .asObservable()
-        .map { userModel in
-            KeyChain.shared.set(key: "ACCESS_TOKEN", value: userModel.accessToken)
-            KeyChain.shared.set(key: "REFRESH_TOKEN", value: userModel.refreshToken)
-            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(userModel.accessTokenExpiresAtKst))
-            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(userModel.refreshTokenExpiresAtKst))
-            return Mutation.loginAndNavigateToHomeSuccess(isSaved: true)
+        .flatMap { userModelResponse -> Observable<Mutation> in
+            guard let accessToken = userModelResponse.accessToken,
+                  let refreshToken = userModelResponse.refreshToken,
+                  let accessTokenExpiresAtKst = userModelResponse.accessTokenExpiresAtKst,
+                  let refreshTokenExpiresAtKst = userModelResponse.refreshTokenExpiresAtKst else { return Observable.empty() }
+            
+            KeyChain.shared.set(key: "ACCESS_TOKEN", value: accessToken)
+            KeyChain.shared.set(key: "REFRESH_TOKEN", value: refreshToken)
+            KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(accessTokenExpiresAtKst))
+            KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(refreshTokenExpiresAtKst))
+            
+            return Observable.just(.loginAndNavigateToHomeSuccess(isSaved: true))
         }
         .catch { error in
             return Observable.just(.loginAndNavigateToHomeFailed("토큰 저장 실패"))
