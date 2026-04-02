@@ -10,7 +10,7 @@
   <img src="https://img.shields.io/badge/release-v26.0.0-4fc08d?style=flat&logo=apple&logoColor=white" alt="릴리즈 버전" />
   </p>
   <p align="center">
-    <a href="https://apps.apple.com/kr/app/%EC%86%8C%EB%B6%44%ED%95%B4%EC%9A%94/id6761189518">
+    <a href="https://apps.apple.com/kr/app/소분해요/id6761189518">
       <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" height="40">
     </a>
   </p>
