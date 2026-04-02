@@ -134,5 +134,13 @@
 
 <br>
 
+## 🚀 Release History
+
+| Version | Date | Description |
+|:---|:---|:---|
+| **v26.0.0** | 2026.04.03 | 첫 공식 배포 (Initial Release) |
+
+<br>
+
 ## License
 Copyright © 2026 Seongpil Heo. All rights reserved.
