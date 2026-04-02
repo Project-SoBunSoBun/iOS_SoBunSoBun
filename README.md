@@ -1,6 +1,6 @@
 <p align="center">
   <img src="https://github.com/user-attachments/assets/46526513-86e0-4e46-9fcf-cc31735857e7" 
-       alt="App Icon" width="100" />
+       alt="App Icon" width="100px" />
 </p>
 
 <h1 align="center">
@@ -8,8 +8,14 @@
   <p align="center">
   <img src="https://img.shields.io/badge/프로젝트 기간-2025.07.24 ~ -fab2ac?style=flat&logo=&logoColor=white" alt="프로젝트 기간" />
   <img src="https://img.shields.io/badge/release-v1.0.0-4fc08d?style=flat&logo=apple&logoColor=white" alt="릴리즈 버전" />
-</p>
+  </p>
+  <p align="center">
+    <a href="https://apps.apple.com/kr/app/%EC%86%8C%EB%B6%44%ED%95%B4%EC%9A%94/id6761189518">
+      <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" alt="Download on the App Store" height="40">
+    </a>
+  </p>
 </h1>
+
 
 ## 🛒 프로젝트 소개
 <div align="left">
@@ -54,10 +60,10 @@
 
 | 프로필 | 이름 | 역할 | 담당 업무 | GitHub |
 | :---: | :---: | :---: | :---: | :---: |
-| <img src="https://github.com/heopill.png" width="80"> | **허성필** | **PM, iOS** | 프로젝트 매니징, 로그인/회원가입, 정산 시스템 로직, <br> 마이페이지 구현, UI 컴포넌트 개발 | [🔗](https://github.com/heopill) |
-| <img src="https://github.com/hugesilver.png" width="80"> | **김태은** | **iOS** | 실시간 채팅 기능 및 WebSocket/Stomp 통신 처리, <br> 홈 화면, 글 작성, UI 컴포넌트 개발 | [🔗](https://github.com/hugesilver) |
-| <img src="https://github.com/yechan9981.png" width="80"> | **천예찬** | **Backend** | 서버 인프라 구축, DB 설계 및 전체 API 설계/운영 | [🔗](https://github.com/yechan9981) |
-| <img src="https://github.com/user-attachments/assets/46526513-86e0-4e46-9fcf-cc31735857e7" width="80"> | **염지윤** | **Designer** | 전체 UI/UX 컨셉 설계, 디자인 시스템 구축, 스토어 에셋 제작 | - |
+| <img src="https://github.com/heopill.png" width="80px"> | **허성필** | **PM, iOS** | 프로젝트 매니징, 로그인/회원가입, 정산 시스템 로직, <br> 마이페이지 구현, UI 컴포넌트 개발 | [🔗](https://github.com/heopill) |
+| <img src="https://github.com/hugesilver.png" width="80px"> | **김태은** | **iOS** | 실시간 채팅 기능 및 WebSocket/Stomp 통신 처리, <br> 홈 화면, 글 작성, UI 컴포넌트 개발, <br> 알림, 프로젝트 시스템 구축| [🔗](https://github.com/hugesilver) |
+| <img src="https://github.com/yechan9981.png" width="80px"> | **천예찬** | **Backend** | 서버 인프라 구축, DB 설계 및 전체 API 설계/운영 | [🔗](https://github.com/yechan9981) |
+| <img src="https://github.com/user-attachments/assets/46526513-86e0-4e46-9fcf-cc31735857e7" width="80px"> | **염지윤** | **Designer** | 전체 UI/UX 컨셉 설계, 디자인 시스템 구축, 스토어 에셋 제작 | - |
 
 <br>
 
@@ -116,7 +122,7 @@
 
 <br>
 
-## 📸 ScreenShots
+## 📸 App Previews
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/f6b78c76-08b7-4509-97ca-c92b82ac27bd" width="19%" alt="최종앱스토어이미지1" />
@@ -129,4 +135,4 @@
 <br>
 
 ## License
-Copyright © 2026 일팔삼 Team. All rights reserved.
+Copyright © 2026 Seongpil Heo. All rights reserved.
