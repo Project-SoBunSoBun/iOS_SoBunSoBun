@@ -7,7 +7,7 @@
   소분해요 (SoBunHaeYo)
   <p align="center">
   <img src="https://img.shields.io/badge/프로젝트 기간-2025.07.24 ~ -fab2ac?style=flat&logo=&logoColor=white" alt="프로젝트 기간" />
-  <img src="https://img.shields.io/badge/release-v1.0.0-4fc08d?style=flat&logo=apple&logoColor=white" alt="릴리즈 버전" />
+  <img src="https://img.shields.io/badge/release-v26.0.0-4fc08d?style=flat&logo=apple&logoColor=white" alt="릴리즈 버전" />
   </p>
   <p align="center">
     <a href="https://apps.apple.com/kr/app/%EC%86%8C%EB%B6%44%ED%95%B4%EC%9A%94/id6761189518">
@@ -78,7 +78,7 @@
 | **Networking** | `RxMoya`, `WebSocket`, `SwiftStomp` |
 | **Social Login** | `KakaoOpenSDK`, `AuthenticationServices(Apple Login)` |
 | **Push Notification** | `Firebase Cloud Messaging (FCM)` |
-| **Storage** | `Keychain`, `Chat Database (Realm/SQLite)`, `GRDB` |
+| **Storage** | `Keychain`, `GRDB(SQLite)` |
 
 <br>
 
