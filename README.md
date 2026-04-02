@@ -68,11 +68,11 @@
 | :--- | :--- |
 | **Architecture** | `ReactorKit(MVI-based)` |
 | **UI Framework** | `UIKit`, `SnapKit`, `Gifu(GIF)`, `Kingfisher(Image Caching)` |
-| **Reactive** | `RxSwift`, `RxCocoa` |
-| **Networking** | `RxMoya`, `WebSocket`, `Stomp` |
+| **Reactive** | `RxSwift`, `RxCocoa`, `RxGesture` |
+| **Networking** | `RxMoya`, `WebSocket`, `SwiftStomp` |
 | **Social Login** | `KakaoOpenSDK`, `AuthenticationServices(Apple Login)` |
 | **Push Notification** | `Firebase Cloud Messaging (FCM)` |
-| **Storage** | `Keychain`, `Chat Database (Realm/SQLite)` |
+| **Storage** | `Keychain`, `Chat Database (Realm/SQLite)`, `GRDB` |
 
 <br>
 
