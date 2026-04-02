@@ -1,0 +1,555 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "AvailableNickname" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용 가능한 닉네임입니다."
+          }
+        }
+      }
+    },
+    "Block" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "차단하기"
+          }
+        }
+      }
+    },
+    "BlockAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 사용자의 게시글을 조회할 수 없고, 채팅을 받을 수 없게 됩니다."
+          }
+        }
+      }
+    },
+    "BlockAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 사용자를 차단하시겠습니까?"
+          }
+        }
+      }
+    },
+    "BlockDoneAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 사용자를 차단했습니다."
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "취소"
+          }
+        }
+      }
+    },
+    "Characters" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "자"
+          }
+        }
+      }
+    },
+    "Chat" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅"
+          }
+        }
+      }
+    },
+    "CheckYourInputs" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "입력을 확인해주세요."
+          }
+        }
+      }
+    },
+    "ClearAll" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모두 지우기"
+          }
+        }
+      }
+    },
+    "Confirm" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "확인"
+          }
+        }
+      }
+    },
+    "Delete" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제하기"
+          }
+        }
+      }
+    },
+    "DeleteCompleted" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "삭제가 완료되었습니다."
+          }
+        }
+      }
+    },
+    "DenyNicknameInput" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2-8자로 한글, 영문 또는 숫자만 입력 가능합니다."
+          }
+        }
+      }
+    },
+    "DuplicationCheck" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중복확인"
+          }
+        }
+      }
+    },
+    "Edit" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수정하기"
+          }
+        }
+      }
+    },
+    "Error" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오류"
+          }
+        }
+      }
+    },
+    "GoToSetting" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정하러가기"
+          }
+        }
+      }
+    },
+    "Home" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "홈"
+          }
+        }
+      }
+    },
+    "ImageSizeExceeded" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 크기 초과"
+          }
+        }
+      }
+    },
+    "InsertContent" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내용을 입력해주세요."
+          }
+        }
+      }
+    },
+    "InsertNickname" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닉네임을 입력해주세요."
+          }
+        }
+      }
+    },
+    "Loading" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "불러오는 중"
+          }
+        }
+      }
+    },
+    "LocationSettingTitle" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "위치정보 이용에 대한\n접근 권한이 없습니다."
+          }
+        }
+      }
+    },
+    "Move" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이동하기"
+          }
+        }
+      }
+    },
+    "Mypage" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마이페이지"
+          }
+        }
+      }
+    },
+    "MyPosts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "작성한 글"
+          }
+        }
+      }
+    },
+    "Next" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음"
+          }
+        }
+      }
+    },
+    "Nickname" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닉네임"
+          }
+        }
+      }
+    },
+    "Notice" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림"
+          }
+        }
+      }
+    },
+    "Profile" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로필"
+          }
+        }
+      }
+    },
+    "Register" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록하기"
+          }
+        }
+      }
+    },
+    "Report" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신고하기"
+          }
+        }
+      }
+    },
+    "SelectOnlyFilesUnder5MB" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5MB 이하의 이미지만 선택할 수 있습니다."
+          }
+        }
+      }
+    },
+    "ServerConnectFailed" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버 에러"
+          }
+        }
+      }
+    },
+    "SettleUp" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산"
+          }
+        }
+      }
+    },
+    "Share" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공유하기"
+          }
+        }
+      }
+    },
+    "SharePostText" : {
+      "comment" : "Common - 게시글 공유 문구 (%1$@ = 게시글 제목, %2$@ = 딥링크)",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "소분해요에서 '%1$@' 게시글을 확인해 보세요!\n\n%2$@"
+          }
+        }
+      }
+    },
+    "TryAgain" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠시 후 다시 시도해 주세요."
+          }
+        }
+      }
+    },
+    "UnavailableNickname" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미 사용 중인 닉네임입니다."
+          }
+        }
+      }
+    },
+    "UnBlock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "차단 해제하기"
+          }
+        }
+      }
+    },
+    "UnBlockAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 사용자의 게시글 조회와 채팅이 가능해집니다."
+          }
+        }
+      }
+    },
+    "UnBlockAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 사용자를 차단 해제하시겠습니까?"
+          }
+        }
+      }
+    },
+    "UnBlockDoneAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 사용자를 차단 해제했습니다."
+          }
+        }
+      }
+    },
+    "Unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알 수 없음"
+          }
+        }
+      }
+    },
+    "Warning" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "경고"
+          }
+        }
+      }
+    },
+    "YouShouldSignInAgain" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "재로그인이 필요합니다."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -1,0 +1,209 @@
+//
+//  MyProfileReactor.swift
+//  SoBunHaeYo
+//
+//  Created by 김태은 on 3/18/26.
+//
+
+import Foundation
+import ReactorKit
+import OSLog
+
+class MyProfileReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunHaeYo",
+        category: "Home.MyProfile.Reactor"
+    )
+    
+    private let disposeBag = DisposeBag()
+    private let networkManager = HomeNetworkManager()
+    
+    let initialState: State = State()
+    private let PAGE_SIZE: Int = 20
+    
+    enum Action {
+        case viewWillAppear
+        case settingButtonTapped
+        case editProfileButtonTapped
+        case tabSelected(Int)
+        case loadMorePosts
+        case refresh // 새로고침
+        case postTapped(PostModel) // 게시글 tap
+    }
+    
+    enum Mutation {
+        case setShouldPushSettingView
+        case setShouldPushEditProfileView
+        case setMyUserInfo(MyProfileResponseDataModel?)
+        case setTab(Int)
+        case setPosts([PostModel]) // 게시글 설정
+        case appendPosts([PostModel]) // 페이지네이션 게시글 추가
+        case setPage(Int) // 페이지네이션 페이지 번호 설정
+        case setLoading(Bool)
+        case setRefreshing(Bool)
+        case setHasMore(Bool) // 페이지네이션 추가 가능 여부 설정
+        case setShouldPushPostDetailView(PostModel)
+        case setErrorMessage(String)
+    }
+    
+    struct State {
+        var userInfo: MyProfileResponseDataModel? // 내 정보 모델
+        var tabIndex: Int = 0
+        var page: Int = 0 // 페이지네이션 페이지 번호
+        var posts: [PostModel] = [] // 게시글
+        var isLoading: Bool = false
+        var hasMore: Bool = true // 페이지네이션 추가 가능 여부
+        var isRefreshing: Bool = false
+        @Pulse var shouldPushSettingView: Void?
+        @Pulse var shouldPushEditProfileView: Void?
+        @Pulse var shouldPushPostDetailView: PostModel?
+        @Pulse var errorMessage: String?
+    }
+    
+    func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case .viewWillAppear:
+            return Observable.concat([
+                Observable.just(.setPage(0)),
+                loadPosts(page: 0, isFirst: true)
+            ])
+            
+        case .settingButtonTapped:
+            return Observable.just(.setShouldPushSettingView)
+            
+        case .editProfileButtonTapped:
+            return Observable.just(.setShouldPushEditProfileView)
+            
+        case .tabSelected(let index):
+            return Observable.concat([
+                Observable.just(.setTab(index)),
+                Observable.just(.setPosts([])),
+                Observable.just(.setPage(0)),
+                loadPosts(page: 0, isFirst: true)
+            ])
+            
+        case .loadMorePosts:
+            guard !currentState.isLoading && currentState.hasMore else {
+                return Observable.empty()
+            }
+            
+            let nextPage = currentState.page + 1
+            
+            return Observable.concat([
+                Observable.just(.setPage(nextPage)),
+                loadPosts(page: nextPage, isFirst: false)
+            ])
+            
+        case .refresh:
+            return Observable.concat([
+                Observable.just(.setRefreshing(true)),
+                Observable.just(.setPage(0)),
+                loadPosts(page: 0, isFirst: true),
+                Observable.just(.setRefreshing(false))
+            ])
+            
+        case .postTapped(let model):
+            return Observable.just(.setShouldPushPostDetailView(model))
+        }
+    }
+    
+    func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+        
+        switch mutation {
+        case .setMyUserInfo(let model):
+            newState.userInfo = model
+            
+        case .setShouldPushSettingView:
+            newState.shouldPushSettingView = ()
+            
+        case .setShouldPushEditProfileView:
+            newState.shouldPushEditProfileView = ()
+            
+        case .setTab(let index):
+            newState.tabIndex = index
+            
+        case .setLoading(let isLoading):
+            newState.isLoading = isLoading
+            
+        case .setRefreshing(let isRefreshing):
+            newState.isRefreshing = isRefreshing
+            
+        case .setPosts(let posts):
+            newState.posts = posts
+            
+        case .appendPosts(let posts):
+            newState.posts.append(contentsOf: posts)
+            
+        case .setPage(let page):
+            newState.page = page
+            
+        case .setHasMore(let hasMore):
+            newState.hasMore = hasMore
+            
+        case .setShouldPushPostDetailView(let model):
+            newState.shouldPushPostDetailView = model
+            
+        case .setErrorMessage(let message):
+            newState.errorMessage = message
+        }
+        
+        return newState
+    }
+    
+    // 홈 게시글 목록 API 호출
+    private func loadPosts(page: Int, isFirst: Bool) -> Observable<Mutation> {
+        let tabs: [String] = ["posts", "commented", "saved"]
+        
+        return Observable.deferred {
+            Observable.concat([
+                Observable.just(.setLoading(true)),
+                self.networkManager.getMyProfile(tab: tabs[self.currentState.tabIndex], page: page, size: self.PAGE_SIZE)
+                    .asObservable()
+                    .flatMap { [weak self] response -> Observable<Mutation> in
+                        guard let self else { return Observable.empty() }
+                        
+                        if response.success, let data = response.data {
+                            self.logger.debug("내 정보 조회 성공")
+                            
+                            let mutations: Observable<Mutation> = isFirst ?
+                            Observable.concat([
+                                Observable.just(.setMyUserInfo(data)),
+                                Observable.just(.setPosts(data.posts.posts))
+                            ]) : Observable.just(.appendPosts(data.posts.posts))
+                            
+                            return Observable.concat([
+                                mutations,
+                                Observable.just(.setHasMore(!data.posts.pageInfo.last))
+                            ])
+                        } else {
+                            if let errorCode = response.errorCode {
+                                self.logger.critical("내 정보 조회 실패(\(errorCode)) - \(response.message ?? "")")
+
+                                return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
+                            } else {
+                                self.logger.critical("내 정보 조회 실패: \(response.message ?? "")")
+                                
+                                return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
+                            }
+                        }
+                    }
+                    .catch { [weak self] error in
+                        guard let self = self else { return Observable.empty() }
+                        
+                        self.logger.critical("내 정보 불러오기 실패: \(error.localizedDescription)")
+                        
+                        let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                        
+                        return Observable.concat([
+                            isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
+                            Observable.just(.setHasMore(false)),
+                            Observable.just(.setPage(0)),
+                            Observable.just(.setErrorMessage(errorMessage))
+                        ])
+                    },
+                Observable.just(.setLoading(false))
+            ])
+        }
+    }
+}

@@ -1,0 +1,240 @@
+//
+//  LoginReactor.swift
+//  SoBunHaeYo
+//
+//  Created by 허성필 on 9/4/25.
+//
+
+import ReactorKit
+import Foundation
+import RxSwift
+import RxKakaoSDKUser
+import KakaoSDKUser
+import KakaoSDKAuth
+import OSLog
+
+class LoginReactor: Reactor {
+    private let logger = Logger(
+        subsystem: "SoBunHaeYo",
+        category: "SignIn.Login.Reactor"
+    )
+    
+    private let disposeBag = DisposeBag()
+    
+    private let networkManager = SignInNetworkManager()
+    private let appleLoginManager = AppleLoginManager()
+    
+    let initialState = State()
+    
+    enum Action {
+        case appleButtonTapped // 애플 로그인 버튼을 클릭했을 때
+        case kakaoButtonTapped // 카카오 로그인 버튼을 클릭했을 때
+        case completeLoginAndNavigateToHome // 로그인 후 홈으로 이동
+    }
+    
+    enum Mutation {
+        case loginSuccess(isNewUser: Bool) // 로그인 성공했을 때
+        case setErrorMessage(String) // 로그인에 실패했을 때
+        case loginAndNavigateToHomeSuccess(isSaved: Bool) // 로그인 후 홈으로 이동 성공
+        case loginAndNavigateToHomeFailed(String) // 로그인 후 홈으로 이동 실패
+    }
+    
+    struct State {
+        @Pulse var loginCompleted: Bool?
+        @Pulse var errorMessage: String?
+        @Pulse var shouldNavigateToHome: Bool?
+    }
+    
+    func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case .kakaoButtonTapped:
+            // 카카오 로그인을 통해 OAuthToken 발급받기
+            return kakaoLoginAction()
+                .flatMap { oauthToken in
+                    let accessToken = oauthToken.accessToken
+                    
+                    // 로그인 타입 저장
+                    KeyChain.shared.set(key: "LOGIN_TYPE", value: "KAKAO")
+                    
+                    return self.networkManager.fetchAuthLoginKakao(accessToken: accessToken)
+                        .asObservable()
+                        .flatMap { [weak self] kakaoAuthResponse -> Observable<Mutation> in
+                            guard let self = self else { return Observable.empty() }
+                            
+                            if kakaoAuthResponse.success,
+                               let loginToken = kakaoAuthResponse.loginToken,
+                               let isNewUser = kakaoAuthResponse.newUser {
+                                // 임시 토큰 저장
+                                KeyChain.shared.set(key: "LOGIN_TOKEN", value: loginToken)
+                                
+                                return Observable.just(.loginSuccess(isNewUser: isNewUser))
+                            } else {
+                                self.logger.critical("\(String(describing: kakaoAuthResponse))")
+                                
+                                if let errorCode = kakaoAuthResponse.errorCode {
+                                    self.logger.critical("카카오 로그인 실패(\(errorCode)) - \(kakaoAuthResponse.message ?? "")")
+                                    
+                                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
+                                } else {
+                                    self.logger.critical("카카오 로그인 실패: \(kakaoAuthResponse.message ?? "")")
+                                    
+                                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
+                                }
+                            }
+                        }
+                        .catch { [weak self] error in
+                            guard let self = self else { return Observable.empty() }
+                            
+                            self.logger.debug("카카오 로그인 에러: \(error)")
+                            
+                            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                        }
+                }
+                .catch { [weak self] error in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.debug("카카오 로그인 취소: \(error.localizedDescription)")
+                    
+                    return Observable.empty()
+                }
+            
+        case .appleButtonTapped:
+            return appleLoginManager.appleLogin()
+                .flatMap { authInfo in
+                    // userID 저장
+                    KeyChain.shared.set(key: "APPLE_USER_ID", value: authInfo.userIdentifier)
+                    
+                    // 로그인 타입 저장
+                    KeyChain.shared.set(key: "LOGIN_TYPE", value: "APPLE")
+                    
+                    return self.networkManager.fethAuthLoginApple(code: authInfo.authorizationCode, idToken: authInfo.identityToken)
+                        .asObservable()
+                        .flatMap { [weak self] appleAuthResponse -> Observable<Mutation> in
+                            guard let self = self else { return Observable.empty() }
+                            
+                            if appleAuthResponse.success,
+                               let loginToken = appleAuthResponse.loginToken,
+                               let isNewUser = appleAuthResponse.newUser {
+                                
+                                // 임시 토큰 저장
+                                KeyChain.shared.set(key: "LOGIN_TOKEN", value: loginToken)
+                                
+                                return Observable.just(.loginSuccess(isNewUser: isNewUser))
+                            } else {
+                                self.logger.critical("\(String(describing: appleAuthResponse))")
+                                
+                                if let errorCode = appleAuthResponse.errorCode {
+                                    self.logger.critical("애플 로그인 실패(\(errorCode)) - \(appleAuthResponse.message ?? "")")
+                                    
+                                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
+                                } else {
+                                    self.logger.critical("애플 로그인 실패: \(appleAuthResponse.message ?? "")")
+                                    
+                                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
+                                }
+                            }
+                        }
+                        .catch { [weak self] error in
+                            guard let self = self else { return Observable.empty() }
+                            
+                            self.logger.debug("애플 로그인 에러: \(error)")
+                            
+                            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                        }
+                }
+                .catch { [weak self] error  in
+                    guard let self = self else { return Observable.empty() }
+                    
+                    self.logger.debug("애플 로그인 취소: \(error.localizedDescription)")
+                    
+                    return Observable.empty()
+                }
+            
+        case .completeLoginAndNavigateToHome:
+            return saveToken()
+        }
+    }
+    
+    func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+        
+        switch mutation {
+        case .loginSuccess(let isNewUser):
+            newState.loginCompleted = isNewUser
+            
+        case .setErrorMessage(let message):
+            newState.errorMessage = message
+            
+        case .loginAndNavigateToHomeSuccess(let isSaved):
+            newState.shouldNavigateToHome = isSaved
+            
+        case .loginAndNavigateToHomeFailed(let message):
+            newState.errorMessage = message
+        }
+        
+        return newState
+    }
+}
+
+extension LoginReactor {
+    private func kakaoLoginAction() -> Observable<OAuthToken> {
+        let loginObservable: Observable<OAuthToken>
+        
+        // KakaoTalk 앱을 통한 로그인
+        if (UserApi.isKakaoTalkLoginAvailable()) {
+            loginObservable = UserApi.shared.rx.loginWithKakaoTalk()
+        } else { // KakaoTalk 앱이 없을 때 웹으로 로그인
+            loginObservable = UserApi.shared.rx.loginWithKakaoAccount()
+        }
+        
+        return loginObservable
+    }
+    
+    private func saveToken() -> Observable<Mutation> {
+        guard let loginToken = KeyChain.shared.get(key: "LOGIN_TOKEN") else {
+            return Observable.just(.loginAndNavigateToHomeFailed("로그인 토큰이 없습니다"))
+        }
+        
+        return networkManager.fetchAuthCompleteSignUp(
+            loginToken: loginToken,
+            serviceTermsAgreed: true,
+            privacyPolicyAgreed: true,
+            marketingOptionalAgreed: false
+        )
+        .asObservable()
+        .flatMap { userModelResponse -> Observable<Mutation> in
+            if userModelResponse.success,
+               let accessToken = userModelResponse.accessToken,
+               let refreshToken = userModelResponse.refreshToken,
+               let accessTokenExpiresAtKst = userModelResponse.accessTokenExpiresAtKst,
+               let refreshTokenExpiresAtKst = userModelResponse.refreshTokenExpiresAtKst {
+                
+                KeyChain.shared.set(key: "ACCESS_TOKEN", value: accessToken)
+                KeyChain.shared.set(key: "REFRESH_TOKEN", value: refreshToken)
+                KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: String(accessTokenExpiresAtKst))
+                KeyChain.shared.set(key: "REFRESH_TOKEN_EXPIRE_AT_KST", value: String(refreshTokenExpiresAtKst))
+                
+                return Observable.just(.loginAndNavigateToHomeSuccess(isSaved: true))
+            } else {
+                self.logger.critical("\(String(describing: userModelResponse))")
+                
+                if let errorCode = userModelResponse.errorCode {
+                    self.logger.critical("로그인 실패(\(errorCode)) - \(userModelResponse.message ?? "")")
+                    
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
+                } else {
+                    self.logger.critical("로그인 실패: \(userModelResponse.message ?? "")")
+                    
+                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
+                }
+            }
+        }
+        .catch { [weak self] error in
+            guard let self = self else { return Observable.empty() }
+            
+            self.logger.debug("토근 저장 실패")
+            
+            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+        }
+    }
+}

@@ -1,0 +1,128 @@
+//
+//  SettingAPIModels.swift
+//  SoBunHaeYo
+//
+//  Created by 허성필 on 2/12/26.
+//
+
+import Foundation
+
+// MARK: - 마이페이지
+struct MyProfileModel: Decodable {
+    let success: Bool
+    let data: MyProfileDataModel
+    let message: String?
+}
+
+struct MyProfileDataModel: Decodable, Equatable {
+    let userId: Int
+    let nickname, profileImageUrl: String?
+    let activityScore, participationCount, hostCount: Int
+    let mannerTags: [MannerTagModel]?
+}
+
+struct MannerTagModel: Decodable, Equatable {
+    let tagId: Int
+    let count: Int
+}
+
+// MARK: - 내 게시글 조회
+struct MyPostRequestModel: Encodable {
+    let page: Int
+    let size: Int
+}
+
+// MARK: - 공지사항
+struct AnnouncementRequestModel: Encodable {
+    let page: Int
+    let size: Int
+}
+
+struct AnnouncementModel: Decodable {
+    let success: Bool
+    let data: AnnouncementDataModel?
+    let errorCode: String?
+    let message: String?
+}
+
+struct AnnouncementDataModel: Decodable {
+    let content: [AnnouncementContentModel]
+    let page: PageModel
+}
+
+struct AnnouncementContentModel: Decodable, Equatable {
+    let id: Int
+    let title, category: String
+    let isPinned: Bool
+    let createdAt: String
+}
+
+struct PageModel: Decodable {
+    let number, size, totalElements, totalPages: Int
+    let first, last, hasNext, hasPrevious: Bool
+}
+
+struct AnnouncementDetailRequestModel: Encodable {
+    let id: Int
+}
+
+struct AnnouncementDetailModel: Decodable {
+    let success: Bool
+    let data: AnnouncementDetailDataModel?
+    let errorCode: String?
+    let message: String?
+}
+
+struct AnnouncementDetailDataModel: Decodable, Equatable {
+    let id: Int
+    let title, content, category: String
+    let isPinned: Bool
+    let viewCount: Int
+    let createdAt, updatedAt: String
+}
+
+// MARK: - 탈퇴
+struct WithdrawRequestBodyModel: Encodable {
+    let reasonCode: String
+    let reasonDetail: String
+    let agreedToTerms: Bool
+}
+
+// MARK: - 1:1 문의
+struct InquiriesPostModel: Encodable {
+    let typeCode: String
+    let content: String
+    let replyEmail: String
+}
+
+// MARK: - 버그 신고
+struct BugReportPostModel: Encodable {
+    let typeCode: String
+    let content: String
+    let deviceInfo: String
+}
+
+// MARK: - 차단 목록
+struct BlockListResponseModel: Decodable {
+    let success: Bool
+    let data: [BlockListResponseDataModel]
+}
+
+struct BlockListResponseDataModel: Decodable, Equatable {
+    let userId: Int
+    let nickname: String
+    let profileImageUrl: String?
+    let blockedAt: String
+}
+
+// MARK: - 약관 조회
+struct TermsResponseModel: Decodable {
+    let success: Bool
+    let data: TermsDataModel
+    let message: String?
+}
+
+struct TermsDataModel: Decodable {
+    let id: Int
+    let type, version, title, content: String
+}

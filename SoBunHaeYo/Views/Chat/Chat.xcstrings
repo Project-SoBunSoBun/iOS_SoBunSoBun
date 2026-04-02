@@ -1,0 +1,665 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "Accept" : {
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수락하기"
+          }
+        }
+      }
+    },
+    "Cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "취소하기"
+          }
+        }
+      }
+    },
+    "CancelAccepts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수락 취소하기"
+          }
+        }
+      }
+    },
+    "CheckPost" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임글 확인하기"
+          }
+        }
+      }
+    },
+    "Confirm" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "확인하기"
+          }
+        }
+      }
+    },
+    "ConfirmAcceptGroupChatRoomAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수락 후 단체 채팅방으로 이동합니다."
+          }
+        }
+      }
+    },
+    "ConfirmAcceptGroupChatRoomAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단체 채팅방 초대를 수락하시겠습니까?"
+          }
+        }
+      }
+    },
+    "ConfirmRateMannersAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가를 완료하시겠습니까?"
+          }
+        }
+      }
+    },
+    "ConfirmRateMannersAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가를 완료하면\n취소할 수 없습니다."
+          }
+        }
+      }
+    },
+    "ConfirmSettlement" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 확인하기"
+          }
+        }
+      }
+    },
+    "Copy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복사하기"
+          }
+        }
+      }
+    },
+    "CreatedChatRoom" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님과 대화해보세요!"
+          }
+        }
+      }
+    },
+    "ErrorAcceptGroupChatRoomMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "만료된 초대장이거나,\n오류가 발생했습니다."
+          }
+        }
+      }
+    },
+    "ErrorGetChatRoomDetail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅방 정보를 불러오는 중 오류가 발생했습니다."
+          }
+        }
+      }
+    },
+    "ErrorSendImage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 보내는 중 오류가 발생했습니다."
+          }
+        }
+      }
+    },
+    "ErrorSendInviteCardMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미 초대장을 보낸 상태이거나,\n일시적인 오류가 발생했습니다."
+          }
+        }
+      }
+    },
+    "ErrorSendSettlementCardMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미 정산서를 보낸 상태이거나,\n일시적인 오류가 발생했습니다."
+          }
+        }
+      }
+    },
+    "GoToPost" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모임글 확인하기"
+          }
+        }
+      }
+    },
+    "GoToSettlementTab" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "네. 정산 페이지로 이동합니다."
+          }
+        }
+      }
+    },
+    "GroupChat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단체 채팅"
+          }
+        }
+      }
+    },
+    "InvitationCardReceivedSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아래의 수락하기 버튼을 누르면\n단체 채팅방으로 이동합니다."
+          }
+        }
+      }
+    },
+    "InvitationCardReceivedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "초대장을\n받았습니다!"
+          }
+        }
+      }
+    },
+    "InvitationCardSentTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "초대장이 성공적으로\n전송되었습니다!"
+          }
+        }
+      }
+    },
+    "Kick" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내보내기"
+          }
+        }
+      }
+    },
+    "KickMemberAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 멤버를 내보내시겠습니까?"
+          }
+        }
+      }
+    },
+    "KickMemberDoneAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해당 멤버를 내보냈습니다."
+          }
+        }
+      }
+    },
+    "KickMembers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "멤버 내보내기"
+          }
+        }
+      }
+    },
+    "LeaveChatRoom" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채팅방 나가기"
+          }
+        }
+      }
+    },
+    "LeaveChatRoomAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정말로 채팅방을 나가시겠습니까?"
+          }
+        }
+      }
+    },
+    "Me" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나"
+          }
+        }
+      }
+    },
+    "MemberCount" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "대화 상대 %1$d"
+          }
+        }
+      }
+    },
+    "NotSettledYetForMemberAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "방장의 정산서 전송 후,\n정산 내용을 확인할 수 있습니다."
+          }
+        }
+      }
+    },
+    "NotSettledYetForMemberAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 정산이 완료 되지 않아\n확인이 불가합니다."
+          }
+        }
+      }
+    },
+    "NotSettledYetForOwnerAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산하기 페이지로 이동하시겠습니까?"
+          }
+        }
+      }
+    },
+    "NotSettledYetForOwnerAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 정산이 완료 되지 않아\n전송이 불가합니다."
+          }
+        }
+      }
+    },
+    "PrivateChat" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인 채팅"
+          }
+        }
+      }
+    },
+    "Rate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가하기"
+          }
+        }
+      }
+    },
+    "RateDone" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가 완료하기"
+          }
+        }
+      }
+    },
+    "RateManners" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가"
+          }
+        }
+      }
+    },
+    "RateMannersDoneAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매너 평가가 완료되었습니다."
+          }
+        }
+      }
+    },
+    "SendInvitation" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "초대장 보내기"
+          }
+        }
+      }
+    },
+    "SendInvitationAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상대방은 초대장 수락 후,\n단체 채팅방으로 이동합니다."
+          }
+        }
+      }
+    },
+    "SendInvitationAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "초대장을 보내시겠습니까?"
+          }
+        }
+      }
+    },
+    "SendMessage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메시지 보내기"
+          }
+        }
+      }
+    },
+    "SendPicture" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진 보내기"
+          }
+        }
+      }
+    },
+    "SendSettlement" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 보내기"
+          }
+        }
+      }
+    },
+    "SendSettlementConfirmAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산이 완료되면,\n채팅방의 멤버에게 정산 완료 알림을 보냅니다."
+          }
+        }
+      }
+    },
+    "SendSettlementConfirmAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서를 보내시겠습니까?"
+          }
+        }
+      }
+    },
+    "SettlementReceivedSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아래의 확인하기 버튼을 눌러\n정산 내용을 확인해 보세요."
+          }
+        }
+      }
+    },
+    "SettlementReceivedTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서를\n받았습니다!"
+          }
+        }
+      }
+    },
+    "SettlementSentTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서가 성공적으로\n전송되었습니다!"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertCancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가 종료하기"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertPrimary" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이어서 평가하기"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertSubTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평가를 종료하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SkipRateMannersAlertTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이전 페이지로 돌아가면\n매너 평가를 진행할 수 없습니다."
+          }
+        }
+      }
+    },
+    "UserMessageImageSent" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 이미지를 보냈습니다."
+          }
+        }
+      }
+    },
+    "UserMessageInviteCard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 초대장을 보냈습니다."
+          }
+        }
+      }
+    },
+    "UserMessageJoined" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님께서 입장하셨습니다."
+          }
+        }
+      }
+    },
+    "UserMessageLeft" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님께서 퇴장하셨습니다."
+          }
+        }
+      }
+    },
+    "UserMessageSettlementCard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$(nickname)@님이 정산서를 보냈습니다."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

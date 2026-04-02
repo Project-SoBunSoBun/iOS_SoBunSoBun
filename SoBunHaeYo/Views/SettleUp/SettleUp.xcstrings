@@ -1,0 +1,485 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "Count" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개"
+          }
+        }
+      }
+    },
+    "GetSettlementFailed" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 상세 조회에 실패했습니다."
+          }
+        }
+      }
+    },
+    "KRW" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "원"
+          }
+        }
+      }
+    },
+    "ListedProductItemTotal" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@개 %@원"
+          }
+        }
+      }
+    },
+    "Me" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(나)"
+          }
+        }
+      }
+    },
+    "SaveSettlement" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장하기"
+          }
+        }
+      }
+    },
+    "SettlementFailed" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 등록 실패"
+          }
+        }
+      }
+    },
+    "SettlementSaveCheckSubtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서를 저장하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SettlementSaveCheckTitle" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장 이후에는 \n정산을 수정할 수 없습니다."
+          }
+        }
+      }
+    },
+    "SettleUp" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산"
+          }
+        }
+      }
+    },
+    "SettleUp1stStepDeleteMessage" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록된 상품을 삭제하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SettleUp1stStepEditMessage" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록된 상품을 수정하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SettleUpShareSuccessMessage" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 공유가 완료되었습니다."
+          }
+        }
+      }
+    },
+    "SettleUpShareConfirmTitle" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서를\n공유하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SettleUpAll" : {
+      "comment" : "CalculationCategory.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전체"
+          }
+        }
+      }
+    },
+    "SettleUpAmount" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "금액"
+          }
+        }
+      }
+    },
+    "SettleUpCheck" : {
+      "comment" : "Incomplete.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산서 확인"
+          }
+        }
+      }
+    },
+    "SettleUpComplete" : {
+      "comment" : "CalculationCategory.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 완료"
+          }
+        }
+      }
+    },
+    "SettleUpDeleteMessage1st" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 내역을 삭제하면 해당 정산 정보는 복구할 수 없습니다."
+          }
+        }
+      }
+    },
+    "SettleUpDeleteMessage2nd" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "그래도 삭제하시겠습니까?"
+          }
+        }
+      }
+    },
+    "SettleUpIncomplete" : {
+      "comment" : "CalculationCategory.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산 미완료"
+          }
+        }
+      }
+    },
+    "SettleUpItemName" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품명"
+          }
+        }
+      }
+    },
+    "SettleUpItemNamePlaceholder" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품명을 입력해주세요"
+          }
+        }
+      }
+    },
+    "SettleUpItemRegistered" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d개의 상품을 등록했습니다. 확인 후 수정해주세요."
+          }
+        }
+      }
+    },
+    "SettleUpParticipant" : {
+      "comment" : "SettleUp2ndStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여자별 정산을 완료해주세요."
+          }
+        }
+      }
+    },
+    "SettleUpQuantity" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수량(개)"
+          }
+        }
+      }
+    },
+    "SettleUpRegisteredItem" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등록된 상품"
+          }
+        }
+      }
+    },
+    "SettleUpRegisteredItemCount" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d개의 상품"
+          }
+        }
+      }
+    },
+    "SettleUpRegisterEmpty" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 등록된 상품이 없습니다.\n상단의 ‘상품 추가’를 통해 추가해보세요."
+          }
+        }
+      }
+    },
+    "SettleUpRegisterItem" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품 등록하기"
+          }
+        }
+      }
+    },
+    "SettleUpStart" : {
+      "comment" : "CalculationCategory.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산하기"
+          }
+        }
+      }
+    },
+    "SettleUpTableViewCompleteEmpty" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정산을 완료한 모임이 없습니다."
+          }
+        }
+      }
+    },
+    "SettleUpTableViewEmpty" : {
+      "comment" : "SettleUpView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "참여 중인 모임이 없습니다. 내 주변 모임을 확인해보세요!"
+          }
+        }
+      }
+    },
+    "SettleUpTotalPrice" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "총 금액"
+          }
+        }
+      }
+    },
+    "SettleUpUnit" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "단위"
+          }
+        }
+      }
+    },
+    "SettleUpWeight" : {
+      "comment" : "SettleUp1stStepView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중량(g)"
+          }
+        }
+      }
+    },
+    "TotalSettlementAmountFormat" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "총 정산 금액 : %@원"
+          }
+        }
+      }
+    },
+    "ValidationCheckQuantity" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품의 수량 합계가 일치하지 않습니다.\n입력된 수량을 다시 확인해 주세요."
+          }
+        }
+      }
+    },
+    "ValidationError" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상품 등록 실패"
+          }
+        }
+      }
+    },
+    "ValidationNagativeError" : {
+      "comment" : "SettleUp",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수량에는 음수를 사용할 수 없습니다."
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -1,0 +1,390 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "All" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 카테고리"
+          }
+        }
+      }
+    },
+    "Category0000" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "과일"
+          }
+        }
+      }
+    },
+    "Category0001" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채소"
+          }
+        }
+      }
+    },
+    "Category0002" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "쌀/잡곡/견과"
+          }
+        }
+      }
+    },
+    "Category0003" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정육/계란류"
+          }
+        }
+      }
+    },
+    "Category0004" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "수산물/건해산"
+          }
+        }
+      }
+    },
+    "Category0005" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "우유/유제품"
+          }
+        }
+      }
+    },
+    "Category0006" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "밀키트/간편식"
+          }
+        }
+      }
+    },
+    "Category0007" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "김치/반찬류"
+          }
+        }
+      }
+    },
+    "Category0008" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "생수/음료/주류"
+          }
+        }
+      }
+    },
+    "Category0009" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "커피/원두/차"
+          }
+        }
+      }
+    },
+    "Category0010" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "면류/통조림"
+          }
+        }
+      }
+    },
+    "Category0011" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "양념/오일"
+          }
+        }
+      }
+    },
+    "Category0012" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "과자/간식"
+          }
+        }
+      }
+    },
+    "Category0013" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "베이커리/잼"
+          }
+        }
+      }
+    },
+    "Category0014" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "건강/영양제"
+          }
+        }
+      }
+    },
+    "Category0015" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "친환경/유기농"
+          }
+        }
+      }
+    },
+    "Category0100" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "제지/위생/건강"
+          }
+        }
+      }
+    },
+    "Category0101" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "디지털/가전"
+          }
+        }
+      }
+    },
+    "Category0102" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가구/인테리어"
+          }
+        }
+      }
+    },
+    "Category0103" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "헤어/바디/뷰티"
+          }
+        }
+      }
+    },
+    "Category0104" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "청소/생활용품"
+          }
+        }
+      }
+    },
+    "Category0105" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "주방용품"
+          }
+        }
+      }
+    },
+    "Category0106" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "생활잡화/공구"
+          }
+        }
+      }
+    },
+    "Category0107" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "반려동물"
+          }
+        }
+      }
+    },
+    "Category0108" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유아동/완구"
+          }
+        }
+      }
+    },
+    "Category0109" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "패션/언더웨어"
+          }
+        }
+      }
+    },
+    "Category0110" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "여행/캠핑"
+          }
+        }
+      }
+    },
+    "Category0111" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "의류/잡화"
+          }
+        }
+      }
+    },
+    "Category0112" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기타"
+          }
+        }
+      }
+    },
+    "Group00" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "식품"
+          }
+        }
+      }
+    },
+    "Group01" : {
+      "comment" : "HomeList.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "생활용품"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
