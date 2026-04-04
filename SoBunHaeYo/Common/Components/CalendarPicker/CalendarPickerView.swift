@@ -135,6 +135,10 @@ class CalendarPickerView: UIViewController {
             contentView.addSubview($0)
         }
         
+        contentView.snp.makeConstraints { make in
+            make.bottom.equalTo(button.snp.bottom).offset(safeAreaBottom)
+        }
+        
         yearLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.top.equalToSuperview().offset(24)
@@ -209,7 +213,6 @@ class CalendarPickerView: UIViewController {
         button.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(calendarCollectionView.snp.bottom).offset(16)
-            make.bottom.equalToSuperview().inset(safeAreaBottom)
         }
     }
 }
