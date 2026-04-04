@@ -125,6 +125,9 @@ class HomeReactor: Reactor {
             return Observable.just(.setAddCategoryTapped)
             
         case .getSelectedCategories(let selectedCategories):
+            guard Set(selectedCategories) != Set(currentState.selectedCategories) else {
+                return Observable.empty()
+            }
             return Observable.concat([
                 Observable.just(.setSelectedCategories(selectedCategories)),
                 Observable.just(.setRefreshing(true)),

@@ -536,6 +536,7 @@ extension HomeView {
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.posts }
+            .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(
                 cellIdentifier: PostListTableViewCell.identifier,
@@ -603,7 +604,7 @@ extension HomeView {
     }
     
     private func showSelectCategoriesBottomSheet() {
-        let sheetView = SelectCategoriesView(selectedCategories: reactor.currentState.selectedCategories)
+        let sheetView = SelectCategoriesView(selectedCategories: reactor.currentState.selectedCategories, safeAreaBottom: view.safeAreaInsets.bottom, allowsEmpty: true)
         
         sheetView.selectedCategoriesRelay
             .map { Reactor.Action.getSelectedCategories($0) }

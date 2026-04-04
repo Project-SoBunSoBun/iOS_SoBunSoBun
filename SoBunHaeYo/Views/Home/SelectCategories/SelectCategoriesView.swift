@@ -13,9 +13,13 @@ import OSLog
 
 class SelectCategoriesView: UIViewController {
     private let initialSelectedCategories: [String]
+    private let safeAreaBottom: CGFloat
+    private let allowsEmpty: Bool
     
-    init(selectedCategories: [String]) {
+    init(selectedCategories: [String], safeAreaBottom: CGFloat, allowsEmpty: Bool) {
         self.initialSelectedCategories = selectedCategories
+        self.safeAreaBottom = safeAreaBottom
+        self.allowsEmpty = allowsEmpty
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -47,6 +51,13 @@ class SelectCategoriesView: UIViewController {
     }()
     
     private var wrappingViews: [HorizontalWrappingView] = []
+    
+    private lazy var confirmButton: Button = {
+        let btn = Button(title: String(localized: "SelectComplete", table: "Home"))
+        btn.isEnabled = allowsEmpty
+        
+        return btn
+    }()
     
     private func groupLabel(number: String) -> UILabel {
         let label = UILabel()
@@ -88,20 +99,22 @@ class SelectCategoriesView: UIViewController {
         bind(reactor: reactor)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        selectedCategoriesRelay.accept(reactor.currentState.selectedCategories)
-    }
-    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        view.addSubview(scrollView)
+        [confirmButton, scrollView].forEach {
+            view.addSubview($0)
+        }
+        
+        confirmButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(safeAreaBottom)
+        }
         
         scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(confirmButton.snp.top)
         }
         
         scrollView.addSubview(contentView)
@@ -121,6 +134,18 @@ extension SelectCategoriesView {
     
     private func bindAction(reactor: SelectCategoriesReactor) {
         reactor.action.onNext(.viewDidLoad(initialSelectedCategories))
+        
+        confirmButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                selectedCategoriesRelay.accept(reactor.currentState.selectedCategories)
+                
+                if let bottomSheet = parent as? BottomSheetView {
+                    bottomSheet.handleDismiss()
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     private func bindState(reactor: SelectCategoriesReactor) {
@@ -140,6 +165,7 @@ extension SelectCategoriesView {
             .subscribe(onNext: { [weak self] categories in
                 guard let self = self else { return }
                 
+                confirmButton.isEnabled = allowsEmpty || !categories.isEmpty
                 updateSelectedCategories(selectedCategories: categories)
             })
             .disposed(by: disposeBag)
@@ -202,17 +228,3 @@ extension SelectCategoriesView {
             }
     }
 }
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-import RxRelay
-
-struct SelectCategoriesViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            SelectCategoriesView(selectedCategories: [])
-        }
-    }
-}
-#endif

@@ -625,7 +625,7 @@ extension RegisterPostView {
     }
     
     private func showSelectCategoriesBottomSheet() {
-        let sheetView = SelectCategoriesView(selectedCategories: reactor.currentState.selectedCategories)
+        let sheetView = SelectCategoriesView(selectedCategories: reactor.currentState.selectedCategories, safeAreaBottom: view.safeAreaInsets.bottom, allowsEmpty: false)
         
         sheetView.selectedCategoriesRelay
             .map { Reactor.Action.setSelectedCategories($0) }

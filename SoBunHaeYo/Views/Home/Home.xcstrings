@@ -33,6 +33,18 @@
         }
       }
     },
+    "SelectComplete" : {
+      "comment" : "Common",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택 완료"
+          }
+        }
+      }
+    },
     "Date" : {
       "comment" : "Home",
       "extractionState" : "manual",
