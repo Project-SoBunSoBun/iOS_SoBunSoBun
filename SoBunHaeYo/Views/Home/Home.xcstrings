@@ -276,6 +276,18 @@
         }
       }
     },
+    "MaximumMembersSuffix" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(최대 %d명)"
+          }
+        }
+      }
+    },
     "MeetingLocation" : {
       "comment" : "Home",
       "extractionState" : "manual",
@@ -308,6 +320,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "최소인원"
+          }
+        }
+      }
+    },
+    "MinimumMembersSuffix" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(최소 %d명)"
           }
         }
       }
@@ -348,7 +372,7 @@
         }
       }
     },
-    "PeopleCount" : {
+    "PeopleUnit" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {

@@ -17,8 +17,8 @@ class RegisterPostView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    private static let memberMinValue: Int = 2
-    private static let memberMaxValue: Int = 10
+    private let memberMinValue: Int = 2
+    private let memberMaxValue: Int = 10
     
     // MARK: - 디자인 요소
     private func titleAttributes() -> [NSAttributedString.Key: Any] {
@@ -140,18 +140,27 @@ class RegisterPostView: UIViewController {
     
     private lazy var minimumTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "MinimumMembers", table: "Home"), attributes: titleAttributes())
+        
+        var suffixAttributes = titleAttributes()
+        suffixAttributes[.foregroundColor] = UIColor.neutral400
+        
+        let mainText = String(localized: "MinimumMembers", table: "Home")
+        let suffix = " " + String(format: String(localized: "MinimumMembersSuffix", table: "Home"), memberMinValue)
+        
+        let fullText = NSMutableAttributedString(string: mainText, attributes: titleAttributes())
+        fullText.append(NSAttributedString(string: suffix, attributes: suffixAttributes))
+        
+        lb.attributedText = fullText
         
         return lb
     }()
     
-    private let minimumTextField: TextFieldMember = {
+    private lazy var minimumTextField: TextFieldMember = {
         let tfm = TextFieldMember(
             minValue: memberMinValue,
             maxValue: memberMaxValue,
             maxLength: 2
         )
-        tfm.placeholder = String(memberMinValue)
         
         return tfm
     }()
@@ -160,18 +169,27 @@ class RegisterPostView: UIViewController {
     
     private lazy var maximumTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "MaximumMembers", table: "Home"), attributes: titleAttributes())
+        
+        var suffixAttributes = titleAttributes()
+        suffixAttributes[.foregroundColor] = UIColor.neutral400
+        
+        let mainText = String(localized: "MaximumMembers", table: "Home")
+        let suffix = " " + String(format: String(localized: "MaximumMembersSuffix", table: "Home"), memberMaxValue)
+        
+        let fullText = NSMutableAttributedString(string: mainText, attributes: titleAttributes())
+        fullText.append(NSAttributedString(string: suffix, attributes: suffixAttributes))
+        
+        lb.attributedText = fullText
         
         return lb
     }()
     
-    private let maximumTextField: TextFieldMember = {
+    private lazy var maximumTextField: TextFieldMember = {
         let tfm = TextFieldMember(
             minValue: memberMinValue,
             maxValue: memberMaxValue,
             maxLength: 2
         )
-        tfm.placeholder = String(memberMaxValue)
         
         return tfm
     }()
