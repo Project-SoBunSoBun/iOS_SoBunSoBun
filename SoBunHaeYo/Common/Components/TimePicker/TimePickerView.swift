@@ -152,6 +152,10 @@ class TimePickerView: UIViewController {
             contentView.addSubview($0)
         }
         
+        contentView.snp.makeConstraints { make in
+            make.bottom.equalTo(button.snp.bottom).offset(safeAreaBottom)
+        }
+        
         titleLabel.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalToSuperview().offset(32)
@@ -174,7 +178,6 @@ class TimePickerView: UIViewController {
         button.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(pickerStackView.snp.bottom).offset(40)
-            make.bottom.equalToSuperview().inset(safeAreaBottom)
         }
     }
 }
