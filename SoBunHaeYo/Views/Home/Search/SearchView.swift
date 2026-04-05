@@ -116,7 +116,7 @@ class SearchView: UIViewController {
     
     private let sortArrowIcon: UIImageView = {
         let iv = UIImageView()
-        iv.image = .blackDown.resize(.init(width: 24, height: 24))
+        iv.image = .blackDown
         iv.contentMode = .scaleAspectFit
         
         return iv
