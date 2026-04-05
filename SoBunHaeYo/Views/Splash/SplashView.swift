@@ -55,11 +55,12 @@ class SplashView: UIViewController {
 
 extension SplashView {
     private func bind(reactor: SplashReactor) {
-        reactor.state.map(\.destination)
+        reactor.pulse(\.$destination)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] destination in
                 guard let self = self else { return }
+                
                 self.navigate(to: destination)
             })
             .disposed(by: disposeBag)
@@ -67,16 +68,16 @@ extension SplashView {
     
     // 화면 전환
     private func navigate(to destination: SplashReactor.Destination) {
-        let nextVC: UIViewController
+        let vc: UIViewController
         
         switch destination {
         case .main:
-            nextVC = NavigationTabView()
+            vc = NavigationTabView()
         case .login:
-            nextVC = LoginView()
+            vc = LoginView()
         }
         
-        let nav = UINavigationController(rootViewController: nextVC)
+        let nav = UINavigationController(rootViewController: vc)
         nav.isNavigationBarHidden = true
         
         guard let window = view.window else { return }
