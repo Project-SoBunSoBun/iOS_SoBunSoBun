@@ -28,7 +28,7 @@ class LoginView: UIViewController {
     // 앱 로고
     private let appLogoImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = .logo
+        imageView.image = .appLogo
         imageView.contentMode = .scaleAspectFit
         
         return imageView

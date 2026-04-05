@@ -39,30 +39,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         tapGesture.cancelsTouchesInView = false
         window.addGestureRecognizer(tapGesture)
         
-        var nav: UINavigationController
+        let nav = UINavigationController(rootViewController: SplashView())
+        nav.isNavigationBarHidden = true
         
-        let now = Date()
+        window.rootViewController = nav
+        window.makeKeyAndVisible()
         
-        if KeyChain.shared.get(key: "REFRESH_TOKEN") != nil,
-           let refreshTokenExpireAtKST = KeyChain.shared.get(key: "REFRESH_TOKEN_EXPIRE_AT_KST"),
-           let dateRefreshTokenExpireAtKST = ISO8601ToDate(refreshTokenExpireAtKST),
-           dateRefreshTokenExpireAtKST > now {
-            nav = UINavigationController(rootViewController: NavigationTabView())
-            nav.isNavigationBarHidden = true
-            
-            window.rootViewController = nav
-            window.makeKeyAndVisible()
-            
-            // 딥링크 처리
-            if let urlContext = connectionOptions.urlContexts.first {
-                DeepLinkManager.shared.handle(url: urlContext.url)
-            }
-        } else {
-            nav = UINavigationController(rootViewController: LoginView())
-            nav.isNavigationBarHidden = true
-            
-            window.rootViewController = nav
-            window.makeKeyAndVisible()
+        // 딥링크 처리
+        if let urlContext = connectionOptions.urlContexts.first {
+            DeepLinkManager.shared.handle(url: urlContext.url)
         }
         
         // 애플 계정 연결 상태 체크 (앱 최초 실행 시 1회)

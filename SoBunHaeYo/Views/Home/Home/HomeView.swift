@@ -34,7 +34,7 @@ class HomeView: UIViewController {
     
     private let logoImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .logo.resize(.init(width: 30, height: 30))
+        iv.image = .appLogo
         iv.contentMode = .scaleAspectFit
         
         return iv
@@ -42,7 +42,7 @@ class HomeView: UIViewController {
     
     private let letterLogoImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .soBunHaeYoText.resize(.init(width: 65, height: 22))
+        iv.image = .soBunHaeYoText
         iv.contentMode = .scaleAspectFit
         
         return iv
@@ -50,7 +50,7 @@ class HomeView: UIViewController {
     
     private let locationIconImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .glassLocation.resize(.init(width: 24, height: 24))
+        iv.image = .glassLocation
         iv.contentMode = .scaleAspectFit
         
         return iv
