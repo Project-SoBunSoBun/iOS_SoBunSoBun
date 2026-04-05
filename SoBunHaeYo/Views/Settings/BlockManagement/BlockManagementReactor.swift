@@ -95,9 +95,9 @@ class BlockManagementReactor: Reactor {
             .catch { [weak self] error in
                 guard let self else { return Observable.empty() }
                 
-                self.logger.critical("차단 목록 조회 실패: \(error.localizedDescription)")
-                
-                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("차단 목록 조회 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(errorMessage))
             }
@@ -109,28 +109,16 @@ class BlockManagementReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("차단 해제 성공")
-                    
-                    return Observable.just(.removeBlockedUser(userId))
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("차단 해제 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("차단 해제 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("차단 해제 성공")
+                
+                return Observable.just(.removeBlockedUser(userId))
             }
             .catch { [weak self] error in
                 guard let self else { return Observable.empty() }
                 
-                self.logger.critical("차단 해제 실패: \(error.localizedDescription)")
-                
-                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("차단 해제 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(errorMessage))
             }

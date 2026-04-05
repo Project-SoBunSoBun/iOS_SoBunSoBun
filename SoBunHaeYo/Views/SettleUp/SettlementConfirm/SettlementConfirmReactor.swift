@@ -76,15 +76,7 @@ class SettlementConfirmReactor: Reactor {
             .flatMap{ [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("알림 읽음 완료")
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
-                    } else {
-                        self.logger.critical("알림 읽음 실패: \(response.message ?? "")")
-                    }
-                }
+                self.logger.debug("알림 읽음 완료")
                 
                 return Observable.empty()
             }
@@ -109,43 +101,35 @@ class SettlementConfirmReactor: Reactor {
                 .flatMap { [weak self] response -> Observable<Mutation> in
                     guard let self else { return Observable.empty() }
                     
-                    if response.success, let item = response.data {
-                        self.logger.debug("정산 상세 데이터 조회 성공")
-                        
-                        let sortedParticipants = item.participants.sorted { lhs, rhs in
-                            let lhsIsCurrentUser = lhs.userId == currentUserId
-                            let rhsIsCurrentUser = rhs.userId == currentUserId
-                            
-                            if lhsIsCurrentUser != rhsIsCurrentUser {
-                                return lhsIsCurrentUser
-                            }
-                            
-                            return false
-                        }
-                        
-                        return Observable.concat([
-                            .just(.setItem(item)),
-                            .just(.setSortedParticipants(sortedParticipants))
-                        ])
-                    } else {
-                        if let errorCode = response.errorCode {
-                            self.logger.critical("정산 상세 데이터 조회 실패(\(errorCode)) - \(response.message ?? "")")
-                            
-                            return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                        } else {
-                            self.logger.critical("정산 상세 데이터 조회 실패")
-                            
-                            return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                        }
+                    guard let item = response.data else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                     }
+                    
+                    self.logger.debug("정산 상세 데이터 조회 성공")
+                    
+                    let sortedParticipants = item.participants.sorted { lhs, rhs in
+                        let lhsIsCurrentUser = lhs.userId == currentUserId
+                        let rhsIsCurrentUser = rhs.userId == currentUserId
+                        
+                        if lhsIsCurrentUser != rhsIsCurrentUser {
+                            return lhsIsCurrentUser
+                        }
+                        
+                        return false
+                    }
+                    
+                    return Observable.concat([
+                        .just(.setItem(item)),
+                        .just(.setSortedParticipants(sortedParticipants))
+                    ])
                 }
                 .catch { [weak self] error in
                     guard let self = self else { return Observable.empty() }
                     
-                    self.logger.critical("정산 상세 데이터 조회 실패: \(error.localizedDescription)")
-                    
-                    let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                    let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
+                    self.logger.critical("정산 상세 데이터 조회 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                    
                     return Observable.just(.setErrorMessage(errorMessage))
                 }
         }

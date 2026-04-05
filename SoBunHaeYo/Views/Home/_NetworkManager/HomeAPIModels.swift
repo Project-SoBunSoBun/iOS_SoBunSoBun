@@ -80,7 +80,6 @@ struct CommentModel: Decodable, Equatable {
     let userNickname, userProfileImageUrl, userAddress, content: String?
     let createdAt, updatedAt: String
     let deleted, edited: Bool
-    let errorCode: String?
 }
 
 struct CreateCommentModel: Encodable {
@@ -89,9 +88,7 @@ struct CreateCommentModel: Encodable {
 }
 
 struct CreateChatRoomResponseModel: Decodable {
-    let success: Bool
     let data: CreateChatRoomResponseDataModel?
-    let message, errorCode: String?
 }
 
 struct CreateChatRoomResponseDataModel: Decodable {
@@ -107,10 +104,7 @@ struct MyProfileRequestModel: Encodable {
 }
 
 struct MyProfileResponseModel: Decodable {
-    let success: Bool
     let data: MyProfileResponseDataModel?
-    let message: String?
-    let errorCode: String?
 }
 
 struct MyProfileResponseDataModel: Decodable, Equatable {

@@ -161,26 +161,16 @@ class ReportReactor: Reactor {
         
         return api.asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success {
-                    self.logger.debug("신고 완료")
-                    
-                    return Observable.just(.setShouldShowReportCompletedAlert)
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("신고 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("신고 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("신고 완료")
+                
+                return Observable.just(.setShouldShowReportCompletedAlert)
             }
             .catch { error in
-                self.logger.debug("신고 에러: \(error)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("신고 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
 }

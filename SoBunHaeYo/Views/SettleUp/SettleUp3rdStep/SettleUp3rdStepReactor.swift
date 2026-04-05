@@ -98,28 +98,18 @@ class SettleUp3rdStepReactor: Reactor {
                     .flatMap { [weak self] response -> Observable<Mutation> in
                         guard let self = self else { return Observable.empty() }
                         
-                        if response.success {
-                            self.logger.debug("정산 등록 성공")
-                            
-                            return Observable.just(.setNavigateToSettleUpView)
-                        } else {
-                            if let errorCode = response.errorCode {
-                                self.logger.critical("정산 등록 실패(\(errorCode)) - \(response.message ?? "")")
-                                
-                                return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                            } else {
-                                self.logger.critical("정산 등록 실패: \(response.message ?? "")")
-                                
-                                return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                            }
-                        }
+                        self.logger.debug("정산 등록 성공")
+                        
+                        return Observable.just(.setNavigateToSettleUpView)
                     }
                     .catch { [weak self] error in
                         guard let self = self else { return Observable.empty() }
                         
-                        self.logger.error("정산 등록 실패: \(error.localizedDescription)")
+                        let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                        self.logger.critical("정산 등록 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                         
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                        return Observable.just(.setErrorMessage(errorMessage))
                     },
                 Observable.just(.setLoading(false))
             ])

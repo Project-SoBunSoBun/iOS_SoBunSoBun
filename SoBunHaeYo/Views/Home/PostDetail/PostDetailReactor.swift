@@ -324,15 +324,7 @@ class PostDetailReactor: Reactor {
             .flatMap{ [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("알림 읽음 완료")
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("알림 읽음 실패(\(errorCode)) - \(response.message ?? "")")
-                    } else {
-                        self.logger.critical("알림 읽음 실패: \(response.message ?? "")")
-                    }
-                }
+                self.logger.debug("알림 읽음 완료")
                 
                 return Observable.empty()
             }
@@ -354,7 +346,7 @@ class PostDetailReactor: Reactor {
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
                 logger.critical("게시글 정보 호출 실패: \(error.localizedDescription)")
@@ -371,7 +363,7 @@ class PostDetailReactor: Reactor {
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
                 logger.critical("게시글 저장 목록 불러오기 실패: \(error.localizedDescription)")
@@ -388,7 +380,7 @@ class PostDetailReactor: Reactor {
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
                 logger.critical("게시글 댓글 갯수 호출 실패: \(error.localizedDescription)")
@@ -426,7 +418,7 @@ class PostDetailReactor: Reactor {
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
                 logger.critical("게시글 댓글 호출 실패: \(error.localizedDescription)")
@@ -441,28 +433,18 @@ class PostDetailReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("게시글 저장 성공")
-                    
-                    return Observable.just(.setIsSaved(true))
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("게시글 저장 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("게시글 저장 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("게시글 저장 성공")
+                
+                return Observable.just(.setIsSaved(true))
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("게시글 저장 실패: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                logger.critical("게시글 저장 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -474,28 +456,18 @@ class PostDetailReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("게시글 저장 취소 성공")
-                    
-                    return Observable.just(.setIsSaved(false))
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("게시글 저장 취소 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("게시글 저장 취소 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("게시글 저장 취소 성공")
+                
+                return Observable.just(.setIsSaved(false))
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("게시글 저장 취소 실패: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                logger.critical("게시글 저장 취소 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -507,28 +479,18 @@ class PostDetailReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("게시글 삭제 성공")
-                    
-                    return Observable.just(.setShouldShowDeletePostDoneAlert)
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("게시글 삭제 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("게시글 삭제 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("게시글 삭제 성공")
+                
+                return Observable.just(.setShouldShowDeletePostDoneAlert)
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("게시글 삭제 실패: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                logger.critical("게시글 삭제 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -548,28 +510,18 @@ class PostDetailReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("댓글 생성 성공")
-                    
-                    return getComments()
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("댓글 생성 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("댓글 생성 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("댓글 생성 성공")
+                
+                return getComments()
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("댓글 생성 실패: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                logger.critical("댓글 생성 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -593,31 +545,21 @@ class PostDetailReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("댓글 수정 성공")
-                    
-                    return Observable.concat([
-                        getComments(),
-                        Observable.just(.setIsEditMode(false))
-                    ])
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("댓글 수정 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("댓글 수정 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("댓글 수정 성공")
+                
+                return Observable.concat([
+                    getComments(),
+                    Observable.just(.setIsEditMode(false))
+                ])
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("댓글 수정 실패: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                logger.critical("댓글 수정 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -633,32 +575,22 @@ class PostDetailReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("댓글 삭제 성공")
-                    
-                    return Observable.concat([
-                        getPostCommentsCount(),
-                        getComments(),
-                        Observable.just(.setShouldShowDeleteCommentDoneAlert)
-                    ])
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("댓글 삭제 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("댓글 삭제 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("댓글 삭제 성공")
+                
+                return Observable.concat([
+                    getPostCommentsCount(),
+                    getComments(),
+                    Observable.just(.setShouldShowDeleteCommentDoneAlert)
+                ])
             }
             .catch { [weak self] error in
                 guard let self = self else {
-                    return Observable.just(.setErrorMessage("Error!"))
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("댓글 삭제 실패: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                logger.critical("댓글 삭제 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -712,27 +644,21 @@ class PostDetailReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self else { return Observable.empty() }
                 
-                if response.success, let data = response.data {
-                    self.logger.debug("채팅방 생성 및 조회 성공")
-                    
-                    return Observable.just(.setShouldNavigateToChat(data.roomId))
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("채팅방 생성 및 조회 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("채팅방 생성 및 조회 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
+                guard let data = response.data else {
+                    self.logger.critical("채팅방 생성 및 조회 실패")
+                    return Observable.just(.setErrorMessage(errorMessage))
                 }
+                
+                self.logger.debug("채팅방 생성 및 조회 성공")
+                
+                return Observable.just(.setShouldNavigateToChat(data.roomId))
             }
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("채팅방 생성 및 조회 실패: \(error.localizedDescription)")
-                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("채팅방 생성 및 조회 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(errorMessage))
             }

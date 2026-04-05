@@ -150,55 +150,47 @@ class SettleUpReactor: Reactor {
             self.networkManager.mySettleUps(status: status, page: page, size: size)
                 .asObservable()
                 .flatMap { response -> Observable<Mutation> in
-                    if response.success, let data = response.data {
-                        self.logger.debug("정산 목록 조회 성공")
-                        
-                        guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
-                        
-                        let currentUserId = Int(userId)
-                        
-                        let items: [SettleUpItemModel] = data.content.map { content in
-                            let isCompleted = (content.status == "COMPLETED")
-                            
-                            return SettleUpItemModel(
-                                settlementId: content.id,
-                                authorId: content.authorId,
-                                chatRoomId: content.chatRoomId,
-                                isAuthor: content.authorId == currentUserId,
-                                settlementStatus: isCompleted,
-                                title: content.groupPostTitle,
-                                location: content.locationName,
-                                meetingDate: content.meetAt,
-                                participants: content.chatRoomMembers
-                            )
-                        }
-                        
-                        let mutation: Observable<Mutation> = isFirst
-                        ? Observable.just(.setItems(items))
-                        : Observable.just(.appendItems(items))
-                        
-                        return Observable.concat([
-                            mutation,
-                            Observable.just(.setHasMore(!data.last))
-                        ])
-                    } else {
-                        if let errorCode = response.errorCode {
-                            self.logger.critical("정산 목록 로드 실패(\(errorCode)) - \(response.message ?? "")")
-                            
-                            return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                        } else {
-                            self.logger.critical("정산 목록 로드 실패: \(response.message ?? "")")
-                            
-                            return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                        }
+                    guard let data = response.data else {
+                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                     }
+                    
+                    self.logger.debug("정산 목록 조회 성공")
+                    
+                    guard let userId = KeyChain.shared.get(key: "USER_ID") else { return Observable.empty() }
+                    
+                    let currentUserId = Int(userId)
+                    
+                    let items: [SettleUpItemModel] = data.content.map { content in
+                        let isCompleted = (content.status == "COMPLETED")
+                        
+                        return SettleUpItemModel(
+                            settlementId: content.id,
+                            authorId: content.authorId,
+                            chatRoomId: content.chatRoomId,
+                            isAuthor: content.authorId == currentUserId,
+                            settlementStatus: isCompleted,
+                            title: content.groupPostTitle,
+                            location: content.locationName,
+                            meetingDate: content.meetAt,
+                            participants: content.chatRoomMembers
+                        )
+                    }
+                    
+                    let mutation: Observable<Mutation> = isFirst
+                    ? Observable.just(.setItems(items))
+                    : Observable.just(.appendItems(items))
+                    
+                    return Observable.concat([
+                        mutation,
+                        Observable.just(.setHasMore(!data.last))
+                    ])
                 }
                 .catch { [weak self] error in
                     guard let self = self else { return Observable.empty() }
                     
-                    self.logger.critical("정산 목록 로드 실패: \(error.localizedDescription)")
-                    
-                    let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                    let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                    self.logger.critical("정산 목록 로드 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                     
                     return Observable.concat([
                         isFirst ? Observable.just(.setItems([])) : Observable.empty(),
@@ -216,28 +208,18 @@ class SettleUpReactor: Reactor {
             .flatMap { [weak self] response -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                if response.success {
-                    self.logger.debug("정산서 전송 성공")
-                    
-                    return Observable.just(.setShowShareSucceedAlert)
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("정산서 전송 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("정산서 전송 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("정산서 전송 성공")
+                
+                return Observable.just(.setShowShareSucceedAlert)
             }
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("정산서 전송 실패: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("정산서 전송 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
-                return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
 }

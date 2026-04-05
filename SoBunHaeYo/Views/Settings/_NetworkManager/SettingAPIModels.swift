@@ -9,9 +9,7 @@ import Foundation
 
 // MARK: - 마이페이지
 struct MyProfileModel: Decodable {
-    let success: Bool
     let data: MyProfileDataModel
-    let message: String?
 }
 
 struct MyProfileDataModel: Decodable, Equatable {
@@ -39,10 +37,7 @@ struct AnnouncementRequestModel: Encodable {
 }
 
 struct AnnouncementModel: Decodable {
-    let success: Bool
     let data: AnnouncementDataModel?
-    let errorCode: String?
-    let message: String?
 }
 
 struct AnnouncementDataModel: Decodable {
@@ -67,10 +62,7 @@ struct AnnouncementDetailRequestModel: Encodable {
 }
 
 struct AnnouncementDetailModel: Decodable {
-    let success: Bool
     let data: AnnouncementDetailDataModel?
-    let errorCode: String?
-    let message: String?
 }
 
 struct AnnouncementDetailDataModel: Decodable, Equatable {
@@ -104,7 +96,6 @@ struct BugReportPostModel: Encodable {
 
 // MARK: - 차단 목록
 struct BlockListResponseModel: Decodable {
-    let success: Bool
     let data: [BlockListResponseDataModel]
 }
 
@@ -117,9 +108,7 @@ struct BlockListResponseDataModel: Decodable, Equatable {
 
 // MARK: - 약관 조회
 struct TermsResponseModel: Decodable {
-    let success: Bool
     let data: TermsDataModel
-    let message: String?
 }
 
 struct TermsDataModel: Decodable {

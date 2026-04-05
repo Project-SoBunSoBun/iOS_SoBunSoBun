@@ -194,26 +194,16 @@ class InquiriesReactor: Reactor {
         )
         .asObservable()
         .flatMap { response -> Observable<Mutation> in
-            if response.success {
-                self.logger.debug("문의 전송 완료")
-                
-                return Observable.just(.setInquiriesCompleted)
-            } else {
-                if let errorCode = response.errorCode {
-                    self.logger.critical("문의 전송 실패(\(errorCode)) - \(response.message ?? "")")
-                    
-                    return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                } else {
-                    self.logger.critical("문의 전송 실패: \(response.message ?? "")")
-                    
-                    return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                }
-            }
+            self.logger.debug("문의 전송 완료")
+            
+            return Observable.just(.setInquiriesCompleted)
         }
         .catch { error in
-            self.logger.debug("문의 전송 에러: \(error)")
+            let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+            self.logger.critical("문의 전송 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
             
-            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+            return Observable.just(.setErrorMessage(errorMessage))
         }
     }
     

@@ -170,7 +170,7 @@ class MyPostReactor: Reactor {
                     ])
                 }
                 .catch { error in
-                    self.logger.critical("내가 게시한 글 불러오기 실패: \(error.localizedDescription)")
+                    self.logger.critical("내가 게시한 글 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                     
                     return Observable.concat([
                         isFirst ? Observable.just(.setMyPosts([])) : Observable.empty(),
@@ -188,39 +188,23 @@ class MyPostReactor: Reactor {
                 self.homeNetworkManager.deletePost(id: id)
                     .asObservable()
                     .flatMap { response -> Observable<Mutation> in
-                        if response.success {
-                            self.logger.debug("게시글 삭제 성공")
-                            
-                            return Observable.concat([
-                                Observable.just(.removePostById(id)),
-                                Observable.just(.setShouldShowDeletePostDoneAlert),
-                                Observable.just(.setLoading(false))
-                            ])
-                        } else {
-                            if let errorCode = response.errorCode {
-                                self.logger.critical("게시글 삭제 실패(\(errorCode)) - \(response.message ?? "")")
-                                
-                                return Observable.concat([
-                                    Observable.just(.setErrorMessage(localizedErrorMessage(errorCode))),
-                                    Observable.just(.setLoading(false))
-                                ])
-                            } else {
-                                self.logger.critical("게시글 삭제 실패: \(response.message ?? "")")
-                                
-                                return Observable.concat([
-                                    Observable.just(.setErrorMessage(localizedErrorMessage(nil))),
-                                    Observable.just(.setLoading(false))
-                                ])
-                            }
-                        }
+                        self.logger.debug("게시글 삭제 성공")
+                        
+                        return Observable.concat([
+                            Observable.just(.removePostById(id)),
+                            Observable.just(.setShouldShowDeletePostDoneAlert),
+                            Observable.just(.setLoading(false))
+                        ])
                     }
                     .catch { [weak self] error in
                         guard let self = self else { return Observable.empty() }
                         
-                        self.logger.error("게시글 삭제 실패: \(error.localizedDescription)")
+                        let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                        self.logger.critical("게시글 삭제 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                         
                         return Observable.concat([
-                            Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription))),
+                            Observable.just(.setErrorMessage(errorMessage)),
                             Observable.just(.setLoading(false))
                         ])
                     }

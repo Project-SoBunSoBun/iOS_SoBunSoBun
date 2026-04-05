@@ -248,9 +248,11 @@ class RegisterPostReactor: Reactor {
                 .catch { error in
                     self.logger.fault("게시글 등록 실패: \(error.localizedDescription)")
                     
+                    let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+                    
                     return Observable.concat([
                         Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                        Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                        Observable.just(.setErrorMessage(errorMessage))
                     ])
                 }
         ])
