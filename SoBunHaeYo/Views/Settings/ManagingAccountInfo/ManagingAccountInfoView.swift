@@ -87,12 +87,13 @@ class ManagingAccountInfoView: UIViewController {
 }
 
 extension ManagingAccountInfoView {
-    private func bind(reactor: ManagingAccountInfoReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: ManagingAccountInfoReactor) {
+    private func bindAction(reactor: Reactor) {
         // 로그아웃 클릭
         logOut.didTap
             .map { Reactor.Action.logOutTapped }
@@ -106,7 +107,7 @@ extension ManagingAccountInfoView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: ManagingAccountInfoReactor) {
+    private func bindState(reactor: Reactor) {
         // 세팅 카드 버튼 클릭 시 화면 이동
         reactor.pulse(\.$shouldNavigate)
             .compactMap { $0 }
@@ -137,10 +138,6 @@ extension ManagingAccountInfoView {
         
         alert.onPrimaryTapped = {
             AuthManager.shared.logout()
-        }
-        
-        alert.onCancelTapped = {
-            self.logger.debug("취소됨")
         }
         
         alert.show(on: self)

@@ -16,6 +16,8 @@ class SelectCategoriesView: UIViewController {
     private let safeAreaBottom: CGFloat
     private let allowsEmpty: Bool
     
+    let selectedCategoriesRelay = PublishRelay<[String]>()
+    
     init(selectedCategories: [String], safeAreaBottom: CGFloat, allowsEmpty: Bool) {
         self.initialSelectedCategories = selectedCategories
         self.safeAreaBottom = safeAreaBottom
@@ -35,8 +37,6 @@ class SelectCategoriesView: UIViewController {
     
     typealias Reactor = SelectCategoriesReactor
     private let reactor: SelectCategoriesReactor = SelectCategoriesReactor()
-    
-    let selectedCategoriesRelay = PublishRelay<[String]>()
     
     private let disposeBag = DisposeBag()
     
@@ -127,12 +127,13 @@ class SelectCategoriesView: UIViewController {
 }
 
 extension SelectCategoriesView {
-    private func bind(reactor: SelectCategoriesReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SelectCategoriesReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad(initialSelectedCategories))
         
         confirmButton.rx.tap
@@ -148,7 +149,7 @@ extension SelectCategoriesView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SelectCategoriesReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.categories }
             .skip(1)
             .observe(on: MainScheduler.instance)

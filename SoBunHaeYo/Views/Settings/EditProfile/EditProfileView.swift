@@ -131,6 +131,7 @@ class EditProfileView: UIViewController {
                     switch result {
                     case .success(let value):
                         let urlString = value.source.url?.absoluteString ?? "알 수 없음"
+                        
                         self.logger.debug("프로필 이미지 비동기 로드 성공: \(urlString)")
                         
                     case .failure(let error):
@@ -151,12 +152,13 @@ class EditProfileView: UIViewController {
 }
 
 extension EditProfileView {
-    private func bind(reactor: EditProfileReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: EditProfileReactor) {
+    private func bindAction(reactor: Reactor) {
         // 카메라 이미지 탭
         cameraImage.rx.tapGesture()
             .when(.recognized)
@@ -171,6 +173,7 @@ extension EditProfileView {
                 guard let self = self else { return }
                 
                 self.profileImageView.image = image
+                
                 self.logger.debug("이미지 선택 완료")
                 reactor.action.onNext(.profileImageSelected(image))
             })
@@ -209,7 +212,7 @@ extension EditProfileView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: EditProfileReactor) {
+    private func bindState(reactor: Reactor) {
         // completeButton 활성화 / 비활성화
         reactor.state.map { $0.isCompleteButtonEnabled }
             .observe(on: MainScheduler.instance)

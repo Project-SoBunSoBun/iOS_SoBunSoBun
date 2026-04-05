@@ -150,12 +150,12 @@ class SignUpView: UIViewController {
 
 extension SignUpView {
     // reactor와 view 연결
-    private func bind(reactor: SignUpReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SignUpReactor) {
+    private func bindAction(reactor: Reactor) {
         // Back 버튼 탭
         backButton.rx.tap
             .map { Reactor.Action.backButtonTapped }
@@ -226,7 +226,7 @@ extension SignUpView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SignUpReactor) {
+    private func bindState(reactor: Reactor) {
         // 뒤로 가기 버튼
         reactor.pulse(\.$shouldPopViewController)
             .compactMap { $0 }
@@ -343,23 +343,9 @@ extension SignUpView {
             }
         }
         
-        alert.onCancelTapped = {
-            self.logger.debug("취소됨")
-        }
-        
         alert.show(on: self)
     }
     
-    // 에러 알림창
-    private func showErrorAlert(message: String) {
-        let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Error"),
-            subTitle: message,
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.show(on: self)
-    }
 }
 
 // 미리보기

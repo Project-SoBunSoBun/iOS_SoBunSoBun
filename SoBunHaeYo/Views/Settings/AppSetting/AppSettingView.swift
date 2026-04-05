@@ -88,7 +88,7 @@ class AppSettingView: UIViewController {
     // 기타 세팅 카드
     private lazy var etcSettingCard = SettingCard(cells: [announcement, customerSupport, terms, currentVersion])
     
-    // MARK: - 생명 주기
+    // MARK: - 생명주기
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -165,12 +165,13 @@ class AppSettingView: UIViewController {
 }
 
 extension AppSettingView {
+    // reactor와 view 연결
     private func bind(reactor:AppSettingReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: AppSettingReactor) {
+    private func bindAction(reactor: Reactor) {
         // 알림 수신 설정 클릭
         notificationSetting.didTap
             .map { Reactor.Action.notificationSettingTapped }
@@ -208,7 +209,7 @@ extension AppSettingView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: AppSettingReactor) {
+    private func bindState(reactor: Reactor) {
         // 세팅 카드 클릭 시 화면 이동
         reactor.pulse(\.$shouldNavigate)
             .compactMap { $0 }

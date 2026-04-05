@@ -15,28 +15,29 @@ import OSLog
 class ChatView: UIViewController {
     private let chatRoomId: Int
     
-    typealias Reactor = ChatReactor
-    private lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
-    
-    private let disposeBag = DisposeBag()
-    
-    private let logger = Logger(
-        subsystem: "SoBunHaeYo",
-        category: "Chat.Chat.View"
-    )
-    
-    private var rightMenuView: ChatRightMenuView?
-    
     private let willLeave = PublishRelay<Void?>()
     
     init(chatRoomId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
         self.chatRoomId = chatRoomId
+        
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let logger = Logger(
+        subsystem: "SoBunHaeYo",
+        category: "Chat.Chat.View"
+    )
+    
+    typealias Reactor = ChatReactor
+    private lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
+    
+    private let disposeBag = DisposeBag()
+    
+    private var rightMenuView: ChatRightMenuView?
     
     // MARK: - 디자인 요소
     private lazy var gradientLayer = BackgroundGradientLayer(view)
@@ -272,12 +273,13 @@ class ChatView: UIViewController {
 }
 
 extension ChatView {
-    private func bind(reactor: ChatReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: ChatReactor) {
+    private func bindAction(reactor: Reactor) {
         // 오른쪽 메뉴 버튼
         rightMenuButton.rx.tap
             .map { Reactor.Action.rightMenuButtonTapped }
@@ -336,10 +338,6 @@ extension ChatView {
                 
                 alert.onPrimaryTapped = {
                     reactor.action.onNext(.sendInviteCard)
-                }
-                
-                alert.onCancelTapped = {
-                    
                 }
                 
                 alert.show(on: self)
@@ -438,6 +436,7 @@ extension ChatView {
                 guard let self = self else { return false }
                 
                 let lastRow = self.tableView.numberOfRows(inSection: 0) - 1
+                
                 return self.tableView.isDragging && indexPath.row >= lastRow - 10
             }
             .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
@@ -502,7 +501,7 @@ extension ChatView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: ChatReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.detailInfoModel }
             .distinctUntilChanged()
             .filter { $0 != nil }
@@ -870,13 +869,7 @@ extension ChatView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         
@@ -887,17 +880,7 @@ extension ChatView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.onPrimaryTapped = {
-                    self.navigationController?.popViewController(animated: true)
-                }
-                
-                alert.show(on: self)
+                self.showCriticalErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }
@@ -932,10 +915,6 @@ extension ChatView {
             }
             
             navController.popToViewController(navigationTabView, animated: true)
-        }
-        
-        alert.onCancelTapped = {
-            
         }
         
         alert.show(on: self)

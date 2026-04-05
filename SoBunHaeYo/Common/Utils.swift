@@ -259,6 +259,32 @@ extension String {
     }
 }
 
+extension UIViewController {
+    func showErrorAlert(message: String) {
+        let alert = CustomAlertView(
+            title: String(localized: "Error", table: "Error"),
+            subTitle: message,
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.show(on: self)
+    }
+    
+    func showCriticalErrorAlert(message: String) {
+        let alert = CustomAlertView(
+            title: String(localized: "Error", table: "Error"),
+            subTitle: message,
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.navigationController?.popViewController(animated: true)
+        }
+        
+        alert.show(on: self)
+    }
+}
+
 // 미리보기
 #if DEBUG
 import SwiftUI

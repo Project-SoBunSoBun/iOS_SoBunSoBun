@@ -208,6 +208,7 @@ class SettleUpView: UIViewController {
 }
 
 extension SettleUpView {
+    // reactor와 view 연결
     func bind(reactor: SettleUpReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -311,7 +312,9 @@ extension SettleUpView {
                         
                         alert.onPrimaryTapped = { [weak self] in
                             guard let self = self,
-                                  let chatRoomId = item.chatRoomId else { return }
+                                  let chatRoomId = item.chatRoomId else {
+                                return
+                            }
                             
                             self.reactor.action.onNext(.sendSettlementCard(settlementId: item.settlementId, chatRoomId: chatRoomId))
                         }

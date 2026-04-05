@@ -197,12 +197,13 @@ class SettleUp3rdStepView: UIViewController {
 }
 
 extension SettleUp3rdStepView {
-    private func bind(reactor: SettleUp3rdStepReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SettleUp3rdStepReactor) {
+    private func bindAction(reactor: Reactor) {
         // 저장하기 버튼 클릭
         saveButton.rx.tap
             .map { Reactor.Action.saveButtonTapped }
@@ -210,7 +211,7 @@ extension SettleUp3rdStepView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SettleUp3rdStepReactor) {
+    private func bindState(reactor: Reactor) {
         // subtitle 바인딩
         reactor.state.map { $0.model.totalAmount }
             .distinctUntilChanged()
@@ -272,19 +273,7 @@ extension SettleUp3rdStepView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.onPrimaryTapped = { [weak self] in
-                    guard let self = self else { return }
-                    
-                    self.logger.debug("확인 버튼 클릭")
-                }
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }
@@ -301,12 +290,6 @@ extension SettleUp3rdStepView {
             guard let self = self else { return }
             
             self.reactor.action.onNext(.alertButtonTapped)
-        }
-        
-        alert.onCancelTapped = { [weak self] in
-            guard let self = self else { return }
-            
-            self.logger.debug("취소 버튼 클릭")
         }
         
         alert.show(on: self)

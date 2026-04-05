@@ -30,7 +30,7 @@ class SplashView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupUI()
+        configureUI()
         bind(reactor: reactor)
     }
     
@@ -40,8 +40,8 @@ class SplashView: UIViewController {
         reactor.action.onNext(.viewDidAppear)
     }
     
-    // MARK: - UI 설정
-    private func setupUI() {
+    // MARK: - 레이아웃 설정
+    private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
         view.addSubview(appLogoImageView)
@@ -54,7 +54,8 @@ class SplashView: UIViewController {
 }
 
 extension SplashView {
-    private func bind(reactor: SplashReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         reactor.pulse(\.$destination)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)

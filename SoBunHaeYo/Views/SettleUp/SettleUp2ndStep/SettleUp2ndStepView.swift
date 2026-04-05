@@ -237,12 +237,12 @@ class SettleUp2ndStepView: UIViewController {
 
 extension SettleUp2ndStepView {
     // reactor와 view 연결
-    private func bind(reactor: SettleUp2ndStepReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SettleUp2ndStepReactor) {
+    private func bindAction(reactor: Reactor) {
         registerButton.rx.tap
             .map { [weak self] () -> Reactor.Action in
                 guard let self = self else { return Reactor.Action.registerButtonTapped([]) }
@@ -257,7 +257,7 @@ extension SettleUp2ndStepView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SettleUp2ndStepReactor) {
+    private func bindState(reactor: Reactor) {
         // 3단계 화면 전환
         reactor.pulse(\.$shouldNavigateToNextStep)
             .compactMap { $0 }
@@ -289,10 +289,6 @@ extension SettleUp2ndStepView {
             subTitle: NSLocalizedString(subtitle, tableName: "SettleUp", comment: ""),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
-        
-        alert.onPrimaryTapped = {
-            self.logger.debug("확인 버튼 클릭")
-        }
         
         alert.show(on: self)
     }

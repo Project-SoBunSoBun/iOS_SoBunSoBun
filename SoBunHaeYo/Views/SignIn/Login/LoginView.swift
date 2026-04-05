@@ -223,15 +223,14 @@ class LoginView: UIViewController {
     }
 }
 
-// Reactor 연결
 extension LoginView {
     // reactor와 view 연결
-    private func bind(reactor: LoginReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: LoginReactor) {
+    private func bindAction(reactor: Reactor) {
         // Apple로 시작하기 버튼 클릭 제스처
         appleButtonView.rx.tapGesture()
             .when(.recognized)
@@ -247,7 +246,7 @@ extension LoginView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: LoginReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.pulse(\.$loginCompleted)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] isNewUser in
@@ -280,23 +279,9 @@ extension LoginView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert(message: message)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
-    }
-    
-    private func errorAlert(message: String) {
-        let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Error"),
-            subTitle: message,
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = {
-            self.logger.debug("확인 버튼 클릭")
-        }
-        
-        alert.show(on: self)
     }
 }
 

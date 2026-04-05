@@ -11,6 +11,8 @@ import RxSwift
 import OSLog
 
 class ChatMemberCellView: UIStackView {
+    let disposeBag = DisposeBag()
+    
     init(frame: CGRect = .zero, isMe: String, model: ChatRoomDetailMemberModel) {
         super.init(frame: frame)
         
@@ -20,8 +22,6 @@ class ChatMemberCellView: UIStackView {
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    let disposeBag = DisposeBag()
     
     private let logger = Logger(
         subsystem: "SoBunHaeYo",

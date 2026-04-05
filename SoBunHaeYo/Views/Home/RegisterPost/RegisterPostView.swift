@@ -463,12 +463,12 @@ class RegisterPostView: UIViewController {
 
 extension RegisterPostView {
     // reactor와 view 연결
-    private func bind(reactor: RegisterPostReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: RegisterPostReactor) {
+    private func bindAction(reactor: Reactor) {
         groupTitleTextField.rx.text.orEmpty
             .map { Reactor.Action.titleTextChanged($0) }
             .bind(to: reactor.action)
@@ -530,7 +530,7 @@ extension RegisterPostView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: RegisterPostReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.pulse(\.$shouldShowBottomCategorySheet)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
@@ -596,13 +596,7 @@ extension RegisterPostView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         

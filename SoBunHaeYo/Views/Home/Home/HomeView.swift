@@ -370,12 +370,12 @@ class HomeView: UIViewController {
 
 extension HomeView {
     // reactor와 view 연결
-    private func bind(reactor: HomeReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: HomeReactor) {
+    private func bindAction(reactor: Reactor) {
         addCategoryButton.rx
             .tapGesture()
             .when(.recognized)
@@ -447,7 +447,7 @@ extension HomeView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: HomeReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.pulse(\.$shouldShowLocationSettingAlert)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
