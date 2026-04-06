@@ -399,20 +399,21 @@ class PostDetailView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.modalPresentationStyle = .pageSheet
-        
         configureUI()
         bind(reactor: reactor)
         
         // 현재의 navigation 스택에서 RegisterPostView 삭제(뒤로가기 시 게시글 작성 뷰 이동 방지)
         if let navigationController = navigationController {
             var viewControllers = navigationController.viewControllers
+            let originalCount = viewControllers.count
             
             viewControllers.removeAll {
                 $0 is RegisterPostView
             }
             
-            navigationController.setViewControllers(viewControllers, animated: false)
+            if viewControllers.count != originalCount {
+                navigationController.setViewControllers(viewControllers, animated: false)
+            }
         }
     }
     
