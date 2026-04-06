@@ -127,15 +127,12 @@ class CalendarPickerView: UIViewController {
         
         view.addSubview(contentView)
         
-        contentView.snp.makeConstraints { make in
-            make.horizontalEdges.top.equalToSuperview()
-        }
-        
         [yearLabel, headerView, weekdayStackView, calendarCollectionView, button].forEach {
             contentView.addSubview($0)
         }
         
         contentView.snp.makeConstraints { make in
+            make.horizontalEdges.top.equalToSuperview()
             make.bottom.equalTo(button.snp.bottom).offset(safeAreaBottom)
         }
         
