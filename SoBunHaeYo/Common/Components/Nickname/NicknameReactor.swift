@@ -73,6 +73,7 @@ class NicknameReactor: Reactor {
                             
                             // 에러 코드 및 메시지 출력
                             self.logger.critical("통신 에러 발생: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                            
                             return Observable.just(Mutation.error)
                         }
                 } else {
@@ -94,21 +95,27 @@ class NicknameReactor: Reactor {
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
+        
         switch mutation {
         case .available:
             newState.nickNameAvailable = true
             newState.infoMessage = String(localized: "AvailableNickname", table: "Common")
+            
         case .unAvailable:
             newState.nickNameAvailable = false
             newState.infoMessage = String(localized: "UnavailableNickname", table: "Common")
+            
         case .invalidInput:
             newState.nickNameAvailable = false
             newState.infoMessage = String(localized: "DenyNicknameInput", table: "Common")
+            
         case .error:
             newState.nickNameAvailable = false
             newState.infoMessage = String(localized: "ErrorMessage", table: "Error")
+            
         case .setButtonEnabled(let isEnabled):
             newState.isButtonEnabled = isEnabled
+            
         case .resetValidation:
             if let isAvailable = newState.nickNameAvailable, isAvailable {
                 newState.nickNameAvailable = nil
@@ -119,6 +126,7 @@ class NicknameReactor: Reactor {
                 newState.shouldClearText = false
             }
         }
+        
         return newState
     }
 }

@@ -350,6 +350,7 @@ class PostDetailReactor: Reactor {
                 }
                 
                 logger.critical("게시글 정보 호출 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -367,6 +368,7 @@ class PostDetailReactor: Reactor {
                 }
                 
                 logger.critical("게시글 저장 목록 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -384,6 +386,7 @@ class PostDetailReactor: Reactor {
                 }
                 
                 logger.critical("게시글 댓글 갯수 호출 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -422,6 +425,7 @@ class PostDetailReactor: Reactor {
                 }
                 
                 logger.critical("게시글 댓글 호출 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
