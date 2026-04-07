@@ -25,6 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = self
         Messaging.messaging().delegate = self
         
+        NotificationManager.shared.registerCategories()
+        
         application.registerForRemoteNotifications()
         
         return true
@@ -51,12 +53,23 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         Messaging.messaging().apnsToken = deviceToken
     }
     
-    // 푸시 알림 클릭
+    // 푸시 알림 클릭 또는 액션 처리
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let userInfo = response.notification.request.content.userInfo
         let type = userInfo["type"] as? String
         
         print("[AppDelegate] userNotificationCenter\n", userInfo)
+        
+        // 채팅 빠른 답장 처리
+        if response.actionIdentifier == "REPLY_ACTION",
+           let textResponse = response as? UNTextInputNotificationResponse,
+           let chatRoomIdString = userInfo["chatRoomId"] as? String,
+           let chatRoomId = Int(chatRoomIdString),
+           !textResponse.userText.isEmpty {
+            NotificationManager.shared.handleChatReply(chatRoomId: chatRoomId, message: textResponse.userText)
+            
+            return
+        }
         
         DispatchQueue.main.async {
             var urlString: String?
