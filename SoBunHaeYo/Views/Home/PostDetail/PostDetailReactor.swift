@@ -331,7 +331,7 @@ class PostDetailReactor: Reactor {
             .catch { [weak self] error in
                 guard let self else { return Observable.empty() }
                 
-                self.logger.critical("알림 읽음 실패: \(error.localizedDescription)")
+                self.logger.critical("알림 읽음 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.empty()
             }
@@ -349,7 +349,8 @@ class PostDetailReactor: Reactor {
                     return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("게시글 정보 호출 실패: \(error.localizedDescription)")
+                logger.critical("게시글 정보 호출 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -366,7 +367,8 @@ class PostDetailReactor: Reactor {
                     return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("게시글 저장 목록 불러오기 실패: \(error.localizedDescription)")
+                logger.critical("게시글 저장 목록 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -383,7 +385,8 @@ class PostDetailReactor: Reactor {
                     return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("게시글 댓글 갯수 호출 실패: \(error.localizedDescription)")
+                logger.critical("게시글 댓글 갯수 호출 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -421,7 +424,8 @@ class PostDetailReactor: Reactor {
                     return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
                 
-                logger.critical("게시글 댓글 호출 실패: \(error.localizedDescription)")
+                logger.critical("게시글 댓글 호출 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }

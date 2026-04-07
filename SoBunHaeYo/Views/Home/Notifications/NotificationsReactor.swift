@@ -138,7 +138,7 @@ class NotificationsReactor: Reactor {
                 ])
             }
             .catch { error in
-                self.logger.critical("알림 목록 불러오기 실패: \(error.localizedDescription)")
+                self.logger.critical("알림 목록 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.concat([
                     isFirst ? Observable.just(.setNotifications([])) : Observable.empty(),
@@ -171,7 +171,7 @@ class NotificationsReactor: Reactor {
             .catch { [weak self] error in
                 guard let self else { return Observable.empty() }
                 
-                self.logger.critical("알림 모두 읽음 실패: \(error.localizedDescription)")
+                self.logger.critical("알림 모두 읽음 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.empty()
             }
