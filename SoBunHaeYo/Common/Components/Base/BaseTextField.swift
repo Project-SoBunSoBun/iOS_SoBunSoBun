@@ -55,8 +55,11 @@ class BaseTextField: UITextField {
         // 텍스트 색
         self.textColor = .neutral900
         
-        // 커서 숨김
-        self.tintColor = .clear
+    }
+    
+    // 시스템 커서 숨김 (tintColor를 clear로 하면 스페이스바 트랙패드 모드가 비활성화되므로 caretRect로 처리)
+    override func caretRect(for position: UITextPosition) -> CGRect {
+        return .zero
     }
     
     // 커서 설정
@@ -107,6 +110,12 @@ class BaseTextField: UITextField {
         cursorLayer = layer
     }
     
+    override var selectedTextRange: UITextRange? {
+        didSet {
+            updateCursorLayer()
+        }
+    }
+
     override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
         updateCursorLayer()
