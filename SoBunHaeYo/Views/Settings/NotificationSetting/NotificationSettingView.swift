@@ -131,7 +131,7 @@ extension NotificationSettingView {
         
         alert.onPrimaryTapped = {
             // 설정 앱으로 이동
-            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+            if let settingsUrl = URL(string: UIApplication.openNotificationSettingsURLString) {
                 UIApplication.shared.open(settingsUrl)
             }
         }
