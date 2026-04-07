@@ -93,11 +93,11 @@ final class NotificationManager: NSObject {
                         self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생(\(errorCode)) - \(model.message ?? "")")
                     } else {
                         self.logger.debug("FCM 토큰 서버 전송 완료\nDevice Id: \(uuid)\nFCM Token: \(token)")
-                        
+
                         KeyChain.shared.set(key: "FCM_TOKEN", value: token)
                     }
                 }, onError: { error in
-                    self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생: \(error.localizedDescription)")
+                    self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 })
                 .disposed(by: self.disposeBag)
         }

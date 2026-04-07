@@ -382,7 +382,7 @@ class ChatReactor: Reactor {
         .catch { [weak self] error in
             guard let self = self else { return Observable.empty() }
             
-            self.logger.critical("채팅방 메시지 불러오기 실패: \(error.localizedDescription)")
+            self.logger.critical("채팅방 메시지 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
             
             return Observable.empty()
         }
@@ -436,7 +436,7 @@ class ChatReactor: Reactor {
                 .catch { [weak self] error in
                     guard let self = self else { return Observable.empty() }
                     
-                    self.logger.critical("채팅 이미지 보내기 실패: \(error.localizedDescription)")
+                    self.logger.critical("채팅 이미지 보내기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                     
                     return Observable.just(.setErrorMessage(String(localized: "ErrorSendImage", table: "Chat")))
                 }
@@ -470,7 +470,7 @@ class ChatReactor: Reactor {
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("초대장 전송 실패: \(error.localizedDescription)")
+                self.logger.critical("초대장 전송 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(String(localized: "ErrorSendInviteCardMessage", table: "Chat")))
             }
@@ -490,7 +490,7 @@ class ChatReactor: Reactor {
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("초대장 수락 실패: \(error.localizedDescription)")
+                self.logger.critical("초대장 수락 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(String(localized: "ErrorAcceptGroupChatRoomMessage", table: "Chat")))
             }
@@ -508,7 +508,7 @@ class ChatReactor: Reactor {
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("정산서 전송 실패: \(error.localizedDescription)")
+                self.logger.critical("정산서 전송 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(String(localized: "ErrorSendSettlementCardMessage", table: "Chat")))
             }

@@ -72,7 +72,7 @@ class NicknameReactor: Reactor {
                             guard let self = self else { return Observable.empty() }
                             
                             // 에러 코드 및 메시지 출력
-                            self.logger.critical("통신 에러 발생: \(error.localizedDescription)")
+                            self.logger.critical("통신 에러 발생: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                             return Observable.just(Mutation.error)
                         }
                 } else {
