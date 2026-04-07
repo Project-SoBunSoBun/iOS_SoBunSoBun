@@ -201,10 +201,12 @@ class SignUpReactor: Reactor {
         }
         .catch { [weak self] error in
             guard let self = self else { return Observable.empty() }
+
+            let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+            self.logger.critical("회원가입 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
             
-            self.logger.debug("회원 가입 에러: \(error)")
-            
-            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+            return Observable.just(.setErrorMessage(errorMessage))
         }
     }
 }

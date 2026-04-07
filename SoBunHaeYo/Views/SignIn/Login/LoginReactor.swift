@@ -84,10 +84,12 @@ class LoginReactor: Reactor {
                         }
                         .catch { [weak self] error in
                             guard let self = self else { return Observable.empty() }
-                            
-                            self.logger.debug("카카오 로그인 에러: \(error)")
-                            
-                            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+
+                            let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                            self.logger.critical("카카오 로그인 에러: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+
+                            return Observable.just(.setErrorMessage(errorMessage))
                         }
                 }
                 .catch { [weak self] error in
@@ -136,10 +138,12 @@ class LoginReactor: Reactor {
                         }
                         .catch { [weak self] error in
                             guard let self = self else { return Observable.empty() }
-                            
-                            self.logger.debug("애플 로그인 에러: \(error)")
-                            
-                            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+
+                            let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                            self.logger.critical("애플 로그인 에러: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+
+                            return Observable.just(.setErrorMessage(errorMessage))
                         }
                 }
                 .catch { [weak self] error  in
@@ -232,9 +236,11 @@ extension LoginReactor {
         .catch { [weak self] error in
             guard let self = self else { return Observable.empty() }
             
-            self.logger.debug("토근 저장 실패")
+            let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
             
-            return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+            self.logger.critical("토큰 저장 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+            
+            return Observable.just(.setErrorMessage(errorMessage))
         }
     }
 }
