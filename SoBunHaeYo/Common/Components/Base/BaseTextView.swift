@@ -44,11 +44,7 @@ class BaseTextView: UITextView {
     
     override var textContainerInset: UIEdgeInsets {
         didSet {
-            placeholderLabel.snp.remakeConstraints { make in
-                make.leading.equalToSuperview().offset(self.textContainerInset.left)
-                make.trailing.equalToSuperview().inset(self.textContainerInset.right)
-                make.top.equalToSuperview().offset(self.textContainerInset.top)
-            }
+            updatePlaceholderConstraints()
         }
     }
     
@@ -70,16 +66,19 @@ class BaseTextView: UITextView {
         
         self.typingAttributes = attributes
         
-        // 커서 숨김
-        self.tintColor = .clear
-        
         // placeholder
         addSubview(placeholderLabel)
-        
-        placeholderLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(self.textContainerInset.left)
-            make.trailing.equalToSuperview().inset(self.textContainerInset.right)
-            make.top.equalToSuperview().offset(self.textContainerInset.top)
+
+        updatePlaceholderConstraints()
+    }
+
+    private func updatePlaceholderConstraints() {
+        let padding = textContainer.lineFragmentPadding
+
+        placeholderLabel.snp.remakeConstraints { make in
+            make.leading.equalToSuperview().offset(textContainerInset.left + padding)
+            make.trailing.equalToSuperview().inset(textContainerInset.right + padding)
+            make.top.equalToSuperview().offset(textContainerInset.top)
         }
     }
     
@@ -90,6 +89,11 @@ class BaseTextView: UITextView {
                 placeholderLabel.isHidden = !text.isEmpty
             })
             .disposed(by: disposeBag)
+    }
+    
+    // 시스템 커서 숨김 (tintColor를 clear로 하면 스페이스바 트랙패드 모드가 비활성화되므로 caretRect로 처리)
+    override func caretRect(for position: UITextPosition) -> CGRect {
+        return .zero
     }
     
     // 커서 설정
@@ -140,6 +144,12 @@ class BaseTextView: UITextView {
         cursorLayer = layer
     }
     
+    override var selectedTextRange: UITextRange? {
+        didSet {
+            updateCursorLayer()
+        }
+    }
+
     override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
         updateCursorLayer()
