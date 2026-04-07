@@ -165,6 +165,7 @@ class MyProfileReactor: Reactor {
                         
                         guard let data = response.data else {
                             self.logger.critical("내 정보 조회 실패")
+                            
                             return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                         }
                         

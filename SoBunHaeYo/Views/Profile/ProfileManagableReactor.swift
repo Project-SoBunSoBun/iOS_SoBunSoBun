@@ -163,6 +163,7 @@ class ProfileManagableReactor: Reactor {
                     self.logger.fault("차단 중 userInfo가 없음")
                     
                     let errorMessage = localizedErrorMessage(nil)
+                    
                     return Observable.just(.setErrorMessage(errorMessage))
                 }
             }
@@ -198,6 +199,7 @@ class ProfileManagableReactor: Reactor {
                     self.logger.fault("차단 해제 중 userInfo가 없음")
                     
                     let errorMessage = localizedErrorMessage(nil)
+                    
                     return Observable.just(.setErrorMessage(errorMessage))
                 }
             }

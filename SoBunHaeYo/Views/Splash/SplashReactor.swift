@@ -15,6 +15,8 @@ class SplashReactor: Reactor {
         case login
     }
     
+    let initialState = State()
+    
     enum Action {
         case viewDidAppear
     }
@@ -26,8 +28,6 @@ class SplashReactor: Reactor {
     struct State {
         @Pulse var destination: Destination?
     }
-    
-    let initialState = State()
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {

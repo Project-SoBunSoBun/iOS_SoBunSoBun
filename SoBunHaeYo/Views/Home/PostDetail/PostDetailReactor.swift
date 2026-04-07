@@ -445,6 +445,7 @@ class PostDetailReactor: Reactor {
                 let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
                 logger.critical("게시글 저장 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -468,6 +469,7 @@ class PostDetailReactor: Reactor {
                 let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
                 logger.critical("게시글 저장 취소 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -491,6 +493,7 @@ class PostDetailReactor: Reactor {
                 let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
                 logger.critical("게시글 삭제 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -522,6 +525,7 @@ class PostDetailReactor: Reactor {
                 let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
                 logger.critical("댓글 생성 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -560,6 +564,7 @@ class PostDetailReactor: Reactor {
                 let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
                 logger.critical("댓글 수정 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -591,6 +596,7 @@ class PostDetailReactor: Reactor {
                 let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
                 logger.critical("댓글 삭제 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -646,6 +652,7 @@ class PostDetailReactor: Reactor {
                 
                 guard let data = response.data else {
                     self.logger.critical("채팅방 생성 및 조회 실패")
+                    
                     return Observable.just(.setErrorMessage(errorMessage))
                 }
                 
