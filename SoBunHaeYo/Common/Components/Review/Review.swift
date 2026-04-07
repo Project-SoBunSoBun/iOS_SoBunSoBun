@@ -116,7 +116,7 @@ class Review: UIButton {
             emojiView.image = .emojiGrinningFace
             
         default:
-            emojiView.image = .logo
+            emojiView.image = .appLogo
         }
     }
     

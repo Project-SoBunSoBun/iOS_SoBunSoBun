@@ -287,12 +287,13 @@ class WithdrawView: UIViewController {
 }
 
 extension WithdrawView {
-    private func bind(reactor: WithdrawReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: WithdrawReactor) {
+    private func bindAction(reactor: Reactor) {
         // 탈퇴 사유 드롭다운 열기
         selectedReason.didTap
             .observe(on: MainScheduler.instance)
@@ -332,7 +333,7 @@ extension WithdrawView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: WithdrawReactor) {
+    private func bindState(reactor: Reactor) {
         // 탈퇴 사유 드롭다운 개폐
         reactor.state.map { $0.isMenuOpen }
             .observe(on: MainScheduler.asyncInstance)
@@ -382,11 +383,20 @@ extension WithdrawView {
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] errorMessage in
+            .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.logger.error("에러: \(errorMessage)")
-                self.errorAlert()
+                let alert = CustomAlertView(
+                    title: String(localized: "Error", table: "Error"),
+                    subTitle: message,
+                    primaryTitleKey: String(localized: "Confirm", table: "Common")
+                )
+                
+                alert.onPrimaryTapped = {
+                    AuthManager.shared.logout()
+                }
+                
+                alert.show(on: self)
             })
             .disposed(by: disposeBag)
         
@@ -405,20 +415,6 @@ extension WithdrawView {
         
         alert.onPrimaryTapped = {
             AuthManager.shared.withdraw()
-        }
-        
-        alert.show(on: self)
-    }
-    
-    private func errorAlert() {
-        let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Error"),
-            subTitle: String(localized: "ErrorMessage", table: "Error"),
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = {
-            AuthManager.shared.logout()
         }
         
         alert.show(on: self)

@@ -63,26 +63,18 @@ class AnnouncementDetailReactor: Reactor {
         return networkManager.getAnnouncementsDetail(id: id)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success, let data = response.data {
-                    self.logger.debug("공지사항 상세 조회 성공")
-                    
-                    return Observable.just(.setNoticeDetail(data))
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("공지사항 상세 조회 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("공지사항 상세 조회 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
+                guard let data = response.data else {
+                    return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                 }
+                
+                self.logger.debug("공지사항 상세 조회 성공")
+                
+                return Observable.just(.setNoticeDetail(data))
             }
             .catch { error in
-                self.logger.fault("공지사항 상세 조회 실패: \(error.localizedDescription)")
-                
-                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("공지사항 상세 조회 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(errorMessage))
             }

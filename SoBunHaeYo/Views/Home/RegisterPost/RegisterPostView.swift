@@ -17,8 +17,8 @@ class RegisterPostView: UIViewController {
     
     private let disposeBag = DisposeBag()
     
-    private static let memberMinValue: Int = 2
-    private static let memberMaxValue: Int = 10
+    private let memberMinValue: Int = 2
+    private let memberMaxValue: Int = 10
     
     // MARK: - 디자인 요소
     private func titleAttributes() -> [NSAttributedString.Key: Any] {
@@ -140,18 +140,27 @@ class RegisterPostView: UIViewController {
     
     private lazy var minimumTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "MinimumMembers", table: "Home"), attributes: titleAttributes())
+        
+        var suffixAttributes = titleAttributes()
+        suffixAttributes[.foregroundColor] = UIColor.neutral400
+        
+        let mainText = String(localized: "MinimumMembers", table: "Home")
+        let suffix = " " + String(format: String(localized: "MinimumMembersSuffix", table: "Home"), memberMinValue)
+        
+        let fullText = NSMutableAttributedString(string: mainText, attributes: titleAttributes())
+        fullText.append(NSAttributedString(string: suffix, attributes: suffixAttributes))
+        
+        lb.attributedText = fullText
         
         return lb
     }()
     
-    private let minimumTextField: TextFieldMember = {
+    private lazy var minimumTextField: TextFieldMember = {
         let tfm = TextFieldMember(
             minValue: memberMinValue,
             maxValue: memberMaxValue,
             maxLength: 2
         )
-        tfm.placeholder = String(memberMinValue)
         
         return tfm
     }()
@@ -160,18 +169,27 @@ class RegisterPostView: UIViewController {
     
     private lazy var maximumTitleLabel: UILabel = {
         let lb = UILabel()
-        lb.attributedText = NSAttributedString(string: String(localized: "MaximumMembers", table: "Home"), attributes: titleAttributes())
+        
+        var suffixAttributes = titleAttributes()
+        suffixAttributes[.foregroundColor] = UIColor.neutral400
+        
+        let mainText = String(localized: "MaximumMembers", table: "Home")
+        let suffix = " " + String(format: String(localized: "MaximumMembersSuffix", table: "Home"), memberMaxValue)
+        
+        let fullText = NSMutableAttributedString(string: mainText, attributes: titleAttributes())
+        fullText.append(NSAttributedString(string: suffix, attributes: suffixAttributes))
+        
+        lb.attributedText = fullText
         
         return lb
     }()
     
-    private let maximumTextField: TextFieldMember = {
+    private lazy var maximumTextField: TextFieldMember = {
         let tfm = TextFieldMember(
             minValue: memberMinValue,
             maxValue: memberMaxValue,
             maxLength: 2
         )
-        tfm.placeholder = String(memberMaxValue)
         
         return tfm
     }()
@@ -445,12 +463,12 @@ class RegisterPostView: UIViewController {
 
 extension RegisterPostView {
     // reactor와 view 연결
-    private func bind(reactor: RegisterPostReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: RegisterPostReactor) {
+    private func bindAction(reactor: Reactor) {
         groupTitleTextField.rx.text.orEmpty
             .map { Reactor.Action.titleTextChanged($0) }
             .bind(to: reactor.action)
@@ -512,7 +530,7 @@ extension RegisterPostView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: RegisterPostReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.pulse(\.$shouldShowBottomCategorySheet)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
@@ -578,13 +596,7 @@ extension RegisterPostView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         
@@ -625,7 +637,7 @@ extension RegisterPostView {
     }
     
     private func showSelectCategoriesBottomSheet() {
-        let sheetView = SelectCategoriesView(selectedCategories: reactor.currentState.selectedCategories)
+        let sheetView = SelectCategoriesView(selectedCategories: reactor.currentState.selectedCategories, safeAreaBottom: view.safeAreaInsets.bottom, allowsEmpty: false)
         
         sheetView.selectedCategoriesRelay
             .map { Reactor.Action.setSelectedCategories($0) }

@@ -132,7 +132,7 @@ class AuthManager {
             }, onError: { [weak self] error in
                 guard let self = self else { return }
                 
-                self.logger.critical("FCM 토큰 삭제 및 해지 실패: \(error.localizedDescription)")
+                self.logger.critical("FCM 토큰 삭제 및 해지 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
@@ -217,7 +217,7 @@ class AuthManager {
             }, onFailure: { [weak self] error in
                 guard let self = self else { return }
                 
-                self.logger.critical("애플 Revoke 실패: \(error.localizedDescription)")
+                self.logger.critical("애플 Revoke 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }

@@ -189,6 +189,7 @@ class ReportView: UIViewController {
 }
 
 extension ReportView {
+    // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -295,10 +296,10 @@ extension ReportView {
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext:  { [weak self] errorMessage in
+            .subscribe(onNext: { [weak self] errorMessage in
                 guard let self = self else { return }
                 
-                self.errorAlert(description: errorMessage)
+                self.showErrorAlert(message: errorMessage)
             })
             .disposed(by: disposeBag)
     }
@@ -327,20 +328,6 @@ extension ReportView {
         
         alert.onPrimaryTapped = {
             self.navigationController?.popViewController(animated: true)
-        }
-        
-        alert.show(on: self)
-    }
-    
-    private func errorAlert(description: String) {
-        let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Error"),
-            subTitle: description,
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = {
-            self.logger.debug("확인 버튼 클릭")
         }
         
         alert.show(on: self)

@@ -76,7 +76,7 @@ class MyChatCellView: UIView {
         sv.alignment = .center
         
         let iv = UIImageView()
-        iv.image = .mail.resize(.init(width: 80, height: 64))
+        iv.image = .mail
         iv.contentMode = .scaleAspectFit
         
         iv.snp.makeConstraints { make in
@@ -105,7 +105,7 @@ class MyChatCellView: UIView {
         sv.alignment = .center
         
         let iv = UIImageView()
-        iv.image = .receipt.resize(.init(width: 72, height: 74))
+        iv.image = .receipt
         iv.contentMode = .scaleAspectFit
         
         iv.snp.makeConstraints { make in

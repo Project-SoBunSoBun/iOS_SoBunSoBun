@@ -248,13 +248,18 @@ class SearchReactor: Reactor {
                             Observable.just(.setHasMore(!response.pageInfo.last))
                         ])
                     }
-                    .catch { error in
-                        self.logger.fault("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+                    .catch { [weak self] error in
+                        guard let self = self else { return Observable.empty() }
+                        
+                        let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+                        
+                        self.logger.fault("게시글 목록 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
 
                         return Observable.concat([
                             isFirst ? Observable.just(.setPosts([])) : Observable.empty(),
                             Observable.just(.setHasMore(false)),
-                            Observable.just(.setPage(0))
+                            Observable.just(.setPage(0)),
+                            Observable.just(.setErrorMessage(errorMessage))
                         ])
                     },
                 Observable.just(.setLoading(false))

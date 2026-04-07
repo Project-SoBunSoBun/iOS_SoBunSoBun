@@ -114,16 +114,17 @@ class AnnouncementDetailView: UIViewController {
 }
 
 extension AnnouncementDetailView {
-    private func bind(reactor: AnnouncementDetailReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: AnnouncementDetailReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad)
     }
     
-    private func bindState(reactor: AnnouncementDetailReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.noticeDetail }
             .compactMap { $0 }
             .distinctUntilChanged()

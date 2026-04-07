@@ -180,6 +180,7 @@ class ProfileManagableView: UIViewController {
 }
 
 extension ProfileManagableView {
+    // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -306,13 +307,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

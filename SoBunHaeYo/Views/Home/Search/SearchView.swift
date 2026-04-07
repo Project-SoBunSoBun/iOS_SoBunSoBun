@@ -116,7 +116,7 @@ class SearchView: UIViewController {
     
     private let sortArrowIcon: UIImageView = {
         let iv = UIImageView()
-        iv.image = .blackDown.resize(.init(width: 24, height: 24))
+        iv.image = .blackDown
         iv.contentMode = .scaleAspectFit
         
         return iv
@@ -304,12 +304,13 @@ class SearchView: UIViewController {
 }
 
 extension SearchView {
-    private func bind(reactor: SearchReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SearchReactor) {
+    private func bindAction(reactor: Reactor) {
         backButton.rx.tap
             .map { Reactor.Action.backButtonTapped }
             .bind(to: reactor.action)
@@ -362,7 +363,7 @@ extension SearchView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SearchReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.pulse(\.$shouldGoBack)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] in
@@ -455,13 +456,7 @@ extension SearchView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

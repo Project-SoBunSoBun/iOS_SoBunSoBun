@@ -163,37 +163,31 @@ class MyProfileReactor: Reactor {
                     .flatMap { [weak self] response -> Observable<Mutation> in
                         guard let self else { return Observable.empty() }
                         
-                        if response.success, let data = response.data {
-                            self.logger.debug("내 정보 조회 성공")
+                        guard let data = response.data else {
+                            self.logger.critical("내 정보 조회 실패")
                             
-                            let mutations: Observable<Mutation> = isFirst ?
-                            Observable.concat([
-                                Observable.just(.setMyUserInfo(data)),
-                                Observable.just(.setPosts(data.posts.posts))
-                            ]) : Observable.just(.appendPosts(data.posts.posts))
-                            
-                            return Observable.concat([
-                                mutations,
-                                Observable.just(.setHasMore(!data.posts.pageInfo.last))
-                            ])
-                        } else {
-                            if let errorCode = response.errorCode {
-                                self.logger.critical("내 정보 조회 실패(\(errorCode)) - \(response.message ?? "")")
-
-                                return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                            } else {
-                                self.logger.critical("내 정보 조회 실패: \(response.message ?? "")")
-                                
-                                return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                            }
+                            return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
                         }
+                        
+                        self.logger.debug("내 정보 조회 성공")
+                        
+                        let mutations: Observable<Mutation> = isFirst ?
+                        Observable.concat([
+                            Observable.just(.setMyUserInfo(data)),
+                            Observable.just(.setPosts(data.posts.posts))
+                        ]) : Observable.just(.appendPosts(data.posts.posts))
+                        
+                        return Observable.concat([
+                            mutations,
+                            Observable.just(.setHasMore(!data.posts.pageInfo.last))
+                        ])
                     }
                     .catch { [weak self] error in
                         guard let self = self else { return Observable.empty() }
                         
-                        self.logger.critical("내 정보 불러오기 실패: \(error.localizedDescription)")
-                        
-                        let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                        let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                        self.logger.critical("내 정보 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                         
                         return Observable.concat([
                             isFirst ? Observable.just(.setPosts([])) : Observable.empty(),

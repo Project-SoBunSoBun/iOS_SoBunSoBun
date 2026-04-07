@@ -102,30 +102,18 @@ class ChatRoomKickReactor: Reactor {
         return networkManager.kickMember(chatRoomId: chatRoomId, userId: id)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success {
-                    self.logger.debug("멤버 강퇴 성공")
-                    
-                    return Observable.concat([
-                        Observable.just(.changeMembers(id)),
-                        Observable.just(.setShouldShowKickDoneAlert)
-                    ])
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("멤버 강퇴 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("멤버 강퇴 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("멤버 강퇴 성공")
+                
+                return Observable.concat([
+                    Observable.just(.changeMembers(id)),
+                    Observable.just(.setShouldShowKickDoneAlert)
+                ])
             }
             .catch { error in
-                self.logger.critical("멤버 강퇴 실패: \(error.localizedDescription)")
-                
-                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
+                self.logger.critical("멤버 강퇴 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }

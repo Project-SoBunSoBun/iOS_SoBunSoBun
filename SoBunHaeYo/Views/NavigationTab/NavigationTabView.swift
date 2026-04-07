@@ -106,9 +106,9 @@ class NavigationTabView: UIViewController {
     }
 }
 
-// Reactor 연결
 extension NavigationTabView {
-    private func bind(reactor: NavigationTabReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
         
@@ -121,7 +121,7 @@ extension NavigationTabView {
             .disposed(by: disposeBag)
     }
     
-    private func bindAction(reactor: NavigationTabReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad)
         
         bottomNavigationBar.didChangeIndex
@@ -135,7 +135,7 @@ extension NavigationTabView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: NavigationTabReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.selectedIndex }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
@@ -170,7 +170,7 @@ extension NavigationTabView {
                     [.greyFilledMessage, .blueFilledMessage]
                 )
                 
-                chatRoomListView.reactor.action.onNext(.receivedChatRoomList(models))
+                chatRoomListView.receivedChatRoomList(models)
             })
             .disposed(by: disposeBag)
         
@@ -179,13 +179,7 @@ extension NavigationTabView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

@@ -12,9 +12,13 @@ import RxCocoa
 
 class ChatRoomListView: UIViewController {
     typealias Reactor = ChatRoomListReactor
-    let reactor = ChatRoomListReactor()
+    private let reactor = ChatRoomListReactor()
     
     private let disposeBag = DisposeBag()
+    
+    func receivedChatRoomList(_ models: [ChatRoomListResponseDataModel]) {
+        reactor.action.onNext(.receivedChatRoomList(models))
+    }
     
     // MARK: - 디자인 요소
     private let titleLabel: UILabel = {
@@ -162,6 +166,7 @@ class ChatRoomListView: UIViewController {
 }
 
 extension ChatRoomListView {
+    // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)

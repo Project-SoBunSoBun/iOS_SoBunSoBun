@@ -101,16 +101,16 @@ class TermsDetailView: UIViewController {
 
 extension TermsDetailView {
     // reactor와 view 연결
-    private func bind(reactor: TermsDetailReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: TermsDetailReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad)
     }
     
-    private func bindState(reactor: TermsDetailReactor) {
+    private func bindState(reactor: Reactor) {
         // HTML 콘텐츠 바인딩
         reactor.state.map { $0.content }
             .distinctUntilChanged()
@@ -130,18 +130,8 @@ extension TermsDetailView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert(message: message)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
-    }
-    
-    private func errorAlert(message: String) {
-        let alert = CustomAlertView(
-            title: message,
-            subTitle: String(localized: "ErrorMessage", table: "Error"),
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.show(on: self)
     }
 }

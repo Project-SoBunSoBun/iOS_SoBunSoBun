@@ -8,9 +8,7 @@
 import Foundation
 
 struct ChatRoomListResponseModel: Decodable, Equatable {
-    let success: Bool
     let data: [ChatRoomListResponseDataModel]?
-    let message, errorCode: String?
 }
 
 struct ChatRoomListResponseDataModel: Decodable, Equatable {

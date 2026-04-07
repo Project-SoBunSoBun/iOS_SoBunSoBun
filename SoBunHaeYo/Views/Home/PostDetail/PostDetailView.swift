@@ -19,16 +19,6 @@ class PostDetailView: UIViewController {
     private let showChatButton: Bool
     private let notificationId: Int?
     
-    typealias Reactor = PostDetailReactor
-    private lazy var reactor = PostDetailReactor(postId: postId)
-    
-    private let disposeBag = DisposeBag()
-    
-    private let logger = Logger(
-        subsystem: "SoBunHaeYo",
-        category: "Home.PostDetail.View"
-    )
-    
     init(
         postId: Int,
         isNew: Bool = false,
@@ -50,6 +40,16 @@ class PostDetailView: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let logger = Logger(
+        subsystem: "SoBunHaeYo",
+        category: "Home.PostDetail.View"
+    )
+    
+    typealias Reactor = PostDetailReactor
+    private lazy var reactor = PostDetailReactor(postId: postId)
+    
+    private let disposeBag = DisposeBag()
     
     // MARK: - 디자인 요소
     // 상단 네비게이션 바
@@ -399,20 +399,21 @@ class PostDetailView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.modalPresentationStyle = .pageSheet
-        
         configureUI()
         bind(reactor: reactor)
         
         // 현재의 navigation 스택에서 RegisterPostView 삭제(뒤로가기 시 게시글 작성 뷰 이동 방지)
         if let navigationController = navigationController {
             var viewControllers = navigationController.viewControllers
+            let originalCount = viewControllers.count
             
             viewControllers.removeAll {
                 $0 is RegisterPostView
             }
             
-            navigationController.setViewControllers(viewControllers, animated: false)
+            if viewControllers.count != originalCount {
+                navigationController.setViewControllers(viewControllers, animated: false)
+            }
         }
     }
     
@@ -543,12 +544,13 @@ class PostDetailView: UIViewController {
 }
 
 extension PostDetailView {
-    private func bind(reactor: PostDetailReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: PostDetailReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad)
         
         if let notificationId {
@@ -688,7 +690,7 @@ extension PostDetailView {
         .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: PostDetailReactor) {
+    private func bindState(reactor: Reactor) {
         // 게시글 정보, 댓글 개수
         reactor.state.map { ($0.postInfo, $0.postCommentsCount) }
             .distinctUntilChanged{ $0.1 == $1.1 }
@@ -1024,13 +1026,7 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

@@ -133,12 +133,13 @@ class SettlementConfirmView: UIViewController {
 }
 
 extension SettlementConfirmView {
-    private func bind(reactor: SettlementConfirmReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SettlementConfirmReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad)
         
         if let notificationId {
@@ -146,7 +147,7 @@ extension SettlementConfirmView {
         }
     }
     
-    private func bindState(reactor: SettlementConfirmReactor) {
+    private func bindState(reactor: Reactor) {
         // totalAmount 바인딩
         reactor.state.compactMap { $0.item?.totalAmount }
             .distinctUntilChanged()
@@ -179,24 +180,8 @@ extension SettlementConfirmView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert(subTitle: message)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
-    }
-    
-    private func errorAlert(subTitle: String) {
-        let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Error"),
-            subTitle: subTitle,
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = { [weak self] in
-            guard let self = self else { return }
-            
-            self.logger.debug("확인 버튼 클릭")
-        }
-        
-        alert.show(on: self)
     }
 }

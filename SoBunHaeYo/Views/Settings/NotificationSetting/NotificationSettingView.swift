@@ -93,12 +93,13 @@ class NotificationSettingView: UIViewController {
 }
 
 extension NotificationSettingView {
-    private func bind(reactor: NotificationSettingReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: NotificationSettingReactor) {
+    private func bindAction(reactor: Reactor) {
         // 세팅 카드 버튼 클릭
         notificationSetting.didTap
             .map { Reactor.Action.notificationSettingTapped }
@@ -106,7 +107,7 @@ extension NotificationSettingView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: NotificationSettingReactor) {
+    private func bindState(reactor: Reactor) {
         // 알림 설정창 이동
         reactor.pulse(\.$shouldOpenSettings)
             .compactMap { $0 }
@@ -133,10 +134,6 @@ extension NotificationSettingView {
             if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsUrl)
             }
-        }
-        
-        alert.onCancelTapped = {
-            self.logger.debug("취소됨")
         }
         
         alert.show(on: self)

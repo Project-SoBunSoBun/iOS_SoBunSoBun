@@ -147,7 +147,7 @@ final class AuthInterceptor: RequestInterceptor {
                 AuthManager.shared.logout()
                 completion(false)
                 
-                logger.critical("리프레시 토큰 갱신 실패: \(error.localizedDescription)")
+                logger.critical("리프레시 토큰 갱신 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
             })
             .disposed(by: disposeBag)
     }
