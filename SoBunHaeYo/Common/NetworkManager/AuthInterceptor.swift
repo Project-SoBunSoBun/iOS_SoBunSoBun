@@ -15,7 +15,6 @@ final class AuthInterceptor: RequestInterceptor {
     nonisolated(unsafe) private let disposeBag = DisposeBag()
     nonisolated(unsafe) private(set) var isRefreshing: Bool = false
     nonisolated(unsafe) private var refreshCompletionHandlers: [(Bool) -> Void] = []
-    
     private let refreshStateQueue = DispatchQueue(label: "SoBunHaeYo.AuthInterceptor.RefreshState")
     
     private let logger = Logger(
@@ -118,11 +117,18 @@ final class AuthInterceptor: RequestInterceptor {
                 return
             }
             
-            CommonNetworkManager().refreshAccessToken(refreshToken: refreshToken)
+            // networkManager를 클로저에 강한 캡처해 요청 완료 전 해제되지 않도록 유지
+            let networkManager = CommonNetworkManager()
+            networkManager.refreshAccessToken(refreshToken: refreshToken)
                 .asObservable()
                 .subscribe(
                     onNext: { [weak self] model in
-                        guard let self = self else { return }
+                        guard let self = self else {
+                            // self가 nil이면 finishRefreshing 미호출로 isRefreshing이 영구 true 고착되므로 반드시 호출
+                            AuthInterceptor.shared.finishRefreshing(isSuccess: true)
+                            
+                            return
+                        }
                         
                         KeyChain.shared.set(key: "ACCESS_TOKEN", value: model.accessToken)
                         KeyChain.shared.set(key: "ACCESS_TOKEN_EXPIRE_AT_KST", value: model.accessTokenExpiresAtKst)
@@ -132,12 +138,18 @@ final class AuthInterceptor: RequestInterceptor {
                         finishRefreshing(isSuccess: true)
                     },
                     onError: { [weak self] error in
-                        guard let self = self else { return }
+                        guard let self = self else {
+                            AuthInterceptor.shared.finishRefreshing(isSuccess: false)
+                            
+                            return
+                        }
                         
                         logger.critical("리프레시 토큰 갱신 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                         
                         finishRefreshing(isSuccess: false)
-                    }
+                    },
+                    // subscription이 종료될 때까지 networkManager를 캡처해 provider가 해제되지 않도록 유지
+                    onDisposed: { _ = networkManager }
                 )
                 .disposed(by: disposeBag)
         }
