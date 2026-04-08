@@ -12,7 +12,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class InquiriesView: UIViewController {
+class InquiriesView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.Inquiries.View"
@@ -186,8 +186,6 @@ class InquiriesView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
         }

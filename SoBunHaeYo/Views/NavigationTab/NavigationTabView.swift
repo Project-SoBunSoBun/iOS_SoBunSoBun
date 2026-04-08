@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 import ReactorKit
 
-class NavigationTabView: UIViewController {
+class NavigationTabView: BaseViewController {
     typealias Reactor = NavigationTabReactor
     private let reactor = NavigationTabReactor()
     private let disposeBag = DisposeBag()
@@ -66,8 +66,6 @@ class NavigationTabView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(containerView)
         
         containerView.snp.makeConstraints { make in

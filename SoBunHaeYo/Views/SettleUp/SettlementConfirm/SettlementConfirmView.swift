@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import OSLog
 
-class SettlementConfirmView: UIViewController {
+class SettlementConfirmView: BaseViewController {
     typealias Reactor = SettlementConfirmReactor
     private let reactor: SettlementConfirmReactor
     private let notificationId: Int?
@@ -84,8 +84,6 @@ class SettlementConfirmView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, titleBackground, tableView].forEach {
             view.addSubview($0)
         }

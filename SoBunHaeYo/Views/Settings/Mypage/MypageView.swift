@@ -13,7 +13,7 @@ import ReactorKit
 import OSLog
 import Kingfisher
 
-class MypageView: UIViewController {
+class MypageView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.Mypage.View"
@@ -203,8 +203,6 @@ class MypageView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, gradientView, scrollView].forEach {
             view.addSubview($0)
         }

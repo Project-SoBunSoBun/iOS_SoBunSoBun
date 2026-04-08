@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class MyPostView: UIViewController {
+class MyPostView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.MyPost.View"
@@ -94,8 +94,6 @@ class MyPostView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, tableView, backgroundDimView ,dropDownView, loadingView].forEach {
             view.addSubview($0)
         }

@@ -241,7 +241,7 @@ class HomeReactor: Reactor {
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                logger.critical("서버로부터 위치 인증 정보 불러오기 실패: \(error.localizedDescription)")
+                logger.critical("서버로부터 위치 인증 정보 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
             }
@@ -335,7 +335,7 @@ class HomeReactor: Reactor {
             }
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
-                
+
                 logger.critical("지오코드 API 호출 실패: \(error.localizedDescription)")
                 
                 return Observable.just(.verifyLocation(String(localized: "ErrorMessage", table: "Error")))
@@ -388,7 +388,7 @@ class HomeReactor: Reactor {
                         ])
                     }
                     .catch { error in
-                        self.logger.critical("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+                        self.logger.critical("게시글 목록 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
 
                         return Observable.concat([
                             isFirst ? Observable.just(.setPosts([])) : Observable.empty(),

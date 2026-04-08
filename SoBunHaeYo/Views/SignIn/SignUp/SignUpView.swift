@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class SignUpView: UIViewController {
+class SignUpView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "SignUp.View"
@@ -81,8 +81,6 @@ class SignUpView: UIViewController {
     
     // MARK: - 레이아웃 설정
     func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [backButton, titleLabel, termsContainerView, nextButton, allAgreeCheckBox ].forEach {
             view.addSubview($0)
         }

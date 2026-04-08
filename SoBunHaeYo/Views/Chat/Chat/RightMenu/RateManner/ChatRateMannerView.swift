@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import OSLog
 
-class ChatRateMannerView: UIViewController {
+class ChatRateMannerView: BaseViewController {
     private let groupPostId: Int
     
     init(
@@ -96,8 +96,6 @@ class ChatRateMannerView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, button, scrollView].forEach {
             view.addSubview($0)
         }

@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class ChatRightMenuView: UIViewController {
+class ChatRightMenuView: BaseViewController {
     private let chatRoomId: Int
     private let groupPostId: Int
     private let type: ChatRoomType
@@ -108,8 +108,6 @@ class ChatRightMenuView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(topNavigationBar)
         
         topNavigationBar.snp.makeConstraints { make in

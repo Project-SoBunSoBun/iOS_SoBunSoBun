@@ -63,30 +63,8 @@ class ChatRoomListWebSocketManager {
         swiftStomp?.delegate = nil
         swiftStomp?.disconnect()
         reconnectWorkItem?.cancel()
+        
         logger.debug("채팅방 목록 Websocket 연결 종료")
-    }
-    
-    private func waitForRefreshAndReconnect() {
-        guard !isWaitingForRefreshToken else { return }
-        
-        isWaitingForRefreshToken = true
-        
-        AuthInterceptor.shared.didFinishRefreshing
-            .take(1)
-            .timeout(.seconds(10), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] in
-                guard let self else { return }
-                
-                self.isWaitingForRefreshToken = false
-                self.logger.debug("리프레시 토큰 갱신 완료, 채팅방 목록 웹소켓 재연결")
-                self.reconnect()
-            }, onError: { [weak self] _ in
-                guard let self else { return }
-                
-                self.isWaitingForRefreshToken = false
-                self.logger.fault("리프레시 토큰 갱신 대기 타임아웃, 채팅방 목록 웹소켓 재연결 중단")
-            })
-            .disposed(by: disposeBag)
     }
     
     // STOMP 인증 실패 시 토큰을 직접 갱신한 후 재연결
@@ -104,6 +82,7 @@ class ChatRoomListWebSocketManager {
             
             if isSuccess {
                 self.logger.debug("채팅방 목록 토큰 갱신 성공, 웹소켓 재연결")
+                
                 self.reconnect()
             } else {
                 self.logger.fault("채팅방 목록 토큰 갱신 실패, 재연결 중단")
@@ -111,8 +90,32 @@ class ChatRoomListWebSocketManager {
         }
     }
     
+    // HTTP 레이어에서 이미 리프레시가 진행 중인 경우 완료될 때까지 대기 후 재연결
+    private func waitForRefreshAndReconnect() {
+        guard !isWaitingForRefreshToken else { return }
+        
+        isWaitingForRefreshToken = true
+        
+        logger.debug("리프레시 토큰 갱신 대기 중, 채팅방 목록 웹소켓 재연결 예정")
+        
+        AuthInterceptor.shared.refreshAccessToken { [weak self] isSuccess in
+            guard let self = self else { return }
+            
+            self.isWaitingForRefreshToken = false
+            
+            if isSuccess {
+                self.logger.debug("리프레시 토큰 갱신 완료, 채팅방 목록 웹소켓 재연결")
+                
+                self.reconnect()
+            } else {
+                self.logger.fault("리프레시 토큰 갱신 실패, 채팅방 목록 웹소켓 재연결 중단")
+            }
+        }
+    }
+    
     private func reconnect() {
         logger.debug("채팅방 목록 Websocket 재연결 시작")
+        
         disconnect()
         connect()
     }
@@ -138,7 +141,7 @@ class ChatRoomListWebSocketManager {
         reconnectWorkItem?.cancel()
         
         let workItem = DispatchWorkItem { [weak self] in
-            guard let self else { return }
+            guard let self = self else { return }
             
             self.isReconnecting = false
             self.reconnect()
@@ -239,9 +242,11 @@ extension ChatRoomListWebSocketManager: SwiftStompDelegate {
         
         if isAuthError && !AuthInterceptor.shared.isRefreshing && !isWaitingForRefreshToken {
             logger.debug("채팅방 목록 STOMP 인증 실패 감지, 토큰 갱신 시도")
+            
             refreshTokenAndReconnect()
-        } else if AuthInterceptor.shared.isRefreshing {
+        } else if isAuthError && AuthInterceptor.shared.isRefreshing {
             logger.debug("리프레시 토큰 갱신 대기 중, 채팅방 목록 웹소켓 재연결 예정")
+            
             waitForRefreshAndReconnect()
         } else if !isWaitingForRefreshToken {
             scheduleReconnect()

@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class SettleUpView: UIViewController {
+class SettleUpView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "SettleUp.SettleUp.View"
@@ -142,8 +142,6 @@ class SettleUpView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [titleLabel, categoryStackView, gradientView, emptyView, tableView].forEach {
             view.addSubview($0)
         }

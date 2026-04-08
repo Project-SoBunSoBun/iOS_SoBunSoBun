@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 import OSLog
 
-class SignUpCompletedView: UIViewController {
+class SignUpCompletedView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "SignUpCompleted.View"
@@ -80,8 +80,6 @@ class SignUpCompletedView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [greyClose, unionLeft, titleLabel, subLabel, unionRight, startButton].forEach {
             view.addSubview($0)
         }

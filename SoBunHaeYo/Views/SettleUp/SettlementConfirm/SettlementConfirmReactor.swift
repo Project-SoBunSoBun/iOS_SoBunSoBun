@@ -83,7 +83,7 @@ class SettlementConfirmReactor: Reactor {
             .catch { [weak self] error in
                 guard let self else { return Observable.empty() }
                 
-                self.logger.critical("알림 읽음 실패: \(error.localizedDescription)")
+                self.logger.critical("알림 읽음 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.empty()
             }

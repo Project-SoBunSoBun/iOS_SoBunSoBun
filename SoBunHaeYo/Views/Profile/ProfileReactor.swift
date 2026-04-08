@@ -152,7 +152,7 @@ class ProfileReactor: Reactor {
                         }
                     }
                     .catch { error in
-                        self.logger.critical("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+                        self.logger.critical("게시글 목록 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                         
                         return Observable.concat([
                             isFirst ? Observable.just(.setPosts([])) : Observable.empty(),

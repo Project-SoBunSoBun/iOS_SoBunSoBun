@@ -13,7 +13,7 @@ import ReactorKit
 import OSLog
 import RxGesture
 
-class EditProfileView: UIViewController {
+class EditProfileView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.EditProfile.View"
@@ -87,8 +87,6 @@ class EditProfileView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, profileImageView, cameraImage, nickname].forEach {
             view.addSubview($0)
         }

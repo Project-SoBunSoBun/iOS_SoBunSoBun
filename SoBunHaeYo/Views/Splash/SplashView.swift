@@ -10,7 +10,7 @@ import ReactorKit
 import SnapKit
 import RxSwift
 
-class SplashView: UIViewController {
+class SplashView: BaseViewController {
     typealias Reactor = SplashReactor
     private let reactor = SplashReactor()
     
@@ -42,8 +42,6 @@ class SplashView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(appLogoImageView)
         
         appLogoImageView.snp.makeConstraints { make in

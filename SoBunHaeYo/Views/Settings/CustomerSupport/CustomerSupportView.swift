@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class CustomerSupportView: UIViewController {
+class CustomerSupportView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.CustomerSupport.View"
@@ -52,8 +52,6 @@ class CustomerSupportView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, cumtomerSupportSettingCard].forEach {
             view.addSubview($0)
         }

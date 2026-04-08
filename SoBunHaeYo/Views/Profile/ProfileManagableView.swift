@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import OSLog
 
-class ProfileManagableView: UIViewController {
+class ProfileManagableView: BaseViewController {
     private let userId: Int
     private let groupPostId: Int
     
@@ -148,8 +148,6 @@ class ProfileManagableView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, buttonsStackView, scrollView, contentView].forEach {
             view.addSubview($0)
         }

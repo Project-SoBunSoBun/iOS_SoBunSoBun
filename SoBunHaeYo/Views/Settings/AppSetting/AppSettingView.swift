@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class AppSettingView: UIViewController {
+class AppSettingView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.AppSetting.View"
@@ -98,8 +98,6 @@ class AppSettingView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, notificationSettingLabel, notificationSettingCard, personalSettingLabel, managingAccountInfoSettingCard, etcLabel, etcSettingCard].forEach {
             view.addSubview($0)
         }

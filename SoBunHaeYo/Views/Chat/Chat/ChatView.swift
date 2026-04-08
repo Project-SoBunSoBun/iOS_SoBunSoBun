@@ -12,7 +12,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class ChatView: UIViewController {
+class ChatView: BaseViewController {
     private let chatRoomId: Int
     
     private let willLeave = PublishRelay<Void?>()
@@ -184,8 +184,6 @@ class ChatView: UIViewController {
         configureUI()
         bind(reactor: reactor)
         
-        // tableview pop gesture 충돌 방지
-        navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -216,7 +214,6 @@ class ChatView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
         [chatStackView, safeareaBottomBackgroundView, tableView, topNavigationBar, chatCellMenuDropDownView].forEach {
@@ -427,6 +424,25 @@ extension ChatView {
                     
                     alert.show(on: self)
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        // 클립보드 이미지 붙여넣기
+        chatTextView.textView.imagePasted
+            .emit(onNext: { [weak self] image in
+                guard let self = self else { return }
+                
+                let confirmVC = ImagePickerConfirmView(image: image)
+                
+                confirmVC.onConfirm
+                    .take(1)
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: { [weak self] in
+                        self?.reactor.action.onNext(.sendImage(image))
+                    })
+                    .disposed(by: confirmVC.disposeBag)
+                
+                self.present(confirmVC, animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -920,22 +936,3 @@ extension ChatView {
         alert.show(on: self)
     }
 }
-
-extension ChatView: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return (self.navigationController?.viewControllers.count ?? 0) > 1
-    }
-}
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct ChatViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            ChatView(chatRoomId: -1)
-        }
-    }
-}
-#endif
