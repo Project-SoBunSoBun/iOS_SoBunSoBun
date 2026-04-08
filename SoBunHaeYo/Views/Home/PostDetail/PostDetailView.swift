@@ -1146,5 +1146,3 @@ extension PostDetailView {
         }
     }
 }
-
-

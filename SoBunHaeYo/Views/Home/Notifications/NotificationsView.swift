@@ -61,7 +61,6 @@ class NotificationsView: BaseViewController {
         
         configureUI()
         bind(reactor: reactor)
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -240,5 +239,3 @@ extension NotificationsView {
             .disposed(by: disposeBag)
     }
 }
-
-

@@ -428,21 +428,23 @@ extension ChatView {
             .disposed(by: disposeBag)
         
         // 클립보드 이미지 붙여넣기
-        chatTextView.textView.onImagePaste = { [weak self] image in
-            guard let self = self else { return }
-            
-            let confirmVC = ImagePickerConfirmView(image: image)
-            
-            confirmVC.onConfirm
-                .take(1)
-                .observe(on: MainScheduler.instance)
-                .subscribe(onNext: { [weak self] in
-                    self?.reactor.action.onNext(.sendImage(image))
-                })
-                .disposed(by: confirmVC.disposeBag)
-            
-            self.present(confirmVC, animated: true)
-        }
+        chatTextView.textView.imagePasted
+            .emit(onNext: { [weak self] image in
+                guard let self = self else { return }
+                
+                let confirmVC = ImagePickerConfirmView(image: image)
+                
+                confirmVC.onConfirm
+                    .take(1)
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: { [weak self] in
+                        self?.reactor.action.onNext(.sendImage(image))
+                    })
+                    .disposed(by: confirmVC.disposeBag)
+                
+                self.present(confirmVC, animated: true)
+            })
+            .disposed(by: disposeBag)
         
         // 채팅 페이지네이션
         tableView.rx.willDisplayCell
@@ -934,18 +936,3 @@ extension ChatView {
         alert.show(on: self)
     }
 }
-
-
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct ChatViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            ChatView(chatRoomId: -1)
-        }
-    }
-}
-#endif
