@@ -131,10 +131,14 @@ class ProfileManagableReactor: Reactor {
                     return Observable.empty()
                 }
             }
-            .catch { error in
-                self.logger.critical("게시글 목록 불러오기 실패: \(error.localizedDescription)")
+            .catch { [weak self] error in
+                guard let self = self else { return Observable.empty() }
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+                
+                self.logger.critical("게시글 목록 불러오기 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
     
@@ -143,42 +147,34 @@ class ProfileManagableReactor: Reactor {
         
         return networkManager.blockUser(userId: userId)
             .asObservable()
-            .flatMap { [weak self] model -> Observable<Mutation> in
+            .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                if model.success {
-                    if var info = userInfo {
-                        info.isBlocked.toggle()
-                        
-                        self.logger.debug("차단 완료")
-                        
-                        return Observable.concat([
-                            Observable.just(.setUserInfo(info)),
-                            Observable.just(.setShouldShowBlockDoneAlert)
-                        ])
-                    } else {
-                        self.logger.fault("차단 중 userInfo가 없음")
-                        
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
-                    }
+                if var info = userInfo {
+                    info.isBlocked.toggle()
+                    
+                    self.logger.debug("차단 완료")
+                    
+                    return Observable.concat([
+                        Observable.just(.setUserInfo(info)),
+                        Observable.just(.setShouldShowBlockDoneAlert)
+                    ])
                 } else {
-                    if let errorCode = model.errorCode {
-                        self.logger.critical("차단 중 오류: \(model.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)))
-                    } else {
-                        self.logger.critical("차단 중 오류")
-                        
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
-                    }
+                    self.logger.fault("차단 중 userInfo가 없음")
+                    
+                    let errorMessage = localizedErrorMessage(nil)
+                    
+                    return Observable.just(.setErrorMessage(errorMessage))
                 }
             }
             .catch { [weak self] error -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("차단 중 오류: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                self.logger.critical("차단 중 오류: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
     
@@ -187,42 +183,34 @@ class ProfileManagableReactor: Reactor {
         
         return networkManager.unBlockUser(userId: userId)
             .asObservable()
-            .flatMap { [weak self] model -> Observable<Mutation> in
+            .flatMap { [weak self] _ -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                if model.success {
-                    if var info = userInfo {
-                        info.isBlocked.toggle()
-                        
-                        self.logger.debug("차단 해제 완료")
-                        
-                        return Observable.concat([
-                            Observable.just(.setUserInfo(info)),
-                            Observable.just(.setShouldShowUnBlockDoneAlert)
-                        ])
-                    } else {
-                        self.logger.fault("차단 해제 중 userInfo가 없음")
-                        
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
-                    }
+                if var info = userInfo {
+                    info.isBlocked.toggle()
+                    
+                    self.logger.debug("차단 해제 완료")
+                    
+                    return Observable.concat([
+                        Observable.just(.setUserInfo(info)),
+                        Observable.just(.setShouldShowUnBlockDoneAlert)
+                    ])
                 } else {
-                    if let errorCode = model.errorCode {
-                        self.logger.critical("차단 해제 중 오류: \(model.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)))
-                    } else {
-                        self.logger.critical("차단 해제 중 오류")
-                        
-                        return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
-                    }
+                    self.logger.fault("차단 해제 중 userInfo가 없음")
+                    
+                    let errorMessage = localizedErrorMessage(nil)
+                    
+                    return Observable.just(.setErrorMessage(errorMessage))
                 }
             }
             .catch { [weak self] error -> Observable<Mutation> in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("차단 해제 중 오류: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                self.logger.critical("차단 해제 중 오류: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
 }

@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 import OSLog
 
-class SignUpCompletedView: UIViewController {
+class SignUpCompletedView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "SignUpCompleted.View"
@@ -80,8 +80,6 @@ class SignUpCompletedView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [greyClose, unionLeft, titleLabel, subLabel, unionRight, startButton].forEach {
             view.addSubview($0)
         }
@@ -123,12 +121,13 @@ class SignUpCompletedView: UIViewController {
 }
 
 extension SignUpCompletedView {
-    private func bind(reactor: SignUpCompletedReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SignUpCompletedReactor) {
+    private func bindAction(reactor: Reactor) {
         // 닫기 버튼 탭
         greyClose.rx.tap
             .map { Reactor.Action.closeButtonTapped }
@@ -142,7 +141,7 @@ extension SignUpCompletedView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SignUpCompletedReactor) {
+    private func bindState(reactor: Reactor) {
         // 닉네임 업데이트
         reactor.state.map { $0.nickname }
             .distinctUntilChanged()
@@ -186,15 +185,7 @@ extension SignUpCompletedView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.logger.fault("에러 발생: \(message)")
-                
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

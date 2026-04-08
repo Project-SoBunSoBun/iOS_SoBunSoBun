@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class NotificationSettingView: UIViewController {
+class NotificationSettingView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.NotificationSetting.View"
@@ -65,8 +65,6 @@ class NotificationSettingView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, notificationSettingCard].forEach {
             view.addSubview($0)
         }
@@ -93,12 +91,13 @@ class NotificationSettingView: UIViewController {
 }
 
 extension NotificationSettingView {
-    private func bind(reactor: NotificationSettingReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: NotificationSettingReactor) {
+    private func bindAction(reactor: Reactor) {
         // 세팅 카드 버튼 클릭
         notificationSetting.didTap
             .map { Reactor.Action.notificationSettingTapped }
@@ -106,7 +105,7 @@ extension NotificationSettingView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: NotificationSettingReactor) {
+    private func bindState(reactor: Reactor) {
         // 알림 설정창 이동
         reactor.pulse(\.$shouldOpenSettings)
             .compactMap { $0 }
@@ -130,13 +129,9 @@ extension NotificationSettingView {
         
         alert.onPrimaryTapped = {
             // 설정 앱으로 이동
-            if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+            if let settingsUrl = URL(string: UIApplication.openNotificationSettingsURLString) {
                 UIApplication.shared.open(settingsUrl)
             }
-        }
-        
-        alert.onCancelTapped = {
-            self.logger.debug("취소됨")
         }
         
         alert.show(on: self)

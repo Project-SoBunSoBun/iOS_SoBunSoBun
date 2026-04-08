@@ -48,15 +48,11 @@ struct ChatReadMessageModel: Encodable {
 
 // 과거 메시지 불러오기 모델
 struct ChatMessageHistoryModel: Decodable, Equatable {
-    let success: Bool
     let data: [ChatMessageModel]?
-    let message, errorCode: String?
 }
 
 struct ChatRoomDetailModel: Decodable, Equatable {
-    let success: Bool
     let data: ChatRoomDetailDataModel?
-    let message, errorCode: String?
 }
 
 struct ChatRoomDetailDataModel: Decodable, Equatable {
@@ -76,8 +72,6 @@ struct ChatRoomDetailMemberModel: Decodable, Equatable {
 }
 
 struct GroupChatAcceptResponseModel: Decodable {
-    let success: Bool
-    let message: String?
     let data: GroupChatAcceptResponseDataModel
 }
 

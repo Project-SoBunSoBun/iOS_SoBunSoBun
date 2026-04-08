@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class SaveListView: UIViewController {
+class SaveListView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.SaveList.View"
@@ -69,8 +69,6 @@ class SaveListView: UIViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-    
         [topNavigationBar, tableView, loadingView].forEach {
             view.addSubview($0)
         }
@@ -96,6 +94,7 @@ class SaveListView: UIViewController {
 }
 
 extension SaveListView {
+    // reactor와 view 연결
     private func bind(reactor: SaveListRecator) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -168,7 +167,7 @@ extension SaveListView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert(title: message)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         
@@ -177,22 +176,5 @@ extension SaveListView {
             .distinctUntilChanged()
             .bind(to: loadingView.rx.isHidden)
             .disposed(by: disposeBag)
-    }
-    
-    // 에러 알러트
-    private func errorAlert(title: String) {
-        let alert = CustomAlertView(
-            title: title,
-            subTitle: String(localized: "TryAgain", table: "Common"),
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = { [weak self] in
-            guard let self = self else { return }
-            
-            self.logger.debug("확인 버튼 클릭")
-        }
-        
-        alert.show(on: self)
     }
 }

@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class ChatRoomKickView: UIViewController {
+class ChatRoomKickView: BaseViewController {
     private let chatRoomId: Int
     
     var changeMembers: PublishRelay<[ChatRoomDetailMemberModel]>?
@@ -85,8 +85,6 @@ class ChatRoomKickView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(topNavigationBar)
         
         topNavigationBar.snp.makeConstraints { make in
@@ -151,11 +149,12 @@ class ChatRoomKickView: UIViewController {
 }
 
 extension ChatRoomKickView {
-    private func bind(reactor: ChatRoomKickReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindState(reactor: reactor)
     }
     
-    private func bindState(reactor: ChatRoomKickReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.members }
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
@@ -182,10 +181,6 @@ extension ChatRoomKickView {
                     reactor.action.onNext(.kickAccepted)
                 }
                 
-                alertView.onCancelTapped = {
-                    
-                }
-                
                 alertView.show(on: self)
             })
             .disposed(by: disposeBag)
@@ -201,10 +196,6 @@ extension ChatRoomKickView {
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alertView.onPrimaryTapped = {
-                    
-                }
-                
                 alertView.show(on: self)
             })
             .disposed(by: disposeBag)
@@ -215,17 +206,7 @@ extension ChatRoomKickView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.onPrimaryTapped = {
-                    
-                }
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

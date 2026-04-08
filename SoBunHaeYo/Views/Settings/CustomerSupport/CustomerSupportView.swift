@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class CustomerSupportView: UIViewController {
+class CustomerSupportView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.CustomerSupport.View"
@@ -52,8 +52,6 @@ class CustomerSupportView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, cumtomerSupportSettingCard].forEach {
             view.addSubview($0)
         }
@@ -79,12 +77,13 @@ class CustomerSupportView: UIViewController {
 }
 
 extension CustomerSupportView {
-    private func bind(reactor: CustomerSupportReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: CustomerSupportReactor) {
+    private func bindAction(reactor: Reactor) {
         // 버그 신고하기 클릭
         bug.didTap
             .map { Reactor.Action.supportBugTapped }
@@ -98,7 +97,7 @@ extension CustomerSupportView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: CustomerSupportReactor) {
+    private func bindState(reactor: Reactor) {
         // 세팅 카드 버튼 클릭 시 화면 이동
         reactor.pulse(\.$shouldNavigate)
             .compactMap { $0 }

@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class AnnouncementView: UIViewController {
+class AnnouncementView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.Announcement.View"
@@ -71,8 +71,6 @@ class AnnouncementView: UIViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-    
         [topNavigationBar, tableView].forEach {
             view.addSubview($0)
         }
@@ -95,12 +93,13 @@ class AnnouncementView: UIViewController {
 }
 
 extension AnnouncementView {
-    private func bind(reactor: AnnouncementReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: AnnouncementReactor) {
+    private func bindAction(reactor: Reactor) {
         // 새로고침
         refreshControl.rx.controlEvent(.valueChanged)
             .map { Reactor.Action.refresh }
@@ -129,7 +128,7 @@ extension AnnouncementView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: AnnouncementReactor) {
+    private func bindState(reactor: Reactor) {
         // 공지사항 데이터를 테이블뷰에 바인딩
         reactor.state.map { $0.notices }
             .distinctUntilChanged()

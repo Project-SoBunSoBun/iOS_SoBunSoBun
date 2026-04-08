@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import OSLog
 
-class BlockManagementView: UIViewController {
+class BlockManagementView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.BlockManagement.View"
@@ -65,8 +65,6 @@ class BlockManagementView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(topNavigationBar)
         
         topNavigationBar.snp.makeConstraints { make in
@@ -123,16 +121,17 @@ class BlockManagementView: UIViewController {
 }
 
 extension BlockManagementView {
-    private func bind(reactor: BlockManagementReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: BlockManagementReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad)
     }
     
-    private func bindState(reactor: BlockManagementReactor) {
+    private func bindState(reactor: Reactor) {
         // 차단 목록
         reactor.state.map { $0.blockList }
             .distinctUntilChanged()
@@ -173,13 +172,7 @@ extension BlockManagementView {
             .subscribe(onNext: { [weak self] message in
                 guard let self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

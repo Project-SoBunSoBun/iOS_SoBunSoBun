@@ -13,7 +13,7 @@ import ReactorKit
 import OSLog
 import Kingfisher
 
-class MypageView: UIViewController {
+class MypageView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.Mypage.View"
@@ -203,8 +203,6 @@ class MypageView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, gradientView, scrollView].forEach {
             view.addSubview($0)
         }
@@ -327,12 +325,13 @@ class MypageView: UIViewController {
 }
 
 extension MypageView {
-    private func bind(reactor: MyPageReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: MyPageReactor) {
+    private func bindAction(reactor: Reactor) {
         // viewWillAppear 시 동작
         reactor.action.onNext(.viewWillAppear)
         
@@ -367,7 +366,7 @@ extension MypageView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: MyPageReactor) {
+    private func bindState(reactor: Reactor) {
         // 프로필 정보 받아오기
         reactor.state.map { $0.profile }
             .compactMap { $0 }
@@ -446,6 +445,7 @@ extension MypageView {
                     switch result {
                     case .success(let value):
                         let urlString = value.source.url?.absoluteString ?? "알 수 없음"
+                        
                         self.logger.debug("프로필 이미지 비동기 로드 성공: \(urlString)")
                         
                     case .failure(let error):

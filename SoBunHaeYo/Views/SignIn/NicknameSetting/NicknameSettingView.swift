@@ -14,7 +14,7 @@ import Photos
 import OSLog
 import RxGesture
 
-class NicknameSettingView: UIViewController {
+class NicknameSettingView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "NicknameSetting.View"
@@ -69,8 +69,6 @@ class NicknameSettingView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [backButton, profileImage, cameraImage, nickname, nextButton].forEach {
             view.addSubview($0)
         }
@@ -116,12 +114,12 @@ class NicknameSettingView: UIViewController {
 
 extension NicknameSettingView {
     // reactor와 view 연결
-    private func bind(reactor: NicknameSettingReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: NicknameSettingReactor) {
+    private func bindAction(reactor: Reactor) {
         // Back 버튼 탭
         backButton.rx.tap
             .map { Reactor.Action.backButtonTapped }
@@ -154,6 +152,7 @@ extension NicknameSettingView {
                 guard let self = self else { return }
                 
                 self.profileImage.image = image
+                
                 self.logger.debug("이미지 선택 완료")
                 reactor.action.onNext(.profileImageSelected(image))
             })
@@ -170,7 +169,7 @@ extension NicknameSettingView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: NicknameSettingReactor) {
+    private func bindState(reactor: Reactor) {
         // 뒤로 가기 버튼
         reactor.pulse(\.$shouldPopViewController)
             .compactMap { $0 }
@@ -213,15 +212,7 @@ extension NicknameSettingView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.logger.debug("에러 발생: \(message)")
-                
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         

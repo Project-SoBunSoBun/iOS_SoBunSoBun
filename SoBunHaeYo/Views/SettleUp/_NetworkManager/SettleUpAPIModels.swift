@@ -9,10 +9,7 @@ import Foundation
 
 // MARK: - 정산
 struct SettleUpResponseModel: Decodable {
-    let success: Bool
-    let message: String?
     let data: SettleUpModel?
-    let errorCode: String?
 }
 
 struct SettleUpModel: Decodable {
@@ -80,9 +77,7 @@ struct SettlementCompleteItemModel: Codable {
 
 // 정산 상세 조회
 struct SettlementResponseModel: Decodable {
-    let success: Bool
     let data: SettlementModel?
-    let message, errorCode: String?
 }
 
 struct SettlementModel: Decodable {

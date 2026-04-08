@@ -13,9 +13,15 @@ import OSLog
 
 class SelectCategoriesView: UIViewController {
     private let initialSelectedCategories: [String]
+    private let safeAreaBottom: CGFloat
+    private let allowsEmpty: Bool
     
-    init(selectedCategories: [String]) {
+    let selectedCategoriesRelay = PublishRelay<[String]>()
+    
+    init(selectedCategories: [String], safeAreaBottom: CGFloat, allowsEmpty: Bool) {
         self.initialSelectedCategories = selectedCategories
+        self.safeAreaBottom = safeAreaBottom
+        self.allowsEmpty = allowsEmpty
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -32,8 +38,6 @@ class SelectCategoriesView: UIViewController {
     typealias Reactor = SelectCategoriesReactor
     private let reactor: SelectCategoriesReactor = SelectCategoriesReactor()
     
-    let selectedCategoriesRelay = PublishRelay<[String]>()
-    
     private let disposeBag = DisposeBag()
     
     // MARK: - 디자인 요소
@@ -47,6 +51,13 @@ class SelectCategoriesView: UIViewController {
     }()
     
     private var wrappingViews: [HorizontalWrappingView] = []
+    
+    private lazy var confirmButton: Button = {
+        let btn = Button(title: String(localized: "SelectComplete", table: "Home"))
+        btn.isEnabled = allowsEmpty
+        
+        return btn
+    }()
     
     private func groupLabel(number: String) -> UILabel {
         let label = UILabel()
@@ -88,20 +99,22 @@ class SelectCategoriesView: UIViewController {
         bind(reactor: reactor)
     }
     
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        
-        selectedCategoriesRelay.accept(reactor.currentState.selectedCategories)
-    }
-    
     // MARK: - 레이아웃 설정
     private func configureUI() {
         view.backgroundColor = .backgroundWhite
         
-        view.addSubview(scrollView)
+        [confirmButton, scrollView].forEach {
+            view.addSubview($0)
+        }
+        
+        confirmButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(safeAreaBottom)
+        }
         
         scrollView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(confirmButton.snp.top)
         }
         
         scrollView.addSubview(contentView)
@@ -114,16 +127,29 @@ class SelectCategoriesView: UIViewController {
 }
 
 extension SelectCategoriesView {
-    private func bind(reactor: SelectCategoriesReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SelectCategoriesReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad(initialSelectedCategories))
+        
+        confirmButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                selectedCategoriesRelay.accept(reactor.currentState.selectedCategories)
+                
+                if let bottomSheet = parent as? BottomSheetView {
+                    bottomSheet.handleDismiss()
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SelectCategoriesReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.categories }
             .skip(1)
             .observe(on: MainScheduler.instance)
@@ -140,6 +166,7 @@ extension SelectCategoriesView {
             .subscribe(onNext: { [weak self] categories in
                 guard let self = self else { return }
                 
+                confirmButton.isEnabled = allowsEmpty || !categories.isEmpty
                 updateSelectedCategories(selectedCategories: categories)
             })
             .disposed(by: disposeBag)
@@ -202,17 +229,3 @@ extension SelectCategoriesView {
             }
     }
 }
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-import RxRelay
-
-struct SelectCategoriesViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            SelectCategoriesView(selectedCategories: [])
-        }
-    }
-}
-#endif

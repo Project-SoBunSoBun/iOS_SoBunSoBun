@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import OSLog
 
-class ProfileManagableView: UIViewController {
+class ProfileManagableView: BaseViewController {
     private let userId: Int
     private let groupPostId: Int
     
@@ -148,8 +148,6 @@ class ProfileManagableView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, buttonsStackView, scrollView, contentView].forEach {
             view.addSubview($0)
         }
@@ -180,6 +178,7 @@ class ProfileManagableView: UIViewController {
 }
 
 extension ProfileManagableView {
+    // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -306,13 +305,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

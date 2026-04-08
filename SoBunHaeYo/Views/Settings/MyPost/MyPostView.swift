@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class MyPostView: UIViewController {
+class MyPostView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.MyPost.View"
@@ -94,8 +94,6 @@ class MyPostView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, tableView, backgroundDimView ,dropDownView, loadingView].forEach {
             view.addSubview($0)
         }
@@ -134,12 +132,13 @@ class MyPostView: UIViewController {
 }
 
 extension MyPostView {
-    private func bind(reactor: MyPostReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: MyPostReactor) {
+    private func bindAction(reactor: Reactor) {
         // 새로고침
         refreshControl.rx.controlEvent(.valueChanged)
             .map { Reactor.Action.refresh }
@@ -194,7 +193,7 @@ extension MyPostView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: MyPostReactor) {
+    private func bindState(reactor: Reactor) {
         // 공지사항 데이터를 테이블 뷰에 바인딩
         reactor.state.map { $0.myPosts }
             .observe(on: MainScheduler.instance)
@@ -266,10 +265,10 @@ extension MyPostView {
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert()
+                self.showCriticalErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         
@@ -303,7 +302,7 @@ extension MyPostView {
         
         alert.onPrimaryTapped = { [weak self] in
             guard let self = self,
-                    let selectedId = self.reactor.currentState.selectedId else { return }
+                  let selectedId = self.reactor.currentState.selectedId else { return }
             
             self.reactor.action.onNext(.deletePostId(selectedId))
         }
@@ -317,25 +316,6 @@ extension MyPostView {
             title: String(localized: "DeleteCompleted", table: "Common"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
-        
-        alert.onPrimaryTapped = {
-            self.logger.debug("확인 버튼 클릭")
-        }
-        
-        alert.show(on: self)
-    }
-    
-    // 에러 알러트
-    private func errorAlert() {
-        let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Error"),
-            subTitle: String(localized: "ErrorMessage", table: "Error"),
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = {
-            self.logger.debug("확인 버튼 클릭")
-        }
         
         alert.show(on: self)
     }

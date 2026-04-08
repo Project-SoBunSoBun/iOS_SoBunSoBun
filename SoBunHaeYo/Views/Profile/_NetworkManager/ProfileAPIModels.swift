@@ -8,9 +8,7 @@
 import Foundation
 
 struct ProfileUserInfoResponseModel: Decodable {
-    let success: Bool
     let data: ProfileUserInfoResponseDataModel?
-    let message: String?
 }
 
 struct ProfileUserInfoResponseDataModel: Decodable, Equatable {

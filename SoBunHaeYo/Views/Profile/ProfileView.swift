@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import OSLog
 
-class ProfileView: UIViewController {
+class ProfileView: BaseViewController {
     private let userId: Int
     
     init(userId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
@@ -145,8 +145,6 @@ class ProfileView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, tableView].forEach {
             view.addSubview($0)
         }
@@ -172,6 +170,7 @@ class ProfileView: UIViewController {
 }
 
 extension ProfileView {
+    // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -250,13 +249,7 @@ extension ProfileView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

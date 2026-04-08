@@ -12,7 +12,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class InquiriesView: UIViewController {
+class InquiriesView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.Inquiries.View"
@@ -186,8 +186,6 @@ class InquiriesView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
         }
@@ -306,12 +304,13 @@ class InquiriesView: UIViewController {
 }
 
 extension InquiriesView {
-    private func bind(reactor: InquiriesReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: InquiriesReactor) {
+    private func bindAction(reactor: Reactor) {
         // 문의 내용 드롭다운 열기
         selectedInquiries.didTap
             .observe(on: MainScheduler.instance)
@@ -386,7 +385,7 @@ extension InquiriesView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: InquiriesReactor) {
+    private func bindState(reactor: Reactor) {
         // 문의 사유 드롭다운 개폐
         reactor.state.map { $0.isMenuOpen }
             .observe(on: MainScheduler.asyncInstance)
@@ -457,11 +456,10 @@ extension InquiriesView {
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] errorMessage in
+            .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.logger.error("에러: \(errorMessage)")
-                self.errorAlert(title: errorMessage)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         
@@ -511,19 +509,6 @@ extension InquiriesView {
         
         alert.onPrimaryTapped = {
             self.navigationController?.popViewController(animated: true)
-        }
-        
-        alert.show(on: self)
-    }
-    
-    private func errorAlert(title: String) {
-        let alert = CustomAlertView(
-            title: title,
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = {
-            self.logger.debug("확인 버튼 클릭")
         }
         
         alert.show(on: self)

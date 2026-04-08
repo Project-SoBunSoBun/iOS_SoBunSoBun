@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class MyGroupBuyingRecordView: UIViewController {
+class MyGroupBuyingRecordView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.MyGroupBuyingRecord.View"
@@ -37,8 +37,6 @@ class MyGroupBuyingRecordView: UIViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-    
         [topNavigationBar].forEach {
             view.addSubview($0)
         }

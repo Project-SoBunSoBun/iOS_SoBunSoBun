@@ -11,10 +11,14 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class ChatRightMenuView: UIViewController {
+class ChatRightMenuView: BaseViewController {
     private let chatRoomId: Int
     private let groupPostId: Int
     private let type: ChatRoomType
+    
+    var willLeave: PublishRelay<Void?>?
+    
+    let changedMembers = PublishRelay<[ChatRoomDetailMemberModel]>()
     
     init(
         chatRoomId: Int,
@@ -41,10 +45,6 @@ class ChatRightMenuView: UIViewController {
     private lazy var reactor = ChatRightMenuReactor(chatRoomId: chatRoomId)
     
     private let disposeBag = DisposeBag()
-    
-    var willLeave: PublishRelay<Void?>?
-    
-    let changedMembers = PublishRelay<[ChatRoomDetailMemberModel]>()
     
     private var kickView: ChatRoomKickView?
     
@@ -108,8 +108,6 @@ class ChatRightMenuView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(topNavigationBar)
         
         topNavigationBar.snp.makeConstraints { make in
@@ -224,12 +222,13 @@ class ChatRightMenuView: UIViewController {
 }
 
 extension ChatRightMenuView {
-    private func bind(reactor: ChatRightMenuReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: ChatRightMenuReactor) {
+    private func bindAction(reactor: Reactor) {
         goToPostDetailCell.didTap
             .map { _ in Reactor.Action.postDetailCardTapped }
             .bind(to: reactor.action)
@@ -246,7 +245,7 @@ extension ChatRightMenuView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: ChatRightMenuReactor) {
+    private func bindState(reactor: Reactor) {
         Observable.merge([
             reactor.state.map { $0.members },
             changedMembers.asObservable()
@@ -305,10 +304,6 @@ extension ChatRightMenuView {
                 alertView.onPrimaryTapped = {
                     self.willLeave?.accept(())
                     self.navigationController?.popViewController(animated: true)
-                }
-                
-                alertView.onCancelTapped = {
-                    
                 }
                 
                 alertView.show(on: self)

@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class ManagingAccountInfoView: UIViewController {
+class ManagingAccountInfoView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.ManagingAccountInfo.View"
@@ -56,9 +56,7 @@ class ManagingAccountInfoView: UIViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
-        let getUserEmail = KeyChain.shared.get(key: "EMAIL") ?? "이메일을 가져오지 못했습니다."
+        let getUserEmail = KeyChain.shared.get(key: "EMAIL") ?? String(localized: "FailToGetEmail", table: "Settings")
         
         self.userEmail = getUserEmail
     
@@ -87,12 +85,13 @@ class ManagingAccountInfoView: UIViewController {
 }
 
 extension ManagingAccountInfoView {
-    private func bind(reactor: ManagingAccountInfoReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: ManagingAccountInfoReactor) {
+    private func bindAction(reactor: Reactor) {
         // 로그아웃 클릭
         logOut.didTap
             .map { Reactor.Action.logOutTapped }
@@ -106,7 +105,7 @@ extension ManagingAccountInfoView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: ManagingAccountInfoReactor) {
+    private func bindState(reactor: Reactor) {
         // 세팅 카드 버튼 클릭 시 화면 이동
         reactor.pulse(\.$shouldNavigate)
             .compactMap { $0 }
@@ -137,10 +136,6 @@ extension ManagingAccountInfoView {
         
         alert.onPrimaryTapped = {
             AuthManager.shared.logout()
-        }
-        
-        alert.onCancelTapped = {
-            self.logger.debug("취소됨")
         }
         
         alert.show(on: self)

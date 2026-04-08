@@ -160,9 +160,11 @@ class NavigationTabReactor: Reactor {
                 return Observable.empty()
             }
             .catch { error in
-                self.logger.critical("내 정보 불러오는 중 오류 발생: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                self.logger.critical("내 정보 불러오는 중 오류 발생: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
     
@@ -177,7 +179,7 @@ class NavigationTabReactor: Reactor {
                 return Observable.just(.setUnreadNotificationCount(count))
             }
             .catch { error -> Observable<Mutation> in
-                self.logger.critical("읽지 않은 알림 개수를 불러오는 중 오류 발생: \(error.localizedDescription)")
+                self.logger.critical("읽지 않은 알림 개수를 불러오는 중 오류 발생: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.empty()
             }
@@ -192,9 +194,11 @@ class NavigationTabReactor: Reactor {
                 return Observable.just(.setChatRoomList(model.data ?? []))
             }
             .catch { error in
-                self.logger.critical("채팅방 목록 불러오는 중 오류 발생: \(error.localizedDescription)")
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
                 
-                return Observable.just(.setErrorMessage(String(localized: "ErrorMessage", table: "Error")))
+                self.logger.critical("채팅방 목록 불러오는 중 오류 발생: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
     

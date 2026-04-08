@@ -10,9 +10,6 @@ import UIKit
 import OSLog
 import RxSwift
 import RxCocoa
-import Moya
-import RxMoya
-
 // window
 var currentWindow: UIWindow? {
     let windowScene = UIApplication.shared.connectedScenes
@@ -24,9 +21,6 @@ var currentWindow: UIWindow? {
 
 // API URL
 let API_URL = Bundle.main.object(forInfoDictionaryKey: "API_URL") as! String
-
-// RESPONSE CODES
-let RESPONSE_CODES: ValidationType = .customCodes(Array(200...299) + [400] + Array(402...499))
 
 // ISO8601 Datetime에서 Date형 변환
 func ISO8601ToDate(_ iso8601DatetimeString: String) -> Date? {
@@ -265,40 +259,29 @@ extension String {
     }
 }
 
-// 오류 코드에 해당하는 다국어 오류 메시지 변환
-func localizedErrorMessage(_ errorCode: String?) -> String {
-    guard let errorCode else {
-        return String(localized: "ErrorMessage", table: "Error")
-    }
-    
-    let message = NSLocalizedString(errorCode, tableName: "Error", comment: "")
-    let fallback = String(format: String(localized: "ErrorMessageWithCode", table: "Error"), errorCode)
-    
-    return message != errorCode ? message : fallback
-}
-
-extension PrimitiveSequence where Trait == SingleTrait, Element == Response {
-    /// Model Decode 실패 시 Data 로그를 추가로 출력합니다.
-    func tryMap<T: Decodable>(_ type: T.Type) -> Single<T> {
-        let logger = Logger(
-            subsystem: "SoBunHaeYo",
-            category: "MoyaNetworkManager.tryMap"
+extension UIViewController {
+    func showErrorAlert(message: String) {
+        let alert = CustomAlertView(
+            title: String(localized: "Error", table: "Error"),
+            subTitle: message,
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        return flatMap { response in
-            do {
-                return .just(try response.map(type))
-            } catch {
-                if let json = try? JSONSerialization.jsonObject(with: response.data),
-                   let pretty = try? JSONSerialization.data(withJSONObject: json, options: .prettyPrinted),
-                   let str = String(data: pretty, encoding: .utf8) {
-                    logger.critical("[Decode 오류]\n\ntype: \(type)\nresponse: \(str)")
-                } else {
-                    logger.critical("[Decode 오류]\n\ntype: \(type)\nresponse(raw): \(String(data: response.data, encoding: .utf8) ?? "String 변환 실패")")
-                }
-                throw error
-            }
+        alert.show(on: self)
+    }
+    
+    func showCriticalErrorAlert(message: String) {
+        let alert = CustomAlertView(
+            title: String(localized: "Error", table: "Error"),
+            subTitle: message,
+            primaryTitleKey: String(localized: "Confirm", table: "Common")
+        )
+        
+        alert.onPrimaryTapped = {
+            self.navigationController?.popViewController(animated: true)
         }
+        
+        alert.show(on: self)
     }
 }
 

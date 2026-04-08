@@ -11,7 +11,7 @@ import OSLog
 import RxSwift
 import RxCocoa
 
-class SettleUp1stStepView: UIViewController{
+class SettleUp1stStepView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "SettleUp.SettleUp1stStep.View"
@@ -344,8 +344,6 @@ class SettleUp1stStepView: UIViewController{
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
         }
@@ -623,10 +621,6 @@ class SettleUp1stStepView: UIViewController{
             self.reactor.action.onNext(.productDeleted(index))
         }
         
-        alert.onCancelTapped = {
-            self.logger.debug("취소됨")
-        }
-        
         alert.show(on: self)
     }
     
@@ -642,22 +636,18 @@ class SettleUp1stStepView: UIViewController{
             self.reactor.action.onNext(.productEdited(index))
         }
         
-        alert.onCancelTapped = {
-            self.logger.debug("취소됨")
-        }
-        
         alert.show(on: self)
     }
 }
 
 extension SettleUp1stStepView {
     // reactor와 view 연결
-    private func bind(reactor: SettleUp1stStepReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: SettleUp1stStepReactor) {
+    private func bindAction(reactor: Reactor) {
         // 수량 버튼 탭
         quantityButton.rx.tap
             .map { Reactor.Action.unitButtonTapped(1) }
@@ -702,7 +692,7 @@ extension SettleUp1stStepView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: SettleUp1stStepReactor) {
+    private func bindState(reactor: Reactor) {
         // 선택된 단위에 따라 UI 업데이트
         reactor.state.map { $0.selectedUnitIndex }
             .distinctUntilChanged()

@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class HomeView: UIViewController {
+class HomeView: BaseViewController {
     typealias Reactor = HomeReactor
     private let reactor = HomeReactor()
     
@@ -34,7 +34,7 @@ class HomeView: UIViewController {
     
     private let logoImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .logo.resize(.init(width: 30, height: 30))
+        iv.image = .appLogo
         iv.contentMode = .scaleAspectFit
         
         return iv
@@ -42,7 +42,7 @@ class HomeView: UIViewController {
     
     private let letterLogoImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .soBunHaeYoText.resize(.init(width: 65, height: 22))
+        iv.image = .soBunHaeYoText
         iv.contentMode = .scaleAspectFit
         
         return iv
@@ -50,7 +50,7 @@ class HomeView: UIViewController {
     
     private let locationIconImageView: UIImageView = {
         let iv = UIImageView()
-        iv.image = .glassLocation.resize(.init(width: 24, height: 24))
+        iv.image = .glassLocation
         iv.contentMode = .scaleAspectFit
         
         return iv
@@ -260,7 +260,6 @@ class HomeView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
         [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, searchTextFieldCover, filtersScrollView, tableView, registerPostButton, dropDownView].forEach {
@@ -370,12 +369,12 @@ class HomeView: UIViewController {
 
 extension HomeView {
     // reactor와 view 연결
-    private func bind(reactor: HomeReactor) {
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: HomeReactor) {
+    private func bindAction(reactor: Reactor) {
         addCategoryButton.rx
             .tapGesture()
             .when(.recognized)
@@ -447,7 +446,7 @@ extension HomeView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: HomeReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.pulse(\.$shouldShowLocationSettingAlert)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
@@ -536,6 +535,7 @@ extension HomeView {
             .disposed(by: disposeBag)
         
         reactor.state.map { $0.posts }
+            .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .bind(to: tableView.rx.items(
                 cellIdentifier: PostListTableViewCell.identifier,
@@ -603,7 +603,7 @@ extension HomeView {
     }
     
     private func showSelectCategoriesBottomSheet() {
-        let sheetView = SelectCategoriesView(selectedCategories: reactor.currentState.selectedCategories)
+        let sheetView = SelectCategoriesView(selectedCategories: reactor.currentState.selectedCategories, safeAreaBottom: view.safeAreaInsets.bottom, allowsEmpty: true)
         
         sheetView.selectedCategoriesRelay
             .map { Reactor.Action.getSelectedCategories($0) }

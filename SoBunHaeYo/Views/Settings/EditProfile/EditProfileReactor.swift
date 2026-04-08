@@ -134,24 +134,16 @@ class EditProfileReactor: Reactor {
         return settingNetworkManager.patchProfileImage(profileImage: profileImage)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success {
-                    self.logger.debug("프로필 이미지 변경 성공")
-                    
-                    return Observable.just(.setProfileSaved)
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("프로필 이미지 변경 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("프로필 이미지 변경 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("프로필 이미지 변경 성공")
+                
+                return Observable.just(.setProfileSaved)
             }
             .catch { error in
-                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("프로필 이미지 변경 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
     
@@ -162,24 +154,16 @@ class EditProfileReactor: Reactor {
         return settingNetworkManager.patchNickname(nickname: nickname)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success {
-                    self.logger.debug("닉네임 변경 성공")
-                    
-                    return Observable.just(.setProfileSaved)
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("닉네임 변경 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("닉네임 변경 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("닉네임 변경 성공")
+                
+                return Observable.just(.setProfileSaved)
             }
             .catch { error in
-                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("닉네임 변경 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
     
@@ -191,24 +175,16 @@ class EditProfileReactor: Reactor {
         return signInNetworkManager.saveProfile(nickname: nickname, profileImage: profileImage)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success {
-                    self.logger.debug("프로필 이미지 및 닉네임 변경 성공")
-                    
-                    return Observable.just(.setProfileSaved)
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("프로필 이미지 및 닉네임 변경 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("프로필 이미지 및 닉네임 변경 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("프로필 이미지 및 닉네임 변경 성공")
+                
+                return Observable.just(.setProfileSaved)
             }
             .catch { error in
-                return Observable.just(.setErrorMessage(String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)))
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
+
+                self.logger.critical("프로필 이미지 및 닉네임 변경 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                return Observable.just(.setErrorMessage(errorMessage))
             }
     }
     

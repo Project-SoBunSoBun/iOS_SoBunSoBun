@@ -92,27 +92,15 @@ class ChatRateMannerReactor: Reactor {
         return networkManager.rateManners(groupPostId: groupPostId, manners: body)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success {
-                    self.logger.debug("매너 평가 성공")
-                    
-                    return Observable.just(.setIsDone)
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("매너 평가 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("매너 평가 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("매너 평가 성공")
+                
+                return Observable.just(.setIsDone)
             }
             .catch { error in
-                self.logger.critical("매너 평가 실패: \(error.localizedDescription)")
-                
-                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
+                self.logger.critical("매너 평가 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }
@@ -123,27 +111,15 @@ class ChatRateMannerReactor: Reactor {
         return networkManager.rateManners(groupPostId: groupPostId, manners: body)
             .asObservable()
             .flatMap { response -> Observable<Mutation> in
-                if response.success {
-                    self.logger.debug("매너 평가 스킵 성공")
-                    
-                    return Observable.just(.setShouldPop)
-                } else {
-                    if let errorCode = response.errorCode {
-                        self.logger.critical("매너 평가 스킵 실패(\(errorCode)) - \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(errorCode)))
-                    } else {
-                        self.logger.critical("매너 평가 스킵 실패: \(response.message ?? "")")
-                        
-                        return Observable.just(.setErrorMessage(localizedErrorMessage(nil)))
-                    }
-                }
+                self.logger.debug("매너 평가 스킵 성공")
+                
+                return Observable.just(.setShouldPop)
             }
             .catch { error in
-                self.logger.critical("매너 평가 스킵 실패: \(error.localizedDescription)")
-                
-                let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
 
+                self.logger.critical("매너 평가 스킵 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
                 return Observable.just(.setErrorMessage(errorMessage))
             }
     }

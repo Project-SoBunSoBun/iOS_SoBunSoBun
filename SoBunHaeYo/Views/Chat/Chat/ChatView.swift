@@ -12,31 +12,32 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class ChatView: UIViewController {
+class ChatView: BaseViewController {
     private let chatRoomId: Int
-    
-    typealias Reactor = ChatReactor
-    private lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
-    
-    private let disposeBag = DisposeBag()
-    
-    private let logger = Logger(
-        subsystem: "SoBunHaeYo",
-        category: "Chat.Chat.View"
-    )
-    
-    private var rightMenuView: ChatRightMenuView?
     
     private let willLeave = PublishRelay<Void?>()
     
     init(chatRoomId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
         self.chatRoomId = chatRoomId
+        
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    private let logger = Logger(
+        subsystem: "SoBunHaeYo",
+        category: "Chat.Chat.View"
+    )
+    
+    typealias Reactor = ChatReactor
+    private lazy var reactor = ChatReactor(chatRoomId: chatRoomId)
+    
+    private let disposeBag = DisposeBag()
+    
+    private var rightMenuView: ChatRightMenuView?
     
     // MARK: - 디자인 요소
     private lazy var gradientLayer = BackgroundGradientLayer(view)
@@ -183,8 +184,6 @@ class ChatView: UIViewController {
         configureUI()
         bind(reactor: reactor)
         
-        // tableview pop gesture 충돌 방지
-        navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -215,7 +214,6 @@ class ChatView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
         [chatStackView, safeareaBottomBackgroundView, tableView, topNavigationBar, chatCellMenuDropDownView].forEach {
@@ -272,12 +270,13 @@ class ChatView: UIViewController {
 }
 
 extension ChatView {
-    private func bind(reactor: ChatReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: ChatReactor) {
+    private func bindAction(reactor: Reactor) {
         // 오른쪽 메뉴 버튼
         rightMenuButton.rx.tap
             .map { Reactor.Action.rightMenuButtonTapped }
@@ -336,10 +335,6 @@ extension ChatView {
                 
                 alert.onPrimaryTapped = {
                     reactor.action.onNext(.sendInviteCard)
-                }
-                
-                alert.onCancelTapped = {
-                    
                 }
                 
                 alert.show(on: self)
@@ -432,12 +427,32 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 클립보드 이미지 붙여넣기
+        chatTextView.textView.imagePasted
+            .emit(onNext: { [weak self] image in
+                guard let self = self else { return }
+                
+                let confirmVC = ImagePickerConfirmView(image: image)
+                
+                confirmVC.onConfirm
+                    .take(1)
+                    .observe(on: MainScheduler.instance)
+                    .subscribe(onNext: { [weak self] in
+                        self?.reactor.action.onNext(.sendImage(image))
+                    })
+                    .disposed(by: confirmVC.disposeBag)
+                
+                self.present(confirmVC, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
         // 채팅 페이지네이션
         tableView.rx.willDisplayCell
             .filter { [weak self] _, indexPath -> Bool in
                 guard let self = self else { return false }
                 
                 let lastRow = self.tableView.numberOfRows(inSection: 0) - 1
+                
                 return self.tableView.isDragging && indexPath.row >= lastRow - 10
             }
             .throttle(.milliseconds(500), scheduler: MainScheduler.instance)
@@ -502,7 +517,7 @@ extension ChatView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: ChatReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.detailInfoModel }
             .distinctUntilChanged()
             .filter { $0 != nil }
@@ -870,13 +885,7 @@ extension ChatView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.show(on: self)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         
@@ -887,17 +896,7 @@ extension ChatView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.onPrimaryTapped = {
-                    self.navigationController?.popViewController(animated: true)
-                }
-                
-                alert.show(on: self)
+                self.showCriticalErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }
@@ -934,29 +933,6 @@ extension ChatView {
             navController.popToViewController(navigationTabView, animated: true)
         }
         
-        alert.onCancelTapped = {
-            
-        }
-        
         alert.show(on: self)
     }
 }
-
-extension ChatView: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return (self.navigationController?.viewControllers.count ?? 0) > 1
-    }
-}
-
-#if DEBUG
-// 미리보기
-import SwiftUI
-
-struct ChatViewController_Preview: PreviewProvider {
-    static var previews: some SwiftUI.View {
-        UIViewControllerPreview {
-            ChatView(chatRoomId: -1)
-        }
-    }
-}
-#endif

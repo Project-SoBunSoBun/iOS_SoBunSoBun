@@ -344,6 +344,42 @@
         }
       }
     },
+    "NotificationReplyActionTitle" : {
+      "comment" : "Common - 채팅 알림 빠른 답장 액션 버튼",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "답장하기"
+          }
+        }
+      }
+    },
+    "NotificationReplyButtonTitle" : {
+      "comment" : "Common - 채팅 알림 빠른 답장 전송 버튼",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전송"
+          }
+        }
+      }
+    },
+    "NotificationReplyPlaceholder" : {
+      "comment" : "Common - 채팅 알림 빠른 답장 입력창 placeholder",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "메시지를 입력해 주세요."
+          }
+        }
+      }
+    },
     "Notice" : {
       "comment" : "Common",
       "extractionState" : "manual",

@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class TermsView: UIViewController {
+class TermsView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.Terms.View"
@@ -55,8 +55,6 @@ class TermsView: UIViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-    
         [topNavigationBar, termsSettingCard].forEach {
             view.addSubview($0)
         }
@@ -82,12 +80,13 @@ class TermsView: UIViewController {
 }
 
 extension TermsView {
-    private func bind(reactor: TermsReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: TermsReactor) {
+    private func bindAction(reactor: Reactor) {
         // 서비스 이용 약관 클릭
         serviceTerm.didTap
             .map { Reactor.Action.serviceTermTapped }
@@ -107,7 +106,7 @@ extension TermsView {
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: TermsReactor) {
+    private func bindState(reactor: Reactor) {
         // 세팅 카드 버튼 클릭 시 화면 이동
         reactor.pulse(\.$shouldNavigate)
             .compactMap { $0 }

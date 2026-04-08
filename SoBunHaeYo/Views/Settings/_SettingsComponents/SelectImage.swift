@@ -24,7 +24,7 @@ class SelectImage: UIView {
     // 카메라 아이콘
     private let cameraIcon: UIImageView = {
         let iv = UIImageView()
-        iv.image = .blackCamera.resize(.init(width: 36, height: 36))
+        iv.image = .blackCamera
         iv.contentMode = .scaleAspectFit
         
         return iv

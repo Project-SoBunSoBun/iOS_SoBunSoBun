@@ -14,6 +14,14 @@ import RxGesture
 class ChatTableViewCell: UITableViewCell {
     static let identifier = "ChatTableViewCell"
     
+    let didImageLoad = PublishRelay<Void>()
+    let didTextLongPressed = PublishRelay<UIView>()
+    let didImageTapped = PublishRelay<UIImage?>()
+    let didInviteCardButtonTapped = PublishRelay<Int>()
+    let didSettlementCardButtonTapped = PublishRelay<Int>()
+    
+    var disposeBag = DisposeBag()
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -44,14 +52,6 @@ class ChatTableViewCell: UITableViewCell {
         
         // Configure the view for the selected state
     }
-    
-    let didImageLoad = PublishRelay<Void>()
-    let didTextLongPressed = PublishRelay<UIView>()
-    let didImageTapped = PublishRelay<UIImage?>()
-    let didInviteCardButtonTapped = PublishRelay<Int>()
-    let didSettlementCardButtonTapped = PublishRelay<Int>()
-    
-    var disposeBag = DisposeBag()
     
     var chatCellView: UIView = UIView()
     

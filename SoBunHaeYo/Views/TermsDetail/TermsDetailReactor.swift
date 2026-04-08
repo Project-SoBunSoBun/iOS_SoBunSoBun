@@ -86,7 +86,7 @@ class TermsDetailReactor: Reactor {
             .catch { [weak self] error in
                 guard let self = self else { return Observable.empty() }
                 
-                self.logger.critical("\(errorLogMessage): \(error.localizedDescription)")
+                self.logger.critical("\(errorLogMessage): \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 
                 return Observable.just(.setErrorMessage(String(localized: String.LocalizationValue(errorKey), table: "Settings")))
             }

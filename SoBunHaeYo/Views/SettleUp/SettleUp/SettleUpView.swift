@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class SettleUpView: UIViewController {
+class SettleUpView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "SettleUp.SettleUp.View"
@@ -142,8 +142,6 @@ class SettleUpView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [titleLabel, categoryStackView, gradientView, emptyView, tableView].forEach {
             view.addSubview($0)
         }
@@ -208,6 +206,7 @@ class SettleUpView: UIViewController {
 }
 
 extension SettleUpView {
+    // reactor와 view 연결
     func bind(reactor: SettleUpReactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -311,7 +310,9 @@ extension SettleUpView {
                         
                         alert.onPrimaryTapped = { [weak self] in
                             guard let self = self,
-                                  let chatRoomId = item.chatRoomId else { return }
+                                  let chatRoomId = item.chatRoomId else {
+                                return
+                            }
                             
                             self.reactor.action.onNext(.sendSettlementCard(settlementId: item.settlementId, chatRoomId: chatRoomId))
                         }

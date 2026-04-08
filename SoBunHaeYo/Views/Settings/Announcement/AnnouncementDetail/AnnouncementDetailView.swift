@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class AnnouncementDetailView: UIViewController {
+class AnnouncementDetailView: BaseViewController {
     init(model: AnnouncementContentModel, nibName nibNameOrNil: String? = nil
          , bundle nibBundleOrNil: Bundle? = nil) {
         reactor = AnnouncementDetailReactor(id: model.id)
@@ -62,8 +62,6 @@ class AnnouncementDetailView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
         }
@@ -114,16 +112,17 @@ class AnnouncementDetailView: UIViewController {
 }
 
 extension AnnouncementDetailView {
-    private func bind(reactor: AnnouncementDetailReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: AnnouncementDetailReactor) {
+    private func bindAction(reactor: Reactor) {
         reactor.action.onNext(.viewDidLoad)
     }
     
-    private func bindState(reactor: AnnouncementDetailReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.noticeDetail }
             .compactMap { $0 }
             .distinctUntilChanged()

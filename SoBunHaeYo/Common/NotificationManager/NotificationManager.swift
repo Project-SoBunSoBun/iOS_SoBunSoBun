@@ -23,7 +23,46 @@ final class NotificationManager: NSObject {
     )
     
     private let networkManager = CommonNetworkManager()
+    private let chatNetworkManager = ChatNetworkManager()
     private let disposeBag = DisposeBag()
+    
+    // 알림 카테고리 등록 (앱 시작 시 1회 호출)
+    func registerCategories() {
+        let replyAction = UNTextInputNotificationAction(
+            identifier: "REPLY_ACTION",
+            title: String(localized: "NotificationReplyActionTitle", table: "Common"),
+            options: [],
+            textInputButtonTitle: String(localized: "NotificationReplyButtonTitle", table: "Common"),
+            textInputPlaceholder: String(localized: "NotificationReplyPlaceholder", table: "Common")
+        )
+        
+        let chatCategory = UNNotificationCategory(
+            identifier: "CHAT",
+            actions: [replyAction],
+            intentIdentifiers: [],
+            options: []
+        )
+        
+        UNUserNotificationCenter.current().setNotificationCategories([chatCategory])
+        
+        logger.debug("알림 카테고리 등록 완료")
+    }
+    
+    // 채팅 알림 빠른 답장 전송
+    func handleChatReply(chatRoomId: Int, message: String) {
+        chatNetworkManager.sendText(id: chatRoomId, message: message)
+            .asObservable()
+            .subscribe(onNext: { [weak self] model in
+                guard let self else { return }
+                
+                logger.debug("채팅 알림 답장 전송 완료")
+            }, onError: { [weak self] error in
+                guard let self else { return }
+                
+                logger.critical("채팅 알림 답장 전송 중 오류 발생: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+            })
+            .disposed(by: disposeBag)
+    }
     
     // 알림 권한 요청
     func requestAuthorization(completion: @escaping (Bool) -> Void) {
@@ -93,11 +132,11 @@ final class NotificationManager: NSObject {
                         self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생(\(errorCode)) - \(model.message ?? "")")
                     } else {
                         self.logger.debug("FCM 토큰 서버 전송 완료\nDevice Id: \(uuid)\nFCM Token: \(token)")
-                        
+
                         KeyChain.shared.set(key: "FCM_TOKEN", value: token)
                     }
                 }, onError: { error in
-                    self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생: \(error.localizedDescription)")
+                    self.logger.critical("FCM 토큰 서버로 전송 중 오류 발생: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
                 })
                 .disposed(by: self.disposeBag)
         }

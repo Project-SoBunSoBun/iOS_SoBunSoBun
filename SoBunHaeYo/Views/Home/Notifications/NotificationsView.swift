@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import OSLog
 
-class NotificationsView: UIViewController {
+class NotificationsView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Home.NotificationsView.View"
@@ -80,8 +80,6 @@ class NotificationsView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, tableView, loadingView].forEach {
             view.addSubview($0)
         }
@@ -107,6 +105,7 @@ class NotificationsView: UIViewController {
 }
 
 extension NotificationsView {
+    // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
@@ -222,14 +221,14 @@ extension NotificationsView {
             .bind(to: refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         
-        // 에러 알러트
+        // 오류 alert
         reactor.pulse(\.$errorMessage)
             .compactMap { $0 }
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                self.errorAlert(subTitle: message)
+                self.showErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
         
@@ -238,22 +237,5 @@ extension NotificationsView {
             .distinctUntilChanged()
             .bind(to: loadingView.rx.isHidden)
             .disposed(by: disposeBag)
-    }
-    
-    // 에러 알러트
-    private func errorAlert(subTitle: String) {
-        let alert = CustomAlertView(
-            title: String(localized: "Error", table: "Error"),
-            subTitle: subTitle,
-            primaryTitleKey: String(localized: "Confirm", table: "Common")
-        )
-        
-        alert.onPrimaryTapped = { [weak self] in
-            guard let self = self else { return }
-            
-            self.logger.debug("확인 버튼 클릭")
-        }
-        
-        alert.show(on: self)
     }
 }

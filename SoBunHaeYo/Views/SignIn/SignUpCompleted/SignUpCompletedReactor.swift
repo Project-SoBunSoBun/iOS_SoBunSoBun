@@ -71,7 +71,7 @@ class SignUpCompletedReactor: Reactor {
                     Observable.just(.setNickname(userInfo.nickname ?? "Error"))
                 }
                 .catch { error in
-                    let errorMessage = String(format: String(localized: "ErrorMessageWithReason", table: "Error"), error.localizedDescription)
+                    let errorMessage = localizedErrorMessage((error as? APIErrorModel)?.errorCode)
                     
                     return Observable.just(.setErrorMessage(errorMessage))
                 },

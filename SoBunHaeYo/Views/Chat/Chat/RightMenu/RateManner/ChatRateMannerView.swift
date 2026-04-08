@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import OSLog
 
-class ChatRateMannerView: UIViewController {
+class ChatRateMannerView: BaseViewController {
     private let groupPostId: Int
     
     init(
@@ -52,10 +52,6 @@ class ChatRateMannerView: UIViewController {
                 primaryTitleKey: String(localized: "SkipRateMannersAlertPrimary", table: "Chat"),
                 cancelTitleKey: String(localized: "SkipRateMannersAlertCancel", table: "Chat")
             )
-            
-            alert.onPrimaryTapped = {
-                
-            }
             
             alert.onCancelTapped = {
                 self.reactor.action.onNext(.skipTapped)
@@ -100,8 +96,6 @@ class ChatRateMannerView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, button, scrollView].forEach {
             view.addSubview($0)
         }
@@ -139,17 +133,19 @@ class ChatRateMannerView: UIViewController {
 }
 
 extension ChatRateMannerView {
-    private func bind(reactor: ChatRateMannerReactor) {
+    // reactor와 view 연결
+    private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
     }
     
-    private func bindAction(reactor: ChatRateMannerReactor) {
+    private func bindAction(reactor: Reactor) {
         button.rx.tap
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 
                 let manners = self.getRatedManners()
+                
                 self.logger.debug("매너 평가 목록: \(manners)")
                 
                 let alert = CustomAlertView(
@@ -163,16 +159,12 @@ extension ChatRateMannerView {
                     reactor.action.onNext(.rateMannersButtonTapped(manners))
                 }
                 
-                alert.onCancelTapped = {
-                    
-                }
-                
                 alert.show(on: self)
             })
             .disposed(by: disposeBag)
     }
     
-    private func bindState(reactor: ChatRateMannerReactor) {
+    private func bindState(reactor: Reactor) {
         reactor.state.map { $0.members }
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] members in
@@ -236,17 +228,7 @@ extension ChatRateMannerView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
-                    title: String(localized: "Error", table: "Error"),
-                    subTitle: message,
-                    primaryTitleKey: String(localized: "Confirm", table: "Common")
-                )
-                
-                alert.onPrimaryTapped = {
-                    self.navigationController?.popViewController(animated: true)
-                }
-                
-                alert.show(on: self)
+                self.showCriticalErrorAlert(message: message)
             })
             .disposed(by: disposeBag)
     }

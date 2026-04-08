@@ -10,11 +10,15 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class ChatRoomListView: UIViewController {
+class ChatRoomListView: BaseViewController {
     typealias Reactor = ChatRoomListReactor
-    let reactor = ChatRoomListReactor()
+    private let reactor = ChatRoomListReactor()
     
     private let disposeBag = DisposeBag()
+    
+    func receivedChatRoomList(_ models: [ChatRoomListResponseDataModel]) {
+        reactor.action.onNext(.receivedChatRoomList(models))
+    }
     
     // MARK: - 디자인 요소
     private let titleLabel: UILabel = {
@@ -117,7 +121,6 @@ class ChatRoomListView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
         [titleLabel, buttonScrollView, privateChatTableView, groupChatTableView].forEach {
@@ -162,6 +165,7 @@ class ChatRoomListView: UIViewController {
 }
 
 extension ChatRoomListView {
+    // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
         bindState(reactor: reactor)
