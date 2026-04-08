@@ -302,20 +302,21 @@ extension SettleUpView {
                         
                         self.logger.debug("공유 버튼 탭: id=\(item.settlementId)")
                         
-                        let alert = CustomAlertView(
+                        let alert = CustomAlert(
                             title: String(localized: "SettleUpShareConfirmTitle", table: "SettleUp"),
                             primaryTitleKey: String(localized: "Share", table: "Common"),
                             cancelTitleKey: String(localized: "Cancel", table: "Common")
                         )
                         
-                        alert.onPrimaryTapped = { [weak self] in
+                        alert.primaryTap.emit(onNext: { [weak self] in
                             guard let self = self,
                                   let chatRoomId = item.chatRoomId else {
                                 return
                             }
                             
                             self.reactor.action.onNext(.sendSettlementCard(settlementId: item.settlementId, chatRoomId: chatRoomId))
-                        }
+                        })
+                        .disposed(by: alert.disposeBag)
                         
                         alert.show(on: self)
                     })
@@ -357,7 +358,7 @@ extension SettleUpView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "SettleUpShareSuccessMessage", table: "SettleUp"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )

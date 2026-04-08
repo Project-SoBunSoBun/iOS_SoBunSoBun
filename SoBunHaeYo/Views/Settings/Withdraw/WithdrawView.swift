@@ -384,15 +384,16 @@ extension WithdrawView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "Error", table: "Error"),
                     subTitle: message,
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     AuthManager.shared.logout()
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -406,14 +407,15 @@ extension WithdrawView {
     }
     
     private func withdrawAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "WithdrawCompleted", table: "Settings"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             AuthManager.shared.withdraw()
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

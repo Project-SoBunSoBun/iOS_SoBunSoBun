@@ -170,16 +170,17 @@ extension ChatRoomKickView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alertView = CustomAlertView(
+                let alertView = CustomAlert(
                     title: String(localized: "Warning", table: "Common"),
                     subTitle: String(localized: "KickMemberAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Kick", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alertView.onPrimaryTapped = {
+                alertView.primaryTap.emit(onNext: {
                     reactor.action.onNext(.kickAccepted)
-                }
+                })
+                .disposed(by: alertView.disposeBag)
                 
                 alertView.show(on: self)
             })
@@ -191,7 +192,7 @@ extension ChatRoomKickView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alertView = CustomAlertView(
+                let alertView = CustomAlert(
                     title: String(localized: "KickMemberDoneAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )

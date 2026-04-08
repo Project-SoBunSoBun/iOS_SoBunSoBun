@@ -99,22 +99,24 @@ class CustomImagePicker: NSObject {
     private func showPermissionAlert() {
         guard let viewController = presentingViewController else { return }
         
-        let alertView = CustomAlertView(
+        let alertView = CustomAlert(
             title: String(localized: "GalleryPermissionMessage", table: "SignIn"),
             primaryTitleKey: String(localized: "GoToSetting", table: "Common")
         )
         
-        alertView.onPrimaryTapped = {
+        alertView.primaryTap.emit(onNext: {
             if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsURL)
             }
-        }
+        })
+        .disposed(by: alertView.disposeBag)
         
-        alertView.onCancelTapped = { [weak self] in
+        alertView.cancelTap.emit(onNext: { [weak self] in
             guard let self = self else { return }
             
             self.logger.debug("권한 요청 취소됨")
-        }
+        })
+        .disposed(by: alertView.disposeBag)
         
         alertView.show(on: viewController)
     }
@@ -123,7 +125,7 @@ class CustomImagePicker: NSObject {
     private func showImageSizeAlert() {
         guard let viewController = presentingViewController else { return }
         
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "ImageSizeExceeded", table: "Common"),
             subTitle: String(localized: "SelectOnlyFilesUnder5MB", table: "Common"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")

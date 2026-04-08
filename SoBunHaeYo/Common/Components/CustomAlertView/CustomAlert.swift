@@ -7,18 +7,22 @@
 
 import UIKit
 import SnapKit
-import ReactorKit
 import RxSwift
 import RxCocoa
 
-class CustomAlertView: UIView {
-    typealias Reactor = CustomAlertViewReactor
-    private let reactor = CustomAlertViewReactor()
+class CustomAlert: UIView {
+    private let primaryTapRelay = PublishRelay<Void>()
+    private let cancelTapRelay = PublishRelay<Void>()
     
-    var onPrimaryTapped: (() -> Void)?
-    var onCancelTapped: (() -> Void)?
+    let disposeBag = DisposeBag()
     
-    var disposeBag = DisposeBag()
+    var primaryTap: Signal<Void> {
+        primaryTapRelay.asSignal()
+    }
+    
+    var cancelTap: Signal<Void> {
+        cancelTapRelay.asSignal()
+    }
     
     init(title: String,
          subTitle: String? = nil,
@@ -34,8 +38,8 @@ class CustomAlertView: UIView {
             primaryTitleKey: primaryTitleKey,
             cancelTitleKey: cancelTitleKey
         )
-        
-        bind(reactor: reactor)
+
+        bind()
     }
     
     required init?(coder: NSCoder) {
@@ -237,7 +241,9 @@ class CustomAlertView: UIView {
     
     func show(on viewController: UIViewController) {
         guard let window = viewController.view.window else { return }
+
         window.addSubview(self)
+
         self.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -252,45 +258,24 @@ class CustomAlertView: UIView {
     }
 }
 
-extension CustomAlertView {
-    private func bind(reactor: CustomAlertViewReactor) {
-        bindAction(reactor: reactor)
-        bindState(reactor: reactor)
-    }
-    
-    private func bindAction(reactor: CustomAlertViewReactor) {
-        // 설정 버튼 탭
+extension CustomAlert {
+    private func bind() {
         primaryButton.rx.tap
-            .map { Reactor.Action.settingButtonTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        // 취소 버튼 탭
-        cancelButton.rx.tap
-            .map { Reactor.Action.cancelButtonTapped }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-    }
-    
-    private func bindState(reactor:CustomAlertViewReactor) {
-        reactor.pulse(\.$shouldOpenSettings)
-            .compactMap { $0 }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .do(onNext: { [weak self] in
                 guard let self = self else { return }
                 
-                self.onPrimaryTapped?()
                 self.removeFromSuperview()
             })
+            .bind(to: primaryTapRelay)
             .disposed(by: disposeBag)
-        
-        reactor.pulse(\.$shouldDismiss)
-            .compactMap { $0 }
-            .observe(on: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
-                self?.onCancelTapped?()
-                self?.removeFromSuperview()
+
+        cancelButton.rx.tap
+            .do(onNext: { [weak self] in
+                guard let self = self else { return }
+                
+                self.removeFromSuperview()
             })
+            .bind(to: cancelTapRelay)
             .disposed(by: disposeBag)
     }
 }

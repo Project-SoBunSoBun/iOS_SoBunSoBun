@@ -303,30 +303,32 @@ extension ReportView {
     }
     
     private func showReportConfirmAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "Notice", table: "Common"),
             subTitle: String(localized: "ReportConfirmAlertSubTitle", table: "Report"),
             primaryTitleKey: String(localized: "Report", table: "Report"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             self.reactor.action.onNext(.report)
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }
     
     private func showReportDoneAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "Notice", table: "Common"),
             subTitle: String(localized: "ReportDoneAlertSubTitle", table: "Report"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             self.navigationController?.popViewController(animated: true)
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

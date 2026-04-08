@@ -120,19 +120,20 @@ extension NotificationSettingView {
     
     // 알림 권한 설정 알림창
     private func showNotificationSettingAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "MoveToSetting", table: "Settings"),
             subTitle: String(localized: "MoveToSettingDesc", table: "Settings"),
             primaryTitleKey: String(localized: "Move", table: "Common"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             // 설정 앱으로 이동
             if let settingsUrl = URL(string: UIApplication.openNotificationSettingsURLString) {
                 UIApplication.shared.open(settingsUrl)
             }
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

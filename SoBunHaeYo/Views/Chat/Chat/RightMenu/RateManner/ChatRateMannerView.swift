@@ -46,16 +46,17 @@ class ChatRateMannerView: BaseViewController {
         let tnb = TopNavigationBar()
         tnb.title = String(localized: "RateManners", table: "Chat")
         tnb.onBackButtonTapped = {
-            let alert = CustomAlertView(
+            let alert = CustomAlert(
                 title: String(localized: "SkipRateMannersAlertTitle", table: "Chat"),
                 subTitle: String(localized: "SkipRateMannersAlertSubTitle", table: "Chat"),
                 primaryTitleKey: String(localized: "SkipRateMannersAlertPrimary", table: "Chat"),
                 cancelTitleKey: String(localized: "SkipRateMannersAlertCancel", table: "Chat")
             )
             
-            alert.onCancelTapped = {
+            alert.cancelTap.emit(onNext: {
                 self.reactor.action.onNext(.skipTapped)
-            }
+            })
+            .disposed(by: alert.disposeBag)
             
             alert.show(on: self)
         }
@@ -148,16 +149,17 @@ extension ChatRateMannerView {
                 
                 self.logger.debug("매너 평가 목록: \(manners)")
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "ConfirmRateMannersAlertTitle", table: "Chat"),
                     subTitle: String(localized: "ConfirmRateMannersAlertSubTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Rate", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.rateMannersButtonTapped(manners))
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -200,14 +202,15 @@ extension ChatRateMannerView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "RateMannersDoneAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     self.navigationController?.popViewController(animated: true)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
