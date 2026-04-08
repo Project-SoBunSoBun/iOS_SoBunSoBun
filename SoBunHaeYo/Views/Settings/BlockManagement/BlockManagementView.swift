@@ -150,16 +150,17 @@ extension BlockManagementView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "UnblockAlertTitle", table: "Settings"),
                     subTitle: String(localized: "UnblockAlertSubTitle", table: "Settings"),
                     primaryTitleKey: String(localized: "UnblockAlertConfirm", table: "Settings"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.unblockConfirmed)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })

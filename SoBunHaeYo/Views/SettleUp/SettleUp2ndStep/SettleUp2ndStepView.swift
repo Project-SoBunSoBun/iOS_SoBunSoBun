@@ -282,7 +282,7 @@ extension SettleUp2ndStepView {
     
     // 검증 오류 알러트
     private func validationErrorAlert(subtitle: String) {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "ValidationError", table: "SettleUp"),
             subTitle: NSLocalizedString(subtitle, tableName: "SettleUp", comment: ""),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
