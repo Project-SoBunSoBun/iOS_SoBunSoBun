@@ -157,9 +157,10 @@ extension BlockManagementView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.unblockConfirmed)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })

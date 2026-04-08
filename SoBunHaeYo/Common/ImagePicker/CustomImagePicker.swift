@@ -104,17 +104,19 @@ class CustomImagePicker: NSObject {
             primaryTitleKey: String(localized: "GoToSetting", table: "Common")
         )
         
-        alertView.onPrimaryTapped = {
+        alertView.primaryTap.emit(onNext: {
             if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsURL)
             }
-        }
+        })
+        .disposed(by: alertView.disposeBag)
         
-        alertView.onCancelTapped = { [weak self] in
+        alertView.cancelTap.emit(onNext: { [weak self] in
             guard let self = self else { return }
             
             self.logger.debug("권한 요청 취소됨")
-        }
+        })
+        .disposed(by: alertView.disposeBag)
         
         alertView.show(on: viewController)
     }

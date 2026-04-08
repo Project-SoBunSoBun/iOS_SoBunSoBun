@@ -301,10 +301,11 @@ extension ChatRightMenuView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alertView.onPrimaryTapped = {
+                alertView.primaryTap.emit(onNext: {
                     self.willLeave?.accept(())
                     self.navigationController?.popViewController(animated: true)
-                }
+                })
+                .disposed(by: alertView.disposeBag)
                 
                 alertView.show(on: self)
             })

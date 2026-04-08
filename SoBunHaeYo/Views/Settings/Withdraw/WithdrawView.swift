@@ -390,9 +390,10 @@ extension WithdrawView {
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     AuthManager.shared.logout()
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -411,9 +412,10 @@ extension WithdrawView {
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             AuthManager.shared.withdraw()
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

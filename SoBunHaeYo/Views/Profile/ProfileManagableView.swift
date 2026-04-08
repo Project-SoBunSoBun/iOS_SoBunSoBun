@@ -242,9 +242,10 @@ extension ProfileManagableView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.blockUser)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -277,9 +278,10 @@ extension ProfileManagableView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.unBlockUser)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })

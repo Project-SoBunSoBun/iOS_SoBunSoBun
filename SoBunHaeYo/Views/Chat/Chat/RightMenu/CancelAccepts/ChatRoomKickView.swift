@@ -177,9 +177,10 @@ extension ChatRoomKickView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alertView.onPrimaryTapped = {
+                alertView.primaryTap.emit(onNext: {
                     reactor.action.onNext(.kickAccepted)
-                }
+                })
+                .disposed(by: alertView.disposeBag)
                 
                 alertView.show(on: self)
             })

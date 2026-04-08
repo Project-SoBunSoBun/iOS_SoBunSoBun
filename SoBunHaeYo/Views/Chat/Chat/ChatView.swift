@@ -333,9 +333,10 @@ extension ChatView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.sendInviteCard)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -360,13 +361,14 @@ extension ChatView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     if let settlementId = model.data?.settlementId {
                         reactor.action.onNext(.sendSettlementCard(settlementId))
                     } else {
                         self.showNotSettledYetForOwnerAlert()
                     }
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -722,9 +724,10 @@ extension ChatView {
                             cancelTitleKey: String(localized: "Cancel", table: "Common")
                         )
                         
-                        alert.onPrimaryTapped = {
+                        alert.primaryTap.emit(onNext: {
                             reactor.action.onNext(.acceptGroupChatRoom(inviteId))
-                        }
+                        })
+                        .disposed(by: alert.disposeBag)
                         
                         alert.show(on: self)
                     })
@@ -924,14 +927,15 @@ extension ChatView {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             guard let navController = self.navigationController,
                   let navigationTabView = navController.viewControllers.first(where: { $0 is NavigationTabView }) as? NavigationTabView else {
                 return
             }
             
             navController.popToViewController(navigationTabView, animated: true)
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

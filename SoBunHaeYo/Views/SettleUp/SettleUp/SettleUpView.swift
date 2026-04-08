@@ -308,14 +308,15 @@ extension SettleUpView {
                             cancelTitleKey: String(localized: "Cancel", table: "Common")
                         )
                         
-                        alert.onPrimaryTapped = { [weak self] in
+                        alert.primaryTap.emit(onNext: { [weak self] in
                             guard let self = self,
                                   let chatRoomId = item.chatRoomId else {
                                 return
                             }
                             
                             self.reactor.action.onNext(.sendSettlementCard(settlementId: item.settlementId, chatRoomId: chatRoomId))
-                        }
+                        })
+                        .disposed(by: alert.disposeBag)
                         
                         alert.show(on: self)
                     })

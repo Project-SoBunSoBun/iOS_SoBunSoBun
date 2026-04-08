@@ -334,12 +334,13 @@ extension SignUpView {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             // 설정 앱으로 이동
             if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
                 UIApplication.shared.open(settingsUrl)
             }
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

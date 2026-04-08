@@ -617,9 +617,10 @@ class SettleUp1stStepView: BaseViewController {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             self.reactor.action.onNext(.productDeleted(index))
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }
@@ -632,9 +633,10 @@ class SettleUp1stStepView: BaseViewController {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             self.reactor.action.onNext(.productEdited(index))
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

@@ -53,9 +53,10 @@ class ChatRateMannerView: BaseViewController {
                 cancelTitleKey: String(localized: "SkipRateMannersAlertCancel", table: "Chat")
             )
             
-            alert.onCancelTapped = {
+            alert.cancelTap.emit(onNext: {
                 self.reactor.action.onNext(.skipTapped)
-            }
+            })
+            .disposed(by: alert.disposeBag)
             
             alert.show(on: self)
         }
@@ -155,9 +156,10 @@ extension ChatRateMannerView {
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.rateMannersButtonTapped(manners))
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -205,9 +207,10 @@ extension ChatRateMannerView {
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     self.navigationController?.popViewController(animated: true)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })

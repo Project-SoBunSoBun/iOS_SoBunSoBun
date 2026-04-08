@@ -167,9 +167,10 @@ class AuthManager {
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     self.switchToLoginView()
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: currentVC)
             }

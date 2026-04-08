@@ -507,9 +507,10 @@ extension InquiriesView {
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             self.navigationController?.popViewController(animated: true)
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

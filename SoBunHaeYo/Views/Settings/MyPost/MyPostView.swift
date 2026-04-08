@@ -300,12 +300,13 @@ extension MyPostView {
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = { [weak self] in
+        alert.primaryTap.emit(onNext: { [weak self] in
             guard let self = self,
                   let selectedId = self.reactor.currentState.selectedId else { return }
             
             self.reactor.action.onNext(.deletePostId(selectedId))
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }
