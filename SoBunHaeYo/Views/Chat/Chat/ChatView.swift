@@ -427,6 +427,23 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
+        // 클립보드 이미지 붙여넣기
+        chatTextView.textView.onImagePaste = { [weak self] image in
+            guard let self = self else { return }
+            
+            let confirmVC = ImagePickerConfirmView(image: image)
+            
+            confirmVC.onConfirm
+                .take(1)
+                .observe(on: MainScheduler.instance)
+                .subscribe(onNext: { [weak self] in
+                    self?.reactor.action.onNext(.sendImage(image))
+                })
+                .disposed(by: confirmVC.disposeBag)
+            
+            self.present(confirmVC, animated: true)
+        }
+        
         // 채팅 페이지네이션
         tableView.rx.willDisplayCell
             .filter { [weak self] _, indexPath -> Bool in

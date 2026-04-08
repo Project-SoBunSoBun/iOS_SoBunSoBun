@@ -91,6 +91,18 @@ class BaseTextView: UITextView {
             .disposed(by: disposeBag)
     }
     
+    // 이미지 붙여넣기 감지 시 호출할 콜백
+    var onImagePaste: ((UIImage) -> Void)?
+    
+    // 클립보드에 이미지가 있으면 콜백으로 전달하고, 텍스트면 기본 붙여넣기 수행
+    override func paste(_ sender: Any?) {
+        if let image = UIPasteboard.general.image {
+            onImagePaste?(image)
+        } else {
+            super.paste(sender)
+        }
+    }
+    
     // 시스템 커서 숨김 (tintColor를 clear로 하면 스페이스바 트랙패드 모드가 비활성화되므로 caretRect로 처리)
     override func caretRect(for position: UITextPosition) -> CGRect {
         return .zero
