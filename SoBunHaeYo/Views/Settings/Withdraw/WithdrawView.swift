@@ -384,7 +384,7 @@ extension WithdrawView {
             .subscribe(onNext: { [weak self] message in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "Error", table: "Error"),
                     subTitle: message,
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
@@ -407,7 +407,7 @@ extension WithdrawView {
     }
     
     private func withdrawAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "WithdrawCompleted", table: "Settings"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )

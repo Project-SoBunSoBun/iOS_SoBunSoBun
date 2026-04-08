@@ -161,7 +161,7 @@ class AuthManager {
             guard let self = self else { return }
             
             if let currentVC = currentWindow?.rootViewController {
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "Notice", table: "Common"),
                     subTitle: String(localized: "YouShouldSignInAgain", table: "Common"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")

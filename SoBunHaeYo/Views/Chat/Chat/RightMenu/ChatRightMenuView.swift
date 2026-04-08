@@ -294,7 +294,7 @@ extension ChatRightMenuView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alertView = CustomAlertView(
+                let alertView = CustomAlert(
                     title: String(localized: "Warning", table: "Common"),
                     subTitle: String(localized: "LeaveChatRoomAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "LeaveChatRoom", table: "Chat"),

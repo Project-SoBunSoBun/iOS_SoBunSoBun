@@ -120,7 +120,7 @@ extension NotificationSettingView {
     
     // 알림 권한 설정 알림창
     private func showNotificationSettingAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "MoveToSetting", table: "Settings"),
             subTitle: String(localized: "MoveToSettingDesc", table: "Settings"),
             primaryTitleKey: String(localized: "Move", table: "Common"),

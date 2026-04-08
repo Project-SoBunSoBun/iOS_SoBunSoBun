@@ -303,7 +303,7 @@ extension ReportView {
     }
     
     private func showReportConfirmAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "Notice", table: "Common"),
             subTitle: String(localized: "ReportConfirmAlertSubTitle", table: "Report"),
             primaryTitleKey: String(localized: "Report", table: "Report"),
@@ -319,7 +319,7 @@ extension ReportView {
     }
     
     private func showReportDoneAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "Notice", table: "Common"),
             subTitle: String(localized: "ReportDoneAlertSubTitle", table: "Report"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")

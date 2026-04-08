@@ -435,7 +435,7 @@ extension BugReportView {
     }
     
     private func bugReportAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "CompletedBugReport", table: "Settings"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )

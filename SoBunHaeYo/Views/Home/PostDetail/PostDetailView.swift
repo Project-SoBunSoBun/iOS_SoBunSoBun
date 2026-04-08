@@ -877,7 +877,7 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "DeletePostTitle", table: "Home"),
                     primaryTitleKey: String(localized: "Delete", table: "Home"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
@@ -899,7 +899,7 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "DeleteDoneTitle", table: "Home"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
@@ -935,7 +935,7 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "DeleteCommentTitle", table: "Home"),
                     primaryTitleKey: String(localized: "Delete", table: "Home"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
@@ -957,7 +957,7 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "DeleteDoneTitle", table: "Home"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )

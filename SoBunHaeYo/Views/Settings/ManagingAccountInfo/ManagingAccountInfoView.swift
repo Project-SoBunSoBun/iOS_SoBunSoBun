@@ -127,7 +127,7 @@ extension ManagingAccountInfoView {
     }
     
     private func showLogOutAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "LogOutMessage", table: "Settings"),
             subTitle: String(localized: "LogOutSubMessage", table: "Settings"),
             primaryTitleKey: String(localized: "LogOut", table: "Settings"),

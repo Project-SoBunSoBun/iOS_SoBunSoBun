@@ -502,7 +502,7 @@ extension InquiriesView {
     }
     
     private func inquiriesAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "CompletedInquiries", table: "Settings"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )

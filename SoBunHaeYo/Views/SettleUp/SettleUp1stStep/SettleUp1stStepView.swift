@@ -611,7 +611,7 @@ class SettleUp1stStepView: BaseViewController {
     
     // 삭제 알림창
     private func showDeleteItemAlert(index: Int) {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "SettleUp1stStepDeleteMessage", table: "SettleUp"),
             primaryTitleKey: String(localized: "Delete", table: "Common"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")
@@ -627,7 +627,7 @@ class SettleUp1stStepView: BaseViewController {
     
     // 수정 알림창
     private func showEditItemAlert(index: Int) {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "SettleUp1stStepEditMessage", table: "SettleUp"),
             primaryTitleKey: String(localized: "Edit", table: "Common"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")

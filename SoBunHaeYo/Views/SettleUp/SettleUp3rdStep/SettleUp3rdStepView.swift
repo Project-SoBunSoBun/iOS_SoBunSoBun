@@ -277,7 +277,7 @@ extension SettleUp3rdStepView {
     }
     
     private func saveCheckAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "SettlementSaveCheckTitle", table: "SettleUp"),
             subTitle: String(localized: "SettlementSaveCheckSubtitle", table: "SettleUp"),
             primaryTitleKey: String(localized: "Confirm", table: "Common"),

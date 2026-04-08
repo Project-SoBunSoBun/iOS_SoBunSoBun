@@ -261,7 +261,7 @@ extension String {
 
 extension UIViewController {
     func showErrorAlert(message: String) {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "Error", table: "Error"),
             subTitle: message,
             primaryTitleKey: String(localized: "Confirm", table: "Common")
@@ -271,7 +271,7 @@ extension UIViewController {
     }
     
     func showCriticalErrorAlert(message: String) {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "Error", table: "Error"),
             subTitle: message,
             primaryTitleKey: String(localized: "Confirm", table: "Common")

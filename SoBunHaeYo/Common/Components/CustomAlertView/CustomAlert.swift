@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class CustomAlertView: UIView {
+class CustomAlert: UIView {
     private let primaryTapRelay = PublishRelay<Void>()
     private let cancelTapRelay = PublishRelay<Void>()
     
@@ -258,7 +258,7 @@ class CustomAlertView: UIView {
     }
 }
 
-extension CustomAlertView {
+extension CustomAlert {
     private func bind() {
         primaryButton.rx.tap
             .do(onNext: { [weak self] in

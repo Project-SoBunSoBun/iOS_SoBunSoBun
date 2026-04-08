@@ -99,7 +99,7 @@ class CustomImagePicker: NSObject {
     private func showPermissionAlert() {
         guard let viewController = presentingViewController else { return }
         
-        let alertView = CustomAlertView(
+        let alertView = CustomAlert(
             title: String(localized: "GalleryPermissionMessage", table: "SignIn"),
             primaryTitleKey: String(localized: "GoToSetting", table: "Common")
         )
@@ -125,7 +125,7 @@ class CustomImagePicker: NSObject {
     private func showImageSizeAlert() {
         guard let viewController = presentingViewController else { return }
         
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "ImageSizeExceeded", table: "Common"),
             subTitle: String(localized: "SelectOnlyFilesUnder5MB", table: "Common"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")

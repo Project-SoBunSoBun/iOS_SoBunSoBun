@@ -183,7 +183,7 @@ extension NavigationTabView {
     }
     
     private func showLocationSettingAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "Error", table: "Error"),
             subTitle: String(localized: "LocationSettingTitle", table: "Common"),
             primaryTitleKey: String(localized: "GoToSetting", table: "Common")

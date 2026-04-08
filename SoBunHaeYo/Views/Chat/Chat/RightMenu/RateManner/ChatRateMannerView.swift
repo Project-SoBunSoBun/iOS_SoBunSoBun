@@ -46,7 +46,7 @@ class ChatRateMannerView: BaseViewController {
         let tnb = TopNavigationBar()
         tnb.title = String(localized: "RateManners", table: "Chat")
         tnb.onBackButtonTapped = {
-            let alert = CustomAlertView(
+            let alert = CustomAlert(
                 title: String(localized: "SkipRateMannersAlertTitle", table: "Chat"),
                 subTitle: String(localized: "SkipRateMannersAlertSubTitle", table: "Chat"),
                 primaryTitleKey: String(localized: "SkipRateMannersAlertPrimary", table: "Chat"),
@@ -149,7 +149,7 @@ extension ChatRateMannerView {
                 
                 self.logger.debug("매너 평가 목록: \(manners)")
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "ConfirmRateMannersAlertTitle", table: "Chat"),
                     subTitle: String(localized: "ConfirmRateMannersAlertSubTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Rate", table: "Chat"),
@@ -202,7 +202,7 @@ extension ChatRateMannerView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "RateMannersDoneAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )

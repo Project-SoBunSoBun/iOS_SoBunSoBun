@@ -293,7 +293,7 @@ extension MyPostView {
     
     // 삭제 확인 알러트
     private func deletePostAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "DeleteAlertTitle", table: "Settings"),
             subTitle: String(localized: "DeleteAlertSubtitle", table: "Settings"),
             primaryTitleKey: String(localized: "Delete", table: "Common"),
@@ -313,7 +313,7 @@ extension MyPostView {
     
     // 삭제 완료 알러트
     private func deletePostDoneAlert() {
-        let alert = CustomAlertView (
+        let alert = CustomAlert (
             title: String(localized: "DeleteCompleted", table: "Common"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )

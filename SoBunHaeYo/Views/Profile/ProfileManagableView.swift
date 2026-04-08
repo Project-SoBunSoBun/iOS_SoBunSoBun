@@ -235,7 +235,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "BlockAlertTitle", table: "Common"),
                     subTitle: String(localized: "BlockAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "Block", table: "Common"),
@@ -256,7 +256,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "Notice", table: "Common"),
                     subTitle: String(localized: "BlockDoneAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
@@ -271,7 +271,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "UnBlockAlertTitle", table: "Common"),
                     subTitle: String(localized: "UnBlockAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "UnBlock", table: "Common"),
@@ -292,7 +292,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "Notice", table: "Common"),
                     subTitle: String(localized: "UnBlockDoneAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")

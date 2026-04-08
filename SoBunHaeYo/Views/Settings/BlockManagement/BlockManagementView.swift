@@ -150,7 +150,7 @@ extension BlockManagementView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "UnblockAlertTitle", table: "Settings"),
                     subTitle: String(localized: "UnblockAlertSubTitle", table: "Settings"),
                     primaryTitleKey: String(localized: "UnblockAlertConfirm", table: "Settings"),
