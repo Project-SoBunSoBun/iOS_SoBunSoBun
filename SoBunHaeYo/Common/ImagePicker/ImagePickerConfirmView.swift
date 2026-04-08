@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class ImagePickerConfirmView: UIViewController {
+class ImagePickerConfirmView: BaseViewController {
     let onConfirm = PublishSubject<Void>()
     
     private let image: UIImage

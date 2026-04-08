@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import OSLog
 
-class NotificationsView: UIViewController {
+class NotificationsView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Home.NotificationsView.View"
@@ -61,6 +61,7 @@ class NotificationsView: UIViewController {
         
         configureUI()
         bind(reactor: reactor)
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -80,8 +81,6 @@ class NotificationsView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, tableView, loadingView].forEach {
             view.addSubview($0)
         }
@@ -241,3 +240,5 @@ extension NotificationsView {
             .disposed(by: disposeBag)
     }
 }
+
+

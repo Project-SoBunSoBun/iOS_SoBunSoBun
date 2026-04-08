@@ -11,7 +11,7 @@ import OSLog
 import RxSwift
 import RxCocoa
 
-class SettleUp2ndStepView: UIViewController {
+class SettleUp2ndStepView: BaseViewController {
     typealias Reactor = SettleUp2ndStepReactor
     private let reactor: SettleUp2ndStepReactor
     
@@ -148,8 +148,6 @@ class SettleUp2ndStepView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView, registerButton].forEach {
             view.addSubview($0)
         }

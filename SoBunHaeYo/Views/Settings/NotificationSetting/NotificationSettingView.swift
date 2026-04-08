@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class NotificationSettingView: UIViewController {
+class NotificationSettingView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.NotificationSetting.View"
@@ -65,8 +65,6 @@ class NotificationSettingView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, notificationSettingCard].forEach {
             view.addSubview($0)
         }

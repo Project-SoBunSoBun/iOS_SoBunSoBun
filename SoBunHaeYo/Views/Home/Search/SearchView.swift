@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class SearchView: UIViewController {
+class SearchView: BaseViewController {
     typealias Reactor = SearchReactor
     private let reactor = SearchReactor()
     
@@ -168,6 +168,8 @@ class SearchView: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        
         reactor.action.onNext(.viewWillAppear)
         
         DispatchQueue.main.async {
@@ -179,8 +181,6 @@ class SearchView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(topContainer)
         
         topContainer.snp.makeConstraints { make in

@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import OSLog
 
-class BlockManagementView: UIViewController {
+class BlockManagementView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.BlockManagement.View"
@@ -65,8 +65,6 @@ class BlockManagementView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(topNavigationBar)
         
         topNavigationBar.snp.makeConstraints { make in

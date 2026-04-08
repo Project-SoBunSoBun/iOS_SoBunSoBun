@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class ChatRoomListView: UIViewController {
+class ChatRoomListView: BaseViewController {
     typealias Reactor = ChatRoomListReactor
     private let reactor = ChatRoomListReactor()
     
@@ -121,7 +121,6 @@ class ChatRoomListView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
         [titleLabel, buttonScrollView, privateChatTableView, groupChatTableView].forEach {

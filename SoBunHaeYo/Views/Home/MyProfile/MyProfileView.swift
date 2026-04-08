@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import OSLog
 
-class MyProfileView: UIViewController {
+class MyProfileView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Home.MyProfile.View"
@@ -135,8 +135,6 @@ class MyProfileView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, tableView].forEach {
             view.addSubview($0)
         }

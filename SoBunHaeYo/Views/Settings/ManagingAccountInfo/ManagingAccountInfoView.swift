@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class ManagingAccountInfoView: UIViewController {
+class ManagingAccountInfoView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.ManagingAccountInfo.View"
@@ -56,9 +56,7 @@ class ManagingAccountInfoView: UIViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
-        let getUserEmail = KeyChain.shared.get(key: "EMAIL") ?? "이메일을 가져오지 못했습니다."
+        let getUserEmail = KeyChain.shared.get(key: "EMAIL") ?? String(localized: "FailToGetEmail", table: "Settings")
         
         self.userEmail = getUserEmail
     

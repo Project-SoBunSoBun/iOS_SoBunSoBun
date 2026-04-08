@@ -18,7 +18,7 @@ enum ReportTarget {
     case comment(commentId: Int)
 }
 
-class ReportView: UIViewController {
+class ReportView: BaseViewController {
     private let target: ReportTarget
     
     init(target: ReportTarget, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
@@ -118,8 +118,6 @@ class ReportView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, reportButton, agreeCheckBox, scrollView, reportTypeDropDownView, loadingView].forEach {
             view.addSubview($0)
         }

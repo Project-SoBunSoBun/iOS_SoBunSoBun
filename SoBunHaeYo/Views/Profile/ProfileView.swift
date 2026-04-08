@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import OSLog
 
-class ProfileView: UIViewController {
+class ProfileView: BaseViewController {
     private let userId: Int
     
     init(userId: Int, nibName nibNameOrNil: String? = nil, bundle nibBundleOrNil: Bundle? = nil) {
@@ -145,8 +145,6 @@ class ProfileView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, tableView].forEach {
             view.addSubview($0)
         }

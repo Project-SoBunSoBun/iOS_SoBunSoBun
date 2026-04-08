@@ -12,7 +12,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class ChatView: UIViewController {
+class ChatView: BaseViewController {
     private let chatRoomId: Int
     
     private let willLeave = PublishRelay<Void?>()
@@ -184,8 +184,6 @@ class ChatView: UIViewController {
         configureUI()
         bind(reactor: reactor)
         
-        // tableview pop gesture 충돌 방지
-        navigationController?.interactivePopGestureRecognizer?.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -216,7 +214,6 @@ class ChatView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
         [chatStackView, safeareaBottomBackgroundView, tableView, topNavigationBar, chatCellMenuDropDownView].forEach {
@@ -921,11 +918,7 @@ extension ChatView {
     }
 }
 
-extension ChatView: UIGestureRecognizerDelegate {
-    func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-        return (self.navigationController?.viewControllers.count ?? 0) > 1
-    }
-}
+
 
 #if DEBUG
 // 미리보기

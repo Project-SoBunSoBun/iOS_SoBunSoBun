@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class SaveListView: UIViewController {
+class SaveListView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.SaveList.View"
@@ -69,8 +69,6 @@ class SaveListView: UIViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-    
         [topNavigationBar, tableView, loadingView].forEach {
             view.addSubview($0)
         }
