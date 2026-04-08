@@ -63,11 +63,12 @@ class ChatWebSocketManager {
     }
     
     func read(lastMessageId: String) {
-        guard let currentChatRoomId else { return }
+        guard let currentChatRoomId = currentChatRoomId else { return }
         
         let model = ChatReadMessageModel(roomId: currentChatRoomId, lastReadMessageId: lastMessageId)
         
         swiftStomp?.send(body: model, to: "/app/chat/read")
+        
         logger.debug("메시지 읽음")
     }
     
@@ -75,30 +76,8 @@ class ChatWebSocketManager {
         swiftStomp?.delegate = nil
         swiftStomp?.disconnect()
         reconnectWorkItem?.cancel()
+        
         logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 Websocket 연결 종료")
-    }
-    
-    private func waitForRefreshAndReconnect() {
-        guard !isWaitingForRefreshToken else { return }
-        
-        isWaitingForRefreshToken = true
-        
-        AuthInterceptor.shared.didFinishRefreshing
-            .take(1)
-            .timeout(.seconds(10), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] in
-                guard let self else { return }
-                
-                self.isWaitingForRefreshToken = false
-                self.logger.debug("리프레시 토큰 갱신 완료, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결")
-                self.reconnect()
-            }, onError: { [weak self] _ in
-                guard let self else { return }
-                
-                self.isWaitingForRefreshToken = false
-                self.logger.fault("리프레시 토큰 갱신 대기 타임아웃, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 중단")
-            })
-            .disposed(by: disposeBag)
     }
     
     // STOMP 인증 실패 시 토큰을 직접 갱신한 후 재연결
@@ -116,9 +95,33 @@ class ChatWebSocketManager {
             
             if isSuccess {
                 self.logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 토큰 갱신 성공, 웹소켓 재연결")
+                
                 self.reconnect()
             } else {
                 self.logger.fault("\(self.currentChatRoomId ?? -1)번 채팅방 토큰 갱신 실패, 재연결 중단")
+            }
+        }
+    }
+    
+    // HTTP 레이어에서 이미 리프레시가 진행 중인 경우 완료될 때까지 대기 후 재연결
+    private func waitForRefreshAndReconnect() {
+        guard !isWaitingForRefreshToken else { return }
+        
+        isWaitingForRefreshToken = true
+        
+        logger.debug("리프레시 토큰 갱신 대기 중, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 예정")
+        
+        AuthInterceptor.shared.refreshAccessToken { [weak self] isSuccess in
+            guard let self = self else { return }
+            
+            self.isWaitingForRefreshToken = false
+            
+            if isSuccess {
+                self.logger.debug("리프레시 토큰 갱신 완료, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결")
+                
+                self.reconnect()
+            } else {
+                self.logger.fault("리프레시 토큰 갱신 실패, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 중단")
             }
         }
     }
@@ -131,6 +134,7 @@ class ChatWebSocketManager {
         }
         
         logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 Websocket 재연결 시작")
+        
         disconnect()
         connect(chatRoomId: chatRoomId)
     }
@@ -156,7 +160,7 @@ class ChatWebSocketManager {
         reconnectWorkItem?.cancel()
         
         let workItem = DispatchWorkItem { [weak self] in
-            guard let self else { return }
+            guard let self = self else { return }
             
             self.isReconnecting = false
             self.reconnect()
@@ -263,9 +267,11 @@ extension ChatWebSocketManager: SwiftStompDelegate {
         
         if isAuthError && !AuthInterceptor.shared.isRefreshing && !isWaitingForRefreshToken {
             logger.debug("\(self.currentChatRoomId ?? -1)번 채팅방 STOMP 인증 실패 감지, 토큰 갱신 시도")
+            
             refreshTokenAndReconnect()
-        } else if AuthInterceptor.shared.isRefreshing {
+        } else if isAuthError && AuthInterceptor.shared.isRefreshing {
             logger.debug("리프레시 토큰 갱신 대기 중, \(self.currentChatRoomId ?? -1)번 채팅방 웹소켓 재연결 예정")
+            
             waitForRefreshAndReconnect()
         } else if !isWaitingForRefreshToken {
             didReceiveError.accept(())
