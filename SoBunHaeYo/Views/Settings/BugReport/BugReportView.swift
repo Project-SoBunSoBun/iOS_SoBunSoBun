@@ -12,7 +12,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class BugReportView: UIViewController {
+class BugReportView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.BugReport.View"
@@ -144,8 +144,6 @@ class BugReportView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
         }

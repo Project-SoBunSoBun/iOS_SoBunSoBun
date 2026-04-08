@@ -13,6 +13,7 @@ final class KeyChain {
         subsystem: "SoBunHaeYo",
         category: "KeyChain"
     )
+    private let accessQueue = DispatchQueue(label: "SoBunHaeYo.KeyChain.Access")
     
     static let shared = KeyChain()
     
@@ -20,59 +21,78 @@ final class KeyChain {
     
     // keyChain 저장 - C
     func set(key: String, value: String) {
-        guard let valueData = value.data(using: .utf8) else {
-            logger.critical("[KeyChain]\n\nvalue를 data형태로 변환 실패\n\nKEY: \(key)\nVALUE: \(value)")
-            return
-        }
-        
-        let saveData: CFDictionary = [kSecClass: kSecClassGenericPassword,
-                                kSecAttrService: key,
-                                 kSecReturnData: true,
-                                  kSecValueData: valueData] as CFDictionary
-        
-        remove(key: key)
-        
-        let status = SecItemAdd(saveData, nil)
-        
-        // 성공 했을 때
-        if status == errSecSuccess {
-            logger.debug("[KeyChain]\n\n저장 성공\n\nKEY: \(key)\nVALUE: \(value)")
-        } else { // 실패 했을 때
-            logger.fault("[KeyChain]\n\n저장 실패\n\nKEY: \(key)\nVALUE: \(value)")
+        accessQueue.sync {
+            guard let valueData = value.data(using: .utf8) else {
+                logger.critical("[KeyChain]\n\nvalue를 data형태로 변환 실패\n\nKEY: \(key)\nVALUE: \(value)")
+                
+                return
+            }
+            
+            let query: CFDictionary = [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrService: key
+            ] as CFDictionary
+            let attributesToUpdate: CFDictionary = [
+                kSecValueData: valueData
+            ] as CFDictionary
+            
+            let updateStatus = SecItemUpdate(query, attributesToUpdate)
+            
+            if updateStatus == errSecSuccess {
+                logger.debug("[KeyChain]\n\n업데이트 성공\n\nKEY: \(key)\nVALUE: \(value)")
+                
+                return
+            }
+            
+            let saveData: CFDictionary = [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrService: key,
+                kSecValueData: valueData
+            ] as CFDictionary
+            
+            let addStatus = SecItemAdd(saveData, nil)
+            
+            if addStatus == errSecSuccess {
+                logger.debug("[KeyChain]\n\n저장 성공\n\nKEY: \(key)\nVALUE: \(value)")
+            } else {
+                logger.fault("[KeyChain]\n\n저장 실패\n\nKEY: \(key)\nVALUE: \(value)\nSTATUS: \(addStatus)")
+            }
         }
     }
     
     // keyChain 값 출력 - R
     func get(key: String) -> String? {
-        let savedData: CFDictionary = [kSecClass: kSecClassGenericPassword,
-                                 kSecAttrService: key,
-                                  kSecReturnData: true] as CFDictionary
-        var searchWord: CFTypeRef? = nil
-        let searchResult = SecItemCopyMatching(savedData, &searchWord)
-        
-        // 없으면 미출력
-        if searchResult != errSecSuccess {
-            return nil
+        accessQueue.sync {
+            let savedData: CFDictionary = [kSecClass: kSecClassGenericPassword,
+                                     kSecAttrService: key,
+                                      kSecReturnData: true] as CFDictionary
+            var searchWord: CFTypeRef? = nil
+            let searchResult = SecItemCopyMatching(savedData, &searchWord)
+            
+            // 없으면 미출력
+            if searchResult != errSecSuccess {
+                return nil
+            }
+            
+            guard let searchData = searchWord as? Data else { return nil }
+            
+            return String(data: searchData, encoding: .utf8)
         }
-        
-        let searchData: Data = searchWord as! Data
-        
-        return String(data: searchData, encoding: .utf8)
     }
     
     // keyChain 값 삭제 - D
     func remove(key: String) {
-        let savedData: CFDictionary = [kSecClass: kSecClassGenericPassword,
-                                 kSecAttrService: key,
-                                  kSecReturnData: true] as CFDictionary
-        
-        let status = SecItemDelete(savedData)
-        
-        // 성공 했을 때
-        if status == errSecSuccess {
-            logger.debug("[KeyChain]\n\n삭제 성공\n\nKEY: \(key)")
-        } else { // 실패 했을 때
-            logger.debug("[KeyChain]\n\n삭제 실패\n\nKEY: \(key)")
+        accessQueue.sync {
+            let savedData: CFDictionary = [kSecClass: kSecClassGenericPassword,
+                                     kSecAttrService: key] as CFDictionary
+            
+            let status = SecItemDelete(savedData)
+            
+            if status == errSecSuccess {
+                logger.debug("[KeyChain]\n\n삭제 성공\n\nKEY: \(key)")
+            } else {
+                logger.debug("[KeyChain]\n\n삭제 실패\n\nKEY: \(key)")
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ import Photos
 import OSLog
 import RxGesture
 
-class NicknameSettingView: UIViewController {
+class NicknameSettingView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "NicknameSetting.View"
@@ -69,8 +69,6 @@ class NicknameSettingView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [backButton, profileImage, cameraImage, nickname, nextButton].forEach {
             view.addSubview($0)
         }

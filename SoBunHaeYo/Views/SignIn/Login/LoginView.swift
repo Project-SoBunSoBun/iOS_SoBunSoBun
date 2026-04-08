@@ -13,7 +13,7 @@ import RxSwift
 import RxGesture
 import OSLog
 
-class LoginView: UIViewController {
+class LoginView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "SignIn.Login.View"
@@ -160,8 +160,6 @@ class LoginView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         // 그라데이션 추가
         view.layer.addSublayer(gradientLayer)
         

@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class AnnouncementDetailView: UIViewController {
+class AnnouncementDetailView: BaseViewController {
     init(model: AnnouncementContentModel, nibName nibNameOrNil: String? = nil
          , bundle nibBundleOrNil: Bundle? = nil) {
         reactor = AnnouncementDetailReactor(id: model.id)
@@ -62,8 +62,6 @@ class AnnouncementDetailView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
         }

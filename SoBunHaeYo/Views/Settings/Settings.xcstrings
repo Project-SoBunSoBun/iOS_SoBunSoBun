@@ -360,6 +360,17 @@
         }
       }
     },
+    "FailToGetEmail" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이메일을 가져오지 못했습니다."
+          }
+        }
+      }
+    },
     "FailToLoadLocationTerm" : {
       "comment" : "Settings",
       "extractionState" : "manual",

@@ -11,7 +11,7 @@ import OSLog
 import RxSwift
 import RxCocoa
 
-class SettleUp3rdStepView: UIViewController {
+class SettleUp3rdStepView: BaseViewController {
     private let authorId: Int
     
     init(model: SettleUp3rdStepDataModel, authorId: Int) {
@@ -129,8 +129,6 @@ class SettleUp3rdStepView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, stepLabel, titleLabel, subtitleBackground, tableView, saveButton, loadingView].forEach {
             view.addSubview($0)
         }

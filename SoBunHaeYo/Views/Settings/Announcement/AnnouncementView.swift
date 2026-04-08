@@ -12,7 +12,7 @@ import RxCocoa
 import ReactorKit
 import OSLog
 
-class AnnouncementView: UIViewController {
+class AnnouncementView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.Announcement.View"
@@ -71,8 +71,6 @@ class AnnouncementView: UIViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-    
         [topNavigationBar, tableView].forEach {
             view.addSubview($0)
         }

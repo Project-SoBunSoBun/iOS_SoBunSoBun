@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class WithdrawView: UIViewController {
+class WithdrawView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "Settings.Withdraw.View"
@@ -205,8 +205,6 @@ class WithdrawView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView, loadingView].forEach {
             view.addSubview($0)
         }

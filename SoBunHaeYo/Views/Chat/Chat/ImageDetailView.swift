@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxGesture
 
-class ImageDetailView: UIViewController {
+class ImageDetailView: BaseViewController {
     private let image: UIImage
     
     private let disposeBag = DisposeBag()
@@ -76,8 +76,6 @@ class ImageDetailView: UIViewController {
     }
     
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [scrollView, topSafeAreaView, topNavigationBar].forEach {
             view.addSubview($0)
         }

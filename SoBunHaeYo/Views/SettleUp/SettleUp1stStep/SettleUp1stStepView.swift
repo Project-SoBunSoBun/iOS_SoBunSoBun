@@ -11,7 +11,7 @@ import OSLog
 import RxSwift
 import RxCocoa
 
-class SettleUp1stStepView: UIViewController{
+class SettleUp1stStepView: BaseViewController {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
         category: "SettleUp.SettleUp1stStep.View"
@@ -344,8 +344,6 @@ class SettleUp1stStepView: UIViewController{
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView].forEach {
             view.addSubview($0)
         }

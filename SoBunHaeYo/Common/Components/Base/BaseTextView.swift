@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import RxSwift
+import RxCocoa
 
 class BaseTextView: UITextView {
     let fontStyle: FontStyle
@@ -89,6 +90,26 @@ class BaseTextView: UITextView {
                 placeholderLabel.isHidden = !text.isEmpty
             })
             .disposed(by: disposeBag)
+    }
+    
+    // 이미지 붙여넣기 이벤트 저장소
+    // Relay는 에러 없이 이벤트만 전달하므로 UI 이벤트를 다루기에 적합
+    private let imagePasteRelay = PublishRelay<UIImage>()
+    
+    // 외부에는 Signal로 노출
+    // Signal은 메인 스레드에서 동작하고 에러를 방출하지 않아, 화면 이벤트를 안전하게 바인딩할 때 사용
+    // 따라서 구독 시 일반 subscribe 대신 UI 바인딩 전용 메서드인 emit을 사용
+    var imagePasted: Signal<UIImage> {
+        imagePasteRelay.asSignal()
+    }
+    
+    // 클립보드에 이미지가 있으면 Rx 이벤트로 전달하고, 텍스트면 기본 붙여넣기 수행
+    override func paste(_ sender: Any?) {
+        if let image = UIPasteboard.general.image {
+            imagePasteRelay.accept(image)
+        } else {
+            super.paste(sender)
+        }
     }
     
     // 시스템 커서 숨김 (tintColor를 clear로 하면 스페이스바 트랙패드 모드가 비활성화되므로 caretRect로 처리)

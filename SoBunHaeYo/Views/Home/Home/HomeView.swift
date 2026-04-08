@@ -12,7 +12,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class HomeView: UIViewController {
+class HomeView: BaseViewController {
     typealias Reactor = HomeReactor
     private let reactor = HomeReactor()
     
@@ -260,7 +260,6 @@ class HomeView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
         view.layer.addSublayer(gradientLayer)
         
         [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, searchTextFieldCover, filtersScrollView, tableView, registerPostButton, dropDownView].forEach {

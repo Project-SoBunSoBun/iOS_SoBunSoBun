@@ -13,7 +13,7 @@ import ReactorKit
 import OSLog
 import WebKit
 
-class TermsDetailView: UIViewController {
+class TermsDetailView: BaseViewController {
     let termsType: String
     
     init(termsType: String) {
@@ -79,8 +79,6 @@ class TermsDetailView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, webView].forEach {
             view.addSubview($0)
         }

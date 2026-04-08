@@ -10,7 +10,7 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class ChatRoomKickView: UIViewController {
+class ChatRoomKickView: BaseViewController {
     private let chatRoomId: Int
     
     var changeMembers: PublishRelay<[ChatRoomDetailMemberModel]>?
@@ -85,8 +85,6 @@ class ChatRoomKickView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         view.addSubview(topNavigationBar)
         
         topNavigationBar.snp.makeConstraints { make in

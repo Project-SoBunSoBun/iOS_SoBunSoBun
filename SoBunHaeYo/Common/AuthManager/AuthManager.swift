@@ -46,6 +46,7 @@ class AuthManager {
                     
                 case .revoked, .notFound:
                     self.logger.error("애플 로그인 인증 상태: 연결 끊김 또는 찾을 수 없음. 로그아웃 진행")
+                    
                     self.withdraw()
                     
                 default:
@@ -70,10 +71,13 @@ class AuthManager {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            deleteFCMToken()
-            removeTokens()
-            NotificationManager.shared.updateBadgeCount(0)
-            showLogOutAlert()
+            self.deleteFCMToken { [weak self] in
+                guard let self = self else { return }
+                
+                self.removeTokens()
+                NotificationManager.shared.updateBadgeCount(0)
+                self.showLogOutAlert()
+            }
         }
         
         logger.debug("로그아웃 처리")
@@ -93,10 +97,13 @@ class AuthManager {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            deleteFCMToken()
-            removeTokens()
-            switchToLoginView()
-            NotificationManager.shared.updateBadgeCount(0)
+            self.deleteFCMToken { [weak self] in
+                guard let self = self else { return }
+                
+                self.removeTokens()
+                self.switchToLoginView()
+                NotificationManager.shared.updateBadgeCount(0)
+            }
         }
     }
     
@@ -114,8 +121,12 @@ class AuthManager {
         logger.debug("모든 keychain 내 토큰 제거")
     }
     
-    func deleteFCMToken() {
-        guard let uuid = UIDevice.current.identifierForVendor?.uuidString else { return }
+    func deleteFCMToken(completion: (() -> Void)? = nil) {
+        guard let uuid = UIDevice.current.identifierForVendor?.uuidString else {
+            completion?()
+            
+            return
+        }
         
         commonNetworkManager.deleteFCMToken(deviceId: uuid)
             .asObservable()
@@ -129,10 +140,14 @@ class AuthManager {
                     
                     KeyChain.shared.remove(key: "FCM_TOKEN")
                 }
+                
+                completion?()
             }, onError: { [weak self] error in
                 guard let self = self else { return }
                 
                 self.logger.critical("FCM 토큰 삭제 및 해지 실패: \((error as? APIErrorModel)?.message ?? error.localizedDescription)")
+                
+                completion?()
             })
             .disposed(by: disposeBag)
     }

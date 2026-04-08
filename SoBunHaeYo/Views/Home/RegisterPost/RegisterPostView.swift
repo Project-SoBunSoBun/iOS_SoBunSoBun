@@ -11,7 +11,7 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class RegisterPostView: UIViewController {
+class RegisterPostView: BaseViewController {
     typealias Reactor = RegisterPostReactor
     private let reactor = RegisterPostReactor()
     
@@ -313,10 +313,14 @@ class RegisterPostView: UIViewController {
         bind(reactor: reactor)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+    }
+    
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, scrollView, loadingView].forEach {
             view.addSubview($0)
         }

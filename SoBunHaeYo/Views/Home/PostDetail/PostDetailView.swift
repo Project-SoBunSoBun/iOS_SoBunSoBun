@@ -12,7 +12,7 @@ import RxCocoa
 import RxGesture
 import OSLog
 
-class PostDetailView: UIViewController {
+class PostDetailView: BaseViewController {
     private let postId: Int
     private let isNew: Bool
     private let showBackButton: Bool
@@ -419,8 +419,6 @@ class PostDetailView: UIViewController {
     
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        view.backgroundColor = .backgroundWhite
-        
         [topNavigationBar, createCommentStackView, commentDividerView, tableView, topMoreDropDownView, commentMenuDropDownView, successView].forEach {
             view.addSubview($0)
         }
