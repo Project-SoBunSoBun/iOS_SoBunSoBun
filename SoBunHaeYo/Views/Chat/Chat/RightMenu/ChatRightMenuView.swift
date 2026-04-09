@@ -294,17 +294,18 @@ extension ChatRightMenuView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alertView = CustomAlertView(
+                let alertView = CustomAlert(
                     title: String(localized: "Warning", table: "Common"),
                     subTitle: String(localized: "LeaveChatRoomAlertTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "LeaveChatRoom", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alertView.onPrimaryTapped = {
+                alertView.primaryTap.emit(onNext: {
                     self.willLeave?.accept(())
                     self.navigationController?.popViewController(animated: true)
-                }
+                })
+                .disposed(by: alertView.disposeBag)
                 
                 alertView.show(on: self)
             })

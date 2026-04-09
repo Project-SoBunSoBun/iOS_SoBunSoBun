@@ -326,16 +326,17 @@ extension ChatView {
                 
                 _ = self.chatTextView.textView.resignFirstResponder()
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "SendInvitationAlertTitle", table: "Chat"),
                     subTitle: String(localized: "SendInvitationAlertSubTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "SendInvitation", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.sendInviteCard)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -353,20 +354,21 @@ extension ChatView {
                 
                 _ = self.chatTextView.textView.resignFirstResponder()
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "SendSettlementConfirmAlertTitle", table: "Chat"),
                     subTitle: String(localized: "SendSettlementConfirmAlertSubTitle", table: "Chat"),
                     primaryTitleKey: String(localized: "SendSettlement", table: "Chat"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     if let settlementId = model.data?.settlementId {
                         reactor.action.onNext(.sendSettlementCard(settlementId))
                     } else {
                         self.showNotSettledYetForOwnerAlert()
                     }
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -416,7 +418,7 @@ extension ChatView {
                 if let settlementId = data.settlementId {
                     self.navigationController?.pushViewController(SettlementConfirmView(settlementId: settlementId), animated: true)
                 } else {
-                    let alert = CustomAlertView(
+                    let alert = CustomAlert(
                         title: String(localized: "NotSettledYetForMemberAlertTitle", table: "Chat"),
                         subTitle: String(localized: "NotSettledYetForMemberAlertSubTitle", table: "Chat"),
                         primaryTitleKey: String(localized: "Confirm", table: "Common")
@@ -715,16 +717,17 @@ extension ChatView {
                     .subscribe(onNext: { [weak self] inviteId in
                         guard let self = self else { return }
                         
-                        let alert = CustomAlertView(
+                        let alert = CustomAlert(
                             title: String(localized: "ConfirmAcceptGroupChatRoomAlertTitle", table: "Chat"),
                             subTitle: String(localized: "ConfirmAcceptGroupChatRoomAlertTitle", table: "Chat"),
                             primaryTitleKey: String(localized: "Confirm", table: "Chat"),
                             cancelTitleKey: String(localized: "Cancel", table: "Common")
                         )
                         
-                        alert.onPrimaryTapped = {
+                        alert.primaryTap.emit(onNext: {
                             reactor.action.onNext(.acceptGroupChatRoom(inviteId))
-                        }
+                        })
+                        .disposed(by: alert.disposeBag)
                         
                         alert.show(on: self)
                     })
@@ -917,21 +920,22 @@ extension ChatView {
     
     // 정산이 완료되지 않을 상태로 정산서 보내기를 시도할 때
     private func showNotSettledYetForOwnerAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "NotSettledYetForOwnerAlertTitle", table: "Chat"),
             subTitle: String(localized: "NotSettledYetForOwnerAlertSubTitle", table: "Chat"),
             primaryTitleKey: String(localized: "GoToSettlementTab", table: "Chat"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = {
+        alert.primaryTap.emit(onNext: {
             guard let navController = self.navigationController,
                   let navigationTabView = navController.viewControllers.first(where: { $0 is NavigationTabView }) as? NavigationTabView else {
                 return
             }
             
             navController.popToViewController(navigationTabView, animated: true)
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }

@@ -877,15 +877,16 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "DeletePostTitle", table: "Home"),
                     primaryTitleKey: String(localized: "Delete", table: "Home"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.deletePost)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -898,17 +899,18 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "DeleteDoneTitle", table: "Home"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     DispatchQueue.main.async {
                         self.navigationController?.popViewController(animated: true)
                         self.dismiss(animated: true)
                     }
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -933,15 +935,16 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "DeleteCommentTitle", table: "Home"),
                     primaryTitleKey: String(localized: "Delete", table: "Home"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     self.reactor.action.onNext(.deleteComment)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -954,7 +957,7 @@ extension PostDetailView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "DeleteDoneTitle", table: "Home"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )

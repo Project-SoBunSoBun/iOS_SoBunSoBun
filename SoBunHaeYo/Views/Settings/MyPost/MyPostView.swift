@@ -293,26 +293,27 @@ extension MyPostView {
     
     // 삭제 확인 알러트
     private func deletePostAlert() {
-        let alert = CustomAlertView(
+        let alert = CustomAlert(
             title: String(localized: "DeleteAlertTitle", table: "Settings"),
             subTitle: String(localized: "DeleteAlertSubtitle", table: "Settings"),
             primaryTitleKey: String(localized: "Delete", table: "Common"),
             cancelTitleKey: String(localized: "Cancel", table: "Common")
         )
         
-        alert.onPrimaryTapped = { [weak self] in
+        alert.primaryTap.emit(onNext: { [weak self] in
             guard let self = self,
                   let selectedId = self.reactor.currentState.selectedId else { return }
             
             self.reactor.action.onNext(.deletePostId(selectedId))
-        }
+        })
+        .disposed(by: alert.disposeBag)
         
         alert.show(on: self)
     }
     
     // 삭제 완료 알러트
     private func deletePostDoneAlert() {
-        let alert = CustomAlertView (
+        let alert = CustomAlert (
             title: String(localized: "DeleteCompleted", table: "Common"),
             primaryTitleKey: String(localized: "Confirm", table: "Common")
         )

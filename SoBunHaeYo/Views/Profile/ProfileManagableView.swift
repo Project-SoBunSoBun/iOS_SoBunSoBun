@@ -235,16 +235,17 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "BlockAlertTitle", table: "Common"),
                     subTitle: String(localized: "BlockAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "Block", table: "Common"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.blockUser)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -255,7 +256,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "Notice", table: "Common"),
                     subTitle: String(localized: "BlockDoneAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
@@ -270,16 +271,17 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "UnBlockAlertTitle", table: "Common"),
                     subTitle: String(localized: "UnBlockAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "UnBlock", table: "Common"),
                     cancelTitleKey: String(localized: "Cancel", table: "Common")
                 )
                 
-                alert.onPrimaryTapped = {
+                alert.primaryTap.emit(onNext: {
                     reactor.action.onNext(.unBlockUser)
-                }
+                })
+                .disposed(by: alert.disposeBag)
                 
                 alert.show(on: self)
             })
@@ -290,7 +292,7 @@ extension ProfileManagableView {
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                let alert = CustomAlertView(
+                let alert = CustomAlert(
                     title: String(localized: "Notice", table: "Common"),
                     subTitle: String(localized: "UnBlockDoneAlertSubTitle", table: "Common"),
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
