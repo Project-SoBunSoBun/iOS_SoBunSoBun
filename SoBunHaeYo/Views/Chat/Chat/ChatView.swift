@@ -292,8 +292,27 @@ extension ChatView {
         
         // 메시지 전송
         sendButton.rx.tap
-            .withLatestFrom(chatTextView.rx.text.orEmpty)
-            .map { Reactor.Action.sendMessage($0) }
+            .withLatestFrom(
+                Observable.combineLatest(
+                    chatTextView.rx.text.orEmpty,
+                    reactor.state.map { $0.lastSendTime }
+                )
+            )
+            .map { message, lastSendTime in
+                let cleanedMessage = message.limitNewLines(limit: 2)
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                return (message, cleanedMessage, lastSendTime)
+            }
+            .filter { _, cleanedMessage, lastSendTime in
+                !cleanedMessage.isEmpty && Date() > lastSendTime.addingTimeInterval(0.5)
+            }
+            .do(onNext: { [weak self] _, _, _ in
+                guard let self = self else { return }
+                
+                self.chatTextView.text = ""
+            })
+            .map { message, _, _ in Reactor.Action.sendMessage(message) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -787,16 +806,6 @@ extension ChatView {
                 }
                 
                 self.navigationController?.pushViewController(rightMenuView, animated: true)
-            })
-            .disposed(by: disposeBag)
-        
-        // 텍스트 전송 성공
-        reactor.pulse(\.$sendSucceed)
-            .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                chatTextView.text = ""
             })
             .disposed(by: disposeBag)
         
