@@ -65,6 +65,7 @@ class BaseTextView: UITextView {
         var attributes = body16.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral900
         
+        // 새로 입력되는 텍스트에 적용될 속성 설정
         self.typingAttributes = attributes
         
         // placeholder
