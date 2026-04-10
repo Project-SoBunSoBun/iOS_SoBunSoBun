@@ -41,7 +41,7 @@ class AutoHeightTextView: UIView {
     
     var textContainerInset: UIEdgeInsets = .zero {
         didSet {
-            textView.textContainerInset = textContainerInset
+            updateTextViewInsets()
         }
     }
     
@@ -143,17 +143,23 @@ class AutoHeightTextView: UIView {
         textView.attributedText = attributedString
     }
     
-    private func setShowCharactersCount(_ show: Bool) {
-        charactersLabel.isHidden = !show
+    private func updateTextViewInsets() {
+        var inset = textContainerInset
         
-        let charactersLabelHeight: CGFloat = body12.font.lineHeight + 8 + 8
-        
-        var inset = textView.textContainerInset
-        inset.bottom = show ? charactersLabelHeight : 0
+        if showCharactersCount {
+            let charactersLabelHeight: CGFloat = body12.font.lineHeight + 8 + 8
+            inset.bottom += charactersLabelHeight
+        }
         
         textView.textContainerInset = inset
         
         updateHeight()
+    }
+    
+    private func setShowCharactersCount(_ show: Bool) {
+        charactersLabel.isHidden = !show
+        
+        updateTextViewInsets()
     }
     
     private func updateCharactersLabel(count: Int) {

@@ -292,7 +292,14 @@ extension ChatView {
         
         // 메시지 전송
         sendButton.rx.tap
+            .throttle(.milliseconds(500), latest: false, scheduler: MainScheduler.instance)
             .withLatestFrom(chatTextView.rx.text.orEmpty)
+            .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            .do(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                
+                self.chatTextView.text = ""
+            })
             .map { Reactor.Action.sendMessage($0) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -787,16 +794,6 @@ extension ChatView {
                 }
                 
                 self.navigationController?.pushViewController(rightMenuView, animated: true)
-            })
-            .disposed(by: disposeBag)
-        
-        // 텍스트 전송 성공
-        reactor.pulse(\.$sendSucceed)
-            .compactMap { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                
-                chatTextView.text = ""
             })
             .disposed(by: disposeBag)
         

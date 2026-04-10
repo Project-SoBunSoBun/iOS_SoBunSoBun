@@ -65,6 +65,7 @@ class BaseTextView: UITextView {
         var attributes = body16.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.neutral900
         
+        // 새로 입력되는 텍스트에 적용될 속성 설정
         self.typingAttributes = attributes
         
         // placeholder
@@ -134,15 +135,22 @@ class BaseTextView: UITextView {
         var caretRect = self.firstRect(for: selectedRange)
         caretRect = self.convert(caretRect, from: self.textInputView)
         
-        let fontHeight = self.font?.lineHeight ?? 20
+        // typingAttributes 기반으로 실제 라인 높이와 폰트 높이 계산
+        let paraStyle = typingAttributes[.paragraphStyle] as? NSParagraphStyle
+        let lineHeight = paraStyle?.minimumLineHeight ?? (fontStyle.fontSize * fontStyle.lineHeightMultiple)
+        let font = (typingAttributes[.font] as? UIFont) ?? self.font
+        let naturalFontHeight = font?.lineHeight ?? lineHeight
+        
+        // baselineOffset만큼 y를 내려 글리프 위치와 커서를 정렬
+        let yOffset = max(0, (lineHeight - naturalFontHeight) / 2)
         
         let layer = CAShapeLayer()
         let path = UIBezierPath(
             roundedRect: CGRect(
                 x: caretRect.origin.x + 1,
-                y: caretRect.origin.y,
+                y: caretRect.origin.y + yOffset,
                 width: cursorLineWidth,
-                height: fontHeight
+                height: naturalFontHeight
             ), cornerRadius: cursorLineWidth / 2
         )
         
