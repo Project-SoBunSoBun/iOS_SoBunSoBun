@@ -63,7 +63,6 @@ class ChatReactor: Reactor {
         case setIsServerMessageEmpty(Bool) // 서버의 과거 메시지가 캐싱된 메시지보다 부족할 때
         case setIsDBMessageEmpty(Bool) // 캐싱된 메시지가 없을 때
         case setShouldNavigateToRightMenu // 오른쪽 메뉴 뷰 이동
-        case setSendSucceed // 텍스트 전송 결과
         case setLastSendTime(Date)
         case setBottomOpenMenu(Bool) // 하단 메뉴 표시
         case setIsChatCellMenuOpen(Bool) // 채팅 상호작용 메뉴 표시
@@ -86,7 +85,6 @@ class ChatReactor: Reactor {
         var selectedChatMessageModel: ChatMessageModel?
         var lastSendTime: Date = Date()
         @Pulse var shouldNavigateToRightMenu: Void?
-        @Pulse var sendSucceed: Void?
         @Pulse var shouldShowImagePicker: Void?
         @Pulse var shouldNavigateToGroupChatRoom: Int?
         @Pulse var shouldNavigateToBack: Void?
@@ -193,9 +191,6 @@ class ChatReactor: Reactor {
             
         case .setShouldNavigateToRightMenu:
             newState.shouldNavigateToRightMenu = ()
-            
-        case .setSendSucceed:
-            newState.sendSucceed = ()
             
         case .setLastSendTime(let time):
             newState.lastSendTime = time
@@ -405,7 +400,7 @@ class ChatReactor: Reactor {
                     
                     self.logger.debug("메시지 전송 완료")
                     
-                    return Observable.just(.setSendSucceed)
+                    return Observable.empty()
                 }
                 .catch { [weak self] error -> Observable<Mutation> in
                     guard let self = self else { return Observable.empty() }
