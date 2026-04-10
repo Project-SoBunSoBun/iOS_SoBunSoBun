@@ -140,6 +140,7 @@ class BaseTextView: UITextView {
         let lineHeight = paraStyle?.minimumLineHeight ?? (fontStyle.fontSize * fontStyle.lineHeightMultiple)
         let font = (typingAttributes[.font] as? UIFont) ?? self.font
         let naturalFontHeight = font?.lineHeight ?? lineHeight
+        
         // baselineOffset만큼 y를 내려 글리프 위치와 커서를 정렬
         let yOffset = max(0, (lineHeight - naturalFontHeight) / 2)
         
