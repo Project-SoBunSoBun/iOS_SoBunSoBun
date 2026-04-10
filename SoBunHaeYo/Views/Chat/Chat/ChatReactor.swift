@@ -398,7 +398,7 @@ class ChatReactor: Reactor {
         }
         
         return Observable.concat([
-            networkManager.sendText(id: chatRoomId, message: message)
+            networkManager.sendText(id: chatRoomId, message: cleanedMessage)
                 .asObservable()
                 .flatMap { [weak self] response -> Observable<Mutation> in
                     guard let self = self else { return Observable.empty() }
