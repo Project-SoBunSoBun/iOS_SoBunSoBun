@@ -194,7 +194,8 @@ class HomeView: BaseViewController {
         tv.minimumZoomScale = 1.0
         tv.maximumZoomScale = 1.0
         tv.pinchGestureRecognizer?.isEnabled = false
-        
+        tv.backgroundColor = .clear
+
         return tv
     }()
     
