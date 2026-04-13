@@ -72,15 +72,15 @@ class RegisterPostReactor: Reactor {
         var notes: String?
         var isRegisterButtonEnable: Bool {
             return (
-                title != nil && !title!.isEmpty &&
+                title?.isEmpty == false &&
                 !selectedCategories.isEmpty &&
                 minimumMembers != nil &&
                 maximumMembers != nil &&
-                location != nil && !location!.isEmpty &&
+                location?.isEmpty == false &&
                 selectedDate != nil &&
                 selectedTime != nil &&
-                plannedItems != nil && !plannedItems!.isEmpty &&
-                notes != nil && !notes!.isEmpty
+                plannedItems?.isEmpty == false &&
+                notes?.isEmpty == false
             )
         }
         
