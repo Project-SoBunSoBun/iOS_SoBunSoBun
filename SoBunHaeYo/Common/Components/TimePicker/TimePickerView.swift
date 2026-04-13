@@ -73,7 +73,7 @@ class TimePickerView: UIViewController {
         // 오전, 오후 심볼 가져오기
         let formatter = DateFormatter()
         formatter.locale = Locale.current
-        
+
         let amSymbol = formatter.amSymbol ?? "AM"
         let pmSymbol = formatter.pmSymbol ?? "PM"
         

@@ -232,13 +232,15 @@ class RegisterPostReactor: Reactor {
             return .just(.setErrorMessage(String(localized: "InsertNotes", table: "Home")))
         }
         
-        guard let convertedDate: Date = stringToDate(
-            string: [selectedDate, selectedTime].joined(separator: " "),
-            format: "yyyy - MM - dd a hh:mm"
-        ),
-        let meetAtDateString: String = dateToISO8601String(date: convertedDate),
-        let deadlineAtDate: Date = Calendar.current.date(byAdding: .day, value: -1, to: convertedDate),
-        let deadlineAtDateString: String = dateToISO8601String(date: deadlineAtDate) else {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy - MM - dd HH:mm"
+        // 24시간 형식은 로케일 독립적이므로 POSIX 로케일 사용
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        guard let convertedDate: Date = dateFormatter.date(from: [selectedDate, selectedTime].joined(separator: " ")),
+              let meetAtDateString: String = dateToISO8601String(date: convertedDate),
+              let deadlineAtDate: Date = Calendar.current.date(byAdding: .day, value: -1, to: convertedDate),
+              let deadlineAtDateString: String = dateToISO8601String(date: deadlineAtDate) else {
             self.logger.fault("RegisterPostBodyModel 생성 실패 - 날짜 형식 오류")
             return .just(.setErrorMessage(String(localized: "CheckYourDateTime", table: "Home")))
         }
