@@ -478,7 +478,7 @@
         }
       }
     },
-    "RegisterPostDeadlineInfoMessage" : {
+    "CreatePostDeadlineInfoMessage" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -490,7 +490,7 @@
         }
       }
     },
-    "RegisterPostInfo" : {
+    "CreatePostInfo" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -502,7 +502,7 @@
         }
       }
     },
-    "RegisterPostSuccess" : {
+    "CreatePostSuccess" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -514,7 +514,7 @@
         }
       }
     },
-    "RegisterPostTimePickerTitle" : {
+    "CreatePostTimePickerTitle" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -526,7 +526,7 @@
         }
       }
     },
-    "RegisterPostTitle" : {
+    "CreatePostTitle" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {

@@ -1,5 +1,5 @@
 //
-//  RegisterPostView.swift
+//  CreatePostView.swift
 //  SoBunHaeYo
 //
 //  Created by 김태은 on 12/9/25.
@@ -11,9 +11,9 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class RegisterPostView: BaseViewController {
-    typealias Reactor = RegisterPostReactor
-    private let reactor = RegisterPostReactor()
+class CreatePostView: BaseViewController {
+    typealias Reactor = CreatePostReactor
+    private let reactor = CreatePostReactor()
     
     private let disposeBag = DisposeBag()
     
@@ -31,7 +31,7 @@ class RegisterPostView: BaseViewController {
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
         tnb.parentViewController = self
-        tnb.title = String(localized: "RegisterPostTitle", table: "Home")
+        tnb.title = String(localized: "CreatePostTitle", table: "Home")
         
         return tnb
     }()
@@ -48,7 +48,7 @@ class RegisterPostView: BaseViewController {
     private let infoLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
-        let attributedText = NSAttributedString(string: String(localized: "RegisterPostInfo", table: "Home"), attributes: body12.attributes())
+        let attributedText = NSAttributedString(string: String(localized: "CreatePostInfo", table: "Home"), attributes: body12.attributes())
         lb.attributedText = attributedText
         lb.textColor = .neutral300
         
@@ -249,7 +249,7 @@ class RegisterPostView: BaseViewController {
         var attributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.primary400
         
-        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostDeadlineInfoMessage", table: "Home"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "CreatePostDeadlineInfoMessage", table: "Home"), attributes: attributes)
         
         return lb
     }()
@@ -465,7 +465,7 @@ class RegisterPostView: BaseViewController {
     }
 }
 
-extension RegisterPostView {
+extension CreatePostView {
     // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
@@ -722,7 +722,7 @@ extension RegisterPostView {
         let components = reactor.currentState.selectedTime.flatMap { time24ToDisplayComponents($0) }
         
         let sheetView = TimePickerView(
-            title: String(localized: "RegisterPostTimePickerTitle", table: "Home"),
+            title: String(localized: "CreatePostTimePickerTitle", table: "Home"),
             selectedHour: components?.hour,
             selectedMinute: components?.minute,
             selectedPeriod: components?.period,

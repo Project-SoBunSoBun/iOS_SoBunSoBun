@@ -1,5 +1,5 @@
 //
-//  RegisterPostReactor.swift
+//  CreatePostReactor.swift
 //  SoBunHaeYo
 //
 //  Created by 김태은 on 12/11/25.
@@ -10,10 +10,10 @@ import ReactorKit
 import RxSwift
 import OSLog
 
-class RegisterPostReactor: Reactor {
+class CreatePostReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
-        category: "Home.RegisterPost.Reactor"
+        category: "Home.CreatePost.Reactor"
     )
     
     private let disposeBag = DisposeBag()
@@ -129,7 +129,7 @@ class RegisterPostReactor: Reactor {
             return Observable.just(.setNotes(notes))
             
         case .registerButtonTapped:
-            return registerPost()
+            return createPost()
         }
     }
     
@@ -189,7 +189,7 @@ class RegisterPostReactor: Reactor {
         return newState
     }
     
-    private func registerPost() -> Observable<Mutation> {
+    private func createPost() -> Observable<Mutation> {
         let state = currentState
         
         guard let title = state.title, !title.isEmpty else {
@@ -241,12 +241,12 @@ class RegisterPostReactor: Reactor {
               let meetAtDateString: String = dateToISO8601String(date: convertedDate),
               let deadlineAtDate: Date = Calendar.current.date(byAdding: .day, value: -1, to: convertedDate),
               let deadlineAtDateString: String = dateToISO8601String(date: deadlineAtDate) else {
-            self.logger.fault("RegisterPostBodyModel 생성 실패 - 날짜 형식 오류")
+            self.logger.fault("CreatePostBodyModel 생성 실패 - 날짜 형식 오류")
             
             return .just(.setErrorMessage(String(localized: "CheckYourDateTime", table: "Home")))
         }
         
-        let model: RegisterPostBodyModel = .init(
+        let model: CreatePostBodyModel = .init(
             title: title,
             categories: currentState.selectedCategories.joined(separator: ","),
             locationName: location,
@@ -260,7 +260,7 @@ class RegisterPostReactor: Reactor {
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
-            networkManager.registerPost(model: model)
+            networkManager.createPost(model: model)
                 .asObservable()
                 .flatMap { model -> Observable<Mutation> in
                     self.logger.debug("\(title) 게시글 등록 성공")
