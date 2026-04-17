@@ -242,6 +242,7 @@ class RegisterPostReactor: Reactor {
               let deadlineAtDate: Date = Calendar.current.date(byAdding: .day, value: -1, to: convertedDate),
               let deadlineAtDateString: String = dateToISO8601String(date: deadlineAtDate) else {
             self.logger.fault("RegisterPostBodyModel 생성 실패 - 날짜 형식 오류")
+            
             return .just(.setErrorMessage(String(localized: "CheckYourDateTime", table: "Home")))
         }
         
