@@ -194,7 +194,8 @@ class HomeView: BaseViewController {
         tv.minimumZoomScale = 1.0
         tv.maximumZoomScale = 1.0
         tv.pinchGestureRecognizer?.isEnabled = false
-        
+        tv.backgroundColor = .clear
+
         return tv
     }()
     
@@ -204,7 +205,7 @@ class HomeView: BaseViewController {
         return rc
     }()
     
-    private let registerPostButton: UIButton = {
+    private let createPostButton: UIButton = {
         var config = UIButton.Configuration.plain()
         config.background.backgroundColor = .primary500
         config.cornerStyle = .fixed
@@ -262,7 +263,7 @@ class HomeView: BaseViewController {
     private func configureUI() {
         view.layer.addSublayer(gradientLayer)
         
-        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, searchTextFieldCover, filtersScrollView, tableView, registerPostButton, dropDownView].forEach {
+        [logoImageView, letterLogoImageView, locationIconImageView, locationLabel, myProfileButton, notificationButton, locationLabel, searchTextField, searchTextFieldCover, filtersScrollView, tableView, createPostButton, dropDownView].forEach {
             view.addSubview($0)
         }
         
@@ -346,7 +347,7 @@ class HomeView: BaseViewController {
         }
         
         // 글쓰기 버튼
-        registerPostButton.snp.makeConstraints { make in
+        createPostButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(16)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(8 + BottomNavigationBar.SHADOW_HEIGHT + 8 + 8)
         }
@@ -399,8 +400,8 @@ extension HomeView {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        registerPostButton.rx.tap
-            .map { Reactor.Action.registerPostTapped }
+        createPostButton.rx.tap
+            .map { Reactor.Action.createPostTapped }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -551,12 +552,12 @@ extension HomeView {
             .bind(to: refreshControl.rx.isRefreshing)
             .disposed(by: disposeBag)
         
-        reactor.pulse(\.$shouldPushRegisterPostView)
+        reactor.pulse(\.$shouldPushCreatePostView)
             .compactMap { $0 }
             .subscribe(onNext: { [weak self] _ in
                 guard let self = self else { return }
                 
-                self.navigationController?.pushViewController(RegisterPostView(), animated: false)
+                self.navigationController?.pushViewController(CreatePostView(), animated: false)
             })
             .disposed(by: disposeBag)
         

@@ -1,5 +1,5 @@
 //
-//  RegisterPostView.swift
+//  CreatePostView.swift
 //  SoBunHaeYo
 //
 //  Created by 김태은 on 12/9/25.
@@ -11,9 +11,9 @@ import RxSwift
 import RxCocoa
 import RxGesture
 
-class RegisterPostView: BaseViewController {
-    typealias Reactor = RegisterPostReactor
-    private let reactor = RegisterPostReactor()
+class CreatePostView: BaseViewController {
+    typealias Reactor = CreatePostReactor
+    private let reactor = CreatePostReactor()
     
     private let disposeBag = DisposeBag()
     
@@ -31,7 +31,7 @@ class RegisterPostView: BaseViewController {
     private lazy var topNavigationBar: TopNavigationBar = {
         let tnb = TopNavigationBar()
         tnb.parentViewController = self
-        tnb.title = String(localized: "RegisterPostTitle", table: "Home")
+        tnb.title = String(localized: "CreatePostTitle", table: "Home")
         
         return tnb
     }()
@@ -48,7 +48,7 @@ class RegisterPostView: BaseViewController {
     private let infoLabel: UILabel = {
         let lb = UILabel()
         lb.numberOfLines = 0
-        let attributedText = NSAttributedString(string: String(localized: "RegisterPostInfo", table: "Home"), attributes: body12.attributes())
+        let attributedText = NSAttributedString(string: String(localized: "CreatePostInfo", table: "Home"), attributes: body12.attributes())
         lb.attributedText = attributedText
         lb.textColor = .neutral300
         
@@ -249,7 +249,7 @@ class RegisterPostView: BaseViewController {
         var attributes: [NSAttributedString.Key: Any] = body12.attributes(alignment: .left)
         attributes[.foregroundColor] = UIColor.primary400
         
-        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostDeadlineInfoMessage", table: "Home"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "CreatePostDeadlineInfoMessage", table: "Home"), attributes: attributes)
         
         return lb
     }()
@@ -465,7 +465,7 @@ class RegisterPostView: BaseViewController {
     }
 }
 
-extension RegisterPostView {
+extension CreatePostView {
     // reactor와 view 연결
     private func bind(reactor: Reactor) {
         bindAction(reactor: reactor)
@@ -581,6 +581,14 @@ extension RegisterPostView {
         reactor.state.map { $0.selectedTime }
             .distinctUntilChanged()
             .compactMap { $0 }
+            .map { [weak self] time24 -> String in
+                guard let self = self,
+                      let components = self.time24ToDisplayComponents(time24) else {
+                    return time24
+                }
+                
+                return "\(components.period) \(components.hour):\(components.minute)"
+            }
             .bind(to: timeTextField.rx.text)
             .disposed(by: disposeBag)
         
@@ -688,20 +696,36 @@ extension RegisterPostView {
             .disposed(by: disposeBag)
     }
     
+    // 24시간 형식 문자열("HH:mm")을 기기 언어 기준 12시간 표시 컴포넌트로 변환
+    private func time24ToDisplayComponents(_ time24: String) -> (hour: String, minute: String, period: String)? {
+        let parts = time24.components(separatedBy: ":")
+        
+        guard parts.count == 2,
+              let hour24 = Int(parts[0]),
+              let minute = Int(parts[1]) else {
+            return nil
+        }
+        
+        let formatter = DateFormatter()
+        formatter.locale = Locale.current
+        let amSymbol = formatter.amSymbol ?? "AM"
+        let pmSymbol = formatter.pmSymbol ?? "PM"
+        
+        let isAM = hour24 < 12
+        let hour12 = hour24 == 0 ? 12 : (hour24 > 12 ? hour24 - 12 : hour24)
+        
+        return (String(hour12), String(format: "%02d", minute), isAM ? amSymbol : pmSymbol)
+    }
+    
     // 시간 설정
     private func showTimePickerBottomSheet() {
-        let timeString = reactor.currentState.selectedTime
-        let separatedString = timeString?.components(separatedBy: " ")
-        let periodString = separatedString?[0]
-        let separatedTimeString = separatedString?[1].components(separatedBy: ":")
-        let hourString = separatedTimeString?[0]
-        let minuteString = separatedTimeString?[1]
+        let components = reactor.currentState.selectedTime.flatMap { time24ToDisplayComponents($0) }
         
         let sheetView = TimePickerView(
-            title: String(localized: "RegisterPostTimePickerTitle", table: "Home"),
-            selectedHour: hourString,
-            selectedMinute: minuteString,
-            selectedPeriod: periodString,
+            title: String(localized: "CreatePostTimePickerTitle", table: "Home"),
+            selectedHour: components?.hour,
+            selectedMinute: components?.minute,
+            selectedPeriod: components?.period,
             safeAreaBottom: view.safeAreaInsets.bottom
         )
         

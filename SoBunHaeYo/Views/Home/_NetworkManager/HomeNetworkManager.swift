@@ -47,8 +47,8 @@ class HomeNetworkManager {
     }
     
     // 글 등록
-    func registerPost(model: RegisterPostBodyModel) -> Single<PostModel> {
-        return authProvider.rx.request(MultiTarget(HomeAPIs.registerPost(model: model)))
+    func createPost(model: CreatePostBodyModel) -> Single<PostModel> {
+        return authProvider.rx.request(MultiTarget(HomeAPIs.createPost(model: model)))
             .tryMap(PostModel.self)
     }
     

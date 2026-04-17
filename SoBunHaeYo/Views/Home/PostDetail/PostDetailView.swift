@@ -364,8 +364,8 @@ class PostDetailView: BaseViewController {
     }()
     
     // 게시글 작성 성공 뷰
-    private let successView: RegisterPostSuccessView = {
-        let view = RegisterPostSuccessView()
+    private let successView: CreatePostSuccessView = {
+        let view = CreatePostSuccessView()
         view.isHidden = true
         
         return view
@@ -402,13 +402,13 @@ class PostDetailView: BaseViewController {
         configureUI()
         bind(reactor: reactor)
         
-        // 현재의 navigation 스택에서 RegisterPostView 삭제(뒤로가기 시 게시글 작성 뷰 이동 방지)
+        // 현재의 navigation 스택에서 CreatePostView 삭제(뒤로가기 시 게시글 작성 뷰 이동 방지)
         if let navigationController = navigationController {
             var viewControllers = navigationController.viewControllers
             let originalCount = viewControllers.count
             
             viewControllers.removeAll {
-                $0 is RegisterPostView
+                $0 is CreatePostView
             }
             
             if viewControllers.count != originalCount {
@@ -556,7 +556,7 @@ extension PostDetailView {
         }
         
         if isNew {
-            logger.debug("RegisterPostSuccessView 보이기")
+            logger.debug("CreatePostSuccessView 보이기")
             reactor.action.onNext(.showRegisterSuccessView)
         }
         

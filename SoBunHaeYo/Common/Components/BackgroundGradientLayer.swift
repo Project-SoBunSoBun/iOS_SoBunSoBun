@@ -31,7 +31,7 @@ class BackgroundGradientLayer: CAGradientLayer {
         locations = [0,1]
         startPoint = CGPoint(x: 0.5, y: 0.0)
         endPoint = CGPoint(x: 0.5, y: 1.0)
-        
+
         frame = CGRect(
             x: 0,
             y: parentView.bounds.height * 0.38, // 높이 기준 38%

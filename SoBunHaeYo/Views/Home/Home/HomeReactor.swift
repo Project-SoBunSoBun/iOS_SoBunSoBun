@@ -38,7 +38,7 @@ class HomeReactor: Reactor {
         
         case loadMorePosts // 페이지네이션
         case refresh // 새로고침
-        case registerPostTapped // 글 쓰기 버튼 tap
+        case createPostTapped // 글 쓰기 버튼 tap
         case postTapped(PostModel) // 게시글 tap
     }
     
@@ -63,7 +63,7 @@ class HomeReactor: Reactor {
         case appendPosts([PostModel]) // 페이지네이션 게시글 추가
         case setPage(Int) // 페이지네이션 페이지 번호 설정
         case setHasMore(Bool) // 페이지네이션 추가 가능 여부 설정
-        case setRegisterPostView // 글 쓰기 뷰로 이동
+        case setCreatePostView // 글 쓰기 뷰로 이동
         case setPostDetailView(PostModel) // 게시글 상세 뷰로 이동
     }
     
@@ -89,7 +89,7 @@ class HomeReactor: Reactor {
         var isLoading: Bool = false
         var isRefreshing: Bool = false
         var hasMore: Bool = true // 페이지네이션 추가 가능 여부
-        @Pulse var shouldPushRegisterPostView: Void? // 글 쓰기 뷰로 이동
+        @Pulse var shouldPushCreatePostView: Void? // 글 쓰기 뷰로 이동
         @Pulse var shouldPushPostDetailView: PostModel? // 게시글 상세 뷰로 이동
     }
     
@@ -157,8 +157,8 @@ class HomeReactor: Reactor {
                 Observable.just(.setRefreshing(false))
             ])
             
-        case .registerPostTapped:
-            return Observable.just(.setRegisterPostView)
+        case .createPostTapped:
+            return Observable.just(.setCreatePostView)
             
         case .postTapped(let model):
             return Observable.just(.setPostDetailView(model))
@@ -217,8 +217,8 @@ class HomeReactor: Reactor {
         case .setHasMore(let hasMore):
             newState.hasMore = hasMore
             
-        case .setRegisterPostView:
-            newState.shouldPushRegisterPostView = ()
+        case .setCreatePostView:
+            newState.shouldPushCreatePostView = ()
             
         case .setPostDetailView(let model):
             newState.shouldPushPostDetailView = model

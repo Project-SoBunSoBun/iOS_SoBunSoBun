@@ -26,6 +26,7 @@ class AuthManager {
     
     private var isShowingLogOutAlert = false
     private var isLoggingOut = false
+    private var pendingLogOutAlert: CustomAlert?
     
     // computed property로 변경: 싱글톤 초기화 시점이 아닌 매번 KeyChain에서 읽어 로그인 후에도 올바른 값 반환
     private var loginType: String? { KeyChain.shared.get(key: "LOGIN_TYPE") }
@@ -167,12 +168,14 @@ class AuthManager {
                     primaryTitleKey: String(localized: "Confirm", table: "Common")
                 )
                 
+                pendingLogOutAlert = alert
+                
                 alert.primaryTap.emit(onNext: {
                     self.switchToLoginView()
                 })
                 .disposed(by: alert.disposeBag)
                 
-                alert.show(on: currentVC)
+                alert.showQueued(on: currentVC)
             }
         }
         
@@ -189,6 +192,9 @@ class AuthManager {
                 
                 currentWindow.rootViewController = vc
             }
+            
+            // 대기 중인 로그아웃 alert 취소
+            self.pendingLogOutAlert = nil
             
             // 다음 로그인-로그아웃 사이클을 위해 플래그 리셋
             self.isLoggingOut = false

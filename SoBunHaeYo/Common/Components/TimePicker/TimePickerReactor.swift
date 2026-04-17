@@ -5,6 +5,7 @@
 //  Created by 김태은 on 12/16/25.
 //
 
+import Foundation
 import ReactorKit
 
 class TimePickerReactor: Reactor {
@@ -57,13 +58,26 @@ class TimePickerReactor: Reactor {
             return .just(.setPeriodString(period))
             
         case .confirm:
-            if let hour = currentState.hourString,
-               let minute = currentState.minuteString,
-               let period = currentState.periodString {
-                return .just(.setConfirmedTime("\(period) \(hour):\(minute)"))
-            } else {
+            guard let hourStr = currentState.hourString,
+                  let minuteStr = currentState.minuteString,
+                  let period = currentState.periodString,
+                  let hour12 = Int(hourStr) else {
                 return .empty()
             }
+            
+            let formatter = DateFormatter()
+            formatter.locale = Locale.current
+            let isAM = period == (formatter.amSymbol ?? "")
+            
+            let hour24: Int
+            if isAM {
+                hour24 = (hour12 == 12) ? 0 : hour12
+            } else {
+                hour24 = (hour12 == 12) ? 12 : hour12 + 12
+            }
+            
+            // 로케일 독립적인 24시간 형식으로 저장
+            return .just(.setConfirmedTime(String(format: "%02d:%02d", hour24, Int(minuteStr) ?? 0)))
         }
     }
     

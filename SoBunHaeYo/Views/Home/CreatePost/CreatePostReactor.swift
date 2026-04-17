@@ -1,5 +1,5 @@
 //
-//  RegisterPostReactor.swift
+//  CreatePostReactor.swift
 //  SoBunHaeYo
 //
 //  Created by 김태은 on 12/11/25.
@@ -10,10 +10,10 @@ import ReactorKit
 import RxSwift
 import OSLog
 
-class RegisterPostReactor: Reactor {
+class CreatePostReactor: Reactor {
     private let logger = Logger(
         subsystem: "SoBunHaeYo",
-        category: "Home.RegisterPost.Reactor"
+        category: "Home.CreatePost.Reactor"
     )
     
     private let disposeBag = DisposeBag()
@@ -72,15 +72,15 @@ class RegisterPostReactor: Reactor {
         var notes: String?
         var isRegisterButtonEnable: Bool {
             return (
-                title != nil && !title!.isEmpty &&
+                title?.isEmpty == false &&
                 !selectedCategories.isEmpty &&
                 minimumMembers != nil &&
                 maximumMembers != nil &&
-                location != nil && !location!.isEmpty &&
+                location?.isEmpty == false &&
                 selectedDate != nil &&
                 selectedTime != nil &&
-                plannedItems != nil && !plannedItems!.isEmpty &&
-                notes != nil && !notes!.isEmpty
+                plannedItems?.isEmpty == false &&
+                notes?.isEmpty == false
             )
         }
         
@@ -129,7 +129,7 @@ class RegisterPostReactor: Reactor {
             return Observable.just(.setNotes(notes))
             
         case .registerButtonTapped:
-            return registerPost()
+            return createPost()
         }
     }
     
@@ -189,38 +189,64 @@ class RegisterPostReactor: Reactor {
         return newState
     }
     
-    private func registerPost() -> Observable<Mutation> {
-        guard let title = currentState.title, !title.isEmpty,
-              !currentState.selectedCategories.isEmpty,
-              let minimumMembers = currentState.minimumMembers,
-              let maximumMembers = currentState.maximumMembers,
-              let location = currentState.location, !location.isEmpty,
-              let selectedDate = currentState.selectedDate,
-              let selectedTime = currentState.selectedTime,
-              let plannedItems = currentState.plannedItems, !plannedItems.isEmpty,
-              let notes = currentState.notes, !notes.isEmpty,
-              let convertedDate: Date = stringToDate(
-                string: [selectedDate, selectedTime].joined(separator: " "),
-                format: "yyyy - MM - dd a hh:mm"
-              ),
-              let meetAtDateString: String = dateToISO8601String(date: convertedDate),
-              let deadlineAtDate: Date = Calendar.current.date(byAdding: .day, value: -1, to: convertedDate),
-              let deadlineAtDateString: String = dateToISO8601String(date: deadlineAtDate) else {
-            self.logger.fault("RegisterPostBodyModel 생성 실패")
-            return Observable.concat([
-                Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                Observable.just(.setErrorMessage(String(localized: "CheckYourInputs", table: "Common")))
-            ])
+    private func createPost() -> Observable<Mutation> {
+        let state = currentState
+        
+        guard let title = state.title, !title.isEmpty else {
+            return .just(.setErrorMessage(String(localized: "InsertTitle", table: "Home")))
+        }
+        
+        guard !state.selectedCategories.isEmpty else {
+            return .just(.setErrorMessage(String(localized: "SelectCategory", table: "Home")))
+        }
+        
+        guard let minimumMembers = state.minimumMembers else {
+            return .just(.setErrorMessage(String(localized: "InsertMinimumMembers", table: "Home")))
+        }
+        
+        guard let maximumMembers = state.maximumMembers else {
+            return .just(.setErrorMessage(String(localized: "InsertMaximumMembers", table: "Home")))
         }
         
         guard maximumMembers >= minimumMembers else {
-            return Observable.concat([
-                Observable.just(.setLoading(false)).delay(.seconds(1), scheduler: MainScheduler.instance),
-                Observable.just(.setErrorMessage(String(localized: "CheckYourMinimumMembers", table: "Home")))
-            ])
+            return .just(.setErrorMessage(String(localized: "CheckYourMinimumMembers", table: "Home")))
         }
         
-        let model: RegisterPostBodyModel = .init(
+        guard let location = state.location, !location.isEmpty else {
+            return .just(.setErrorMessage(String(localized: "InsertLocation", table: "Home")))
+        }
+        
+        guard let selectedDate = state.selectedDate else {
+            return .just(.setErrorMessage(String(localized: "SelectDate", table: "Home")))
+        }
+        
+        guard let selectedTime = state.selectedTime else {
+            return .just(.setErrorMessage(String(localized: "SelectTime", table: "Home")))
+        }
+        
+        guard let plannedItems = state.plannedItems, !plannedItems.isEmpty else {
+            return .just(.setErrorMessage(String(localized: "InsertPlannedItems", table: "Home")))
+        }
+        
+        guard let notes = state.notes, !notes.isEmpty else {
+            return .just(.setErrorMessage(String(localized: "InsertNotes", table: "Home")))
+        }
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy - MM - dd HH:mm"
+        // 24시간 형식은 로케일 독립적이므로 POSIX 로케일 사용
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        
+        guard let convertedDate: Date = dateFormatter.date(from: [selectedDate, selectedTime].joined(separator: " ")),
+              let meetAtDateString: String = dateToISO8601String(date: convertedDate),
+              let deadlineAtDate: Date = Calendar.current.date(byAdding: .day, value: -1, to: convertedDate),
+              let deadlineAtDateString: String = dateToISO8601String(date: deadlineAtDate) else {
+            self.logger.fault("CreatePostBodyModel 생성 실패 - 날짜 형식 오류")
+            
+            return .just(.setErrorMessage(String(localized: "CheckYourDateTime", table: "Home")))
+        }
+        
+        let model: CreatePostBodyModel = .init(
             title: title,
             categories: currentState.selectedCategories.joined(separator: ","),
             locationName: location,
@@ -234,7 +260,7 @@ class RegisterPostReactor: Reactor {
         
         return Observable.concat([
             Observable.just(.setLoading(true)),
-            networkManager.registerPost(model: model)
+            networkManager.createPost(model: model)
                 .asObservable()
                 .flatMap { model -> Observable<Mutation> in
                     self.logger.debug("\(title) 게시글 등록 성공")

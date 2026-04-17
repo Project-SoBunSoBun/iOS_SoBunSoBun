@@ -11,6 +11,18 @@
         }
       }
     },
+    "CheckYourDateTime" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "날짜 및 시간 형식을 확인해주세요."
+          }
+        }
+      }
+    },
     "CheckYourMinimumMembers" : {
       "comment" : "Home",
       "extractionState" : "manual",
@@ -212,6 +224,54 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "장소를 입력해주세요."
+          }
+        }
+      }
+    },
+    "InsertMaximumMembers" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대 인원을 입력해주세요."
+          }
+        }
+      }
+    },
+    "InsertMinimumMembers" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최소 인원을 입력해주세요."
+          }
+        }
+      }
+    },
+    "InsertNotes" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전달 사항을 입력해주세요."
+          }
+        }
+      }
+    },
+    "InsertPlannedItems" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구매 예정 품목을 입력해주세요."
           }
         }
       }
@@ -418,7 +478,7 @@
         }
       }
     },
-    "RegisterPostDeadlineInfoMessage" : {
+    "CreatePostDeadlineInfoMessage" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -430,7 +490,7 @@
         }
       }
     },
-    "RegisterPostInfo" : {
+    "CreatePostInfo" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -442,7 +502,7 @@
         }
       }
     },
-    "RegisterPostSuccess" : {
+    "CreatePostSuccess" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -454,7 +514,7 @@
         }
       }
     },
-    "RegisterPostTimePickerTitle" : {
+    "CreatePostTimePickerTitle" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -466,7 +526,7 @@
         }
       }
     },
-    "RegisterPostTitle" : {
+    "CreatePostTitle" : {
       "comment" : "Home",
       "extractionState" : "manual",
       "localizations" : {
@@ -565,6 +625,42 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "검색어를 입력하세요."
+          }
+        }
+      }
+    },
+    "SelectCategory" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카테고리를 선택해주세요."
+          }
+        }
+      }
+    },
+    "SelectDate" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "날짜를 선택해주세요."
+          }
+        }
+      }
+    },
+    "SelectTime" : {
+      "comment" : "Home",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시간을 선택해주세요."
           }
         }
       }

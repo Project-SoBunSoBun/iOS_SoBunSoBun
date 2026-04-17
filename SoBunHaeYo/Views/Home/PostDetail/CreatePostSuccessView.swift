@@ -1,5 +1,5 @@
 //
-//  RegisterPostSuccessView.swift
+//  CreatePostSuccessView.swift
 //  SoBunHaeYo
 //
 //  Created by 김태은 on 12/18/25.
@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class RegisterPostSuccessView: UIView {
+class CreatePostSuccessView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -62,7 +62,7 @@ class RegisterPostSuccessView: UIView {
         var attributes: [NSAttributedString.Key: Any] = title20.attributes(alignment: .center)
         attributes[.foregroundColor] = UIColor.primary400
         
-        lb.attributedText = NSAttributedString(string: String(localized: "RegisterPostSuccess", table: "Home"), attributes: attributes)
+        lb.attributedText = NSAttributedString(string: String(localized: "CreatePostSuccess", table: "Home"), attributes: attributes)
         
         lb.snp.makeConstraints { make in make.width.equalTo(182) }
         
