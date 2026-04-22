@@ -671,6 +671,18 @@
         }
       }
     },
+    "MyPostEmpty" : {
+      "comment" : "MyPostView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "게시한 글이 없습니다."
+          }
+        }
+      }
+    },
     "MyProfile" : {
       "comment" : "Settings",
       "extractionState" : "manual",
@@ -835,6 +847,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "저장 목록"
+          }
+        }
+      }
+    },
+    "SaveListEmpty" : {
+      "comment" : "SaveListView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장된 글이 없습니다."
           }
         }
       }

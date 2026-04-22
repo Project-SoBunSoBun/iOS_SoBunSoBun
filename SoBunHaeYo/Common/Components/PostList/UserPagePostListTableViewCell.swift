@@ -48,8 +48,7 @@ class UserPagePostListTableViewCell: UITableViewCell {
         contentView.addSubview(view)
         
         view.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalToSuperview()
+            make.horizontalEdges.top.equalToSuperview()
             make.bottom.equalToSuperview().priority(.high)
         }
     }
@@ -58,8 +57,7 @@ class UserPagePostListTableViewCell: UITableViewCell {
         view.configureUI(model: model)
         
         view.snp.remakeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalToSuperview()
+            make.horizontalEdges.top.equalToSuperview()
             make.bottom.equalToSuperview().inset(bottomEdgeInset).priority(.high)
         }
         
