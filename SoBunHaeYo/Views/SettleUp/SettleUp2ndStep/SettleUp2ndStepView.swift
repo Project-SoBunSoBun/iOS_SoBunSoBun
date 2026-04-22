@@ -167,7 +167,7 @@ class SettleUp2ndStepView: BaseViewController {
         
         contentView.snp.makeConstraints { make in
             make.horizontalEdges.top.equalToSuperview()
-            make.bottom.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().inset(64 + 16) // 버튼 높이 + 상단 여백
             make.width.equalToSuperview()
         }
         
