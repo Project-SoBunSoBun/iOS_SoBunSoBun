@@ -432,6 +432,18 @@
         }
       }
     },
+    "Total" : {
+      "comment" : "UserSettlementCellView.swift에서 사용",
+      "extractionState" : "manual",
+      "localizations" : {
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "총"
+          }
+        }
+      }
+    },
     "TotalSettlementAmountFormat" : {
       "comment" : "SettleUp",
       "extractionState" : "manual",
