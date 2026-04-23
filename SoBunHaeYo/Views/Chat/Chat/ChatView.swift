@@ -767,17 +767,24 @@ extension ChatView {
             })
             .disposed(by: disposeBag)
         
-        // 메시지 표시될 때마다 스크롤이 맨하단 근처에 있다면 아래로
+        // 메시지 표시될 때마다 스크롤 처리
         reactor.state.map { $0.messages }
             .distinctUntilChanged()
             .filter { !$0.isEmpty }
             .observe(on: MainScheduler.instance)
             .delay(.milliseconds(100), scheduler: MainScheduler.instance)
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] messages in
                 guard let self = self else { return }
                 
                 DispatchQueue.main.async {
-                    if self.isScrollNearBottom() {
+                    guard let myIdString = KeyChain.shared.get(key: "USER_ID"),
+                          let myId = Int(myIdString) else {
+                        return
+                    }
+                    
+                    let isLatestMine = messages.first?.userId == myId
+                    
+                    if isLatestMine || self.isScrollNearBottom() {
                         self.scrollToBottom()
                     }
                 }
