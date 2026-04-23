@@ -678,7 +678,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "게시한 글이 없습니다."
+            "value" : "게시한 글이 없습니다.\n모임글을 작성해 보세요!"
           }
         }
       }
@@ -858,7 +858,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "저장된 글이 없습니다."
+            "value" : "저장된 글이 없습니다.\n모임글을 저장해 보세요!"
           }
         }
       }
