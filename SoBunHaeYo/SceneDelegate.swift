@@ -58,15 +58,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     @objc private func dismissKeyboard(_ gesture: UITapGestureRecognizer) {
-        guard let view = gesture.view else { return }
-        
-        let location = gesture.location(in: view)
-        
-        if let tappedView = view.hitTest(location, with: nil),
-           tappedView is UIButton {
-            return
-        }
-        
         window?.endEditing(true)
     }
     

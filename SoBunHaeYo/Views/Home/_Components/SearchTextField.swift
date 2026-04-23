@@ -54,6 +54,9 @@ class SearchTextField: BaseTextField {
         self.layer.borderColor = UIColor.primary100.cgColor
         self.frame = CGRectInset(self.frame, -self.layer.borderWidth, -self.layer.borderWidth)
         
+        // 키보드 타입
+        self.returnKeyType = .search
+        
         // Placeholder
         self.placeholder = String(localized: "SearchSomething", table: "Home")
         self.placeholderColor = .primary200
