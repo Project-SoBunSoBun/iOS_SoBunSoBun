@@ -115,13 +115,13 @@ class ChatView: BaseViewController {
     }()
     
     // 전송 버튼
-    private let sendButton: UIButton = {
+    private let sendButton: NonDismissingButton = {
         var config = UIButton.Configuration.plain()
         config.image = .lightBluePointer.resize(.init(width: 24, height: 24))
         config.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
-        
-        let btn = UIButton(configuration: config)
-        
+
+        let btn = NonDismissingButton(configuration: config)
+
         return btn
     }()
     
