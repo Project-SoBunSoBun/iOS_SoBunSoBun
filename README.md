@@ -7,7 +7,7 @@
   소분해요 (SoBunHaeYo)
   <p align="center">
   <img src="https://img.shields.io/badge/프로젝트 기간-2025.07.24 ~ -fab2ac?style=flat&logo=&logoColor=white" alt="프로젝트 기간" />
-  <img src="https://img.shields.io/badge/release-v26.0.2-4fc08d?style=flat&logo=apple&logoColor=white" alt="릴리즈 버전" />
+  <img src="https://img.shields.io/badge/release-v26.0.3-4fc08d?style=flat&logo=apple&logoColor=white" alt="릴리즈 버전" />
   </p>
   <p align="center">
     <a href="https://apps.apple.com/kr/app/소분해요/id6761189518">
@@ -141,6 +141,7 @@
 | **v26.0.0** | 2026.04.03 | 첫 공식 배포 (Initial Release) |
 | **v26.0.1** | 2026.04.09 | 오류 수정 및 기능 업데이트 (채팅 미리보기 답장 전송, UI 개선) |
 | **v26.0.2** | 2026.04.09 | 액세스 토큰 리프레시 로직 수정 및 CustomAlert를 RxSwift로 리팩토링 |
+| **v26.0.3** | 2026.04.24 | 채팅 뷰 개선, 홈 뷰 디자인 수정, 오류 메시지 Alert 수정, 마이페이지 디자인 수정, <br> 정산 화면 디자인 수정 및 정산 품목 세부내역 추가, 키보드 내림 이슈 수정 |
 
 <br>
 
