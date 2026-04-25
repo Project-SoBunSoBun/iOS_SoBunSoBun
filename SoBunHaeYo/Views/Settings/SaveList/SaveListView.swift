@@ -44,6 +44,21 @@ class SaveListView: BaseViewController {
         return tv
     }()
     
+    private let emptyStateLabel: UILabel = {
+        var attributes = body16.attributes(alignment: .center)
+        attributes[.foregroundColor] = UIColor.neutral500
+        
+        let label = UILabel()
+        label.attributedText = NSAttributedString(
+            string: String(localized: "SaveListEmpty", table: "Settings"),
+            attributes: attributes
+        )
+        label.numberOfLines = 0
+        label.isHidden = true
+        
+        return label
+    }()
+    
     // 새로고침
     private let refreshControl: BlueMeatballsRefreshController = {
         let rc = BlueMeatballsRefreshController()
@@ -69,7 +84,7 @@ class SaveListView: BaseViewController {
 
     // MARK: - 레이아웃 설정
     private func configureUI() {
-        [topNavigationBar, tableView, loadingView].forEach {
+        [topNavigationBar, tableView, emptyStateLabel, loadingView].forEach {
             view.addSubview($0)
         }
         
@@ -83,6 +98,11 @@ class SaveListView: BaseViewController {
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(topNavigationBar.snp.bottom).offset(16)
             make.bottom.equalToSuperview()
+        }
+        
+        emptyStateLabel.snp.makeConstraints { make in
+            make.center.equalTo(tableView)
+            make.horizontalEdges.equalToSuperview().inset(32)
         }
         
         tableView.refreshControl = refreshControl
@@ -141,6 +161,13 @@ extension SaveListView {
             )) { _, model, cell in
                 cell.configureUI(model: model, bottomEdgeInset: 24)
             }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map { $0.savedPosts.isEmpty }
+            .distinctUntilChanged()
+            .map { !$0 }
+            .observe(on: MainScheduler.instance)
+            .bind(to: emptyStateLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
         // 셀을 눌렀을 때 화면 이동

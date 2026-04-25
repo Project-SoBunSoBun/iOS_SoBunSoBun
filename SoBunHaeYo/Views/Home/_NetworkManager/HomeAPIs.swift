@@ -15,7 +15,7 @@ enum HomeAPIs {
     case getHomeList(sortBy: String, page: Int, size: Int)
     case getHomeListByCategories(category: [String], sortBy: String, page: Int, size: Int)
     case getAddress(point: String) // 좌표를 통해 주소 가져오기
-    case registerPost(model: RegisterPostBodyModel)
+    case createPost(model: CreatePostBodyModel)
     
     // 검색
     case getSuggestions
@@ -71,7 +71,7 @@ extension HomeAPIs: TargetType {
         case .getAddress:
             return "/req/address"
             
-        case .registerPost:
+        case .createPost:
             return "/api/posts"
             
         case .getSuggestions:
@@ -126,7 +126,7 @@ extension HomeAPIs: TargetType {
             return .get
             
         case // POST
-                .registerPost,
+                .createPost,
                 .savePost,
                 .createPostComment,
                 .createChatRoomId:
@@ -171,7 +171,7 @@ extension HomeAPIs: TargetType {
             
             return .requestParameters(parameters: model.toDictionary()!, encoding: URLEncoding(destination: .queryString, arrayEncoding: .brackets, boolEncoding: .literal))
             
-        case .registerPost(let model):
+        case .createPost(let model):
             return .requestJSONEncodable(model)
             
         case .getSuggestions:

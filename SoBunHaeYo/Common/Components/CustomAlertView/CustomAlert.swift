@@ -13,6 +13,7 @@ import RxCocoa
 class CustomAlert: UIView {
     private let primaryTapRelay = PublishRelay<Void>()
     private let cancelTapRelay = PublishRelay<Void>()
+    private let dismissedRelay = PublishRelay<Void>()
     
     let disposeBag = DisposeBag()
     
@@ -22,6 +23,10 @@ class CustomAlert: UIView {
     
     var cancelTap: Signal<Void> {
         cancelTapRelay.asSignal()
+    }
+    
+    private var dismissed: Signal<Void> {
+        dismissedRelay.asSignal()
     }
     
     init(title: String,
@@ -38,7 +43,7 @@ class CustomAlert: UIView {
             primaryTitleKey: primaryTitleKey,
             cancelTitleKey: cancelTitleKey
         )
-
+        
         bind()
     }
     
@@ -156,6 +161,7 @@ class CustomAlert: UIView {
             string: title,
             attributes: title16.attributes(alignment: .center)
         )
+        
         titleLabel.attributedText = titleAttributedText
         
         // subTitle
@@ -239,16 +245,51 @@ class CustomAlert: UIView {
         }
     }
     
+    /// 이미 표시 중인 alert가 있으면 무시
     func show(on viewController: UIViewController) {
+        // window 바인딩 실패 또는 이미 표시 중인 alert가 있으면 무시
+        guard let window = viewController.view.window,
+              !window.subviews.contains(where: { $0 is CustomAlert }) else {
+            return
+        }
+        
+        addToWindow(window)
+    }
+    
+    /// 이미 표시 중인 alert가 있으면 닫힌 후 순서대로 표시
+    func showQueued(on viewController: UIViewController) {
+        // window 바인딩 실패 시 무시
         guard let window = viewController.view.window else { return }
-
+        
+        // 이미 표시 중인 alert가 있으면 무시
+        if let existing = window.subviews.first(where: { $0 is CustomAlert }) as? CustomAlert {
+            // 기존 alert의 dismissed 시그널을 구독해 닫히는 시점에 표시
+            existing.dismissed
+                .emit(onNext: { [weak self, weak window] in
+                    guard let self, let window else { return }
+                    
+                    self.addToWindow(window)
+                })
+                .disposed(by: existing.disposeBag)
+        } else {
+            addToWindow(window)
+        }
+    }
+    
+    override func removeFromSuperview() {
+        super.removeFromSuperview()
+        
+        // 대기 중인 alert에게 표시 시점을 알림
+        dismissedRelay.accept(())
+    }
+    
+    private func addToWindow(_ window: UIWindow) {
         window.addSubview(self)
-
+        
         self.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        // 애니메이션
         self.alpha = 0
         containerView.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
         UIView.animate(withDuration: 0.25) {
@@ -268,7 +309,7 @@ extension CustomAlert {
             })
             .bind(to: primaryTapRelay)
             .disposed(by: disposeBag)
-
+        
         cancelButton.rx.tap
             .do(onNext: { [weak self] in
                 guard let self = self else { return }

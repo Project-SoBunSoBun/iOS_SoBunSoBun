@@ -160,14 +160,14 @@ class SettleUp2ndStepView: BaseViewController {
         scrollView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview()
             make.top.equalTo(topNavigationBar.snp.bottom)
-            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top)
+            make.bottom.equalTo(registerButton.snp.top).offset(-16)
         }
         
         scrollView.addSubview(contentView)
         
         contentView.snp.makeConstraints { make in
             make.horizontalEdges.top.equalToSuperview()
-            make.bottom.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview()
             make.width.equalToSuperview()
         }
         

@@ -10,6 +10,7 @@ import UIKit
 class BaseTextField: UITextField {
     let fontStyle: FontStyle
     let showCursor: Bool
+    private var editMenuInteraction: UIEditMenuInteraction?
     
     init(frame: CGRect, fontStyle: FontStyle, showCursor: Bool = true) {
         self.fontStyle = fontStyle
@@ -17,6 +18,7 @@ class BaseTextField: UITextField {
         super.init(frame: frame)
         
         configureUI()
+        setupEmptyTextMenu()
     }
     
     required init?(coder: NSCoder) {
@@ -49,16 +51,45 @@ class BaseTextField: UITextField {
     }
     
     private func configureUI() {
-        // 폰트 설정
         self.font = fontStyle.font
-        
-        // 텍스트 색
         self.textColor = .neutral900
     }
     
+    // 빈 텍스트일 때 롱프레스 시 컨텍스트 메뉴를 수동으로 표시
+    // iOS 내부 UITextInteraction은 선택할 텍스트가 없으면 메뉴를 트리거하지 않으므로 직접 처리
+    private func setupEmptyTextMenu() {
+        let interaction = UIEditMenuInteraction(delegate: self)
+        addInteraction(interaction)
+        editMenuInteraction = interaction
+
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(handleEmptyTextLongPress(_:)))
+        longPress.delegate = self
+        
+        addGestureRecognizer(longPress)
+    }
+
+    @objc private func handleEmptyTextLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began, (text ?? "").isEmpty else { return }
+
+        if !isFirstResponder {
+            _ = becomeFirstResponder()
+        }
+
+        let location = gesture.location(in: self)
+
+        guard let interaction = editMenuInteraction else { return }
+
+        let config = UIEditMenuConfiguration(identifier: nil, sourcePoint: location)
+        interaction.presentEditMenu(with: config)
+    }
+    
     // 시스템 커서 숨김 (tintColor를 clear로 하면 스페이스바 트랙패드 모드가 비활성화되므로 caretRect로 처리)
+    // origin은 유지하여 context menu가 올바른 위치에 앵커되도록 함
     override func caretRect(for position: UITextPosition) -> CGRect {
-        return .zero
+        var rect = super.caretRect(for: position)
+        rect.size = .zero
+        
+        return rect
     }
     
     // 커서 설정
@@ -66,11 +97,9 @@ class BaseTextField: UITextField {
     private let cursorLineWidth: CGFloat = 1.5
     
     private func updateCursorLayer() {
-        // 기존 레이어 제거
         cursorLayer?.removeFromSuperlayer()
         cursorLayer = nil
         
-        // 커스텀 레이어 추가
         guard showCursor, isFirstResponder else { return }
         
         guard let selectedRange = selectedTextRange else { return }
@@ -114,10 +143,11 @@ class BaseTextField: UITextField {
             updateCursorLayer()
         }
     }
-
+    
     override func becomeFirstResponder() -> Bool {
         let result = super.becomeFirstResponder()
         updateCursorLayer()
+        
         return result
     }
     
@@ -125,6 +155,7 @@ class BaseTextField: UITextField {
         let result = super.resignFirstResponder()
         cursorLayer?.removeFromSuperlayer()
         cursorLayer = nil
+        
         return result
     }
     
@@ -133,3 +164,14 @@ class BaseTextField: UITextField {
         updateCursorLayer()
     }
 }
+
+extension BaseTextField: UIGestureRecognizerDelegate {
+    func gestureRecognizer(
+        _ gestureRecognizer: UIGestureRecognizer,
+        shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
+    ) -> Bool {
+        return true
+    }
+}
+
+extension BaseTextField: UIEditMenuInteractionDelegate {}

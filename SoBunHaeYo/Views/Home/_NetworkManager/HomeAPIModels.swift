@@ -23,7 +23,7 @@ struct HomeListCategoryRequestModel: Encodable {
     let page, size: Int
 }
 
-struct RegisterPostBodyModel: Encodable {
+struct CreatePostBodyModel: Encodable {
     let title, categories, locationName, meetAt, deadlineAt, itemsText, notesText: String
     let minMembers, maxMembers: Int
 }
