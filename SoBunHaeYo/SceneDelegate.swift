@@ -37,6 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // 텍스트 입력창 밖 tap할 시 키보드 내리기
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false
+        tapGesture.delegate = self
         window.addGestureRecognizer(tapGesture)
         
         let nav = UINavigationController(rootViewController: SplashView())
@@ -84,6 +85,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NotificationCenter.default.post(name: .sceneDidEnterBackground, object: nil)
     }
 }
+
+extension SceneDelegate: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        // NonDismissingButton 터치 시 키보드 내리기 제스처 비활성화
+        return !(touch.view is NonDismissingButton)
+    }
+}
+
+// 키보드를 내리지 않아야 하는 버튼에 사용하는 마커 서브클래스
+final class NonDismissingButton: UIButton {}
 
 extension Notification.Name {
     static let sceneDidEnterBackground = Notification.Name("sceneDidEnterBackground")
