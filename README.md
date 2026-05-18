@@ -146,5 +146,34 @@
 
 <br>
 
+## 🌳 프로젝트 구조
+```
+app/
+├── Common/                # 공통 로직 및 유틸리티
+│   ├── Authentication/    # 사용자 인증 관련
+│   ├── Network/           # API 통신 및 네트워크 레이어
+│   ├── PushNotification/  # 알림 처리
+│   └── Utils/             # 프로젝트 전반에서 사용되는 유틸리티
+│
+├── Common/Components/     # 공통 UI 컴포넌트 (Design System)
+│
+├── Views/                 # 기능별 화면 모듈
+│   ├── Splash/            # 앱 진입점
+│   ├── SignIn/            # 로그인 및 회원가입
+│   ├── Home/              # 메인 홈 화면
+│   ├── Chat/              # 채팅 기능
+│   ├── NavigationTab/     # 메인 탭바 제어
+│   ├── Profile/           # 사용자 프로필
+│   ├── Settings/          # 앱 설정
+│   ├── SettleUp/          # 정산 단계 화면
+│   ├── Report/            # 신고 및 피드백
+│   └── TermsDetail/       # 약관 상세 내용
+│
+├── Assets.xcassets/       # 이미지, 컬러 시스템 등 리소스
+├── Fonts/                 # 폰트 구성 파일
+└── InfoPlist.strings/     # 다국어 처리 및 문자열 리소스
+
+```
+
 ## License
 Copyright © 2026 Seongpil Heo. All rights reserved.
