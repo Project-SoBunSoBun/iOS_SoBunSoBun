@@ -172,7 +172,6 @@ app/
 ├── Assets.xcassets/       # 이미지, 컬러 시스템 등 리소스
 ├── Fonts/                 # 폰트 구성 파일
 └── InfoPlist.strings/     # 다국어 처리 및 문자열 리소스
-
 ```
 
 ## License
