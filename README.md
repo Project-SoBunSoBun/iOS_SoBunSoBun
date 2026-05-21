@@ -146,5 +146,38 @@
 
 <br>
 
+## 🌳 프로젝트 구조
+```
+SoBunHaeYo/
+├── Common/                    # 공통 모듈
+│   ├── AuthManager/           # 인증 관련
+│   ├── Components/            # 공통 UI 컴포넌트
+│   ├── DeepLinkManager/       # 딥링크 처리
+│   ├── Fonts/                 # 폰트
+│   ├── ImagePicker/           # 이미지 피커
+│   ├── LocationManager/       # 위치 관련
+│   ├── NetworkManager/        # 네트워크 통신
+│   ├── NotificationManager/   # 알림 처리
+│   ├── StringCatalogs/        # 다국어 처리
+│   ├── AppVersion             # 앱 버전 정보 관리
+│   ├── KeyChain               # 키체인 저장소 처리
+│   └── Utils                  # 공통 유틸리티 함수
+│
+├── Views/                     # 기능별 화면 모듈
+│   ├── Splash/                # 스플래시 화면
+│   ├── SignIn/                # 로그인/회원가입
+│   ├── Home/                  # 홈 화면
+│   ├── Chat/                  # 채팅 기능
+│   ├── NavigationTab/         # 메인 탭바
+│   ├── Profile/               # 프로필
+│   ├── Settings/              # 설정/마이페이지
+│   ├── SettleUp/              # 정산 기능
+│   ├── Report/                # 신고 기능
+│   └── TermsDetail/           # 약관 상세
+│
+├── Assets.xcassets/           # 이미지 및 컬러 리소스 
+└── InfoPlist.strings/         # 다국어 문자열 리소스
+```
+
 ## License
 Copyright © 2026 Seongpil Heo. All rights reserved.
