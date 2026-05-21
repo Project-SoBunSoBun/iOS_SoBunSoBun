@@ -153,7 +153,7 @@ SoBunHaeYo/
 │   ├── AuthManager/           # 인증 관련
 │   ├── Components/            # 공통 UI 컴포넌트
 │   ├── DeepLinkManager/       # 딥링크 처리
-│   ├── Fonts/                 # 폰트 유틸
+│   ├── Fonts/                 # 폰트
 │   ├── ImagePicker/           # 이미지 선택 피커
 │   ├── LocationManager/       # 위치 관련
 │   ├── NetworkManager/        # 네트워크 통신
@@ -173,7 +173,7 @@ SoBunHaeYo/
 │   └── TermsDetail/           # 약관 상세
 │
 ├── Assets.xcassets/           # 이미지 및 컬러 리소스
-├── Fonts/                     # 폰트 파일
+├── NotificationService/       # 푸시 알림 
 └── InfoPlist.strings/         # 다국어 문자열 리소스
 ```
 
