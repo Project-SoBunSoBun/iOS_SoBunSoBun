@@ -172,8 +172,7 @@ SoBunHaeYo/
 │   ├── Report/                # 신고 기능
 │   └── TermsDetail/           # 약관 상세
 │
-├── Assets.xcassets/           # 이미지 및 컬러 리소스
-├── NotificationService/       # 푸시 알림 
+├── Assets.xcassets/           # 이미지 및 컬러 리소스 
 └── InfoPlist.strings/         # 다국어 문자열 리소스
 ```
 
