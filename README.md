@@ -154,11 +154,14 @@ SoBunHaeYo/
 │   ├── Components/            # 공통 UI 컴포넌트
 │   ├── DeepLinkManager/       # 딥링크 처리
 │   ├── Fonts/                 # 폰트
-│   ├── ImagePicker/           # 이미지 선택 피커
+│   ├── ImagePicker/           # 이미지 피커
 │   ├── LocationManager/       # 위치 관련
 │   ├── NetworkManager/        # 네트워크 통신
 │   ├── NotificationManager/   # 알림 처리
-│   └── StringCatalogs/        # 다국어 처리
+│   ├── StringCatalogs/        # 다국어 처리
+│   ├── AppVersion             # 앱 버전 정보 관리
+│   ├── KeyChain               # 키체인 저장소 처리
+│   └── Utils                  # 공통 유틸리티 함수
 │
 ├── Views/                     # 기능별 화면 모듈
 │   ├── Splash/                # 스플래시 화면
