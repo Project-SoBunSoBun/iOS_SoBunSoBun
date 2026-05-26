@@ -128,7 +128,7 @@
   <img src="https://github.com/user-attachments/assets/f6b78c76-08b7-4509-97ca-c92b82ac27bd" width="19%" alt="최종앱스토어이미지1" />
   <img src="https://github.com/user-attachments/assets/6569190e-4cc8-4d1b-905d-67aec21c3be5" width="19%" alt="최종앱스토어이미지2" />
   <img src="https://github.com/user-attachments/assets/8df4d912-8550-401c-8c66-bca48dc27e98" width="19%" alt="최종앱스토어이미지3" />
-  <img src="https://github.com/user-attachments/assets/6a2a7127-4a50-469f-9531-2494c81d593a" width="19%" alt="최종앱스토어이미지4" />
+  <img src="https://github.com/user-attachments/assets/14f14d99-8f74-4711-97f4-b85c767362ca" width="19%" alt="최종앱스토어이미지4" />
   <img src="https://github.com/user-attachments/assets/ca205c38-9236-4453-99f7-d7a36e0c9208" width="19%" alt="최종앱스토어이미지5" />
 </p>
 
